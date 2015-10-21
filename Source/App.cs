@@ -25,6 +25,7 @@ namespace PointWars
 	using Math;
 	using Platform;
 	using Platform.Graphics;
+	using Platform.Input;
 	using Rendering;
 	using Utilities;
 	using static GLFW3.GLFW;
@@ -61,6 +62,11 @@ namespace PointWars
 		public Window Window { get; private set; }
 
 		/// <summary>
+		///   Gets the app's input device.
+		/// </summary>
+		public LogicalInputDevice Input { get; private set; }
+
+		/// <summary>
 		///   Initializes the application.
 		/// </summary>
 		private void Initialize()
@@ -88,6 +94,7 @@ namespace PointWars
 		public void Run()
 		{
 			using (Window = new Window(Name, new Size(1024, 768), false))
+			using (Input = new LogicalInputDevice(Window))
 			using (var frameSynchronizer = new FrameSynchronizer())
 			{
 				Initialize();
@@ -95,6 +102,8 @@ namespace PointWars
 				while (_isRunning)
 				{
 					glfwPollEvents();
+					Input.Update();
+
 					Update();
 
 					frameSynchronizer.BeginFrame();

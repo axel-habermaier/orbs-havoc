@@ -89,7 +89,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Gets the graphics object's underlying OpenGL handle.
 		/// </summary>
-		public uint Handle { get; protected set; }
+		protected uint Handle { get; set; }
 
 		/// <summary>
 		///   In debug builds, checks for OpenGL errors.
@@ -225,6 +225,15 @@ namespace PointWars.Platform.Graphics
 				if (stateValues[i] == value)
 					stateValues[i] = null;
 			}
+		}
+
+		/// <summary>
+		///   Casts the graphics object to its underlying OpenGL handle.
+		/// </summary>
+		public static implicit operator uint(GraphicsObject obj)
+		{
+			Assert.ArgumentNotNull(obj, nameof(obj));
+			return obj.Handle;
 		}
 	}
 }

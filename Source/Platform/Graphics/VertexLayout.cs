@@ -43,8 +43,8 @@ namespace PointWars.Platform.Graphics
 			Handle = Allocate(glGenVertexArrays, "VertexLayout");
 
 			glBindVertexArray(Handle);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer.Handle);
-			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.Handle);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(Vertex), (void*)0);

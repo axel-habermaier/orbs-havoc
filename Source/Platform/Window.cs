@@ -41,7 +41,6 @@ namespace PointWars.Platform
 		private static readonly Size MaximumSize = new Size(4096, 2160);
 
 		private static bool _initialized;
-
 		private readonly bool _fullscreen;
 		private readonly GLFWwindow* _window;
 
@@ -157,7 +156,7 @@ namespace PointWars.Platform
 		private void InitializeCallbacks()
 		{
 			_characterCallback = (window, codepoint) => CharacterEntered?.Invoke(codepoint);
-			_scrollCallback = (window, x, y) => MouseWheel?.Invoke(y > 0 ? 1 : -1);
+			_scrollCallback = (window, x, y) => MouseWheel?.Invoke(y > 0 ? MouseWheelDirection.Up : MouseWheelDirection.Down);
 			_sizeCallback = (window, width, height) => Resized?.Invoke(new Size(width, height));
 			_keyCallback = (window, key, scancode, action, mods) =>
 			{
@@ -213,7 +212,7 @@ namespace PointWars.Platform
 		/// <summary>
 		///   Raised when the mouse wheel was moved.
 		/// </summary>
-		public event Action<int> MouseWheel;
+		public event Action<MouseWheelDirection> MouseWheel;
 
 		/// <summary>
 		///   Raised when a character was entered.
@@ -229,6 +228,15 @@ namespace PointWars.Platform
 
 			glfwDestroyWindow(_window);
 			_initialized = false;
+		}
+
+		/// <summary>
+		///   Casts the window to its underlying GLFW window handle.
+		/// </summary>
+		public static implicit operator GLFWwindow*(Window window)
+		{
+			Assert.ArgumentNotNull(window, nameof(window));
+			return window._window;
 		}
 	}
 }

@@ -55,7 +55,7 @@ namespace PointWars.Platform.Graphics
 			Handle = Allocate(glGenFramebuffers, nameof(RenderTarget));
 
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
-			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture.Handle, 0);
+			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
 
 			switch (glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER))
 			{
@@ -138,7 +138,7 @@ namespace PointWars.Platform.Graphics
 			if (Change(ref State.RenderTarget, this))
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
 
-			glBindVertexArray(State.VertexLayout.Handle);
+			glBindVertexArray(State.VertexLayout);
 			glDrawArrays(GL_TRIANGLES, vertexOffset, 3 * primitiveCount);
 			glBindVertexArray(0);
 		}
@@ -155,7 +155,7 @@ namespace PointWars.Platform.Graphics
 			if (Change(ref State.RenderTarget, this))
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
 
-			glBindVertexArray(State.VertexLayout.Handle);
+			glBindVertexArray(State.VertexLayout);
 			glDrawElementsBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
 			glBindVertexArray(0);
 		}
