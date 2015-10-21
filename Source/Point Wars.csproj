@@ -54,6 +54,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Network\NetworkProtocol.cs" />
     <Compile Include="Platform\Graphics\Buffer.cs" />
     <Compile Include="Platform\Graphics\FrameSynchronizer.cs" />
     <Compile Include="Platform\Graphics\GraphicsObject.cs" />
@@ -112,11 +113,47 @@
     <Compile Include="Platform\PlatformInfo.cs" />
     <Compile Include="Platform\PlatformLibrary.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="App.cs" />
+    <Compile Include="Application.cs" />
     <Compile Include="Platform\Window.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Color.cs" />
     <Compile Include="Rendering\Colors.cs" />
+    <Compile Include="Scripting\Binding.cs" />
+    <Compile Include="Scripting\BindingCollection.cs" />
+    <Compile Include="Scripting\CommandAttribute.cs" />
+    <Compile Include="Scripting\CommandLine.cs" />
+    <Compile Include="Scripting\CommandParameter.cs" />
+    <Compile Include="Scripting\CommandRegistry.cs" />
+    <Compile Include="Scripting\Commands.cs" />
+    <Compile Include="Scripting\Command`0.cs" />
+    <Compile Include="Scripting\Command`1.cs" />
+    <Compile Include="Scripting\Command`2.cs" />
+    <Compile Include="Scripting\Command`3.cs" />
+    <Compile Include="Scripting\ConfigurationFile.cs" />
+    <Compile Include="Scripting\Cvar.cs" />
+    <Compile Include="Scripting\CvarAttribute.cs" />
+    <Compile Include="Scripting\CvarRegistry.cs" />
+    <Compile Include="Scripting\Cvars.cs" />
+    <Compile Include="Scripting\Help.cs" />
+    <Compile Include="Scripting\ICommand.cs" />
+    <Compile Include="Scripting\ICommands.cs" />
+    <Compile Include="Scripting\ICvar.cs" />
+    <Compile Include="Scripting\ICvars.cs" />
+    <Compile Include="Scripting\Parsing\InputStream.cs" />
+    <Compile Include="Scripting\Instruction.cs" />
+    <Compile Include="Scripting\Interpreter.cs" />
+    <Compile Include="Scripting\Parsing\ParseException.cs" />
+    <Compile Include="Scripting\Parsing\Parser.cs" />
+    <Compile Include="Scripting\Parsing\InputStreamState.cs" />
+    <Compile Include="Scripting\PersistentAttribute.cs" />
+    <Compile Include="Scripting\SystemOnlyAttribute.cs" />
+    <Compile Include="Scripting\TypeRegistry.cs" />
+    <Compile Include="Scripting\Validators\FileNameAttribute.cs" />
+    <Compile Include="Scripting\Validators\MaximumLengthAttribute.cs" />
+    <Compile Include="Scripting\Validators\NotEmptyAttribute.cs" />
+    <Compile Include="Scripting\Validators\RangeAttribute.cs" />
+    <Compile Include="Scripting\Validators\ValidatorAttribute.cs" />
+    <Compile Include="Scripting\Validators\WindowSizeAttribute.cs" />
     <Compile Include="Utilities\Assert.cs" />
     <Compile Include="Utilities\FatalErrorException.cs" />
   </ItemGroup>

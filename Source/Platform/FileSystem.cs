@@ -35,11 +35,16 @@ namespace PointWars.Platform
 	internal static class FileSystem
 	{
 		/// <summary>
+		///   The number of spaces per tab.
+		/// </summary>
+		private const int SpacesPerTab = 4;
+
+		/// <summary>
 		///   Initializes the type.
 		/// </summary>
 		static FileSystem()
 		{
-			UserDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), App.Name).Replace("\\", "/");
+			UserDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.Name).Replace("\\", "/");
 			Directory.CreateDirectory(UserDirectory);
 		}
 
@@ -90,12 +95,23 @@ namespace PointWars.Platform
 		{
 			try
 			{
-				return File.ReadAllText(GetUserFileName(fileName));
+				return Normalize(File.ReadAllText(GetUserFileName(fileName)));
 			}
 			catch (Exception e)
 			{
 				throw new FileSystemException(e.Message);
 			}
+		}
+
+		/// <summary>
+		///   Normalizes the line endings of the given input string to '\n', and replaces all tabs with spaces.
+		/// </summary>
+		/// <param name="input">The input whose line endings should be normalized.</param>
+		private static string Normalize(string input)
+		{
+			return input.Replace("\r\n", "\n")
+						.Replace("\r", "\n")
+						.Replace("\t", String.Join(" ", Enumerable.Range(0, SpacesPerTab).Select(_ => String.Empty)));
 		}
 
 		/// <summary>

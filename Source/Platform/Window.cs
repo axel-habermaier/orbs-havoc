@@ -37,8 +37,15 @@ namespace PointWars.Platform
 	/// </summary>
 	public unsafe class Window : DisposableObject
 	{
-		private static readonly Size MinimumSize = new Size(320, 240);
-		private static readonly Size MaximumSize = new Size(4096, 2160);
+		/// <summary>
+		///   The minimum supported window size.
+		/// </summary>
+		public static readonly Size MinimumSize = new Size(320, 240);
+
+		/// <summary>
+		///   The maximum supported window size.
+		/// </summary>
+		public static readonly Size MaximumSize = new Size(4096, 2160);
 
 		private static bool _initialized;
 		private readonly bool _fullscreen;

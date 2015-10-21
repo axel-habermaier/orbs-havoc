@@ -23,6 +23,7 @@
 namespace PointWars.Platform.Input
 {
 	using System;
+	using Scripting;
 	using Utilities;
 
 	/// <summary>

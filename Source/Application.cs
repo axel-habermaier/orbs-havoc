@@ -26,6 +26,7 @@ namespace PointWars
 	using Platform;
 	using Platform.Graphics;
 	using Platform.Input;
+	using Platform.Logging;
 	using Rendering;
 	using Utilities;
 	using static GLFW3.GLFW;
@@ -33,19 +34,19 @@ namespace PointWars
 	/// <summary>
 	///   Represents the application.
 	/// </summary>
-	internal class App
+	internal class Application
 	{
 		/// <summary>
 		///   The name of the application.
 		/// </summary>
 		public const string Name = "Point Wars";
 
-		private readonly bool _isRunning = true;
+		private bool _running;
 
 		/// <summary>
 		///   Initializes the application.
 		/// </summary>
-		public App()
+		public Application()
 		{
 			Assert.That(Current == null, "The application has already been initialized.");
 			Current = this;
@@ -54,7 +55,7 @@ namespace PointWars
 		/// <summary>
 		///   Gets the current application instance.
 		/// </summary>
-		public static App Current { get; private set; }
+		public static Application Current { get; private set; }
 
 		/// <summary>
 		///   Gets the app's window.
@@ -93,13 +94,15 @@ namespace PointWars
 		/// </summary>
 		public void Run()
 		{
+			_running = true;
+
 			using (Window = new Window(Name, new Size(1024, 768), false))
 			using (Input = new LogicalInputDevice(Window))
 			using (var frameSynchronizer = new FrameSynchronizer())
 			{
 				Initialize();
 
-				while (_isRunning)
+				while (_running)
 				{
 					glfwPollEvents();
 					Input.Update();
@@ -113,6 +116,15 @@ namespace PointWars
 					Window.Present();
 				}
 			}
+		}
+
+		/// <summary>
+		///   Exists the application.
+		/// </summary>
+		public void Exit()
+		{
+			Log.Info("Exiting {0}...", Name);
+			_running = false;
 		}
 	}
 }

@@ -28,9 +28,9 @@ namespace PointWars
 	using System.Reflection;
 	using System.Threading;
 	using System.Threading.Tasks;
-	using Math;
 	using Platform;
 	using Platform.Logging;
+	using Scripting;
 	using Utilities;
 
 	/// <summary>
@@ -39,10 +39,15 @@ namespace PointWars
 	internal static class Program
 	{
 		/// <summary>
+		///   Gets a value indicating whether the program was successfully initialized.
+		/// </summary>
+		public static bool Initialized { get; private set; }
+
+		/// <summary>
 		///   The entry point of the application.
 		/// </summary>
-		/// <param name="args">The command line arguments passed to the application.</param>
-		private static void Main(string[] args)
+		/// <param name="arguments">The command line arguments passed to the application.</param>
+		private static void Main(string[] arguments)
 		{
 			Thread.CurrentThread.Name = "Main Thread";
 			TaskScheduler.UnobservedTaskException += (o, e) => { throw e.Exception.InnerException; };
@@ -51,18 +56,28 @@ namespace PointWars
 
 			using (var platform = new PlatformLibrary())
 			using (var logFile = new LogFile())
+			using (new Help())
+			using (new Interpreter())
 			{
 				PrintToConsole();
-				Log.Info("Starting {0}...", App.Name);
+				Log.Info("Starting {0}...", Application.Name);
 
 				try
 				{
+					// Process the autoexec.cfg first, then the command line, so that cvar values set via the 
+					// command line overwrite the autoexec.cfg. We'll set all cvars now and execute all commands
+					// later when the app is fully initialized.
+					ConfigurationFile.Process(ConfigurationFile.AutoExec, executedByUser: false);
+					CommandLine.Process(arguments);
+
 					platform.Initialize();
 
-					var app = new App();
+					Initialized = true;
+					var app = new Application();
 					app.Run();
 
-					Log.Info("{0} has shut down.", App.Name);
+					ConfigurationFile.WriteAutoExec();
+					Log.Info("{0} has shut down.", Application.Name);
 				}
 				catch (TargetInvocationException e)
 				{
@@ -91,7 +106,7 @@ namespace PointWars
 			logFile.WriteToFile(force: true);
 
 			message = String.Format(message, exception.Message, logFile.FilePath);
-			Log.ShowErrorBox(App.Name, message);
+			Log.ShowErrorBox(Application.Name, message);
 
 			if (!(exception is FatalErrorException))
 			{

@@ -43,7 +43,7 @@ namespace PointWars.Platform.Logging
 		/// <summary>
 		///   The name of the generated log file.
 		/// </summary>
-		private readonly string _fileName = $"{App.Name}.log";
+		private readonly string _fileName = $"{Application.Name}.log";
 
 		/// <summary>
 		///   The unwritten log entries that have been generated.
