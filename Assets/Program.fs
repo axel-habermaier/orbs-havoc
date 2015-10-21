@@ -20,20 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Graphics
-{
-	/// <summary>
-	///   Represents the state of the graphics device.
-	/// </summary>
-	public sealed class GraphicsState
-	{
-		public const uint ConstantBufferSlotCount = 14;
-		public const uint MaxFrameLag = 3;
-
-		public readonly Buffer[] ConstantBuffers = new Buffer[ConstantBufferSlotCount];
-		public bool CanDraw;
-		public RenderTarget RenderTarget;
-		public Texture Texture;
-		public VertexLayout VertexLayout;
-	}
-}
+[<EntryPoint>]
+let main argv = 
+    Registry.generateCvars ()
+    Registry.generateCommands ()
+    0

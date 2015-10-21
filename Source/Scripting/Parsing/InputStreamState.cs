@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,18 +34,11 @@ namespace PointWars.Scripting.Parsing
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="position">The zero-based position of the next character that will be read by the input stream.</param>
-		/// <param name="line">The line number of the next character that will be read by the input stream, starting with 1.</param>
-		/// <param name="lineBegin">The absolute, zero-based position of the first character of the current line.</param>
-		public InputStreamState(int position, int line, int lineBegin)
+		public InputStreamState(int position)
 			: this()
 		{
 			Assert.ArgumentInRange(position, 0, Int32.MaxValue, nameof(position));
-			Assert.ArgumentInRange(line, 1, Int32.MaxValue, nameof(line));
-			Assert.ArgumentInRange(lineBegin, 0, Int32.MaxValue, nameof(lineBegin));
-
 			Position = position;
-			Line = line;
-			LineBegin = lineBegin;
 		}
 
 		/// <summary>
@@ -54,27 +47,12 @@ namespace PointWars.Scripting.Parsing
 		public int Position { get; }
 
 		/// <summary>
-		///   Gets the line number of the next character that will be read by the input stream, starting with 1.
-		/// </summary>
-		public int Line { get; }
-
-		/// <summary>
-		///   Gets the absolute, zero-based position of the first character of the current line.
-		/// </summary>
-		public int LineBegin { get; }
-
-		/// <summary>
-		///   Gets the relative position of the first character of the current line, starting with 1.
-		/// </summary>
-		public int Column => Position - LineBegin + 1;
-
-		/// <summary>
 		///   Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
 		/// <param name="other">An object to compare with this object.</param>
 		public bool Equals(InputStreamState other)
 		{
-			return Position == other.Position && Line == other.Line && LineBegin == other.LineBegin;
+			return Position == other.Position;
 		}
 
 		/// <summary>
@@ -93,13 +71,7 @@ namespace PointWars.Scripting.Parsing
 		/// </summary>
 		public override int GetHashCode()
 		{
-			unchecked
-			{
-				var hashCode = Position;
-				hashCode = (hashCode * 397) ^ Line;
-				hashCode = (hashCode * 397) ^ LineBegin;
-				return hashCode;
-			}
+			return Position.GetHashCode();
 		}
 
 		/// <summary>
@@ -123,15 +95,11 @@ namespace PointWars.Scripting.Parsing
 		}
 
 		/// <summary>
-		///   Advances the position, updating the line count and line begin if necessary.
+		///   Advances the position.
 		/// </summary>
-		/// <param name="newline">Indicates whether a new line should be registered.</param>
-		internal InputStreamState Advance(bool newline)
+		internal InputStreamState Advance()
 		{
-			if (newline)
-				return new InputStreamState(Position + 1, Line + 1, Position + 1);
-
-			return new InputStreamState(Position + 1, Line, LineBegin);
+			return new InputStreamState(Position + 1);
 		}
 	}
 }

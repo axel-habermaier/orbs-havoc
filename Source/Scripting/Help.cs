@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -73,16 +73,16 @@ namespace PointWars.Scripting
 			var builder = new StringBuilder();
 			builder.Append("\nUse the console to set and view cvars and to invoke commands.\n");
 			builder.Append("Cvars:\n");
-			builder.Append("   Type '\\lightgrey<cvar-name>\\\0' to view the current value of the cvar.\n");
-			builder.Append("   Type '\\lightgrey<cvar-name> <value>\\\0' to set a cvar to a new value.\n");
-			builder.Append("   Type '\\lightgreyhelp <cvar-name>\\\0' to view a description of the usage and purpose of the cvar.\n");
-			builder.Append("   Type '\\lightgreylist_cvars\\\0' to list all available cvars.\n");
+			builder.Append("   Type '\\lightgrey<cvar-name>\\default' to view the current value of the cvar.\n");
+			builder.Append("   Type '\\lightgrey<cvar-name> <value>\\default' to set a cvar to a new value.\n");
+			builder.Append("   Type '\\lightgreyhelp <cvar-name>\\default' to view a description of the usage and purpose of the cvar.\n");
+			builder.Append("   Type '\\lightgreylist_cvars\\default' to list all available cvars.\n");
 			builder.Append("Commands:\n");
 			builder.Append(
-				"   Type '\\lightgrey<command-name> <value1> <value2> ...\\\0' to invoke the command with parameters value1, value2, ... " +
+				"   Type '\\lightgrey<command-name> <value1> <value2> ...\\default' to invoke the command with parameters value1, value2, ... " +
 				"Optional parameters can be omitted at the end of the command invocation.\n");
-			builder.Append("   Type '\\lightgreyhelp <command-name>\\\0' to view a description of the usage and purpose of the command.\n");
-			builder.Append("   Type '\\lightgreylist_commands\\\0' to list all available commands.\n");
+			builder.Append("   Type '\\lightgreyhelp <command-name>\\default' to view a description of the usage and purpose of the command.\n");
+			builder.Append("   Type '\\lightgreylist_commands\\default' to list all available commands.\n");
 
 			Log.Info(builder.ToString());
 		}
@@ -98,16 +98,12 @@ namespace PointWars.Scripting
 			builder.AppendFormat("Description:   {0}\n", cvar.Description);
 			builder.AppendFormat("Type:          {0} (e.g., {1})\n", TypeRegistry.GetDescription(cvar.ValueType),
 				String.Join(", ", TypeRegistry.GetExamples(cvar.ValueType)));
-			builder.AppendFormat("Default Value: {0}\\\0\n", TypeRegistry.ToString(cvar.DefaultValue));
-			builder.AppendFormat("Current Value: {0}\\\0\n", TypeRegistry.ToString(cvar.Value));
-
-			if (cvar.UpdateMode != UpdateMode.Immediate && cvar.HasDeferredValue)
-				builder.AppendFormat("Pending Value: {0}\\\0\n", TypeRegistry.ToString(cvar.DeferredValue));
+			builder.AppendFormat("Default Value: {0}\\default\n", TypeRegistry.ToString(cvar.DefaultValue));
+			builder.AppendFormat("Current Value: {0}\\default\n", TypeRegistry.ToString(cvar.Value));
 
 			if (cvar.Validators.Any())
 				builder.AppendFormat("Remarks:       {0}\n", String.Join("; ", cvar.Validators.Select(v => v.Description)));
 
-			builder.AppendFormat("Update Mode:   {0}\n", cvar.UpdateMode.ToDisplayString());
 			builder.AppendFormat("Persistent:    {0}\n", cvar.Persistent ? "yes" : "no");
 			builder.AppendFormat("User Access:   {0}\n", cvar.SystemOnly ? "read" : "read/write");
 

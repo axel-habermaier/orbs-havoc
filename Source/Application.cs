@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ namespace PointWars
 	using Platform.Input;
 	using Platform.Logging;
 	using Rendering;
+	using Scripting;
 	using Utilities;
 	using static GLFW3.GLFW;
 
@@ -42,6 +43,8 @@ namespace PointWars
 		public const string Name = "Point Wars";
 
 		private bool _running;
+
+		public bool IsConsoleOpen => false;
 
 		/// <summary>
 		///   Initializes the application.
@@ -72,6 +75,16 @@ namespace PointWars
 		/// </summary>
 		private void Initialize()
 		{
+			Window.Closing += Exit;
+
+			Commands.Bind(Key.F1.WentDown(), "start_server TestServer");
+			Commands.Bind(Key.F2.WentDown(), "stop_server");
+			Commands.Bind(Key.F3.WentDown(), "connect ::1");
+			Commands.Bind(Key.F4.WentDown(), "disconnect");
+			Commands.Bind(Key.F5.WentDown(), "reload_assets");
+
+			Commands.Bind(Key.Escape.WentDown() & Key.LeftShift.IsPressed(), "exit");
+			Commands.Bind(Key.F10.WentDown(), "toggle show_debug_overlay");
 		}
 
 		/// <summary>

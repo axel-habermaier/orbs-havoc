@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,11 +46,11 @@ namespace PointWars.Scripting.Parsing
 
 			while (!inputStream.EndOfInput)
 			{
-				c = inputStream.Read();
-				if (Char.IsLetterOrDigit(c) || c == '_')
-					continue;
+				c = inputStream.Peek();
+				if (!Char.IsLetterOrDigit(c) && c != '_')
+					break;
 
-				break;
+				inputStream.Skip(1);
 			}
 			return inputStream.Substring(position, inputStream.State.Position - position);
 		}
@@ -315,6 +315,7 @@ namespace PointWars.Scripting.Parsing
 				throw new ParseException(inputStream, "'[' is never closed.");
 			}
 
+			inputStream.Skip(1);
 			var input = inputStream.Substring(state.Position + 1, inputStream.State.Position - state.Position - 2);
 			var parts = input.Split(new[] { "+" }, StringSplitOptions.RemoveEmptyEntries).Select(part => part.ToLower());
 
@@ -337,9 +338,9 @@ namespace PointWars.Scripting.Parsing
 						break;
 					default:
 						if (part.StartsWith("key."))
-							key = (Key)Enum.Parse(typeof(Key), part.Substring("key.".Length + 1));
+							key = (Key)Enum.Parse(typeof(Key), part.Substring("key.".Length), ignoreCase: true);
 						else if (part.StartsWith("mouse."))
-							button = (MouseButton)Enum.Parse(typeof(MouseButton), part.Substring("mouse.".Length + 1));
+							button = (MouseButton)Enum.Parse(typeof(MouseButton), part.Substring("mouse.".Length), ignoreCase: true);
 						else
 							throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", part);
 						break;
@@ -406,7 +407,7 @@ namespace PointWars.Scripting.Parsing
 					cvar.Name, e.Message, TypeRegistry.GetExampleString(cvar.ValueType), Help.GetHint(cvar.Name));
 			}
 
-			if (inputStream.WhiteSpaceUntilEndOfInput())
+			if (!inputStream.WhiteSpaceUntilEndOfInput())
 				throw new ParseException(inputStream, "Expected end of input.");
 
 			return instruction;
@@ -459,7 +460,7 @@ namespace PointWars.Scripting.Parsing
 				}
 			}
 
-			if (inputStream.WhiteSpaceUntilEndOfInput())
+			if (!inputStream.WhiteSpaceUntilEndOfInput())
 				throw new ParseException(inputStream, "Expected end of input.");
 
 			return new Instruction(command, values);

@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ namespace PointWars.Scripting.Parsing
 	using Utilities;
 
 	/// <summary>
-	///   Provides read-access to a sequence of UTF-16 characters. The only supported newline token is \n.
+	///   Provides read-access to a sequence of UTF-16 characters.
 	/// </summary>
 	public class InputStream
 	{
@@ -60,7 +60,7 @@ namespace PointWars.Scripting.Parsing
 		/// </summary>
 		internal char Peek()
 		{
-			return Input[State.Position];
+			return EndOfInput ? Char.MaxValue : Input[State.Position];
 		}
 
 		/// <summary>
@@ -96,7 +96,7 @@ namespace PointWars.Scripting.Parsing
 			Assert.ArgumentInRange(count, 0, Int32.MaxValue, nameof(count));
 
 			for (var i = 0; i < count && !EndOfInput; ++i)
-				State = State.Advance(IsNewline(Peek()));
+				State = State.Advance();
 		}
 
 		/// <summary>
@@ -137,15 +137,6 @@ namespace PointWars.Scripting.Parsing
 			}
 
 			return true;
-		}
-
-		/// <summary>
-		///   Returns true if the given character represents a newline token.
-		/// </summary>
-		/// <param name="character">The character that should be checked.</param>
-		private static bool IsNewline(char character)
-		{
-			return character == '\n';
 		}
 	}
 }

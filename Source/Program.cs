@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -56,28 +56,34 @@ namespace PointWars
 
 			using (var platform = new PlatformLibrary())
 			using (var logFile = new LogFile())
-			using (new Help())
-			using (new Interpreter())
 			{
 				PrintToConsole();
 				Log.Info("Starting {0}...", Application.Name);
 
+				Cvars.Initialize();
+				Commands.Initialize();
+
 				try
 				{
-					// Process the autoexec.cfg first, then the command line, so that cvar values set via the 
-					// command line overwrite the autoexec.cfg. We'll set all cvars now and execute all commands
-					// later when the app is fully initialized.
-					ConfigurationFile.Process(ConfigurationFile.AutoExec, executedByUser: false);
-					CommandLine.Process(arguments);
+					using (new Help())
+					using (new Interpreter())
+					{
 
-					platform.Initialize();
+						// Process the autoexec.cfg first, then the command line, so that cvar values set via the 
+						// command line overwrite the autoexec.cfg. We'll set all cvars now and execute all commands
+						// later when the app is fully initialized.
+						ConfigurationFile.Process(ConfigurationFile.AutoExec, executedByUser: false);
+						CommandLine.Process(arguments);
 
-					Initialized = true;
-					var app = new Application();
-					app.Run();
+						platform.Initialize();
 
-					ConfigurationFile.WriteAutoExec();
-					Log.Info("{0} has shut down.", Application.Name);
+						Initialized = true;
+						var app = new Application();
+						app.Run();
+
+						ConfigurationFile.WriteAutoExec();
+						Log.Info("{0} has shut down.", Application.Name);
+					}
 				}
 				catch (TargetInvocationException e)
 				{

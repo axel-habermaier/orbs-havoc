@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ namespace PointWars.Scripting
 				// report an error and try again for the next argument.
 				if (!arguments[i].StartsWith(ArgumentSeparator))
 				{
-					Log.Error("Encountered unexpected token '{0}\\\0' in command line at position {1}. " +
+					Log.Error("Encountered unexpected token '{0}\\default' in command line at position {1}. " +
 							  "Expected the name of a cvar or command, prefixed with '{2}'.", arguments[i], i, ArgumentSeparator);
 
 					++i;

@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,7 @@ namespace PointWars.Platform
 		private readonly GLFWwindow* _window;
 
 		private GLFWcharfun _characterCallback;
+		private GLFWwindowclosefun _closeCallback;
 		private GLFWkeyfun _keyCallback;
 		private GLFWmousebuttonfun _mouseCallback;
 		private GLFWscrollfun _scrollCallback;
@@ -163,6 +164,7 @@ namespace PointWars.Platform
 		private void InitializeCallbacks()
 		{
 			_characterCallback = (window, codepoint) => CharacterEntered?.Invoke(codepoint);
+			_closeCallback = window => Closing?.Invoke();
 			_scrollCallback = (window, x, y) => MouseWheel?.Invoke(y > 0 ? MouseWheelDirection.Up : MouseWheelDirection.Down);
 			_sizeCallback = (window, width, height) => Resized?.Invoke(new Size(width, height));
 			_keyCallback = (window, key, scancode, action, mods) =>
@@ -185,6 +187,7 @@ namespace PointWars.Platform
 			};
 
 			glfwSetCharCallback(_window, _characterCallback);
+			glfwSetWindowCloseCallback(_window, _closeCallback);
 			glfwSetScrollCallback(_window, _scrollCallback);
 			glfwSetFramebufferSizeCallback(_window, _sizeCallback);
 			glfwSetKeyCallback(_window, _keyCallback);
@@ -225,6 +228,11 @@ namespace PointWars.Platform
 		///   Raised when a character was entered.
 		/// </summary>
 		public event Action<uint> CharacterEntered;
+
+		/// <summary>
+		///   Raised when the user requested the window to be closed.
+		/// </summary>
+		public event Action Closing;
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.

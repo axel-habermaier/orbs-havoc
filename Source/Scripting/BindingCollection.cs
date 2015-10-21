@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -68,9 +68,8 @@ namespace PointWars.Scripting
 		/// </summary>
 		public void Update()
 		{
-			// TODO
-//			if (_device.TextInputEnabled || Application.Current.IsConsoleOpen)
-//				return;
+			if (_device.TextInputEnabled || Application.Current.IsConsoleOpen)
+				return;
 
 			foreach (var binding in _bindings)
 				binding.ExecuteIfTriggered();
@@ -102,9 +101,9 @@ namespace PointWars.Scripting
 			builder.Append("\n");
 			foreach (var group in bindingGroups)
 			{
-				builder.AppendFormat("'\\lightgrey{0}\\\0' on ", group.Command);
+				builder.AppendFormat("'\\lightgrey{0}\\default' on ", group.Command);
 				builder.Append(String.Join(", ",
-					group.Bindings.Select(binding => $"\\lightgrey{TypeRegistry.ToString(binding.Input.Trigger)}\\\0")));
+					group.Bindings.Select(binding => $"\\lightgrey{TypeRegistry.ToString(binding.Input.Trigger)}\\default")));
 				builder.Append("\n");
 			}
 

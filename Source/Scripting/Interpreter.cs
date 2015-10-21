@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -186,7 +186,7 @@ namespace PointWars.Scripting
 			var builder = new StringBuilder();
 			builder.Append("\n");
 			foreach (var element in elements)
-				builder.AppendFormat("'\\lightgrey{0}\\\0': {1}\n", name(element), description(element));
+				builder.AppendFormat("'\\lightgrey{0}\\default': {1}\n", name(element), description(element));
 
 			Log.Info("{0}", builder);
 		}

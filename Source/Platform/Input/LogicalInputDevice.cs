@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ namespace PointWars.Platform.Input
 	public sealed class LogicalInputDevice : DisposableObject
 	{
 		private readonly List<LogicalInput> _inputs = new List<LogicalInput>(64);
-		private readonly InputState[] _keyStates = new InputState[Enum.GetValues(typeof(Key)).Length + 1];
+		private readonly InputState[] _keyStates = new InputState[GLFW_KEY_LAST + 1];
 		private readonly InputState[] _mouseButtonStates = new InputState[Enum.GetValues(typeof(MouseButton)).Length + 1];
 		private readonly Window _window;
 
@@ -53,6 +53,11 @@ namespace PointWars.Platform.Input
 			_window.MousePressed += OnMouseDown;
 			_window.MouseReleased += OnMouseUp;
 		}
+
+		/// <summary>
+		///   Gets a value indicating whether the user is currently inputting some text.
+		/// </summary>
+		public bool TextInputEnabled { get; private set; }
 
 		/// <summary>
 		///   Raises the mouse wheel event.

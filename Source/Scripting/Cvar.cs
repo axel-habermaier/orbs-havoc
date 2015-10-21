@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2014-2015, Institute for Software & Systems Engineering
+// Copyright (c) 2015, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -87,15 +87,8 @@ namespace PointWars.Scripting
 					return;
 
 				UpdateValue(value);
-				HasExplicitValue = true;
 			}
 		}
-
-		/// <summary>
-		///   Gets a value indicating whether the cvar's value has been set explicitly. If false, the cvar has its default value. This
-		///   property is also true if the cvar's default value has been set explicitly.
-		/// </summary>
-		public bool HasExplicitValue { get; private set; }
 
 		/// <summary>
 		///   Gets a value indicating whether the cvar is readonly and cannot be set from the console.
@@ -172,7 +165,7 @@ namespace PointWars.Scripting
 				if (validator.Validate(value))
 					continue;
 
-				Log.Error("'{0}' could not be set to '{1}\\\0': {2}", Name, TypeRegistry.ToString(value), validator.ErrorMessage);
+				Log.Error("'{0}' could not be set to '{1}\\default': {2}", Name, TypeRegistry.ToString(value), validator.ErrorMessage);
 				Log.Info("{0}", Help.GetHint(Name));
 				return false;
 			}
@@ -191,7 +184,7 @@ namespace PointWars.Scripting
 			else
 			{
 				_value = value;
-				Log.Info("'{0}' is now '{1}\\\0'.", Name, TypeRegistry.ToString(value));
+				Log.Info("'{0}' is now '{1}\\default'.", Name, TypeRegistry.ToString(value));
 
 				Changed?.Invoke();
 			}

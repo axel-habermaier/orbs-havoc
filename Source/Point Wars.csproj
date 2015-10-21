@@ -124,7 +124,9 @@
     <Compile Include="Scripting\CommandLine.cs" />
     <Compile Include="Scripting\CommandParameter.cs" />
     <Compile Include="Scripting\CommandRegistry.cs" />
-    <Compile Include="Scripting\Commands.cs" />
+    <Compile Include="Scripting\Commands.gen.cs">
+      <DependentUpon>Commands.cs</DependentUpon>
+    </Compile>
     <Compile Include="Scripting\Command`0.cs" />
     <Compile Include="Scripting\Command`1.cs" />
     <Compile Include="Scripting\Command`2.cs" />
@@ -133,12 +135,14 @@
     <Compile Include="Scripting\Cvar.cs" />
     <Compile Include="Scripting\CvarAttribute.cs" />
     <Compile Include="Scripting\CvarRegistry.cs" />
-    <Compile Include="Scripting\Cvars.cs" />
+    <Compile Include="Scripting\Cvars.gen.cs">
+      <DependentUpon>Cvars.cs</DependentUpon>
+    </Compile>
     <Compile Include="Scripting\Help.cs" />
     <Compile Include="Scripting\ICommand.cs" />
-    <Compile Include="Scripting\ICommands.cs" />
+    <Compile Include="Scripting\Commands.cs" />
     <Compile Include="Scripting\ICvar.cs" />
-    <Compile Include="Scripting\ICvars.cs" />
+    <Compile Include="Scripting\Cvars.cs" />
     <Compile Include="Scripting\Parsing\InputStream.cs" />
     <Compile Include="Scripting\Instruction.cs" />
     <Compile Include="Scripting\Interpreter.cs" />
