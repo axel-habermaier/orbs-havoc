@@ -20,31 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform
+namespace PointWars.Platform.Graphics
 {
+	using Math;
+	using Utilities;
+	using static OpenGL3;
+
 	/// <summary>
-	///   Indicates the whether the window is minimized, maximized, or neither minimized nor maximized.
+	///   Represents a 2-dimensional texture.
 	/// </summary>
-	public enum WindowMode
+	public sealed unsafe class Texture : GraphicsObject
 	{
 		/// <summary>
-		///   Indicates that the window is neither minimized nor maximized.
+		///   Initializes a new instance.
 		/// </summary>
-		Normal = 1,
+		public Texture(Size size, uint format, void* data)
+		{
+			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
+
+			Size = size;
+			Handle = Allocate(glGenTextures, "Texture");
+
+			glBindTexture(GL_TEXTURE_2D, Handle);
+			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
+		}
 
 		/// <summary>
-		///   Indicates that the window is maximized, filling the entire screen.
+		///   Gets the size of the texture.
 		/// </summary>
-		Maximized = 2,
+		public Size Size { get; }
 
 		/// <summary>
-		///   Indicates that the window is minimized and invisible.
+		///   Binds the texture for rendering.
 		/// </summary>
-		Minimized = 3,
+		public void Bind()
+		{
+			if (Change(ref State.Texture, this))
+				glBindTexture(GL_TEXTURE_2D, Handle);
+		}
 
 		/// <summary>
-		///   Indicates that the window is in borderless fullscreen mode, filling the entire screen.
+		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
-		Fullscreen = 4
+		protected override void OnDisposing()
+		{
+			Unset(ref State.Texture, this);
+			Deallocate(glDeleteTextures, Handle);
+		}
 	}
 }
