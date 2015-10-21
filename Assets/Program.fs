@@ -24,4 +24,5 @@
 let main argv = 
     Registry.generateCvars ()
     Registry.generateCommands ()
+    GLSpecParser.generateIL ()
     0

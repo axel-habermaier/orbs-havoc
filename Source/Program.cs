@@ -85,10 +85,6 @@ namespace PointWars
 						Log.Info("{0} has shut down.", Application.Name);
 					}
 				}
-				catch (TargetInvocationException e)
-				{
-					ReportException(e.InnerException, logFile);
-				}
 				catch (Exception e)
 				{
 					ReportException(e, logFile);
@@ -105,6 +101,9 @@ namespace PointWars
 		{
 			var message = "The application has been terminated after a fatal error. " +
 						  "See the log file for further details.\n\nThe error was: {0}\n\nLog file: {1}";
+
+			if (exception is TargetInvocationException || exception is TypeInitializationException)
+				exception = exception.InnerException;
 
 			logFile.Enqueue(new LogEntry(LogType.Error, $"Exception type: {exception.GetType().FullName}"));
 			logFile.Enqueue(new LogEntry(LogType.Error, $"Exception message: {exception.Message}"));

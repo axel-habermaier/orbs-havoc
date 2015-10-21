@@ -99,7 +99,7 @@ namespace PointWars
 		/// </summary>
 		private void Draw()
 		{
-			Window.BackBuffer.Clear(Colors.Red);
+			Window.BackBuffer.Clear(Colors.CornflowerBlue);
 		}
 
 		/// <summary>

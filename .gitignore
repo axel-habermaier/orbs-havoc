@@ -26,4 +26,4 @@ packages
 *.sln.ide
 *.assets
 *.*~*
-*.gen.cs
+*.gen.*

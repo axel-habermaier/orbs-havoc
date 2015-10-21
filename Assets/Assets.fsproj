@@ -58,6 +58,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="CodeWriter.fs" />
+    <Compile Include="GLSpecParser.fs" />
     <Compile Include="Registry.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -85,6 +86,8 @@
       <HintPath>..\Dependencies\Packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
