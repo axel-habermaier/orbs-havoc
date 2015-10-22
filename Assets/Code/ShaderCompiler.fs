@@ -20,9 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-[<EntryPoint>]
-let main argv = 
-    Registry.generateCvars ()
-    Registry.generateCommands ()
-    GLSpecParser.generateIL ()
-    0
+module ShaderCompiler
+
+open System
+open System.Linq
+open System.IO
+open Assets
+
+type Shader = { Name : string; VertexShader : string; FragmentShader : string }
+
+let private prefix = """#version 330
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_shading_language_420pack : enable
+
+"""
+
+let compile shader (bundle : AssetBundle) =
+    let vs = File.ReadAllText(Path.Combine("../../Assets/Shaders", shader.VertexShader))
+    let fs = File.ReadAllText(Path.Combine("../../Assets/Shaders", shader.FragmentShader))
+
+    bundle.WriteString (prefix + vs)
+    bundle.WriteString (prefix + fs)
+
+    bundle.AddAsset (Shader, shader.Name)
+    bundle

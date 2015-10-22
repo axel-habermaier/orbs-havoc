@@ -26,10 +26,13 @@ namespace PointWars
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.Reflection;
+	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using Platform;
 	using Platform.Logging;
+	using Platform.Memory;
+	using Rendering;
 	using Scripting;
 	using Utilities;
 
@@ -49,46 +52,52 @@ namespace PointWars
 		/// <param name="arguments">The command line arguments passed to the application.</param>
 		private static void Main(string[] arguments)
 		{
-			Thread.CurrentThread.Name = "Main Thread";
-			TaskScheduler.UnobservedTaskException += (o, e) => { throw e.Exception.InnerException; };
-			CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-			CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-
-			using (var platform = new PlatformLibrary())
-			using (var logFile = new LogFile())
+			try
 			{
-				PrintToConsole();
-				Log.Info("Starting {0}...", Application.Name);
+				Thread.CurrentThread.Name = "Main Thread";
+				TaskScheduler.UnobservedTaskException += (o, e) => { throw e.Exception.InnerException; };
+				CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+				CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
-				Cvars.Initialize();
-				Commands.Initialize();
-
-				try
+				using (var platform = new PlatformLibrary())
+				using (var logFile = new LogFile())
 				{
-					using (new Help())
-					using (new Interpreter())
+					PrintToConsole();
+					Log.Info("Starting {0}...", Application.Name);
+
+					Cvars.Initialize();
+					Commands.Initialize();
+
+					try
 					{
+						using (new Help())
+						using (new Interpreter())
+						{
+							// Process the autoexec.cfg first, then the command line, so that cvar values set via the 
+							// command line overwrite the autoexec.cfg. We'll set all cvars now and execute all commands
+							// later when the app is fully initialized.
+							ConfigurationFile.Process(ConfigurationFile.AutoExec, executedByUser: false);
+							CommandLine.Process(arguments);
 
-						// Process the autoexec.cfg first, then the command line, so that cvar values set via the 
-						// command line overwrite the autoexec.cfg. We'll set all cvars now and execute all commands
-						// later when the app is fully initialized.
-						ConfigurationFile.Process(ConfigurationFile.AutoExec, executedByUser: false);
-						CommandLine.Process(arguments);
+							platform.Initialize();
 
-						platform.Initialize();
+							Initialized = true;
+							var app = new Application();
+							app.Run();
 
-						Initialized = true;
-						var app = new Application();
-						app.Run();
-
-						ConfigurationFile.WriteAutoExec();
-						Log.Info("{0} has shut down.", Application.Name);
+							ConfigurationFile.WriteAutoExec();
+							Log.Info("{0} has shut down.", Application.Name);
+						}
+					}
+					catch (Exception e)
+					{
+						ReportException(e, logFile);
 					}
 				}
-				catch (Exception e)
-				{
-					ReportException(e, logFile);
-				}
+			}
+			finally
+			{
+				ObjectPool.DisposeGlobalPools();
 			}
 		}
 
@@ -141,9 +150,17 @@ namespace PointWars
 		private static void WriteToConsole(LogEntry entry)
 		{
 #if DEBUG
-			Debug.WriteLine("[{0}] {1}", entry.LogTypeString, entry.Message);
+			var builder = new StringBuilder();
+			TextString.Write(builder, entry.Message);
+
+			Debug.WriteLine("[{0}] {1}", entry.LogTypeString, builder);
 #else
-			Console.WriteLine("[{0}] {1}", entry.LogTypeString, entry.Message);
+			Console.Out.Write("[");
+			Console.Out.Write(entry.LogTypeString);
+			Console.Out.Write("] ");
+
+			TextString.Write(Console.Out, entry.Message);
+			Console.Out.WriteLine();
 #endif
 		}
 	}

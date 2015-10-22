@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-module Utilities
+namespace Assets
 
 open System
+open System.IO
+open System.Linq
 open System.Text
 
 type internal CodeWriter () =

@@ -56,6 +56,7 @@ namespace PointWars.Platform.Graphics
 
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
 			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
+			CheckErrors();
 
 			switch (glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER))
 			{
@@ -89,6 +90,7 @@ namespace PointWars.Platform.Graphics
 
 			var buffer = GL_COLOR_ATTACHMENT0;
 			glDrawBuffers(1, &buffer);
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -126,6 +128,7 @@ namespace PointWars.Platform.Graphics
 
 			glClearColor(color.Red / 255.0f, color.Green / 255.0f, color.Blue / 255.0f, color.Alpha / 255.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -141,6 +144,7 @@ namespace PointWars.Platform.Graphics
 			glBindVertexArray(State.VertexLayout);
 			glDrawArrays(GL_TRIANGLES, vertexOffset, 3 * primitiveCount);
 			glBindVertexArray(0);
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -158,6 +162,7 @@ namespace PointWars.Platform.Graphics
 			glBindVertexArray(State.VertexLayout);
 			glDrawElementsBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
 			glBindVertexArray(0);
+			CheckErrors();
 		}
 
 		/// <summary>

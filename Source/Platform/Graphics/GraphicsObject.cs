@@ -79,6 +79,8 @@ namespace PointWars.Platform.Graphics
 			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)), new string((sbyte*)glGetString(GL_VENDOR)));
 			Log.Info("OpenGL version: {0}", new string((sbyte*)glGetString(GL_VERSION)));
 			Log.Info("OpenGL GLSL version: {0}", new string((sbyte*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+			CheckErrors();
 		}
 
 		/// <summary>

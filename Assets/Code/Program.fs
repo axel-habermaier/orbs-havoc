@@ -20,21 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Graphics
-{
-	/// <summary>
-	///   Represents the state of the graphics device.
-	/// </summary>
-	public sealed class GraphicsState
-	{
-		public const uint ConstantBufferSlotCount = 14;
-		public const uint MaxFrameLag = 3;
+open Assets
 
-		public readonly Buffer[] ConstantBuffers = new Buffer[ConstantBufferSlotCount];
-		public bool CanDraw;
-		public RenderTarget RenderTarget;
-		public Texture Texture;
-		public VertexLayout VertexLayout;
-		public Shader Shader;
-	}
-}
+[<EntryPoint>]
+let main argv = 
+    RegistryGenerator.generateCvars ()
+    RegistryGenerator.generateCommands ()
+    GLGenerator.generateIL ()
+
+    Bundle.create ()
+    |> FontCompiler.compile {  Name = "DefaultFont"; File = "LiberationMono-Regular.ttf";Size = 11; Aliased = true; InvalidChar = '□'; CharacterRange = (0, 256) }
+    |> ShaderCompiler.compile { Name = "SpriteBatchShader"; VertexShader = "SpriteBatch.vert"; FragmentShader = "SpriteBatch.frag" }
+    |> Bundle.generate
+
+    0

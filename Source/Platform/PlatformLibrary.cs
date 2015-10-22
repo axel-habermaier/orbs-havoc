@@ -22,6 +22,7 @@
 
 namespace PointWars.Platform
 {
+	using System;
 	using System.Diagnostics;
 	using GLFW3;
 	using Logging;
@@ -51,20 +52,28 @@ namespace PointWars.Platform
 		/// </summary>
 		public void Initialize()
 		{
-			glfwSetErrorCallback(ErrorCallback);
-			if (glfwInit() == 0)
-				Log.Die("GLFW initialization failed.");
-
-			int major, minor, revision;
-			glfwGetVersion(&major, &minor, &revision);
-
-			if (major != GLFW_VERSION_MAJOR || minor < GLFW_VERSION_MINOR || (minor == GLFW_VERSION_MINOR && revision < GLFW_VERSION_REVISION))
+			try
 			{
-				Log.Die("GLFW is outdated; version {0}.{1}.{2} was found but at least version {3}.{4}.{5} is required.",
-					major, minor, revision, GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_REVISION);
-			}
+				glfwSetErrorCallback(ErrorCallback);
+				if (glfwInit() == 0)
+					Log.Die("GLFW initialization failed.");
 
-			Log.Info("GLFW {0}.{1}.{2} initialized.", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_REVISION);
+				int major, minor, revision;
+				glfwGetVersion(&major, &minor, &revision);
+
+				if (major != GLFW_VERSION_MAJOR || minor < GLFW_VERSION_MINOR || (minor == GLFW_VERSION_MINOR && revision < GLFW_VERSION_REVISION))
+				{
+					Log.Die("GLFW is outdated; version {0}.{1}.{2} was found but at least version {3}.{4}.{5} is required.",
+						major, minor, revision, GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_REVISION);
+				}
+
+				Log.Info("GLFW {0}.{1}.{2} initialized.", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_REVISION);
+			}
+			catch (DllNotFoundException)
+			{
+				Log.Die("Unable to load GLFW 3. The library could not be not found. " +
+						"Make sure GLFW 3 is installed on your system or 'glfw3.dll' is placed in the application directory.");
+			}
 		}
 
 		/// <summary>

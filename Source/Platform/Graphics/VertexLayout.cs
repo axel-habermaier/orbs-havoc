@@ -45,17 +45,21 @@ namespace PointWars.Platform.Graphics
 			glBindVertexArray(Handle);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+			CheckErrors();
 
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(Vertex), (void*)0);
+			CheckErrors();
 
 			glEnableVertexAttribArray(1);
 			glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(Vertex), (void*)sizeof(Vector2));
+			CheckErrors();
 
 			// The type of color inputs in the shader is Vector4; however, we only send RGBA8 values and let the shader
 			// convert the data to save 12 bytes per vertex
 			glEnableVertexAttribArray(2);
 			glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, true, sizeof(Vertex), (void*)(2 * sizeof(Vector2)));
+			CheckErrors();
 
 			glBindVertexArray(0);
 		}

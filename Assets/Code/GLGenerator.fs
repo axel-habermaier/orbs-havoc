@@ -20,15 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-module GLSpecParser
+module GLGenerator
 
 open System
+open System.Linq
 open System.Collections.Generic
 open System.Globalization
 open System.IO
 open System.Xml
 open System.Xml.Linq
-open Utilities
+open Assets
 
 type Enum = { Name : string; Value : string }
 type Param = { Name : string; Type : string; Group : string }
@@ -134,7 +135,7 @@ let private parse () =
 
 let rec private mapType (glType : string) =
     let glType = glType.Replace("const", "").Trim()
-    let glType = if glType.EndsWith("*") then mapType(glType.Substring(0, glType.Length - 2)) + "*" else glType
+    let glType = if glType.EndsWith("*") then mapType(glType.Substring(0, glType.Length - 1)) + "*" else glType
     match glType with
     | "GLboolean" -> "bool"
     | "GLuint" | "GLenum" | "GLbitfield" -> "uint32"

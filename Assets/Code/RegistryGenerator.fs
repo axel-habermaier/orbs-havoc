@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-module Registry
+module RegistryGenerator
 
 open System
 open System.Linq
@@ -29,7 +29,7 @@ open System.Text.RegularExpressions
 open Microsoft.CodeAnalysis.CSharp
 open Microsoft.CodeAnalysis
 open Microsoft.CodeAnalysis.CSharp.Syntax
-open Utilities
+open Assets
 
 let private getRuntimeName (name : string) = 
     let nameSeq = seq {

@@ -23,6 +23,7 @@
 namespace PointWars.Platform.Graphics
 {
 	using Math;
+	using Memory;
 	using Utilities;
 	using static OpenGL3;
 
@@ -32,31 +33,77 @@ namespace PointWars.Platform.Graphics
 	public sealed unsafe class Texture : GraphicsObject
 	{
 		/// <summary>
+		///   Initializes a new instance that is initialized later.
+		/// </summary>
+		public Texture()
+		{
+		}
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		public Texture(Size size, uint format, void* data)
 		{
-			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
-
-			Size = size;
-			Handle = Allocate(glGenTextures, "Texture");
-
-			glBindTexture(GL_TEXTURE_2D, Handle);
-			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
+			Initialize(size, format, data);
 		}
 
 		/// <summary>
 		///   Gets the size of the texture.
 		/// </summary>
-		public Size Size { get; }
+		public Size Size { get; private set; }
+
+		/// <summary>
+		///   Loads a texture from the given buffer.
+		/// </summary>
+		/// <param name="buffer">The buffer the texture should be read from.</param>
+		public static Texture Create(ref BufferReader buffer)
+		{
+			var texture = new Texture();
+			texture.Load(ref buffer);
+			return texture;
+		}
+
+		/// <summary>
+		///   Loads the texture from the given buffer.
+		/// </summary>
+		/// <param name="buffer">The buffer the texture should be read from.</param>
+		public void Load(ref BufferReader buffer)
+		{
+			var size = new Size(buffer.ReadUInt32(), buffer.ReadUInt32());
+			var sizeInBytes = buffer.ReadInt32();
+			var data = buffer.Pointer;
+			buffer.Skip(sizeInBytes);
+
+			Initialize(size, GL_RGBA, data);
+		}
+
+		/// <summary>
+		///   Initializes the texture.
+		/// </summary>
+		private void Initialize(Size size, uint format, void* data)
+		{
+			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
+
+			Size = size;
+			Deallocate(glDeleteTextures, Handle);
+			Handle = Allocate(glGenTextures, "Texture");
+
+			glBindTexture(GL_TEXTURE_2D, Handle);
+			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
+			CheckErrors();
+		}
 
 		/// <summary>
 		///   Binds the texture for rendering.
 		/// </summary>
 		public void Bind()
 		{
+			Assert.That(Handle != 0, "The texture has not been initialized.");
+
 			if (Change(ref State.Texture, this))
 				glBindTexture(GL_TEXTURE_2D, Handle);
+
+			CheckErrors();
 		}
 
 		/// <summary>

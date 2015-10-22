@@ -22,16 +22,37 @@
 
 namespace PointWars.Platform.Graphics
 {
+	using System.Runtime.InteropServices;
 	using Math;
 	using Rendering;
 
 	/// <summary>
-	///   Represents a vertex that can be drawn.
+	///   Holds position, texture coordinates, and color data for a vertex.
 	/// </summary>
-	internal struct Vertex
+	[StructLayout(LayoutKind.Explicit, Pack = 1)]
+	public struct Vertex
 	{
+		/// <summary>
+		///   The size in bytes of the structure.
+		/// </summary>
+		public const int Size = 20;
+
+		/// <summary>
+		///   Gets or sets the vertex' position.
+		/// </summary>
+		[FieldOffset(0)]
 		public Vector2 Position;
-		public Vector2 TexCoords;
+
+		/// <summary>
+		///   Gets or sets the vertex' texture coordinates.
+		/// </summary>
+		[FieldOffset(8)]
+		public Vector2 TextureCoordinates;
+
+		/// <summary>
+		///   Gets or sets the vertex' color.
+		/// </summary>
+		[FieldOffset(16)]
 		public Color Color;
-	};
+	}
 }

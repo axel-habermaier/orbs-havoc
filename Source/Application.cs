@@ -112,6 +112,7 @@ namespace PointWars
 			using (Window = new Window(Name, new Size(1024, 768), false))
 			using (Input = new LogicalInputDevice(Window))
 			using (var frameSynchronizer = new FrameSynchronizer())
+			using (new Assets())
 			{
 				Initialize();
 
