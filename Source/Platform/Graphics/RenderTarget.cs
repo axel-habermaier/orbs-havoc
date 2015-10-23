@@ -33,13 +33,21 @@ namespace PointWars.Platform.Graphics
 	/// </summary>
 	public sealed unsafe class RenderTarget : GraphicsObject
 	{
+		private readonly Size _size;
 		private readonly Texture _texture;
+		private readonly Window _window;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		internal RenderTarget()
+		internal RenderTarget(Window window)
 		{
+			Assert.ArgumentNotNull(window, nameof(window));
+
+			_window = window;
+			_window.Resized += ChangeViewport;
+
+			ChangeViewport(_window.Size);
 		}
 
 		/// <summary>
@@ -50,8 +58,10 @@ namespace PointWars.Platform.Graphics
 		{
 			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
 
-			Size = size;
+			_size = size;
 			_texture = new Texture(size, GL_RGBA, null);
+
+			Viewport = new Rectangle(0, 0, _size);
 			Handle = Allocate(glGenFramebuffers, nameof(RenderTarget));
 
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
@@ -110,12 +120,40 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Gets a value indicating whether the render target is the back buffer of a swap chain.
 		/// </summary>
-		public bool IsBackBuffer => Handle == 0;
+		public bool IsBackBuffer => _window != null;
 
 		/// <summary>
 		///   Gets the size of the render target.
 		/// </summary>
-		public Size Size { get; }
+		public Size Size => IsBackBuffer ? _window.Size : _size;
+
+		/// <summary>
+		///   Gets or sets the viewport used when drawing to the render target.
+		/// </summary>
+		public Rectangle Viewport { get; set; }
+
+		/// <summary>
+		///   Changes the size of the viewport.
+		/// </summary>
+		private void ChangeViewport(Size size)
+		{
+			Viewport = new Rectangle(0, 0, size);
+		}
+
+		/// <summary>
+		///   Sets the viewport used for rendering, if necessary.
+		/// </summary>
+		private void SetViewport()
+		{
+			if (!Change(ref State.Viewport, Viewport))
+				return;
+
+			glViewport(
+				MathUtils.RoundIntegral(Viewport.Left),
+				MathUtils.RoundIntegral(Viewport.Top),
+				MathUtils.RoundIntegral(Viewport.Width),
+				MathUtils.RoundIntegral(Viewport.Height));
+		}
 
 		/// <summary>
 		///   Clears the render target.
@@ -126,6 +164,7 @@ namespace PointWars.Platform.Graphics
 			if (Change(ref State.RenderTarget, this))
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
 
+			SetViewport();
 			glClearColor(color.Red / 255.0f, color.Green / 255.0f, color.Blue / 255.0f, color.Alpha / 255.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 			CheckErrors();
@@ -136,11 +175,12 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="primitiveCount">The number of primitives that should be drawn.</param>
 		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
-		private void Draw(int primitiveCount, int vertexOffset)
+		public void Draw(int primitiveCount, int vertexOffset)
 		{
 			if (Change(ref State.RenderTarget, this))
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
 
+			SetViewport();
 			glBindVertexArray(State.VertexLayout);
 			glDrawArrays(GL_TRIANGLES, vertexOffset, 3 * primitiveCount);
 			glBindVertexArray(0);
@@ -154,11 +194,12 @@ namespace PointWars.Platform.Graphics
 		/// <param name="indexCount">The number of indices to draw.</param>
 		/// <param name="indexOffset">The location of the first index read by the GPU from the index buffer.</param>
 		/// <param name="vertexOffset">The value that should be added to each index before reading a vertex from the vertex buffer.</param>
-		private void DrawIndexed(int indexCount, int indexOffset, int vertexOffset)
+		public void DrawIndexed(int indexCount, int indexOffset, int vertexOffset)
 		{
 			if (Change(ref State.RenderTarget, this))
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
 
+			SetViewport();
 			glBindVertexArray(State.VertexLayout);
 			glDrawElementsBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
 			glBindVertexArray(0);
@@ -170,6 +211,9 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			if (_window != null)
+				_window.Resized -= ChangeViewport;
+
 			Unset(ref State.RenderTarget, this);
 			Deallocate(glDeleteFramebuffers, Handle);
 		}

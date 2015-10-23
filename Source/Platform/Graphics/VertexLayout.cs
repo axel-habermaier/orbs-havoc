@@ -40,7 +40,7 @@ namespace PointWars.Platform.Graphics
 			Assert.ArgumentNotNull(vertexBuffer, nameof(vertexBuffer));
 			Assert.ArgumentNotNull(indexBuffer, nameof(indexBuffer));
 
-			Handle = Allocate(glGenVertexArrays, "VertexLayout");
+			Handle = Allocate(glGenVertexArrays, nameof(VertexLayout));
 
 			glBindVertexArray(Handle);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);

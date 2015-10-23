@@ -40,7 +40,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		public Buffer(uint bufferType, uint usage, uint sizeInBytes, void* data)
 		{
-			Handle = Allocate(glGenBuffers, "Buffer");
+			Handle = Allocate(glGenBuffers, nameof(Buffer));
 			SizeInBytes = sizeInBytes;
 			_type = bufferType;
 
@@ -62,7 +62,6 @@ namespace PointWars.Platform.Graphics
 		public BufferData Map(uint mapMode)
 		{
 			Assert.NotDisposed(this);
-			Assert.ArgumentInRange(mapMode, nameof(mapMode));
 			Assert.That(!_isMapped, "Buffer is already mapped.");
 
 			glBindBuffer(_type, Handle);
@@ -86,7 +85,6 @@ namespace PointWars.Platform.Graphics
 		public BufferData MapRange(uint mapMode, uint offsetInBytes, uint byteCount)
 		{
 			Assert.NotDisposed(this);
-			Assert.ArgumentInRange(mapMode, nameof(mapMode));
 			Assert.That(offsetInBytes < SizeInBytes, "Invalid offset.");
 			Assert.InRange(byteCount, 1u, SizeInBytes - 1);
 			Assert.That(offsetInBytes + byteCount <= SizeInBytes, "Buffer overflow.");

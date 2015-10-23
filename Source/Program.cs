@@ -32,7 +32,6 @@ namespace PointWars
 	using Platform;
 	using Platform.Logging;
 	using Platform.Memory;
-	using Rendering;
 	using Scripting;
 	using Utilities;
 

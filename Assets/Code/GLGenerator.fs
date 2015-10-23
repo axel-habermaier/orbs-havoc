@@ -211,4 +211,4 @@ let generateIL () =
         )
     )
 
-    File.WriteAllText ("../../Source/Platform/Graphics/OpenGL.gen.asm", writer.ToString())
+    File.WriteAllText ("../../Source/Platform/Graphics/OpenGL3.asm", writer.ToString())

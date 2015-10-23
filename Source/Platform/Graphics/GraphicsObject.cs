@@ -22,14 +22,12 @@
 
 namespace PointWars.Platform.Graphics
 {
-	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using Logging;
 	using Memory;
 	using Utilities;
 	using static OpenGL3;
-	using static GLFW3.GLFW;
 
 	/// <summary>
 	///   Base class for all objects belonging to a graphics device.
@@ -37,56 +35,9 @@ namespace PointWars.Platform.Graphics
 	public abstract unsafe class GraphicsObject : DisposableObject
 	{
 		/// <summary>
-		///   Represents a pointer to an OpenGL allocation function.
-		/// </summary>
-		/// <param name="count">The number of objects that should be allocated.</param>
-		/// <param name="objects">A pointer to the allocated objects.</param>
-		public delegate void Allocator(int count, uint* objects);
-
-		/// <summary>
-		///   Represents a pointer to an OpenGL deallocation function.
-		/// </summary>
-		/// <param name="count">The number of objects that should be deallocated.</param>
-		/// <param name="objects">A pointer to the objects that should be deallocated.</param>
-		public delegate void Deallocator(int count, uint* objects);
-
-		/// <summary>
-		///   Initializes OpenGL.
-		/// </summary>
-		static GraphicsObject()
-		{
-			Load(entryPoint =>
-			{
-				var function = glfwGetProcAddress(entryPoint);
-
-				// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
-				if ((long)function >= -1 && (long)function <= 3)
-					Log.Die("Failed to load OpenGL entry point '{0}'.", entryPoint);
-
-				return new IntPtr(function);
-			});
-
-			int major, minor;
-			glGetIntegerv(GL_MAJOR_VERSION, &major);
-			glGetIntegerv(GL_MINOR_VERSION, &minor);
-
-			if (major < 3 || (major == 3 && minor < 3))
-				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
-
-			if (glfwExtensionSupported("GL_ARB_shading_language_420pack") == 0)
-				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_shading_language_420pack' is not supported.");
-
-			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)), new string((sbyte*)glGetString(GL_VENDOR)));
-			Log.Info("OpenGL version: {0}", new string((sbyte*)glGetString(GL_VERSION)));
-			Log.Info("OpenGL GLSL version: {0}", new string((sbyte*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
-
-			CheckErrors();
-		}
-
-		/// <summary>
 		///   Gets the state of the graphics device.
 		/// </summary>
-		public static GraphicsState State { get; } = new GraphicsState();
+		protected static GraphicsState State { get; } = new GraphicsState();
 
 		/// <summary>
 		///   Gets the graphics object's underlying OpenGL handle.
@@ -135,7 +86,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate the object.</param>
 		/// <param name="type">A user-friendly name of the type of the allocated object.</param>
-		public static uint Allocate(Allocator allocator, string type)
+		protected static uint Allocate(Allocator allocator, string type)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNullOrWhitespace(type, nameof(type));
@@ -155,7 +106,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="deallocator">The deallocator that should be used to allocate the object.</param>
 		/// <param name="obj">The object that should be deallocated.</param>
-		public static void Deallocate(Deallocator deallocator, uint obj)
+		protected static void Deallocate(Deallocator deallocator, uint obj)
 		{
 			Assert.ArgumentNotNull(deallocator, nameof(deallocator));
 
@@ -237,5 +188,19 @@ namespace PointWars.Platform.Graphics
 			Assert.ArgumentNotNull(obj, nameof(obj));
 			return obj.Handle;
 		}
+
+		/// <summary>
+		///   Represents a pointer to an OpenGL allocation function.
+		/// </summary>
+		/// <param name="count">The number of objects that should be allocated.</param>
+		/// <param name="objects">A pointer to the allocated objects.</param>
+		protected delegate void Allocator(int count, uint* objects);
+
+		/// <summary>
+		///   Represents a pointer to an OpenGL deallocation function.
+		/// </summary>
+		/// <param name="count">The number of objects that should be deallocated.</param>
+		/// <param name="objects">A pointer to the objects that should be deallocated.</param>
+		protected delegate void Deallocator(int count, uint* objects);
 	}
 }

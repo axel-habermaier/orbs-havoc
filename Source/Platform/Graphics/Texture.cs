@@ -53,6 +53,16 @@ namespace PointWars.Platform.Graphics
 		public Size Size { get; private set; }
 
 		/// <summary>
+		///   Gets the width of the texture.
+		/// </summary>
+		public float Width => Size.Width;
+
+		/// <summary>
+		///   Gets the height of the texture.
+		/// </summary>
+		public float Height => Size.Height;
+
+		/// <summary>
 		///   Loads a texture from the given buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the texture should be read from.</param>
@@ -86,7 +96,7 @@ namespace PointWars.Platform.Graphics
 
 			Size = size;
 			Deallocate(glDeleteTextures, Handle);
-			Handle = Allocate(glGenTextures, "Texture");
+			Handle = Allocate(glGenTextures, nameof(Texture));
 
 			glBindTexture(GL_TEXTURE_2D, Handle);
 			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);

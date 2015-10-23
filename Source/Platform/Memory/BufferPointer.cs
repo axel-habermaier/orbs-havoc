@@ -69,6 +69,14 @@ namespace PointWars.Platform.Memory
 		public byte* Pointer { get; }
 
 		/// <summary>
+		///   Converts the pointer to its underlying pointer value.
+		/// </summary>
+		public static implicit operator void*(BufferPointer pointer)
+		{
+			return pointer.Pointer;
+		}
+
+		/// <summary>
 		///   Gets a value indicating whether the buffer pointer has been initialized.
 		/// </summary>
 		public bool IsInitialized => Pointer != null;

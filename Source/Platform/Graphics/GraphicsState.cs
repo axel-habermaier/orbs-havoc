@@ -22,19 +22,22 @@
 
 namespace PointWars.Platform.Graphics
 {
+	using Math;
+
 	/// <summary>
 	///   Represents the state of the graphics device.
 	/// </summary>
 	public sealed class GraphicsState
 	{
 		public const uint ConstantBufferSlotCount = 14;
-		public const uint MaxFrameLag = 3;
 
 		public readonly Buffer[] ConstantBuffers = new Buffer[ConstantBufferSlotCount];
 		public bool CanDraw;
 		public RenderTarget RenderTarget;
+		public SamplerState SamplerState;
+		public Shader Shader;
 		public Texture Texture;
 		public VertexLayout VertexLayout;
-		public Shader Shader;
+		public Rectangle Viewport;
 	}
 }

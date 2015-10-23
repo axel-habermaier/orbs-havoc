@@ -50,15 +50,12 @@ namespace PointWars.Utilities
 		private static readonly ObjectPool<StringBuilder> StringBuilderPool = new ObjectPool<StringBuilder>(hasGlobalLifetime: true);
 
 		/// <summary>
-		///   Maps characters to colors. The character plus the color marker comprise a color specifier. For instance, 'w'
-		///   is mapped to the color white, so a text containing "\wA" prints a white 'A'.
+		///   Maps characters to colors. The character plus the color marker comprise a color specifier. For instance, 'white'
+		///   is mapped to the color white, so a text containing "\whiteA" prints a white 'A'.
 		/// </summary>
 		private static readonly ColorSpecifier[] Colors =
 		{
-			// A special color specifier that restores the original color; can only be used by the application
 			new ColorSpecifier(ColorMarker + "default", null),
-
-			// Predefined colors
 			new ColorSpecifier(ColorMarker + "white", new Color(255, 255, 255, 255)),
 			new ColorSpecifier(ColorMarker + "black", new Color(0, 0, 0, 255)),
 			new ColorSpecifier(ColorMarker + "red", new Color(255, 0, 0, 255)),
@@ -94,6 +91,9 @@ namespace PointWars.Utilities
 
 			_text = StringBuilderPool.Allocate();
 			_colorRanges = ColorRangePool.Allocate();
+
+			_text.Clear();
+
 			SourceString = textString;
 			ProcessSourceText();
 		}

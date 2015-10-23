@@ -55,7 +55,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Gets the font texture.
 		/// </summary>
-		internal Texture Texture { get; private set; }
+		internal Texture Texture { get; } = new Texture();
 
 		/// <summary>
 		///   Loads a font from the given buffer.
@@ -63,7 +63,7 @@ namespace PointWars.Rendering
 		/// <param name="buffer">The buffer the font should be read from.</param>
 		public static Font Create(ref BufferReader buffer)
 		{
-			var font = new Font { Texture = new Texture() };
+			var font = new Font();
 			font.Load(ref buffer);
 			return font;
 		}
@@ -265,10 +265,10 @@ namespace PointWars.Rendering
 				_glyphs[index].Area.Height = buffer.ReadUInt16();
 
 				// Compute the texture coordinates
-				var textureLeft = x / Texture.Size.Width;
-				var textureRight = (x + _glyphs[index].Area.Width) / Texture.Size.Width;
-				var textureBottom = (y + _glyphs[index].Area.Height) / Texture.Size.Height;
-				var textureTop = y / Texture.Size.Height;
+				var textureLeft = x / Texture.Width;
+				var textureRight = (x + _glyphs[index].Area.Width) / Texture.Width;
+				var textureBottom = (y + _glyphs[index].Area.Height) / Texture.Height;
+				var textureTop = y / Texture.Height;
 
 				_glyphs[index].TextureArea = new Rectangle(textureLeft, textureTop,
 					textureRight - textureLeft,

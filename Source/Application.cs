@@ -44,8 +44,6 @@ namespace PointWars
 
 		private bool _running;
 
-		public bool IsConsoleOpen => false;
-
 		/// <summary>
 		///   Initializes the application.
 		/// </summary>
@@ -55,20 +53,32 @@ namespace PointWars
 			Current = this;
 		}
 
+		public bool IsConsoleOpen => false;
+
 		/// <summary>
 		///   Gets the current application instance.
 		/// </summary>
 		public static Application Current { get; private set; }
 
 		/// <summary>
-		///   Gets the app's window.
+		///   Gets the application's window.
 		/// </summary>
 		public Window Window { get; private set; }
 
 		/// <summary>
-		///   Gets the app's input device.
+		///   Gets the application's sprite batch.
+		/// </summary>
+		public SpriteBatch SpriteBatch { get; private set; }
+
+		/// <summary>
+		///   Gets the application's input device.
 		/// </summary>
 		public LogicalInputDevice Input { get; private set; }
+
+		/// <summary>
+		///   Gets thhe graphics device used by the application.
+		/// </summary>
+		public GraphicsDevice GraphicsDevice { get; private set; }
 
 		/// <summary>
 		///   Initializes the application.
@@ -76,6 +86,7 @@ namespace PointWars
 		private void Initialize()
 		{
 			Window.Closing += Exit;
+			Window.Resized += SetProjectionMatrix;
 
 			Commands.Bind(Key.F1.WentDown(), "start_server TestServer");
 			Commands.Bind(Key.F2.WentDown(), "stop_server");
@@ -85,6 +96,8 @@ namespace PointWars
 
 			Commands.Bind(Key.Escape.WentDown() & Key.LeftShift.IsPressed(), "exit");
 			Commands.Bind(Key.F10.WentDown(), "toggle show_debug_overlay");
+
+			SetProjectionMatrix(Window.Size);
 		}
 
 		/// <summary>
@@ -100,6 +113,10 @@ namespace PointWars
 		private void Draw()
 		{
 			Window.BackBuffer.Clear(Colors.CornflowerBlue);
+
+			SpriteBatch.DrawText(Assets.DefaultFont, "Hallo Welt", Colors.White, new Vector2(100, 100));
+			SpriteBatch.DrawText(Assets.DefaultFont, $"Frame Time: {GraphicsDevice.FrameTime:F2}ms", Colors.White,
+				new Vector2(150, 150));
 		}
 
 		/// <summary>
@@ -111,8 +128,9 @@ namespace PointWars
 
 			using (Window = new Window(Name, new Size(1024, 768), false))
 			using (Input = new LogicalInputDevice(Window))
-			using (var frameSynchronizer = new FrameSynchronizer())
+			using (GraphicsDevice = new GraphicsDevice())
 			using (new Assets())
+			using (SpriteBatch = new SpriteBatch())
 			{
 				Initialize();
 
@@ -123,9 +141,10 @@ namespace PointWars
 
 					Update();
 
-					frameSynchronizer.BeginFrame();
+					GraphicsDevice.BeginFrame();
 					Draw();
-					frameSynchronizer.EndFrame();
+					SpriteBatch.DrawBatch(Window.BackBuffer);
+					GraphicsDevice.EndFrame();
 
 					Window.Present();
 				}
@@ -139,6 +158,14 @@ namespace PointWars
 		{
 			Log.Info("Exiting {0}...", Name);
 			_running = false;
+		}
+
+		/// <summary>
+		///   Sets the sprite batch's projection matrix.
+		/// </summary>
+		private void SetProjectionMatrix(Size size)
+		{
+			SpriteBatch.ProjectionMatrix = Matrix.CreateOrthographic(0, size.Width, size.Height, 0, 0, 1);
 		}
 	}
 }

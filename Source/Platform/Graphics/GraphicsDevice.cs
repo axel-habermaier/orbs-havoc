@@ -22,37 +22,75 @@
 
 namespace PointWars.Platform.Graphics
 {
-	using Memory;
+	using System;
+	using GLFW3;
+	using Logging;
 	using static OpenGL3;
 
 	/// <summary>
-	///   Synchronizes GPU and CPU.
+	///   Represents the GPU.
 	/// </summary>
-	public sealed unsafe class FrameSynchronizer : DisposableObject
+	public sealed unsafe class GraphicsDevice : GraphicsObject
 	{
-		private readonly uint[] _beginQueries = new uint[GraphicsState.MaxFrameLag];
-		private readonly uint[] _endQueries = new uint[GraphicsState.MaxFrameLag];
-		private readonly void*[] _syncQueries = new void*[GraphicsState.MaxFrameLag];
-		private uint _syncedIndex = 0;
+		private const uint MaxFrameLag = 3;
+		private readonly uint[] _beginQueries = new uint[MaxFrameLag];
+		private readonly uint[] _endQueries = new uint[MaxFrameLag];
+		private readonly void*[] _syncQueries = new void*[MaxFrameLag];
+		private uint _syncedIndex;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///   Initializes the graphics device.
 		/// </summary>
-		public FrameSynchronizer()
+		public GraphicsDevice()
 		{
-			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
+			Load(entryPoint =>
 			{
-				_beginQueries[i] = GraphicsObject.Allocate(glGenQueries, "TimestampQuery");
-				_endQueries[i] = GraphicsObject.Allocate(glGenQueries, "TimestampQuery");
+				var function = GLFW.glfwGetProcAddress(entryPoint);
+
+				// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
+				if ((long)function >= -1 && (long)function <= 3)
+					Log.Die("Failed to load OpenGL entry point '{0}'.", entryPoint);
+
+				return new IntPtr(function);
+			});
+
+			int major, minor;
+			glGetIntegerv(GL_MAJOR_VERSION, &major);
+			glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+			if (major < 3 || (major == 3 && minor < 3))
+				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
+
+			if (GLFW.glfwExtensionSupported("GL_ARB_shading_language_420pack") == 0)
+				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_shading_language_420pack' is not supported.");
+
+			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
+				new string((sbyte*)glGetString(GL_VENDOR)));
+			Log.Info("OpenGL version: {0}", new string((sbyte*)glGetString(GL_VERSION)));
+			Log.Info("OpenGL GLSL version: {0}", new string((sbyte*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+			SamplerState.Initialize();
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+			glBlendEquation(GL_FUNC_ADD);
+
+			CheckErrors();
+
+			for (var i = 0; i < MaxFrameLag; ++i)
+			{
+				_beginQueries[i] = Allocate(glGenQueries, "TimestampQuery");
+				_endQueries[i] = Allocate(glGenQueries, "TimestampQuery");
 				_syncQueries[i] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
 				glQueryCounter(_beginQueries[i], GL_TIMESTAMP);
 				glQueryCounter(_endQueries[i], GL_TIMESTAMP);
+
+				CheckErrors();
 			}
 		}
 
 		/// <summary>
-		///   Gets the GPU frame time in seconds.
+		///   Gets the GPU frame time in milliseconds.
 		/// </summary>
 		public double FrameTime { get; private set; }
 
@@ -73,11 +111,13 @@ namespace PointWars.Platform.Graphics
 			ulong begin, end;
 			glGetQueryObjectui64v(_beginQueries[_syncedIndex], GL_QUERY_RESULT, &begin);
 			glGetQueryObjectui64v(_endQueries[_syncedIndex], GL_QUERY_RESULT, &end);
-			FrameTime = (end - begin) / 1000000000000.0;
+			FrameTime = (end - begin) / 1000000.0f;
 
 			// Issue timing query for the current frame and allow drawing
 			glQueryCounter(_beginQueries[_syncedIndex], GL_TIMESTAMP);
-			GraphicsObject.State.CanDraw = true;
+			State.CanDraw = true;
+
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -91,10 +131,12 @@ namespace PointWars.Platform.Graphics
 			// We've completed the frame, so issue the synced query for the current frame and update the synced index
 			glDeleteSync(_syncQueries[_syncedIndex]);
 			_syncQueries[_syncedIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-			_syncedIndex = (_syncedIndex + 1) % GraphicsState.MaxFrameLag;
+			_syncedIndex = (_syncedIndex + 1) % MaxFrameLag;
 
 			// Drawing is no longer allowed
-			GraphicsObject.State.CanDraw = false;
+			State.CanDraw = false;
+
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -102,11 +144,13 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
+			SamplerState.Dispose();
+
+			for (var i = 0; i < MaxFrameLag; ++i)
 			{
 				glDeleteSync(_syncQueries[i]);
-				GraphicsObject.Deallocate(glDeleteQueries, _beginQueries[i]);
-				GraphicsObject.Deallocate(glDeleteQueries, _endQueries[i]);
+				Deallocate(glDeleteQueries, _beginQueries[i]);
+				Deallocate(glDeleteQueries, _endQueries[i]);
 			}
 		}
 	}

@@ -84,7 +84,7 @@ namespace PointWars.Platform
 
 			glfwMakeContextCurrent(_window);
 			InitializeCallbacks();
-			BackBuffer = new RenderTarget();
+			BackBuffer = new RenderTarget(this);
 		}
 
 		/// <summary>
@@ -125,16 +125,15 @@ namespace PointWars.Platform
 			{
 				Assert.NotDisposed(this);
 
-				int left, top, right, bottom;
-				glfwGetWindowFrameSize(_window, &left, &top, &right, &bottom);
+				int width, height;
+				glfwGetFramebufferSize(_window, &width, &height);
 
 				// We have to allow the size to become smaller than the window minimum size, as GLFW cannot guarantee
 				// us that the window will always be larger; if we don't allow that, we get all sorts of strange
 				// rendering artifacts. Do, however, clamp the size to some sensible min and max values
-				var width = MathUtils.Clamp(right - left, MinimumSize.Width, MaximumSize.Width);
-				var height = MathUtils.Clamp(top - bottom, MinimumSize.Height, MaximumSize.Height);
-
-				return new Size(width, height);
+				return new Size(
+					MathUtils.Clamp(width, MinimumSize.Width, MaximumSize.Width),
+					MathUtils.Clamp(height, MinimumSize.Height, MaximumSize.Height));
 			}
 		}
 
