@@ -128,12 +128,7 @@ namespace PointWars.Platform
 				int width, height;
 				glfwGetFramebufferSize(_window, &width, &height);
 
-				// We have to allow the size to become smaller than the window minimum size, as GLFW cannot guarantee
-				// us that the window will always be larger; if we don't allow that, we get all sorts of strange
-				// rendering artifacts. Do, however, clamp the size to some sensible min and max values
-				return new Size(
-					MathUtils.Clamp(width, MinimumSize.Width, MaximumSize.Width),
-					MathUtils.Clamp(height, MinimumSize.Height, MaximumSize.Height));
+				return ClampSize(width, height);
 			}
 		}
 
@@ -147,6 +142,19 @@ namespace PointWars.Platform
 				Assert.NotDisposed(this);
 				return _fullscreen;
 			}
+		}
+
+		/// <summary>
+		///   Clamps the window size to sensible values.
+		/// </summary>
+		private static Size ClampSize(int width, int height)
+		{
+			// We have to allow the size to become smaller than the window minimum size, as GLFW cannot guarantee
+			// us that the window will always be larger; if we don't allow that, we get all sorts of strange
+			// rendering artifacts. Do, however, clamp the size to some sensible min and max values
+			return new Size(
+				MathUtils.Clamp(width, MinimumSize.Width, MaximumSize.Width),
+				MathUtils.Clamp(height, MinimumSize.Height, MaximumSize.Height));
 		}
 
 		/// <summary>
@@ -165,7 +173,7 @@ namespace PointWars.Platform
 			_characterCallback = (window, codepoint) => CharacterEntered?.Invoke(codepoint);
 			_closeCallback = window => Closing?.Invoke();
 			_scrollCallback = (window, x, y) => MouseWheel?.Invoke(y > 0 ? MouseWheelDirection.Up : MouseWheelDirection.Down);
-			_sizeCallback = (window, width, height) => Resized?.Invoke(new Size(width, height));
+			_sizeCallback = (window, width, height) => Resized?.Invoke(ClampSize(width, height));
 			_keyCallback = (window, key, scancode, action, mods) =>
 			{
 				Assert.ArgumentInRange((Key)key, nameof(key));

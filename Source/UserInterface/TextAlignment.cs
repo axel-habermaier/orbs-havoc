@@ -20,45 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform
+namespace PointWars.UserInterface
 {
 	using System;
-	using Memory;
 
 	/// <summary>
-	///   Provides further information about the platform the application is running on.
+	///   Describes the alignment of text.
 	/// </summary>
-	public static class PlatformInfo
+	[Flags]
+	public enum TextAlignment
 	{
 		/// <summary>
-		///   Indicates whether the platform is a big or little endian architecture.
+		///   Indicates that the text should be aligned to the left.
 		/// </summary>
-		public const Endianess Endianess = 
-#if BigEndian
-			Memory.Endianess.Big;
-#else
-			Memory.Endianess.Little;
-#endif
+		Left = 1,
 
 		/// <summary>
-		///   The type of the platform the application is running on.
+		///   Indicates that the text should be horizontally centered.
 		/// </summary>
-		public static readonly PlatformType Platform =
-			Environment.OSVersion.Platform == PlatformID.Win32NT ? PlatformType.Windows : PlatformType.Linux;
+		Centered = 2,
 
 		/// <summary>
-		///   Indicates whether the application was built in debug mode.
+		///   Indicates that the text should be aligned to the right.
 		/// </summary>
-		public const bool IsDebug =
-#if DEBUG
-			true;
-#else
-			false;
-#endif
+		Right = 4,
 
 		/// <summary>
-		///   The scan code of the console key.
+		///   Indicates that the text should be aligned to the top.
 		/// </summary>
-		public static readonly int ConsoleKey = Platform == PlatformType.Windows ? 41 : 49;
+		Top = 8,
+
+		/// <summary>
+		///   Indicates that the text should be vertically centered.
+		/// </summary>
+		Middle = 16,
+
+		/// <summary>
+		///   Indicates that the text should be aligned to the bottom.
+		/// </summary>
+		Bottom = 32
 	}
 }

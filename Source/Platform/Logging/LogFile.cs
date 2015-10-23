@@ -60,11 +60,7 @@ namespace PointWars.Platform.Logging
 		/// </summary>
 		public LogFile()
 		{
-			Log.OnFatalError += Enqueue;
-			Log.OnError += Enqueue;
-			Log.OnWarning += Enqueue;
-			Log.OnInfo += Enqueue;
-			Log.OnDebugInfo += Enqueue;
+			Log.OnLog += Enqueue;
 
 			// Delete any previously created log file
 			FileSystem.Delete(_fileName);
@@ -168,12 +164,7 @@ namespace PointWars.Platform.Logging
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Log.OnFatalError -= Enqueue;
-			Log.OnError -= Enqueue;
-			Log.OnWarning -= Enqueue;
-			Log.OnInfo -= Enqueue;
-			Log.OnDebugInfo -= Enqueue;
-
+			Log.OnLog -= Enqueue;
 			WriteToFile(true);
 		}
 	}

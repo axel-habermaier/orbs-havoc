@@ -20,45 +20,55 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform
+namespace PointWars.Utilities
 {
 	using System;
-	using Memory;
+	using Scripting;
 
 	/// <summary>
-	///   Provides further information about the platform the application is running on.
+	///   Represents a timer that periodically raises a timeout event.
 	/// </summary>
-	public static class PlatformInfo
+	public struct Timer
 	{
 		/// <summary>
-		///   Indicates whether the platform is a big or little endian architecture.
+		///   The timeout in milliseconds after which the timeout event is raised.
 		/// </summary>
-		public const Endianess Endianess = 
-#if BigEndian
-			Memory.Endianess.Big;
-#else
-			Memory.Endianess.Little;
-#endif
+		private readonly double _timeout;
 
 		/// <summary>
-		///   The type of the platform the application is running on.
+		///   The clock that is used to determine when the timeout event should be raised.
 		/// </summary>
-		public static readonly PlatformType Platform =
-			Environment.OSVersion.Platform == PlatformID.Win32NT ? PlatformType.Windows : PlatformType.Linux;
+		private Clock _clock;
 
 		/// <summary>
-		///   Indicates whether the application was built in debug mode.
+		///   Creates a new instance.
 		/// </summary>
-		public const bool IsDebug =
-#if DEBUG
-			true;
-#else
-			false;
-#endif
+		/// <param name="timeout">The timeout in milliseconds after which the timeout event should be raised.</param>
+		/// <param name="scale">Scales the passing of time. If null, time advances in constant steps.</param>
+		public Timer(double timeout, Cvar<double> scale = null)
+			: this()
+		{
+			_clock = new Clock(scale);
+			_timeout = timeout;
+		}
 
 		/// <summary>
-		///   The scan code of the console key.
+		///   Raised when a timeout occurred.
 		/// </summary>
-		public static readonly int ConsoleKey = Platform == PlatformType.Windows ? 41 : 49;
+		public event Action Timeout;
+
+		/// <summary>
+		///   Updates the timer, raising the timeout event if enough time has passed.
+		/// </summary>
+		public void Update()
+		{
+			Assert.NotNull(Timeout, "Timeout event is not observed.");
+
+			if (_clock.Milliseconds < _timeout)
+				return;
+
+			_clock.Reset();
+			Timeout();
+		}
 	}
 }

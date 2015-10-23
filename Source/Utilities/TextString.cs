@@ -93,6 +93,7 @@ namespace PointWars.Utilities
 			_colorRanges = ColorRangePool.Allocate();
 
 			_text.Clear();
+			_colorRanges.Clear();
 
 			SourceString = textString;
 			ProcessSourceText();
@@ -147,10 +148,8 @@ namespace PointWars.Utilities
 		/// </summary>
 		public void Dispose()
 		{
-			_colorRanges.Clear();
-
-			StringBuilderPool.Free(_text);
 			ColorRangePool.Free(_colorRanges);
+			StringBuilderPool.Free(_text);
 		}
 
 		/// <summary>

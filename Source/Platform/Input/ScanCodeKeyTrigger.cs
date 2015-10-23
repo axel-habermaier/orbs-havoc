@@ -123,14 +123,14 @@ namespace PointWars.Platform.Input
 
 			if (_device != null)
 			{
-				_device.KeyPressed -= OnKeyPressed;
-				_device.KeyReleased -= OnKeyReleased;
+				_device.Keyboard.KeyPressed -= OnKeyPressed;
+				_device.Keyboard.KeyReleased -= OnKeyReleased;
 			}
 
 			if (device != null)
 			{
-				device.KeyPressed += OnKeyPressed;
-				device.KeyReleased += OnKeyReleased;
+				device.Keyboard.KeyPressed += OnKeyPressed;
+				device.Keyboard.KeyReleased += OnKeyReleased;
 			}
 
 			_device = device;

@@ -24,91 +24,76 @@ namespace PointWars.Platform.Input
 {
 	using System;
 	using System.Collections.Generic;
+	using Logging;
 	using Memory;
 	using Utilities;
-	using static GLFW3.GLFW;
 
 	/// <summary>
-	///   Manages logical inputs that are triggered by input triggers. The logical input device listens for the corresponding
-	///   input events on its associated window.
+	///   Manages logical inputs that are triggered by input triggers. A logical input device has support for 32 unique and
+	///   prioritized input layers that determine which inputs can be triggered. Higher-numbered layers take priority over
+	///   lower-numbered ones, effectively disabling all input to lower layers. Layers are activated and deactivated using the
+	///   ActivateLayer and DeactivateLayer methods, where the number of calls to DeactivateLayer for a given layer n must
+	///   match the number of calls to ActivateLayer for n before n is considered inactive again. This way, the order of
+	///   activation and deactivation is not important. The actual layer activation and deactivation is deferred one frame.
 	/// </summary>
-	public sealed class LogicalInputDevice : DisposableObject
+	public class LogicalInputDevice : DisposableObject
 	{
-		private readonly List<LogicalInput> _inputs = new List<LogicalInput>(64);
-		private readonly InputState[] _keyStates = new InputState[GLFW_KEY_LAST + 1];
-		private readonly InputState[] _mouseButtonStates = new InputState[Enum.GetValues(typeof(MouseButton)).Length + 1];
-		private readonly Window _window;
+		/// <summary>
+		///   The logical inputs that are currently registered on the device.
+		/// </summary>
+		private readonly List<LogicalInput> _inputs = new List<LogicalInput>(256);
+
+		/// <summary>
+		///   Stores the activation states of the currently active input layers.
+		/// </summary>
+		private readonly ActivationState[] _layerStates = new ActivationState[Enum.GetValues(typeof(InputLayer)).Length];
+
+		/// <summary>
+		///   A value indicating whether the logical input device provides text input.
+		/// </summary>
+		private ActivationState _textInput = new ActivationState();
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="window">The window that should be associated with this logical device.</param>
 		public LogicalInputDevice(Window window)
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
 
-			_window = window;
-			_window.KeyPressed += OnKeyDown;
-			_window.KeyReleased += OnKeyUp;
-			_window.MouseWheel += OnMouseWheel;
-			_window.MousePressed += OnMouseDown;
-			_window.MouseReleased += OnMouseUp;
+			Keyboard = new Keyboard(window);
+			Mouse = new Mouse(window);
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the user is currently inputting some text.
+		///   Gets the current input layer used by the input device.
 		/// </summary>
-		public bool TextInputEnabled { get; private set; }
+		public InputLayer InputLayer { get; private set; }
 
 		/// <summary>
-		///   Raises the mouse wheel event.
+		///   Gets the keyboard that is associated with this logical device.
 		/// </summary>
-		private void OnMouseWheel(MouseWheelDirection direction)
-		{
-			MouseWheel?.Invoke(direction);
-		}
+		public Keyboard Keyboard { get; }
 
 		/// <summary>
-		///   Updates the mouse button state of the mouse button the event has been raised for.
+		///   Gets the mouse that is associated with this logical device.
 		/// </summary>
-		private void OnMouseDown(MouseButton button, KeyModifiers modifiers)
-		{
-			Assert.ArgumentInRange(button, nameof(button));
-
-			_mouseButtonStates[(int)button].Pressed();
-			MousePressed?.Invoke(button, modifiers);
-		}
+		public Mouse Mouse { get; }
 
 		/// <summary>
-		///   Updates the mouse button state of the mouse button the event has been raised for.
+		///   Gets or sets a value indicating whether the logical input device provides text input. The actual update is deferred
+		///   until the next frame. Text input is only disabled if the deactivation count matches the activation count.
 		/// </summary>
-		private void OnMouseUp(MouseButton button, KeyModifiers modifiers)
+		public bool TextInputEnabled
 		{
-			Assert.ArgumentInRange(button, nameof(button));
-
-			_mouseButtonStates[(int)button].Released();
-			MouseReleased?.Invoke(button, modifiers);
-		}
-
-		/// <summary>
-		///   Updates the key state of the key the event has been raised for.
-		/// </summary>
-		private void OnKeyDown(Key key, int scanCode, KeyModifiers modifiers)
-		{
-			Assert.ArgumentInRange(key, nameof(key));
-
-			_keyStates[(int)key].Pressed();
-			KeyPressed?.Invoke(key, scanCode, modifiers);
-		}
-
-		/// <summary>
-		///   Updates the key state of the key the event has been raised for.
-		/// </summary>
-		private void OnKeyUp(Key key, int scanCode, KeyModifiers modifiers)
-		{
-			Assert.ArgumentInRange(key, nameof(key));
-
-			_keyStates[(int)key].Released();
-			KeyReleased?.Invoke(key, scanCode, modifiers);
+			get { return _textInput.Count != 0; }
+			set
+			{
+				if (value)
+					_textInput.Activate();
+				else
+					_textInput.Deactivate();
+			}
 		}
 
 		/// <summary>
@@ -123,6 +108,8 @@ namespace PointWars.Platform.Input
 
 			_inputs.Add(input);
 			input.SetLogicalDevice(this);
+
+			Log.Debug("A logical input with trigger '{0}' has been registered.", input.Trigger);
 		}
 
 		/// <summary>
@@ -139,145 +126,135 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
+		///   Activates the given input layer on the device, disabling all lower input layers starting with the next frame.
+		/// </summary>
+		/// <param name="layer">The layer that should be activated.</param>
+		public void ActivateLayer(InputLayer layer)
+		{
+			Assert.ArgumentInRange(layer, nameof(layer));
+
+			for (var i = 0; i < 32; ++i)
+			{
+				if ((int)layer == 1 << i)
+				{
+					_layerStates[i].Activate();
+					return;
+				}
+			}
+
+			Assert.NotReached("Unknown input layer.");
+		}
+
+		/// <summary>
+		///   Deactivates the given input layer on the device, only enabling the next lower active input layer if the number of
+		///   deactivation requests for the given layer matches the number of activation requests. The actual deactivation is
+		///   deferred until the next frame.
+		/// </summary>
+		/// <param name="layer">The layer that should be activated.</param>
+		public void DeactivateLayer(InputLayer layer)
+		{
+			Assert.ArgumentInRange(layer, nameof(layer));
+
+			for (var i = 1; i < 32; ++i)
+			{
+				if ((int)layer != 1 << i)
+					continue;
+
+				_layerStates[i].Deactivate();
+				return;
+			}
+
+			Assert.NotReached("Unknown input layer.");
+		}
+
+		/// <summary>
 		///   Updates the device state.
 		/// </summary>
-		public unsafe void Update()
+		internal void Update()
 		{
-			// Update all logical inputs
+			// Perform all deferred layer activations and deactivations
+			for (var i = 0; i < _layerStates.Length; ++i)
+				_layerStates[i].Update();
+
+			// Determine the currently active input layout with the highest priority
+			for (var i = _layerStates.Length; i > 0; --i)
+			{
+				if (_layerStates[i - 1].Count > 0)
+				{
+					var layer = (InputLayer)(1 << (i - 1));
+					if (InputLayer != layer)
+						Log.Debug("Input layer has been switched to {0}.", layer);
+
+					InputLayer = layer;
+					break;
+				}
+			}
+
+			// Update the text input state
+			_textInput.Update();
+
+			// Update all inputs
 			foreach (var input in _inputs)
 				input.Update(this);
 
-			// Update all key states
-			for (var i = 0; i < _keyStates.Length; ++i)
-			{
-				// We might have missed a key up event for a pressed key, so update the input state accordingly
-				if (_keyStates[i].IsPressed && glfwGetKey(_window, i) == GLFW_RELEASE)
-					_keyStates[i].Released();
-
-				_keyStates[i].Update();
-			}
-
-			// Update all mouse button states
-			for (var i = 0; i < _mouseButtonStates.Length; ++i)
-			{
-				// We might have missed a mouse up event for a pressed mouse button, so update the input state accordingly
-				if (_mouseButtonStates[i].IsPressed && glfwGetMouseButton(_window, i) == GLFW_RELEASE)
-					_mouseButtonStates[i].Released();
-
-				_mouseButtonStates[i].Update();
-			}
+			Keyboard.Update();
+			Mouse.Update();
 		}
-
-		/// <summary>
-		///   Gets a value indicating whether the key is currently being pressed down.
-		/// </summary>
-		/// <param name="key">The key that should be checked.</param>
-		public bool IsPressed(Key key)
-		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _keyStates[(int)key].IsPressed;
-		}
-
-		/// <summary>
-		///   Gets a value indicating whether the key was pressed during the current frame. WentDown is
-		///   only true during the single frame when IsPressed changed from false to true.
-		/// </summary>
-		/// <param name="key">The key that should be checked.</param>
-		public bool WentDown(Key key)
-		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _keyStates[(int)key].WentDown;
-		}
-
-		/// <summary>
-		///   Gets a value indicating whether the key was released during the current frame. WentUp is
-		///   only true during the single frame when IsPressed changed from true to false.
-		/// </summary>
-		/// <param name="key">The key that should be checked.</param>
-		public bool WentUp(Key key)
-		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _keyStates[(int)key].WentUp;
-		}
-
-		/// <summary>
-		///   Gets a value indicating whether a system key repeat event occurred. IsRepeated is also true
-		///   when the key is pressed, i.e., when WentDown is true.
-		/// </summary>
-		/// <param name="key">The key that should be checked.</param>
-		public bool IsRepeated(Key key)
-		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _keyStates[(int)key].IsRepeated;
-		}
-
-		/// <summary>
-		///   Gets a value indicating whether the button is currently being pressed down.
-		/// </summary>
-		/// <param name="button">The button that should be checked.</param>
-		public bool IsPressed(MouseButton button)
-		{
-			Assert.ArgumentInRange(button, nameof(button));
-			return _mouseButtonStates[(int)button].IsPressed;
-		}
-
-		/// <summary>
-		///   Gets a value indicating whether the button was pressed during the current frame. WentDown is
-		///   only true during the single frame when IsPressed changed from false to true.
-		/// </summary>
-		/// <param name="button">The button that should be checked.</param>
-		public bool WentDown(MouseButton button)
-		{
-			Assert.ArgumentInRange(button, nameof(button));
-			return _mouseButtonStates[(int)button].WentDown;
-		}
-
-		/// <summary>
-		///   Gets a value indicating whether the button was released during the current frame. WentUp is
-		///   only true during the single frame when IsPressed changed from true to false.
-		/// </summary>
-		/// <param name="button">The button that should be checked.</param>
-		public bool WentUp(MouseButton button)
-		{
-			Assert.ArgumentInRange(button, nameof(button));
-			return _mouseButtonStates[(int)button].WentUp;
-		}
-
-		/// <summary>
-		///   Raised when a key was pressed.
-		/// </summary>
-		public event Action<Key, int, KeyModifiers> KeyPressed;
-
-		/// <summary>
-		///   Raised when a key was released.
-		/// </summary>
-		public event Action<Key, int, KeyModifiers> KeyReleased;
-
-		/// <summary>
-		///   Raised when a mouse button was pressed.
-		/// </summary>
-		public event Action<MouseButton, KeyModifiers> MousePressed;
-
-		/// <summary>
-		///   Raised when a mouse button was released.
-		/// </summary>
-		public event Action<MouseButton, KeyModifiers> MouseReleased;
-
-		/// <summary>
-		///   Raised when the mouse wheel was moved.
-		/// </summary>
-		public event Action<MouseWheelDirection> MouseWheel;
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			_window.KeyPressed -= OnKeyDown;
-			_window.KeyReleased -= OnKeyUp;
-			_window.MouseWheel -= OnMouseWheel;
-			_window.MousePressed -= OnMouseDown;
-			_window.MouseReleased -= OnMouseUp;
+			Keyboard.SafeDispose();
+			Mouse.SafeDispose();
+		}
+
+		/// <summary>
+		///   Represents an activation state with deferred updates. The state is considered active for as long as Count != 0.
+		/// </summary>
+		private struct ActivationState
+		{
+			/// <summary>
+			///   The current activation count.
+			/// </summary>
+			public ushort Count;
+
+			/// <summary>
+			///   The pending activation and deactivation requests.
+			/// </summary>
+			public short Pending;
+
+			/// <summary>
+			///   Executes all deferred updates to the state.
+			/// </summary>
+			public void Update()
+			{
+				Count = (ushort)(Count + Pending);
+				Pending = 0;
+			}
+
+			/// <summary>
+			///   Handles a deferred activation request.
+			/// </summary>
+			public void Activate()
+			{
+				Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
+				Assert.That(Count + Pending + 1 < UInt16.MaxValue, "Too many activations.");
+
+				++Pending;
+			}
+
+			/// <summary>
+			///   Handles a deferred deactivation request.
+			/// </summary>
+			public void Deactivate()
+			{
+				Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
+				Assert.That(Count + Pending > 0, "Imbalanced call to deactivate.");
+
+				--Pending;
+			}
 		}
 	}
 }

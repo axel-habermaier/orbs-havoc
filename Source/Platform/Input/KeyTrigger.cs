@@ -80,15 +80,15 @@ namespace PointWars.Platform.Input
 			switch (_triggerType)
 			{
 				case KeyTriggerType.Released:
-					return !device.IsPressed(_key);
+					return !device.Keyboard.IsPressed(_key);
 				case KeyTriggerType.WentDown:
-					return device.WentDown(_key);
+					return device.Keyboard.WentDown(_key);
 				case KeyTriggerType.Pressed:
-					return device.IsPressed(_key);
+					return device.Keyboard.IsPressed(_key);
 				case KeyTriggerType.WentUp:
-					return device.WentUp(_key);
+					return device.Keyboard.WentUp(_key);
 				case KeyTriggerType.Repeated:
-					return device.IsRepeated(_key);
+					return device.Keyboard.IsRepeated(_key);
 				default:
 					return false;
 			}

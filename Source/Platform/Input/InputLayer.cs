@@ -20,45 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform
+namespace PointWars.Platform.Input
 {
 	using System;
-	using Memory;
 
 	/// <summary>
-	///   Provides further information about the platform the application is running on.
+	///   Represents an input layer. The active input layer of a logical input device determines which logical inputs are
+	///   triggered. Input layers are prioritized, with higher-numbered layers having higher priorities. The
+	///   application can use up to 31 unique input layers ranging from 1 to 31 (inclusive), with input layer 32 being
+	///   reserved for the console.
 	/// </summary>
-	public static class PlatformInfo
+	[Flags]
+	public enum InputLayer
 	{
 		/// <summary>
-		///   Indicates whether the platform is a big or little endian architecture.
+		///   The input layer used by all input to the game.
 		/// </summary>
-		public const Endianess Endianess = 
-#if BigEndian
-			Memory.Endianess.Big;
-#else
-			Memory.Endianess.Little;
-#endif
+		Game = 1,
 
 		/// <summary>
-		///   The type of the platform the application is running on.
+		///   The input layer used by the chat input.
 		/// </summary>
-		public static readonly PlatformType Platform =
-			Environment.OSVersion.Platform == PlatformID.Win32NT ? PlatformType.Windows : PlatformType.Linux;
+		Chat = 2,
 
 		/// <summary>
-		///   Indicates whether the application was built in debug mode.
+		///   The input layer used by the console.
 		/// </summary>
-		public const bool IsDebug =
-#if DEBUG
-			true;
-#else
-			false;
-#endif
+		Console = 8,
 
 		/// <summary>
-		///   The scan code of the console key.
+		///   Represents all input layers.
 		/// </summary>
-		public static readonly int ConsoleKey = Platform == PlatformType.Windows ? 41 : 49;
+		All = Game | Chat | Console
 	}
 }

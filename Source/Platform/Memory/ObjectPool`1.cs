@@ -112,8 +112,10 @@ namespace PointWars.Platform.Memory
 		/// <param name="obj">The object that should be returned to the pool.</param>
 		public void Free(T obj)
 		{
+			if (obj == null)
+				return;
+
 			Assert.NotDisposed(this);
-			Assert.ArgumentNotNull(obj, nameof(obj));
 			Assert.ArgumentSatisfies(!_pooledObjects.Contains(obj), nameof(obj), "The object has already been returned.");
 			Assert.That(_pooledObjects.Count < _allocationCount, "More objects returned than allocated.");
 

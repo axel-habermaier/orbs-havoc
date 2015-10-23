@@ -34,6 +34,7 @@ namespace PointWars
 	using Platform.Memory;
 	using Scripting;
 	using Utilities;
+	using Console = UserInterface.Console;
 
 	/// <summary>
 	///   Represents the application.
@@ -60,8 +61,9 @@ namespace PointWars
 
 				using (var platform = new PlatformLibrary())
 				using (var logFile = new LogFile())
+				using (var console = new Console())
 				{
-					PrintToConsole();
+					Log.OnLog += WriteToConsole;
 					Log.Info("Starting {0}...", Application.Name);
 
 					Cvars.Initialize();
@@ -81,7 +83,7 @@ namespace PointWars
 							platform.Initialize();
 
 							Initialized = true;
-							var app = new Application();
+							var app = new Application(console);
 							app.Run();
 
 							ConfigurationFile.WriteAutoExec();
@@ -131,18 +133,6 @@ namespace PointWars
 		}
 
 		/// <summary>
-		///   Wires up the log events to write all logged messages to the console.
-		/// </summary>
-		private static void PrintToConsole()
-		{
-			Log.OnFatalError += WriteToConsole;
-			Log.OnError += WriteToConsole;
-			Log.OnWarning += WriteToConsole;
-			Log.OnInfo += WriteToConsole;
-			Log.OnDebugInfo += WriteToConsole;
-		}
-
-		/// <summary>
 		///   Writes the given log entry to the given text writer.
 		/// </summary>
 		/// <param name="entry">The log entry that should be written.</param>
@@ -154,12 +144,14 @@ namespace PointWars
 
 			Debug.WriteLine("[{0}] {1}", entry.LogTypeString, builder);
 #else
-			Console.Out.Write("[");
-			Console.Out.Write(entry.LogTypeString);
-			Console.Out.Write("] ");
+			var output = System.Console.Out;
 
-			TextString.Write(Console.Out, entry.Message);
-			Console.Out.WriteLine();
+			output.Write("[");
+			output.Write(entry.LogTypeString);
+			output.Write("] ");
+
+			TextString.Write(output, entry.Message);
+			output.WriteLine();
 #endif
 		}
 	}

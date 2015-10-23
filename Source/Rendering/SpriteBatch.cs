@@ -49,6 +49,11 @@ namespace PointWars.Rendering
 		private readonly Buffer _indexBuffer;
 
 		/// <summary>
+		///   The uniform buffer providing the shader with the projection matrix.
+		/// </summary>
+		private readonly Buffer _projectionMatrixBuffer;
+
+		/// <summary>
 		///   The list of all quads.
 		/// </summary>
 		private readonly Quad[] _quads = new Quad[MaxQuads];
@@ -72,6 +77,11 @@ namespace PointWars.Rendering
 		///   A 1x1 pixels fully white texture.
 		/// </summary>
 		private readonly Texture _whiteTexture;
+
+		/// <summary>
+		///   The uniform buffer providing the shader with the projection matrix.
+		/// </summary>
+		private readonly Buffer _worldMatrixBuffer;
 
 		/// <summary>
 		///   The blend state that should be used for drawing.
@@ -124,9 +134,9 @@ namespace PointWars.Rendering
 		private Section[] _sections = new Section[16];
 
 		/// <summary>
-		///   The uniform buffer providing the shader with the projection matrix.
+		///   The world matrix used by the sprite batch.
 		/// </summary>
-		private readonly Buffer _uniformBuffer;
+		private Matrix _worldMatrix = Matrix.Identity;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -158,13 +168,29 @@ namespace PointWars.Rendering
 				_vertexBuffer = Quad.CreateDynamicVertexBuffer(MaxQuads);
 				_indexBuffer = new Buffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, numIndices * sizeof(uint), data);
 				_vertexLayout = new VertexLayout(_vertexBuffer.Buffer, _indexBuffer);
-				_uniformBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STREAM_DRAW, (uint)sizeof(Matrix), null);
+				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STREAM_DRAW, (uint)sizeof(Matrix), null);
+				_worldMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW, (uint)sizeof(Matrix), null);
 			}
 
 			using (var pointer = new BufferPointer(new byte[] { 255, 255, 255, 255 }))
 				_whiteTexture = new Texture(new Size(1, 1), GL_RGBA, pointer);
 
 			Reset();
+		}
+
+		/// <summary>
+		///   Gets or sets the world matrix used by the sprite batch.
+		/// </summary>
+		public unsafe Matrix WorldMatrix
+		{
+			get { return _worldMatrix; }
+			set
+			{
+				Assert.NotDisposed(this);
+
+				_worldMatrix = value;
+				_worldMatrixBuffer.Copy(&value);
+			}
 		}
 
 		/// <summary>
@@ -178,7 +204,7 @@ namespace PointWars.Rendering
 				Assert.NotDisposed(this);
 
 				_projectionMatrix = value;
-				_uniformBuffer.Copy(&value);
+				_projectionMatrixBuffer.Copy(&value);
 			}
 		}
 
@@ -238,7 +264,8 @@ namespace PointWars.Rendering
 			_vertexBuffer.SafeDispose();
 			_indexBuffer.SafeDispose();
 			_vertexLayout.SafeDispose();
-			_uniformBuffer.SafeDispose();
+			_projectionMatrixBuffer.SafeDispose();
+			_worldMatrixBuffer.SafeDispose();
 		}
 
 		/// <summary>
@@ -454,7 +481,7 @@ namespace PointWars.Rendering
 		///   Draws all batched sprites.
 		/// </summary>
 		/// <param name="renderTarget">The render target the sprite batch should draw to.</param>
-		public void DrawBatch(RenderTarget renderTarget)
+		public unsafe void DrawBatch(RenderTarget renderTarget)
 		{
 			Assert.That(SamplerState != null, "No sampler state has been set.");
 			Assert.NotDisposed(this);
@@ -468,7 +495,12 @@ namespace PointWars.Rendering
 
 			// Prepare the vertex buffer
 			UpdateVertexBuffer();
+
+			// Set the shared GPU state
+			Assets.SpriteBatchShader.Bind();
 			_vertexLayout.Bind();
+			_projectionMatrixBuffer.Bind(0);
+			_worldMatrixBuffer.Bind(1);
 
 			// Draw the quads, starting with the lowest layer
 			var offset = 0;
@@ -476,21 +508,21 @@ namespace PointWars.Rendering
 			{
 				var sectionList = _sectionLists[i];
 
-				// Bind the texture and rendering state
+				// Set the section-specific GPU state
 				sectionList.Texture.Bind();
 				sectionList.SamplerState.Bind();
 				sectionList.BlendState.Bind();
-				Assets.SpriteBatchShader.Bind();
-				_uniformBuffer.Bind(0);
+
+				_worldMatrixBuffer.Copy(&sectionList.WorldMatrix);
 
 				if (!sectionList.UseScissorTest)
 					glDisable(GL_SCISSOR_TEST);
 				else
 				{
-					glDisable(GL_SCISSOR_TEST);
+					glEnable(GL_SCISSOR_TEST);
 					glScissor(
 						MathUtils.RoundIntegral(sectionList.ScissorArea.Left),
-						MathUtils.RoundIntegral(sectionList.ScissorArea.Top),
+						MathUtils.RoundIntegral(renderTarget.Size.Height - sectionList.ScissorArea.Height - sectionList.ScissorArea.Top),
 						MathUtils.RoundIntegral(sectionList.ScissorArea.Width),
 						MathUtils.RoundIntegral(sectionList.ScissorArea.Height));
 				}
@@ -612,7 +644,19 @@ namespace PointWars.Rendering
 			if (!known)
 			{
 				_currentSectionList = _numSectionLists;
-				AddSectionList(new SectionList(BlendState, SamplerState, texture, ScissorArea, UseScissorTest, Layer, _numSections));
+				AddSectionList(new SectionList
+				{
+					BlendState = BlendState,
+					SamplerState = SamplerState,
+					Texture = texture,
+					ScissorArea = ScissorArea,
+					UseScissorTest = UseScissorTest,
+					Layer = Layer,
+					FirstSection = _numSections,
+					LastSection = _numSections,
+					NumQuads = 0,
+					WorldMatrix = WorldMatrix
+				});
 			}
 
 			_currentSection = _numSections;
@@ -633,7 +677,7 @@ namespace PointWars.Rendering
 
 			return list.Texture == texture && list.BlendState == BlendState && list.Layer == Layer &&
 				   list.SamplerState == SamplerState && list.UseScissorTest == UseScissorTest &&
-				   list.ScissorArea == ScissorArea;
+				   list.ScissorArea == ScissorArea && list.WorldMatrix == WorldMatrix;
 		}
 
 		/// <summary>
@@ -707,73 +751,16 @@ namespace PointWars.Rendering
 		/// </summary>
 		private struct SectionList
 		{
-			/// <summary>
-			///   The blend state used by the sections.
-			/// </summary>
-			public readonly BlendState BlendState;
-
-			/// <summary>
-			///   The index of the first section of the list or -1 if there is none.
-			/// </summary>
-			public readonly int FirstSection;
-
-			/// <summary>
-			///   The layer of the section list.
-			/// </summary>
-			public readonly int Layer;
-
-			/// <summary>
-			///   The sampler state used by the sections.
-			/// </summary>
-			public readonly SamplerState SamplerState;
-
-			/// <summary>
-			///   The scissor area used by the sections.
-			/// </summary>
-			public readonly Rectangle ScissorArea;
-
-			/// <summary>
-			///   The texture used by the sections.
-			/// </summary>
-			public readonly Texture Texture;
-
-			/// <summary>
-			///   Indicates whether the scissor test should be enabled when drawing the sections.
-			/// </summary>
-			public readonly bool UseScissorTest;
-
-			/// <summary>
-			///   The index of the last section of the list or -1 if there is none.
-			/// </summary>
+			public BlendState BlendState;
+			public int FirstSection;
+			public int Layer;
+			public SamplerState SamplerState;
+			public Rectangle ScissorArea;
+			public Texture Texture;
+			public bool UseScissorTest;
 			public int LastSection;
-
-			/// <summary>
-			///   The total number of quads of the section list across all sections.
-			/// </summary>
 			public int NumQuads;
-
-			/// <summary>
-			///   Initializes the instance.
-			/// </summary>
-			public SectionList(BlendState blendState,
-							   SamplerState samplerState,
-							   Texture texture,
-							   Rectangle scissorArea,
-							   bool useScissorTest,
-							   int layer,
-							   int section)
-			{
-				Texture = texture;
-				FirstSection = section;
-				ScissorArea = scissorArea;
-				UseScissorTest = useScissorTest;
-				BlendState = blendState;
-				SamplerState = samplerState;
-				LastSection = section;
-				Layer = layer;
-
-				NumQuads = 0;
-			}
+			public Matrix WorldMatrix;
 
 			/// <summary>
 			///   Used to compare the layers of two section lists.

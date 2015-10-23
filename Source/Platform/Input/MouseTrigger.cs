@@ -80,13 +80,13 @@ namespace PointWars.Platform.Input
 			switch (_triggerType)
 			{
 				case MouseTriggerType.Released:
-					return !device.IsPressed(_button);
+					return !device.Mouse.IsPressed(_button);
 				case MouseTriggerType.WentDown:
-					return device.WentDown(_button);
+					return device.Mouse.WentDown(_button);
 				case MouseTriggerType.Pressed:
-					return device.IsPressed(_button);
+					return device.Mouse.IsPressed(_button);
 				case MouseTriggerType.WentUp:
-					return device.WentUp(_button);
+					return device.Mouse.WentUp(_button);
 				default:
 					return false;
 			}

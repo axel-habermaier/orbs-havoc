@@ -20,45 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform
+namespace PointWars.Utilities
 {
 	using System;
-	using Memory;
 
 	/// <summary>
-	///   Provides further information about the platform the application is running on.
+	///   Allows CPU time measurements using C#'s using blocks.
 	/// </summary>
-	public static class PlatformInfo
+	internal unsafe struct TimeMeasurement : IDisposable
 	{
 		/// <summary>
-		///   Indicates whether the platform is a big or little endian architecture.
+		///   A pointer to a variable that stores the measured CPU time in milliseconds.
 		/// </summary>
-		public const Endianess Endianess = 
-#if BigEndian
-			Memory.Endianess.Big;
-#else
-			Memory.Endianess.Little;
-#endif
+		private double* _measuredTime;
 
 		/// <summary>
-		///   The type of the platform the application is running on.
+		///   The starting time of the measurement in seconds.
 		/// </summary>
-		public static readonly PlatformType Platform =
-			Environment.OSVersion.Platform == PlatformID.Win32NT ? PlatformType.Windows : PlatformType.Linux;
+		private double _startTime;
 
 		/// <summary>
-		///   Indicates whether the application was built in debug mode.
+		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
-		public const bool IsDebug =
-#if DEBUG
-			true;
-#else
-			false;
-#endif
+		public void Dispose()
+		{
+			Assert.NotNull(new IntPtr(_measuredTime));
+			*_measuredTime = (Clock.GetTime() - _startTime) * 1000;
+		}
 
 		/// <summary>
-		///   The scan code of the console key.
+		///   Measures the CPU time until the Dispose method is called.
 		/// </summary>
-		public static readonly int ConsoleKey = Platform == PlatformType.Windows ? 41 : 49;
+		/// <param name="measuredTime">A pointer to a variable that should store the measured CPU time in milliseconds.</param>
+		internal static TimeMeasurement Measure(double* measuredTime)
+		{
+			Assert.ArgumentNotNull(new IntPtr(measuredTime), nameof(measuredTime));
+			return new TimeMeasurement { _startTime = Clock.GetTime(), _measuredTime = measuredTime };
+		}
 	}
 }

@@ -40,30 +40,9 @@ namespace PointWars.Platform.Logging
 		private static readonly object LockObject = new object();
 
 		/// <summary>
-		///   Raised when a fatal error occurred. Typically, the program terminates after all event handlers have
-		///   been executed.
+		///   Raised when a log message has been generated.
 		/// </summary>
-		public static event Action<LogEntry> OnFatalError;
-
-		/// <summary>
-		///   Raised when an error occurred.
-		/// </summary>
-		public static event Action<LogEntry> OnError;
-
-		/// <summary>
-		///   Raised when a warning was generated.
-		/// </summary>
-		public static event Action<LogEntry> OnWarning;
-
-		/// <summary>
-		///   Raised when an informational message was generated.
-		/// </summary>
-		public static event Action<LogEntry> OnInfo;
-
-		/// <summary>
-		///   Raised when a debug informational message was generated.
-		/// </summary>
-		public static event Action<LogEntry> OnDebugInfo;
+		public static event Action<LogEntry> OnLog;
 
 		/// <summary>
 		///   Raises the OnFatalError event with the given message and terminates the application by throwing
@@ -76,13 +55,8 @@ namespace PointWars.Platform.Logging
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
 
-			lock (LockObject)
-			{
-				var formattedMessage = String.Format(message, arguments);
-				OnFatalError?.Invoke(new LogEntry(LogType.Fatal, formattedMessage));
-
-				throw new FatalErrorException(formattedMessage);
-			}
+			RaiseEvent(LogType.Fatal, message, arguments);
+			throw new FatalErrorException(message, arguments);
 		}
 
 		/// <summary>
@@ -94,11 +68,7 @@ namespace PointWars.Platform.Logging
 		public static void Error(string message, params object[] arguments)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-
-			lock (LockObject)
-			{
-				OnError?.Invoke(new LogEntry(LogType.Error, String.Format(message, arguments)));
-			}
+			RaiseEvent(LogType.Error, message, arguments);
 		}
 
 		/// <summary>
@@ -110,11 +80,7 @@ namespace PointWars.Platform.Logging
 		public static void Warn(string message, params object[] arguments)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-
-			lock (LockObject)
-			{
-				OnWarning?.Invoke(new LogEntry(LogType.Warning, String.Format(message, arguments)));
-			}
+			RaiseEvent(LogType.Warning, message, arguments);
 		}
 
 		/// <summary>
@@ -126,11 +92,7 @@ namespace PointWars.Platform.Logging
 		public static void Info(string message, params object[] arguments)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-
-			lock (LockObject)
-			{
-				OnInfo?.Invoke(new LogEntry(LogType.Info, String.Format(message, arguments)));
-			}
+			RaiseEvent(LogType.Info, message, arguments);
 		}
 
 		/// <summary>
@@ -142,11 +104,7 @@ namespace PointWars.Platform.Logging
 		public static void Debug(string message, params object[] arguments)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-
-			lock (LockObject)
-			{
-				OnDebugInfo?.Invoke(new LogEntry(LogType.Debug, String.Format(message, arguments)));
-			}
+			RaiseEvent(LogType.Debug, message, arguments);
 		}
 
 		/// <summary>
@@ -160,6 +118,17 @@ namespace PointWars.Platform.Logging
 		{
 			if (condition)
 				Debug(message, arguments);
+		}
+
+		/// <summary>
+		///   Raises the OnLog event.
+		/// </summary>
+		private static void RaiseEvent(LogType logType, string message, params object[] arguments)
+		{
+			lock (LockObject)
+			{
+				OnLog?.Invoke(new LogEntry(logType, String.Format(message, arguments)));
+			}
 		}
 
 		/// <summary>

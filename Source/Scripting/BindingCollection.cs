@@ -68,7 +68,7 @@ namespace PointWars.Scripting
 		/// </summary>
 		public void Update()
 		{
-			if (_device.TextInputEnabled || Application.Current.IsConsoleOpen)
+			if (_device.TextInputEnabled || Application.Current.Console.IsOpened)
 				return;
 
 			foreach (var binding in _bindings)
@@ -159,7 +159,7 @@ namespace PointWars.Scripting
 		/// <param name="command">The instruction that should be bound.</param>
 		private void OnBind(InputTrigger trigger, string command)
 		{
-			var input = new LogicalInput(trigger);
+			var input = new LogicalInput(trigger, InputLayer.All);
 			_device.Add(input);
 
 			try

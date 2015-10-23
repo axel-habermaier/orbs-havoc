@@ -22,22 +22,72 @@
 
 namespace PointWars.Platform.Graphics
 {
+	using System.Diagnostics;
 	using Math;
+	using Utilities;
 
 	/// <summary>
 	///   Represents the state of the graphics device.
 	/// </summary>
 	public sealed class GraphicsState
 	{
+		/// <summary>
+		///   The maximum number of constant buffers that can be bound simultaneously.
+		/// </summary>
 		public const uint ConstantBufferSlotCount = 14;
 
+		/// <summary>
+		///   The constant buffers that are currently bound.
+		/// </summary>
 		public readonly Buffer[] ConstantBuffers = new Buffer[ConstantBufferSlotCount];
+
+		/// <summary>
+		///   Indicates whether drawing operations are currently allowed.
+		/// </summary>
 		public bool CanDraw;
+
+		/// <summary>
+		///   The currently bound render target.
+		/// </summary>
 		public RenderTarget RenderTarget;
+
+		/// <summary>
+		///   The currently bound sampler state.
+		/// </summary>
 		public SamplerState SamplerState;
+
+		/// <summary>
+		///   The currently bound shader.
+		/// </summary>
 		public Shader Shader;
+
+		/// <summary>
+		///   The currently bound texture.
+		/// </summary>
 		public Texture Texture;
+
+		/// <summary>
+		///   The currently bound vertex layout.
+		/// </summary>
 		public VertexLayout VertexLayout;
+
+		/// <summary>
+		///   The currently bound viewport.
+		/// </summary>
 		public Rectangle Viewport;
+
+		/// <summary>
+		///   In debug builds, validates the state of the graphics device before drawing.
+		/// </summary>
+		[Conditional("DEBUG")]
+		internal void Validate()
+		{
+			Assert.That(CanDraw, "Drawing commands can only be issued between a call to BeginFrame() and EndFrame().");
+			Assert.NotNull(RenderTarget);
+			Assert.NotNull(Shader);
+			Assert.NotNull(VertexLayout);
+			Assert.NotNull(RenderTarget);
+			Assert.That(Viewport.Size.Width * Viewport.Size.Height > 0, "Viewport has an area of 0.");
+		}
 	}
 }

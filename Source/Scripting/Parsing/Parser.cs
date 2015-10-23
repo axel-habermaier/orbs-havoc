@@ -185,8 +185,8 @@ namespace PointWars.Scripting.Parsing
 			}
 			else
 			{
+				var state = inputStream.State;
 				inputStream.Skip(1);
-				var position = inputStream.State.Position;
 
 				var wasBackslash = false;
 				while (!inputStream.EndOfInput)
@@ -202,10 +202,13 @@ namespace PointWars.Scripting.Parsing
 
 				// Parse the closing quote
 				if (inputStream.EndOfInput)
-					throw new ParseException(inputStream, "missing closing quote '\"'");
+				{
+					inputStream.State = state;
+					throw new ParseException(inputStream, "Missing closing quote '\"'.");
+				}
 
 				// Extract the string literal and unescape all escaped quotes
-				var result = inputStream.Substring(position, inputStream.State.Position - position);
+				var result = inputStream.Substring(state.Position + 1, inputStream.State.Position - state.Position - 1);
 				result = result.Replace("\\\"", "\"");
 
 				// Skip the closing quote and return the result.
@@ -371,6 +374,7 @@ namespace PointWars.Scripting.Parsing
 				throw new ParseException(inputStream, "Expected a valid cvar or command name.");
 
 			// Parse the cvar or command name
+			var state = inputStream.State;
 			var name = ParseIdentifier(inputStream);
 
 			// Check if a cvar has been referenced and if so, return the appropriate instruction
@@ -384,6 +388,7 @@ namespace PointWars.Scripting.Parsing
 				return Parse(inputStream, command);
 
 			// If the name refers to neither a cvar nor a command, give up
+			inputStream.State = state;
 			throw new ParseException(inputStream, $"Unknown cvar or command '{name}'.");
 		}
 
@@ -392,9 +397,14 @@ namespace PointWars.Scripting.Parsing
 		/// </summary>
 		private static Instruction Parse(InputStream inputStream, ICvar cvar)
 		{
-			inputStream.SkipWhitespaces();
-			if (inputStream.EndOfInput)
+			if (inputStream.WhiteSpaceUntilEndOfInput())
 				return new Instruction(cvar, null);
+
+			// The argument must be separated from the previous one by at least one white space character
+			if (!Char.IsWhiteSpace(inputStream.Peek()))
+				throw new ParseException(inputStream, "Expected a whitespace character.");
+
+			inputStream.SkipWhitespaces();
 
 			Instruction instruction;
 			try
@@ -403,8 +413,8 @@ namespace PointWars.Scripting.Parsing
 			}
 			catch (ParseException e)
 			{
-				throw new ParseException(inputStream, "Invalid value for cvar '{0}': {1}\nExamples of valid values: {2}\n{3}",
-					cvar.Name, e.Message, TypeRegistry.GetExampleString(cvar.ValueType), Help.GetHint(cvar.Name));
+				throw new ParseException(inputStream, "{0}\n{1}\n{2}",
+					e.Message, TypeRegistry.GetExampleString(cvar.ValueType), Help.GetHint(cvar.Name));
 			}
 
 			if (!inputStream.WhiteSpaceUntilEndOfInput())
@@ -437,7 +447,7 @@ namespace PointWars.Scripting.Parsing
 				{
 					inputStream.SkipWhitespaces(); // To get the correct column in the error message
 
-					throw new ParseException(inputStream, "Expected: {0}\nExamples of valid values: {1}\n{2}",
+					throw new ParseException(inputStream, "Expected a value of type '{0}'.\n{1}\n{2}",
 						TypeRegistry.GetDescription(parameters[i].Type), TypeRegistry.GetExampleString(parameters[i].Type), Help.GetHint(command.Name));
 				}
 
@@ -454,7 +464,7 @@ namespace PointWars.Scripting.Parsing
 				catch (ParseException e)
 				{
 					throw new ParseException(inputStream,
-						"Invalid value for parameter '{0}': {1}\nParameter type: {2}\nExamples of valid values: {3}\n{4}",
+						"Invalid value for parameter '{0}': {1}\nParameter type: {2}\n{3}\n{4}",
 						parameters[i].Name, e.Message, TypeRegistry.GetDescription(parameters[i].Type),
 						TypeRegistry.GetExampleString(parameters[i].Type), Help.GetHint(command.Name));
 				}
@@ -479,7 +489,7 @@ namespace PointWars.Scripting.Parsing
 			var positive = sign == '+';
 
 			if (negative && !allowNegative)
-				throw new ParseException(inputStream, "Expected: {0}", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 
 			if (negative || positive)
 				inputStream.Skip(1);
@@ -487,7 +497,7 @@ namespace PointWars.Scripting.Parsing
 			// Parse the integer part, if any -- it may be missing if a fractional part follows
 			var count = inputStream.Skip(Char.IsDigit);
 			if (count == 0 && (!allowDecimal || inputStream.Peek() != '.'))
-				throw new ParseException(inputStream, "Expected: {0}", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 
 			// If a fractional part is allowed, parse it, but there must be at least one digit following
 			if (allowDecimal && inputStream.Peek() == '.')
@@ -496,7 +506,7 @@ namespace PointWars.Scripting.Parsing
 				count = inputStream.Skip(Char.IsDigit);
 
 				if (count == 0)
-					throw new ParseException(inputStream, "Expected: {0}", TypeRegistry.GetDescription<T>());
+					throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 
 			// Convert everything from the first digit (or sign or decimal point) to the last digit followed by a non-digit character
@@ -506,11 +516,11 @@ namespace PointWars.Scripting.Parsing
 			}
 			catch (FormatException)
 			{
-				throw new ParseException(inputStream, "Expected: {0}", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 			catch (OverflowException)
 			{
-				throw new ParseException(inputStream, "The value lies outside the range of a {0}.", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, "The value lies outside the range of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 		}
 	}

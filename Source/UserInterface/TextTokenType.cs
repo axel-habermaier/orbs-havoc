@@ -20,45 +20,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform
+namespace PointWars.UserInterface
 {
-	using System;
-	using Memory;
-
 	/// <summary>
-	///   Provides further information about the platform the application is running on.
+	///   Identifies the type of a text token.
 	/// </summary>
-	public static class PlatformInfo
+	internal enum TextTokenType
 	{
 		/// <summary>
-		///   Indicates whether the platform is a big or little endian architecture.
+		///   Indicates that the token represents of a word, including digits and special characters.
 		/// </summary>
-		public const Endianess Endianess = 
-#if BigEndian
-			Memory.Endianess.Big;
-#else
-			Memory.Endianess.Little;
-#endif
+		Word,
 
 		/// <summary>
-		///   The type of the platform the application is running on.
+		///   Indicates that the token represents a space character.
 		/// </summary>
-		public static readonly PlatformType Platform =
-			Environment.OSVersion.Platform == PlatformID.Win32NT ? PlatformType.Windows : PlatformType.Linux;
+		Space,
 
 		/// <summary>
-		///   Indicates whether the application was built in debug mode.
+		///   Indicates that the token represents a space character that should be replaced by a new line.
 		/// </summary>
-		public const bool IsDebug =
-#if DEBUG
-			true;
-#else
-			false;
-#endif
+		WrappedSpace,
 
 		/// <summary>
-		///   The scan code of the console key.
+		///   Indicates that the token represents a new line marker.
 		/// </summary>
-		public static readonly int ConsoleKey = Platform == PlatformType.Windows ? 41 : 49;
+		NewLine,
+
+		/// <summary>
+		///   Indicates that the token represents a wrap marker.
+		/// </summary>
+		Wrap,
+
+		/// <summary>
+		///   Indicates that the sequence represents the end of the text.
+		/// </summary>
+		EndOfText
 	}
 }

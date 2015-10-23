@@ -73,12 +73,15 @@
     <Compile Include="Platform\Input\ConfigurableInput.cs" />
     <Compile Include="Platform\Input\ConfigurableTrigger.cs" />
     <Compile Include="Platform\Input\InputExtensions.cs" />
+    <Compile Include="Platform\Input\InputLayer.cs" />
     <Compile Include="Platform\Input\InputState.cs" />
     <Compile Include="Platform\Input\InputTrigger.cs" />
+    <Compile Include="Platform\Input\Keyboard.cs" />
     <Compile Include="Platform\Input\KeyTrigger.cs" />
     <Compile Include="Platform\Input\KeyTriggerType.cs" />
     <Compile Include="Platform\Input\LogicalInput.cs" />
     <Compile Include="Platform\Input\LogicalInputDevice.cs" />
+    <Compile Include="Platform\Input\Mouse.cs" />
     <Compile Include="Platform\Input\MouseTrigger.cs" />
     <Compile Include="Platform\Input\MouseTriggerType.cs" />
     <Compile Include="Platform\Input\MouseWheelDirection.cs" />
@@ -130,6 +133,7 @@
     <Compile Include="Rendering\Font.cs" />
     <Compile Include="Rendering\Quad.cs" />
     <Compile Include="Rendering\SpriteBatch.cs" />
+    <Compile Include="Rendering\TextRenderer.cs" />
     <Compile Include="Scripting\Binding.cs" />
     <Compile Include="Scripting\BindingCollection.cs" />
     <Compile Include="Scripting\CommandAttribute.cs" />
@@ -170,17 +174,36 @@
     <Compile Include="Scripting\Validators\RangeAttribute.cs" />
     <Compile Include="Scripting\Validators\ValidatorAttribute.cs" />
     <Compile Include="Scripting\Validators\WindowSizeAttribute.cs" />
+    <Compile Include="UserInterface\Caret.cs" />
+    <Compile Include="UserInterface\Console.cs" />
+    <Compile Include="UserInterface\ConsoleContent.cs" />
+    <Compile Include="UserInterface\ConsoleInput.cs" />
+    <Compile Include="UserInterface\ConsolePrompt.cs" />
+    <Compile Include="UserInterface\DebugOverlay.cs" />
+    <Compile Include="UserInterface\Label.cs" />
+    <Compile Include="UserInterface\TextAlignment.cs" />
+    <Compile Include="UserInterface\TextAlignmentExtensions.cs" />
+    <Compile Include="UserInterface\TextBox.cs" />
+    <Compile Include="UserInterface\TextLayout.cs" />
+    <Compile Include="UserInterface\TextLine.cs" />
+    <Compile Include="UserInterface\TextSequence.cs" />
+    <Compile Include="UserInterface\TextToken.cs" />
+    <Compile Include="UserInterface\TextTokenStream.cs" />
+    <Compile Include="UserInterface\TextTokenType.cs" />
     <Compile Include="Utilities\Assert.cs" />
+    <Compile Include="Utilities\Clock.cs" />
     <Compile Include="Utilities\FatalErrorException.cs" />
+    <Compile Include="Utilities\StepTimer.cs" />
     <Compile Include="Utilities\TextString.cs" />
+    <Compile Include="Utilities\TimeMeasurement.cs" />
+    <Compile Include="Utilities\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
     <IL Include="Properties\AssemblyInfo.asm" />
     <IL Include="Platform\Memory\CopyBlock.asm" />
-	<IL Include="Platform\Graphics\OpenGL3.asm" />
+    <IL Include="Platform\Graphics\OpenGL3.asm" />
   </ItemGroup>
   <ItemGroup>
-    
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

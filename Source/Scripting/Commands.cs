@@ -142,12 +142,6 @@ namespace PointWars.Scripting
 		void ReloadAssets();
 
 		/// <summary>
-		///   Exits and restarts the application.
-		/// </summary>
-		[Command]
-		void Restart();
-
-		/// <summary>
 		///   Toggles the value of a Boolean console variable.
 		/// </summary>
 		/// <param name="cvar">The name of console variable whose value should be toggled.</param>
