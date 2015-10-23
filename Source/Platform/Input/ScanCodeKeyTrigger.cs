@@ -34,7 +34,7 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   The scan code of the key that the trigger monitors.
 		/// </summary>
-		private readonly int _scanCode;
+		private readonly ScanCode _scanCode;
 
 		/// <summary>
 		///   Determines the type of the trigger.
@@ -57,7 +57,7 @@ namespace PointWars.Platform.Input
 		/// </summary>
 		/// <param name="triggerType">Determines the type of the trigger.</param>
 		/// <param name="scanCode">The scan code of the key that the trigger monitors.</param>
-		internal ScanCodeKeyTrigger(KeyTriggerType triggerType, int scanCode)
+		internal ScanCodeKeyTrigger(KeyTriggerType triggerType, ScanCode scanCode)
 		{
 			Assert.ArgumentInRange(triggerType, nameof(triggerType));
 
@@ -139,7 +139,7 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Invoked whenever a key is pressed.
 		/// </summary>
-		private void OnKeyPressed(Key key, int scanCode, KeyModifiers modifiers)
+		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
 			if (scanCode == _scanCode)
 				_state.Pressed();
@@ -148,7 +148,7 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Invoked whenever a key is released.
 		/// </summary>
-		private void OnKeyReleased(Key key, int scanCode, KeyModifiers modifiers)
+		private void OnKeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
 			if (scanCode == _scanCode)
 				_state.Released();

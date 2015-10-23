@@ -86,9 +86,7 @@ namespace PointWars.Platform.Graphics
 		/// <param name="buffer">The buffer the shader should be read from.</param>
 		public void Load(ref BufferReader buffer)
 		{
-			glDeleteShader(_vertexShader);
-			glDeleteShader(_fragmentShader);
-			glDeleteProgram(Handle);
+			OnDisposing();
 
 			_vertexShader = LoadShader(GL_VERTEX_SHADER, buffer.ReadString());
 			_fragmentShader = LoadShader(GL_FRAGMENT_SHADER, buffer.ReadString());

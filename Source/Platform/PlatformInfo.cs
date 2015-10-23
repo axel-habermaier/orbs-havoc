@@ -55,10 +55,5 @@ namespace PointWars.Platform
 #else
 			false;
 #endif
-
-		/// <summary>
-		///   The scan code of the console key.
-		/// </summary>
-		public static readonly int ConsoleKey = Platform == PlatformType.Windows ? 41 : 49;
 	}
 }

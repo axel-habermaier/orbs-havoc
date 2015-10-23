@@ -94,8 +94,8 @@ namespace PointWars.Platform.Graphics
 		{
 			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
 
+			OnDisposing();
 			Size = size;
-			Deallocate(glDeleteTextures, Handle);
 			Handle = Allocate(glGenTextures, nameof(Texture));
 
 			glBindTexture(GL_TEXTURE_2D, Handle);

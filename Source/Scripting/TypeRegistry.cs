@@ -27,6 +27,7 @@ namespace PointWars.Scripting
 	using System.Linq;
 	using System.Reflection;
 	using Parsing;
+	using Platform;
 	using Platform.Input;
 	using Platform.Logging;
 	using Utilities;
@@ -64,7 +65,9 @@ namespace PointWars.Scripting
 
 			// Register default Pegasus framework types
 			Register(Parser.ParseIPAddress, "IPv4 or IPv6 address", null, "localhost", "::1", "127.0.0.1");
+			Register(Parser.ParseVector2, null, s => $"{s.X};{s.Y}", "0;0", "-10;10.5");
 			Register(Parser.ParseSize, null, s => $"{s.Width}x{s.Height}", "0x0", "-10x10.5", "1920x1200");
+			Register(Parser.ParseEnumerationLiteral<WindowMode>, null, null);
 			Register(Parser.ParseEnumerationLiteral<Key>, "Key", null, "A", "B", "LeftControl", "Return", "F1");
 			Register(Parser.ParseEnumerationLiteral<MouseButton>, "Mouse Button", null, "Left", "Right", "Middle", "XButton1", "XButton2");
 			Register(Parser.ParseConfigurableInput, null, null, "[Key.A+Control]", "[Mouse.Left+Alt]", "[Mouse.XButton1+Shift+Alt]");

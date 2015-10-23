@@ -22,8 +22,6 @@
 
 namespace PointWars.Platform.Input
 {
-	using GLFW3;
-
 	/// <summary>
 	///   Identifies a mouse button.
 	/// </summary>
@@ -32,26 +30,26 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Identifies the left mouse button.
 		/// </summary>
-		Left = GLFW.GLFW_MOUSE_BUTTON_LEFT,
+		Left = 1,
 
 		/// <summary>
 		///   Identifies the middle mouse button.
 		/// </summary>
-		Middle = GLFW.GLFW_MOUSE_BUTTON_MIDDLE,
+		Middle,
 
 		/// <summary>
 		///   Identifies the right mouse button.
 		/// </summary>
-		Right = GLFW.GLFW_MOUSE_BUTTON_RIGHT,
+		Right,
 
 		/// <summary>
 		///   Identifies the first extra mouse button.
 		/// </summary>
-		XButton1 = GLFW.GLFW_MOUSE_BUTTON_4,
+		XButton1,
 
 		/// <summary>
 		///   Identifies the second extra mouse button.
 		/// </summary>
-		XButton2 = GLFW.GLFW_MOUSE_BUTTON_5
+		XButton2
 	};
 }

@@ -23,7 +23,6 @@
 namespace PointWars.UserInterface
 {
 	using System;
-	using Platform;
 	using Platform.Input;
 	using Platform.Memory;
 
@@ -49,7 +48,7 @@ namespace PointWars.UserInterface
 			var controlPressed = Key.LeftControl.IsPressed() | Key.RightControl.IsPressed();
 			var controlReleased = Key.LeftControl.IsReleased() | Key.RightControl.IsReleased();
 
-			Toggle = new LogicalInput(new ScanCodeKeyTrigger(KeyTriggerType.WentDown, PlatformInfo.ConsoleKey), InputLayer.All);
+			Toggle = new LogicalInput(new ScanCodeKeyTrigger(KeyTriggerType.WentDown, ScanCode.Grave), InputLayer.All);
 			Submit = new LogicalInput(Key.Enter.WentDown() | Key.NumpadEnter.WentDown(), InputLayer.Console);
 			Clear = new LogicalInput(controlPressed + Key.L.IsPressed(), InputLayer.Console);
 			ClearPrompt = new LogicalInput(Key.Escape.WentDown(), InputLayer.Console);
@@ -150,12 +149,12 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Raised when a text character was entered.
+		///   Raised when a text was entered.
 		/// </summary>
-		public event Action<char> CharEntered
+		public event Action<string> TextEntered
 		{
-			add { _device.Keyboard.CharacterEntered += value; }
-			remove { _device.Keyboard.CharacterEntered -= value; }
+			add { _device.Keyboard.TextEntered += value; }
+			remove { _device.Keyboard.TextEntered -= value; }
 		}
 
 		/// <summary>

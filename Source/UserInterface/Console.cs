@@ -156,7 +156,7 @@ namespace PointWars.UserInterface
 
 			Commands.OnShowConsole += ShowConsole;
 
-			_input.CharEntered += OnCharEntered;
+			_input.TextEntered += OnTextEntered;
 			_inputDevice.Keyboard.KeyPressed += OnKeyPressed;
 			_inputDevice.Mouse.Wheel += OnMouseWheelMoved;
 
@@ -179,7 +179,7 @@ namespace PointWars.UserInterface
 
 			if (_input != null)
 			{
-				_input.CharEntered -= OnCharEntered;
+				_input.TextEntered -= OnTextEntered;
 				_inputDevice.Keyboard.KeyPressed -= OnKeyPressed;
 			}
 
@@ -192,19 +192,21 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Invoked whenever a printable character is entered.
+		///   Invoked whenever a text is entered.
 		/// </summary>
-		/// <param name="c">The character that has been entered.</param>
-		private void OnCharEntered(char c)
+		private void OnTextEntered(string text)
 		{
-			if (_isOpened)
+			if (!_isOpened)
+				return;
+
+			foreach (var c in text)
 				_prompt.InsertCharacter(c);
 		}
 
 		/// <summary>
 		///   Invoked whenever a key is pressed.
 		/// </summary>
-		private void OnKeyPressed(Key key, int scanCode, KeyModifiers modifiers)
+		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
 			if (_isOpened)
 				_prompt.InjectKeyPress(key, modifiers);

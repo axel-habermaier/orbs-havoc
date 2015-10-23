@@ -32,7 +32,6 @@ namespace PointWars
 	using Scripting;
 	using UserInterface;
 	using Utilities;
-	using static GLFW3.GLFW;
 
 	/// <summary>
 	///   Represents the application.
@@ -126,10 +125,6 @@ namespace PointWars
 		private void Draw()
 		{
 			Window.BackBuffer.Clear(Colors.Black);
-
-			SpriteBatch.DrawText(Assets.DefaultFont, "Hallo Welt", Colors.White, new Vector2(100, 100));
-			SpriteBatch.DrawText(Assets.DefaultFont, $"Frame Time: {GraphicsDevice.FrameTime:F2}ms", Colors.White,
-				new Vector2(150, 150));
 		}
 
 		/// <summary>
@@ -139,9 +134,9 @@ namespace PointWars
 		{
 			_running = true;
 
-			using (Window = new Window(Name, new Size(1024, 768), false))
-			using (InputDevice = new LogicalInputDevice(Window))
 			using (GraphicsDevice = new GraphicsDevice())
+			using (Window = new Window(GraphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
+			using (InputDevice = new LogicalInputDevice(Window))
 			using (new Assets())
 			using (SpriteBatch = new SpriteBatch())
 			using (var bindings = new BindingCollection(InputDevice))
@@ -210,7 +205,7 @@ namespace PointWars
 			InputDevice.Mouse.Update();
 
 			// Process all pending operating system events
-			glfwPollEvents();
+			Window.HandleEvents();
 
 			// Update the logical inputs based on the new state of the input system
 			InputDevice.Update();

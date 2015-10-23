@@ -23,7 +23,7 @@
 namespace PointWars.Utilities
 {
 	using Scripting;
-	using static GLFW3.GLFW;
+	using static Platform.SDL2;
 
 	/// <summary>
 	///   Represents a clock that can be used to query the time that has elapsed since the creation of the clock.
@@ -50,6 +50,11 @@ namespace PointWars.Utilities
 		///   The current time in seconds.
 		/// </summary>
 		private double _time;
+
+		/// <summary>
+		///   The application start time.
+		/// </summary>
+		private static readonly double _startTime = GetTime();
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -87,7 +92,7 @@ namespace PointWars.Utilities
 		/// </summary>
 		public static double GetTime()
 		{
-			return glfwGetTime();
+			return SDL_GetPerformanceCounter() / (double)SDL_GetPerformanceFrequency() - _startTime;
 		}
 
 		/// <summary>

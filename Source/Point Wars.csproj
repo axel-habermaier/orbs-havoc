@@ -47,9 +47,6 @@
     <Reference Include="PointWars.IL">
       <HintPath>$(OutDir)\Point Wars.IL.dll</HintPath>
     </Reference>
-    <Reference Include="GLFW3.Net">
-      <HintPath>..\Dependencies\GLFW3.Net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -85,7 +82,10 @@
     <Compile Include="Platform\Input\MouseTrigger.cs" />
     <Compile Include="Platform\Input\MouseTriggerType.cs" />
     <Compile Include="Platform\Input\MouseWheelDirection.cs" />
+    <Compile Include="Platform\Input\ScanCode.cs" />
     <Compile Include="Platform\Input\ScanCodeKeyTrigger.cs" />
+    <Compile Include="Platform\SDL2.cs" />
+    <Compile Include="Platform\WindowMode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Math\MathUtils.cs" />
     <Compile Include="Math\Matrix.cs" />
@@ -173,6 +173,7 @@
     <Compile Include="Scripting\Validators\NotEmptyAttribute.cs" />
     <Compile Include="Scripting\Validators\RangeAttribute.cs" />
     <Compile Include="Scripting\Validators\ValidatorAttribute.cs" />
+    <Compile Include="Scripting\Validators\WindowPositionValidator.cs" />
     <Compile Include="Scripting\Validators\WindowSizeAttribute.cs" />
     <Compile Include="UserInterface\Caret.cs" />
     <Compile Include="UserInterface\Console.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Utilities\Clock.cs" />
     <Compile Include="Utilities\FatalErrorException.cs" />
     <Compile Include="Utilities\StepTimer.cs" />
+    <Compile Include="Utilities\StringMarshaler.cs" />
     <Compile Include="Utilities\TextString.cs" />
     <Compile Include="Utilities\TimeMeasurement.cs" />
     <Compile Include="Utilities\Timer.cs" />
@@ -215,6 +217,6 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(SolutionDir)Dependencies/glfw3.dll" DestinationFolder="$(OutDir)" Condition="'$(OS)' == 'Windows_NT'" />
+    <Copy SourceFiles="$(SolutionDir)Dependencies/SDL2.dll" DestinationFolder="$(OutDir)" Condition="'$(OS)' == 'Windows_NT'" />
   </Target>
 </Project>

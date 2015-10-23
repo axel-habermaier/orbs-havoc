@@ -77,6 +77,11 @@ namespace PointWars.Platform.Graphics
 		public Rectangle Viewport;
 
 		/// <summary>
+		///   The currently bound window.
+		/// </summary>
+		public Window Window;
+
+		/// <summary>
 		///   In debug builds, validates the state of the graphics device before drawing.
 		/// </summary>
 		[Conditional("DEBUG")]

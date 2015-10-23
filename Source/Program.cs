@@ -75,8 +75,7 @@ namespace PointWars
 						using (new Interpreter())
 						{
 							// Process the autoexec.cfg first, then the command line, so that cvar values set via the 
-							// command line overwrite the autoexec.cfg. We'll set all cvars now and execute all commands
-							// later when the app is fully initialized.
+							// command line overwrite the autoexec.cfg.
 							ConfigurationFile.Process(ConfigurationFile.AutoExec, executedByUser: false);
 							CommandLine.Process(arguments);
 

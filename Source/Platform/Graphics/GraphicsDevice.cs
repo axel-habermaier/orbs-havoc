@@ -23,9 +23,10 @@
 namespace PointWars.Platform.Graphics
 {
 	using System;
-	using GLFW3;
 	using Logging;
+	using Scripting;
 	using static OpenGL3;
+	using static SDL2;
 
 	/// <summary>
 	///   Represents the GPU.
@@ -34,6 +35,8 @@ namespace PointWars.Platform.Graphics
 	{
 		private const uint MaxFrameLag = 3;
 		private readonly uint[] _beginQueries = new uint[MaxFrameLag];
+		private readonly void* _context;
+		private readonly void* _contextWindow;
 		private readonly uint[] _endQueries = new uint[MaxFrameLag];
 		private readonly void*[] _syncQueries = new void*[MaxFrameLag];
 		private uint _syncedIndex;
@@ -43,9 +46,19 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		public GraphicsDevice()
 		{
+			_contextWindow = SDL_CreateWindow("CtxWnd", 0, 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
+			if (_contextWindow == null)
+				Log.Die("Failed to create the OpenGL context window: {0}", SDL_GetError());
+
+			_context = SDL_GL_CreateContext(_contextWindow);
+			if (_context == null)
+				Log.Die("Failed to initialize the OpenGL context. OpenGL 3.3 is not supported by your graphics card.");
+
+			MakeCurrent();
+
 			Load(entryPoint =>
 			{
-				var function = GLFW.glfwGetProcAddress(entryPoint);
+				var function = SDL_GL_GetProcAddress(entryPoint);
 
 				// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
 				if ((long)function >= -1 && (long)function <= 3)
@@ -61,7 +74,7 @@ namespace PointWars.Platform.Graphics
 			if (major < 3 || (major == 3 && minor < 3))
 				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
 
-			if (GLFW.glfwExtensionSupported("GL_ARB_shading_language_420pack") == 0)
+			if (SDL_GL_ExtensionSupported("GL_ARB_shading_language_420pack") == 0)
 				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_shading_language_420pack' is not supported.");
 
 			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
@@ -87,12 +100,24 @@ namespace PointWars.Platform.Graphics
 
 				CheckErrors();
 			}
+
+			Cvars.VsyncChanged += SetVsync;
+			SetVsync();
 		}
 
 		/// <summary>
 		///   Gets the GPU frame time in milliseconds.
 		/// </summary>
 		public double FrameTime { get; private set; }
+
+		/// <summary>
+		///   Makes the OpenGL context for the given window the current one on the calling thread.
+		/// </summary>
+		public void MakeCurrent(Window window = null)
+		{
+			if (SDL_GL_MakeCurrent(window ?? _contextWindow, _context) != 0)
+				Log.Die("Failed to make OpenGL context current: {0}", SDL_GetError());
+		}
 
 		/// <summary>
 		///   Ensures that the CPU and GPU are synchronized, so that the actual frame lag is less
@@ -149,6 +174,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			Cvars.VsyncChanged -= SetVsync;
 			SamplerState.Dispose();
 
 			for (var i = 0; i < MaxFrameLag; ++i)
@@ -157,6 +183,18 @@ namespace PointWars.Platform.Graphics
 				Deallocate(glDeleteQueries, _beginQueries[i]);
 				Deallocate(glDeleteQueries, _endQueries[i]);
 			}
+
+			SDL_GL_DeleteContext(_context);
+			SDL_DestroyWindow(_contextWindow);
+		}
+
+		/// <summary>
+		///   Changes the vertical synchronization setting.
+		/// </summary>
+		private static void SetVsync()
+		{
+			if (SDL_GL_SetSwapInterval(Cvars.Vsync ? 1 : 0) != 0)
+				Log.Warn("Failed to change vsync mode: {0}", SDL_GetError());
 		}
 	}
 }

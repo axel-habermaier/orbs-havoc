@@ -25,7 +25,7 @@ namespace PointWars.Platform.Input
 	using System;
 	using Memory;
 	using Utilities;
-	using static GLFW3.GLFW;
+	using static SDL2;
 
 	/// <summary>
 	///   Represents the state of the keyboard.
@@ -35,7 +35,7 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   The key states.
 		/// </summary>
-		private readonly InputState[] _states = new InputState[GLFW_KEY_LAST + 1];
+		private readonly InputState[] _states = new InputState[SDL_NUM_SCANCODES];
 
 		/// <summary>
 		///   The window that generates the key events.
@@ -53,18 +53,35 @@ namespace PointWars.Platform.Input
 			_window = window;
 			_window.KeyPressed += OnKeyPressed;
 			_window.KeyReleased += OnKeyReleased;
-			_window.CharacterEntered += OnCharacterEntered;
 		}
 
 		/// <summary>
-		///   Raised when a text character was entered.
+		///   Get or sets a value indicating whether text input is enabled for the currently focused window.
 		/// </summary>
-		public event Action<char> CharacterEntered;
+		internal static bool TextInputEnabled
+		{
+			get { return SDL_IsTextInputActive() != 0; }
+			set
+			{
+				if (value)
+					SDL_StartTextInput();
+				else SDL_StopTextInput();
+			}
+		}
+
+		/// <summary>
+		///   Raised when a text was entered.
+		/// </summary>
+		public event Action<string> TextEntered
+		{
+			add { _window.TextEntered += value; }
+			remove { _window.TextEntered -= value; }
+		}
 
 		/// <summary>
 		///   Raised when a key was pressed.
 		/// </summary>
-		public event Action<Key, int, KeyModifiers> KeyPressed
+		public event Action<Key, ScanCode, KeyModifiers> KeyPressed
 		{
 			add { _window.KeyPressed += value; }
 			remove { _window.KeyPressed -= value; }
@@ -73,7 +90,7 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Raised when a key was released.
 		/// </summary>
-		public event Action<Key, int, KeyModifiers> KeyReleased
+		public event Action<Key, ScanCode, KeyModifiers> KeyReleased
 		{
 			add { _window.KeyReleased += value; }
 			remove { _window.KeyReleased -= value; }
@@ -86,36 +103,24 @@ namespace PointWars.Platform.Input
 		{
 			_window.KeyPressed -= OnKeyPressed;
 			_window.KeyReleased -= OnKeyReleased;
-			_window.CharacterEntered -= OnCharacterEntered;
-		}
-
-		/// <summary>
-		///   Invoked when a character has been entered.
-		/// </summary>
-		/// <param name="character">Identifies the character that has been entered.</param>
-		private void OnCharacterEntered(uint character)
-		{
-			// Only raise the character entered event if the character is a printable ASCII character
-			if (character < 32 || character > 255 || Char.IsControl((char)character))
-				return;
-
-			CharacterEntered?.Invoke((char)character);
 		}
 
 		/// <summary>
 		///   Invoked when a key has been released.
 		/// </summary>
-		private void OnKeyReleased(Key key, int scanCode, KeyModifiers modifiers)
+		private void OnKeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			_states[(int)key].Released();
+			Assert.ArgumentInRange(scanCode, nameof(scanCode));
+			_states[(int)scanCode].Released();
 		}
 
 		/// <summary>
 		///   Invoked when a key has been pressed.
 		/// </summary>
-		private void OnKeyPressed(Key key, int scanCode, KeyModifiers modifiers)
+		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			_states[(int)key].Pressed();
+			Assert.ArgumentInRange(scanCode, nameof(scanCode));
+			_states[(int)scanCode].Pressed();
 		}
 
 		/// <summary>
@@ -130,11 +135,53 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Gets a value indicating whether the key is currently being pressed down.
 		/// </summary>
+		/// <param name="scanCode">The scan code of the key that should be checked.</param>
+		public bool IsPressed(ScanCode scanCode)
+		{
+			Assert.ArgumentInRange(scanCode, nameof(scanCode));
+			return _states[(int)scanCode].IsPressed;
+		}
+
+		/// <summary>
+		///   Gets a value indicating whether the key was pressed during the current frame. WentDown is
+		///   only true during the single frame when IsPressed changed from false to true.
+		/// </summary>
+		/// <param name="scanCode">The scan code of the key that should be checked.</param>
+		public bool WentDown(ScanCode scanCode)
+		{
+			Assert.ArgumentInRange(scanCode, nameof(scanCode));
+			return _states[(int)scanCode].WentDown;
+		}
+
+		/// <summary>
+		///   Gets a value indicating whether the key was released during the current frame. WentUp is
+		///   only true during the single frame when IsPressed changed from true to false.
+		/// </summary>
+		/// <param name="scanCode">The scan code of the key that should be checked.</param>
+		public bool WentUp(ScanCode scanCode)
+		{
+			Assert.ArgumentInRange(scanCode, nameof(scanCode));
+			return _states[(int)scanCode].WentUp;
+		}
+
+		/// <summary>
+		///   Gets a value indicating whether a system key repeat event occurred. IsRepeated is also true
+		///   when the key is pressed, i.e., when WentDown is true.
+		/// </summary>
+		/// <param name="scanCode">The scan code of the key that should be checked.</param>
+		public bool IsRepeated(ScanCode scanCode)
+		{
+			Assert.ArgumentInRange(scanCode, nameof(scanCode));
+			return _states[(int)scanCode].IsRepeated;
+		}
+
+		/// <summary>
+		///   Gets a value indicating whether the key is currently being pressed down.
+		/// </summary>
 		/// <param name="key">The key that should be checked.</param>
 		public bool IsPressed(Key key)
 		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _states[(int)key].IsPressed;
+			return IsPressed(SDL_GetScancodeFromKey(key));
 		}
 
 		/// <summary>
@@ -144,8 +191,7 @@ namespace PointWars.Platform.Input
 		/// <param name="key">The key that should be checked.</param>
 		public bool WentDown(Key key)
 		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _states[(int)key].WentDown;
+			return WentDown(SDL_GetScancodeFromKey(key));
 		}
 
 		/// <summary>
@@ -155,8 +201,7 @@ namespace PointWars.Platform.Input
 		/// <param name="key">The key that should be checked.</param>
 		public bool WentUp(Key key)
 		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _states[(int)key].WentUp;
+			return WentUp(SDL_GetScancodeFromKey(key));
 		}
 
 		/// <summary>
@@ -166,8 +211,7 @@ namespace PointWars.Platform.Input
 		/// <param name="key">The key that should be checked.</param>
 		public bool IsRepeated(Key key)
 		{
-			Assert.ArgumentInRange(key, nameof(key));
-			return _states[(int)key].IsRepeated;
+			return IsRepeated(SDL_GetScancodeFromKey(key));
 		}
 	}
 }

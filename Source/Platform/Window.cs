@@ -23,20 +23,26 @@
 namespace PointWars.Platform
 {
 	using System;
-	using GLFW3;
+	using System.Text;
 	using Graphics;
 	using Input;
 	using Logging;
 	using Math;
 	using Memory;
+	using Scripting;
 	using Utilities;
-	using static GLFW3.GLFW;
+	using static SDL2;
 
 	/// <summary>
 	///   Represents a window the application can be drawn to.
 	/// </summary>
 	public unsafe class Window : DisposableObject
 	{
+		/// <summary>
+		///   The minimum overlap of a window that must always be visible.
+		/// </summary>
+		private const int MinimumOverlap = 100;
+
 		/// <summary>
 		///   The minimum supported window size.
 		/// </summary>
@@ -47,45 +53,52 @@ namespace PointWars.Platform
 		/// </summary>
 		public static readonly Size MaximumSize = new Size(4096, 2160);
 
-		private static bool _initialized;
-		private readonly bool _fullscreen;
-		private readonly GLFWwindow* _window;
+		private readonly void* _window;
 
-		private GLFWcharfun _characterCallback;
-		private GLFWwindowclosefun _closeCallback;
-		private GLFWkeyfun _keyCallback;
-		private GLFWmousebuttonfun _mouseCallback;
-		private GLFWscrollfun _scrollCallback;
-		private GLFWframebuffersizefun _sizeCallback;
+		private bool _shouldClose;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="graphicsDevice">The graphics device used to draw the window's contents.</param>
 		/// <param name="title">The window's title.</param>
+		/// <param name="position">The window's initial position.</param>
 		/// <param name="size">The window's initial size.</param>
-		/// <param name="fullscreen">Indicates whether the window should be opened in fullscreen mode.</param>
-		public Window(string title, Size size, bool fullscreen)
+		/// <param name="mode">The initial mode of the window.</param>
+		public Window(GraphicsDevice graphicsDevice, string title, Vector2 position, Size size, WindowMode mode)
 		{
-			Assert.That(!_initialized, "Only one window can be opened.");
-			_initialized = true;
+			Assert.ArgumentNotNull(graphicsDevice, nameof(graphicsDevice));
+			Assert.ArgumentNotNullOrWhitespace(title, nameof(title));
+			Assert.ArgumentInRange(mode, nameof(mode));
 
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
-			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, PlatformInfo.IsDebug ? 1 : 0);
+			ConstrainWindowPlacement(ref position, ref size);
 
-			var monitor = fullscreen ? glfwGetPrimaryMonitor() : null;
-			_fullscreen = fullscreen;
-			_window = glfwCreateWindow(size.IntegralWidth, size.IntegralHeight, title, monitor, null);
+			var flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
+			switch (mode)
+			{
+				case WindowMode.Fullscreen:
+					flags |= SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_INPUT_GRABBED;
+					break;
+				case WindowMode.Maximized:
+					flags |= SDL_WINDOW_MAXIMIZED;
+					break;
+			}
 
+			_window = SDL_CreateWindow(title, position.IntegralX, position.IntegralY, size.IntegralWidth, size.IntegralHeight, flags);
 			if (_window == null)
-				Log.Die("Window creation failed.");
+				Log.Die("Failed to create window: {0}", SDL_GetError());
 
-			glfwMakeContextCurrent(_window);
-			InitializeCallbacks();
+			SDL_SetWindowMinimumSize(_window, MinimumSize.IntegralWidth, MinimumSize.IntegralHeight);
+			SDL_SetWindowMaximumSize(_window, MaximumSize.IntegralWidth, MaximumSize.IntegralHeight);
+
+			GraphicsDevice = graphicsDevice;
 			BackBuffer = new RenderTarget(this);
 		}
+
+		/// <summary>
+		///   Gets the graphics device used to draw the window's contents.
+		/// </summary>
+		public GraphicsDevice GraphicsDevice { get; }
 
 		/// <summary>
 		///   Gets the render target representing the window's back buffer.
@@ -95,14 +108,7 @@ namespace PointWars.Platform
 		/// <summary>
 		///   Gets a value indicating whether the window currently has the focus.
 		/// </summary>
-		internal bool HasFocus
-		{
-			get
-			{
-				Assert.NotDisposed(this);
-				return glfwGetWindowAttrib(_window, GLFW_FOCUSED) != 0;
-			}
-		}
+		internal bool HasFocus { get; private set; }
 
 		/// <summary>
 		///   Gets a value indicating whether the user requested to close the window.
@@ -112,7 +118,26 @@ namespace PointWars.Platform
 			get
 			{
 				Assert.NotDisposed(this);
-				return glfwWindowShouldClose(_window) != 0;
+
+				var shouldClose = _shouldClose;
+				_shouldClose = false;
+				return shouldClose;
+			}
+		}
+
+		/// <summary>
+		///   Gets the position of the window.
+		/// </summary>
+		public Vector2 Position
+		{
+			get
+			{
+				Assert.NotDisposed(this);
+
+				int x, y;
+				SDL_GetWindowPosition(_window, out x, out y);
+
+				return new Vector2(x, y);
 			}
 		}
 
@@ -126,21 +151,31 @@ namespace PointWars.Platform
 				Assert.NotDisposed(this);
 
 				int width, height;
-				glfwGetFramebufferSize(_window, &width, &height);
+				SDL_GetWindowSize(_window, out width, out height);
 
 				return ClampSize(width, height);
 			}
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the window is in fullscreen mode.
+		///   Gets the window's current mode.
 		/// </summary>
-		public bool IsFullscreen
+		public WindowMode Mode
 		{
 			get
 			{
-				Assert.NotDisposed(this);
-				return _fullscreen;
+				var flags = SDL_GetWindowFlags(_window);
+
+				if ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP)
+					return WindowMode.Fullscreen;
+
+				if ((flags & SDL_WINDOW_MAXIMIZED) == SDL_WINDOW_MAXIMIZED)
+					return WindowMode.Maximized;
+
+				if ((flags & SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED)
+					return WindowMode.Minimized;
+
+				return WindowMode.Normal;
 			}
 		}
 
@@ -162,43 +197,7 @@ namespace PointWars.Platform
 		/// </summary>
 		public void Present()
 		{
-			glfwSwapBuffers(_window);
-		}
-
-		/// <summary>
-		///   Initializes the window's GLFW callbacks.
-		/// </summary>
-		private void InitializeCallbacks()
-		{
-			_characterCallback = (window, codepoint) => CharacterEntered?.Invoke(codepoint);
-			_closeCallback = window => Closing?.Invoke();
-			_scrollCallback = (window, x, y) => MouseWheel?.Invoke(y > 0 ? MouseWheelDirection.Up : MouseWheelDirection.Down);
-			_sizeCallback = (window, width, height) => Resized?.Invoke(ClampSize(width, height));
-			_keyCallback = (window, key, scancode, action, mods) =>
-			{
-				Assert.ArgumentInRange((Key)key, nameof(key));
-
-				if (action == GLFW_PRESS || action == GLFW_REPEAT)
-					KeyPressed?.Invoke((Key)key, scancode, (KeyModifiers)mods);
-				else
-					KeyReleased?.Invoke((Key)key, scancode, (KeyModifiers)mods);
-			};
-			_mouseCallback = (window, button, action, mods) =>
-			{
-				Assert.ArgumentInRange((MouseButton)button, nameof(button));
-
-				if (action == GLFW_PRESS || action == GLFW_REPEAT)
-					MousePressed?.Invoke((MouseButton)button, (KeyModifiers)mods);
-				else
-					MouseReleased?.Invoke((MouseButton)button, (KeyModifiers)mods);
-			};
-
-			glfwSetCharCallback(_window, _characterCallback);
-			glfwSetWindowCloseCallback(_window, _closeCallback);
-			glfwSetScrollCallback(_window, _scrollCallback);
-			glfwSetFramebufferSizeCallback(_window, _sizeCallback);
-			glfwSetKeyCallback(_window, _keyCallback);
-			glfwSetMouseButtonCallback(_window, _mouseCallback);
+			SDL_GL_SwapWindow(_window);
 		}
 
 		/// <summary>
@@ -209,22 +208,22 @@ namespace PointWars.Platform
 		/// <summary>
 		///   Raised when a key was pressed.
 		/// </summary>
-		public event Action<Key, int, KeyModifiers> KeyPressed;
+		public event Action<Key, ScanCode, KeyModifiers> KeyPressed;
 
 		/// <summary>
 		///   Raised when a key was released.
 		/// </summary>
-		public event Action<Key, int, KeyModifiers> KeyReleased;
+		public event Action<Key, ScanCode, KeyModifiers> KeyReleased;
 
 		/// <summary>
 		///   Raised when a mouse button was pressed.
 		/// </summary>
-		public event Action<MouseButton, KeyModifiers> MousePressed;
+		public event Action<MouseButton, Vector2, bool> MousePressed;
 
 		/// <summary>
 		///   Raised when a mouse button was released.
 		/// </summary>
-		public event Action<MouseButton, KeyModifiers> MouseReleased;
+		public event Action<MouseButton, Vector2> MouseReleased;
 
 		/// <summary>
 		///   Raised when the mouse wheel was moved.
@@ -232,9 +231,9 @@ namespace PointWars.Platform
 		public event Action<MouseWheelDirection> MouseWheel;
 
 		/// <summary>
-		///   Raised when a character was entered.
+		///   Raised when a text was entered.
 		/// </summary>
-		public event Action<uint> CharacterEntered;
+		public event Action<string> TextEntered;
 
 		/// <summary>
 		///   Raised when the user requested the window to be closed.
@@ -246,19 +245,188 @@ namespace PointWars.Platform
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			BackBuffer.SafeDispose();
+			GraphicsDevice.MakeCurrent();
 
-			glfwDestroyWindow(_window);
-			_initialized = false;
+			BackBuffer.SafeDispose();
+			SDL_DestroyWindow(_window);
 		}
 
 		/// <summary>
-		///   Casts the window to its underlying GLFW window handle.
+		///   Casts the window to its underlying SDL2 window pointer.
 		/// </summary>
-		public static implicit operator GLFWwindow*(Window window)
+		public static implicit operator void*(Window window)
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
 			return window._window;
+		}
+
+		/// <summary>
+		///   Toggles between fullscreen and windowed mode when ALT+Enter is pressed.
+		/// </summary>
+		private void ToggleFullscreen(SDL_Keysym key)
+		{
+			if ((key.sym != Key.Enter && key.sym != Key.NumpadEnter) || (key.mod & KeyModifiers.LeftAlt) != KeyModifiers.LeftAlt)
+				return;
+
+			if (Mode == WindowMode.Fullscreen)
+			{
+				if (SDL_SetWindowFullscreen(_window, 0) != 0)
+					Log.Die("Failed to switch to windowed mode: {0}", SDL_GetError());
+
+				SDL_SetWindowGrab(_window, 0);
+			}
+			else
+			{
+				if (SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
+					Log.Die("Failed to switch to fullscreen mode: {0}", SDL_GetError());
+
+				SDL_SetWindowGrab(_window, 1);
+			}
+		}
+
+		/// <summary>
+		///   Handles all pending OS events.
+		/// </summary>
+		public void HandleEvents()
+		{
+			var size = Size;
+			SDL_Event e;
+
+			while (SDL_PollEvent(out e) != 0)
+			{
+				switch (e.type)
+				{
+					case SDL_WINDOWEVENT:
+					{
+						switch (e.window.windowEvent)
+						{
+							case SDL_WINDOWEVENT_SHOWN:
+							case SDL_WINDOWEVENT_HIDDEN:
+							case SDL_WINDOWEVENT_EXPOSED:
+							case SDL_WINDOWEVENT_RESIZED:
+							case SDL_WINDOWEVENT_ENTER:
+							case SDL_WINDOWEVENT_LEAVE:
+							case SDL_WINDOWEVENT_MOVED:
+							case SDL_WINDOWEVENT_SIZE_CHANGED:
+							case SDL_WINDOWEVENT_MINIMIZED:
+							case SDL_WINDOWEVENT_MAXIMIZED:
+							case SDL_WINDOWEVENT_RESTORED:
+								// Don't care
+								break;
+							case SDL_WINDOWEVENT_FOCUS_GAINED:
+								HasFocus = true;
+								break;
+							case SDL_WINDOWEVENT_FOCUS_LOST:
+								HasFocus = false;
+								break;
+							case SDL_WINDOWEVENT_CLOSE:
+								_shouldClose = true;
+								Closing?.Invoke();
+								break;
+							default:
+								Log.Debug("Unsupported SDL event.");
+								break;
+						}
+
+						break;
+					}
+					case SDL_KEYDOWN:
+						KeyPressed?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);
+						ToggleFullscreen(e.key.keysym);
+						break;
+					case SDL_KEYUP:
+						KeyReleased?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);
+						break;
+					case SDL_TEXTINPUT:
+						var count = 0;
+						while (e.text.text[count] != 0)
+							++count;
+
+						TextEntered?.Invoke(new string((sbyte*)e.text.text, 0, count, Encoding.UTF8));
+						break;
+					case SDL_MOUSEBUTTONDOWN:
+						MousePressed?.Invoke(e.button.button, new Vector2(e.button.x, e.button.y), e.button.clicks == 2);
+						break;
+					case SDL_MOUSEBUTTONUP:
+						MouseReleased?.Invoke(e.button.button, new Vector2(e.button.x, e.button.y));
+						break;
+					case SDL_MOUSEWHEEL:
+						MouseWheel?.Invoke(e.wheel.y < 0 ? MouseWheelDirection.Down : MouseWheelDirection.Up);
+						break;
+					case SDL_TEXTEDITING:
+					case SDL_MOUSEMOTION:
+					case SDL_QUIT:
+						// Don't care
+						break;
+					default:
+						Log.Debug("Unsupported SDL event.");
+						break;
+				}
+			}
+
+			if (size != Size)
+				Resized?.Invoke(Size);
+
+			if (Cvars.WindowPosition != Position && Mode == WindowMode.Normal)
+				Cvars.WindowPosition = Position;
+
+			if (Cvars.WindowSize != Size && Mode == WindowMode.Normal)
+				Cvars.WindowSize = Size;
+
+			if (Cvars.WindowMode != Mode)
+				Cvars.WindowMode = Mode;
+		}
+
+		/// <summary>
+		///   Gets the area of the desktop.
+		/// </summary>
+		private static Rectangle GetDesktopArea()
+		{
+			int left = Int32.MaxValue, top = Int32.MaxValue, bottom = Int32.MinValue, right = Int32.MinValue;
+			var num = SDL_GetNumVideoDisplays();
+
+			if (num <= 0)
+				Log.Die("Failed to determine the number of displays: {0}", SDL_GetError());
+
+			for (var i = 0; i < num; ++i)
+			{
+				SDL_Rect bounds;
+				if (SDL_GetDisplayBounds(i, out bounds) != 0)
+					Log.Die("Failed to retrieve display bounds of display {0}: {1}", i, SDL_GetError());
+
+				left = bounds.x < left ? bounds.x : left;
+				right = bounds.x + bounds.w > right ? bounds.x + bounds.w : right;
+				top = bounds.y + top >= bounds.y ? bounds.y : top;
+				bottom = bounds.y + bounds.h > bottom ? bounds.y + bounds.h : bottom;
+			}
+
+			return new Rectangle(left, top, right - left, bottom - top);
+		}
+
+		/// <summary>
+		///   Constrains the placement and size of the window such that it is always visible.
+		/// </summary>
+		/// <param name="position">The position of the window.</param>
+		/// <param name="size">The size of the window.</param>
+		private static void ConstrainWindowPlacement(ref Vector2 position, ref Size size)
+		{
+			Assert.ArgumentInRange(position.X, -MaximumSize.Width, MaximumSize.Width, nameof(position));
+			Assert.ArgumentInRange(position.Y, -MaximumSize.Height, MaximumSize.Height, nameof(position));
+			Assert.ArgumentSatisfies(size.Width <= MaximumSize.Width, nameof(size), "Invalid window width.");
+			Assert.ArgumentSatisfies(size.Height <= MaximumSize.Height, nameof(size), "Invalid window height.");
+
+			var desktopArea = GetDesktopArea();
+
+			// The window's size must not exceed the size of the desktop
+			size.Width = MathUtils.Clamp(size.Width, MinimumSize.Width, desktopArea.Width);
+			size.Height = MathUtils.Clamp(size.Height, MinimumSize.Height, desktopArea.Height);
+
+			// Move the window's desired position such that at least MinOverlap pixels of the window are visible 
+			// both vertically and horizontally
+			position.X = MathUtils.Clamp(position.X, desktopArea.Left - size.Width + MinimumOverlap,
+				desktopArea.Left + desktopArea.Width - MinimumOverlap);
+			position.Y = MathUtils.Clamp(position.Y, desktopArea.Top - size.Height + MinimumOverlap,
+				desktopArea.Top + desktopArea.Height - MinimumOverlap);
 		}
 	}
 }

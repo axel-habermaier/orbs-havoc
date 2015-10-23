@@ -47,7 +47,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   In debug builds, checks for OpenGL errors.
 		/// </summary>
-		[DebuggerHidden, Conditional("DEBUG")]
+		[Conditional("DEBUG")]
 		protected static void CheckErrors()
 		{
 			var glErrorOccurred = false;

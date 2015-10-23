@@ -29,6 +29,7 @@ namespace PointWars.Rendering
 	using Platform.Logging;
 	using Platform.Memory;
 	using Scripting;
+	using Utilities;
 
 	/// <summary>
 	///   Provides access to assets used throughout the application.
@@ -57,11 +58,14 @@ namespace PointWars.Rendering
 		/// </summary>
 		private static void Load(Loader loader)
 		{
+			var start = Clock.GetTime();
 			var assets = Decompress(FileSystem.ReadAllBytes("Assets.pak"));
 			var reader = new BufferReader(assets, Endianess.Little);
 
 			loader(ref reader);
 			reader.Dispose();
+
+			Log.Info("Asset bundle loaded ({0:F2}ms).", (Clock.GetTime() - start) * 1000);
 		}
 
 		/// <summary>

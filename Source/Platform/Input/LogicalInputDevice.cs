@@ -192,6 +192,7 @@ namespace PointWars.Platform.Input
 
 			// Update the text input state
 			_textInput.Update();
+			Keyboard.TextInputEnabled = TextInputEnabled;
 
 			// Update all inputs
 			foreach (var input in _inputs)

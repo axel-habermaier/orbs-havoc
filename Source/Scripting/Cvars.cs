@@ -46,10 +46,16 @@ namespace PointWars.Scripting
 		Size WindowSize { get; set; }
 
 		/// <summary>
-		///   Indicates whether the application is run in fullscreen mode.
+		///   The screen position of the application window's top left corner in non-fullscreen mode.
 		/// </summary>
-		[Cvar(true), Persistent, SystemOnly]
-		bool Fullscreen { get; set; }
+		[Cvar("new Vector2(100, 100)"), Persistent, WindowPosition, SystemOnly]
+		Vector2 WindowPosition { get; set; }
+
+		/// <summary>
+		///   The width of the application's window in non-fullscreen mode.
+		/// </summary>
+		[Cvar(WindowMode.Fullscreen), Persistent, SystemOnly]
+		WindowMode WindowMode { get; set; }
 
 		/// <summary>
 		///   Shows or hides the debug overlay.

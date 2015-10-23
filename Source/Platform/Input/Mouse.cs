@@ -26,7 +26,7 @@ namespace PointWars.Platform.Input
 	using Math;
 	using Memory;
 	using Utilities;
-	using static GLFW3.GLFW;
+	using static SDL2;
 
 	/// <summary>
 	///   Represents the state of the mouse.
@@ -34,9 +34,14 @@ namespace PointWars.Platform.Input
 	public class Mouse : DisposableObject
 	{
 		/// <summary>
+		///   Stores whether a button is currently being double-clicked.
+		/// </summary>
+		private readonly bool[] _doubleClicked = new bool[Enum.GetValues(typeof(MouseButton)).Length + 1];
+
+		/// <summary>
 		///   The mouse button states.
 		/// </summary>
-		private readonly InputState[] _states = new InputState[GLFW_MOUSE_BUTTON_LAST + 1];
+		private readonly InputState[] _states = new InputState[Enum.GetValues(typeof(MouseButton)).Length + 1];
 
 		/// <summary>
 		///   The window that generates the mouse events.
@@ -59,14 +64,14 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Gets the position of the mouse.
 		/// </summary>
-		public unsafe Vector2 Position
+		public Vector2 Position
 		{
 			get
 			{
-				double x, y;
-				glfwGetCursorPos(_window, &x, &y);
+				int x, y;
+				SDL_GetMouseState(out x, out y);
 
-				return new Vector2((float)x, (float)y);
+				return new Vector2(x, y);
 			}
 		}
 
@@ -82,15 +87,16 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Invoked when a button has been pressed.
 		/// </summary>
-		private void ButtonPressed(MouseButton button, KeyModifiers modifiers)
+		private void ButtonPressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
 			_states[(int)button].Pressed();
+			_doubleClicked[(int)button] |= doubleClicked;
 		}
 
 		/// <summary>
 		///   Invoked when a button has been released.
 		/// </summary>
-		private void ButtonReleased(MouseButton button, KeyModifiers modifiers)
+		private void ButtonReleased(MouseButton button, Vector2 position)
 		{
 			_states[(int)button].Released();
 		}
@@ -101,7 +107,10 @@ namespace PointWars.Platform.Input
 		internal void Update()
 		{
 			for (var i = 0; i < _states.Length; ++i)
+			{
 				_states[i].Update();
+				_doubleClicked[i] = false;
+			}
 		}
 
 		/// <summary>

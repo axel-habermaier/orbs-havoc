@@ -20,33 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Input
+namespace PointWars.Platform
 {
-	using System;
-
 	/// <summary>
-	///   Specifies a set of key modifiers.
+	///   Indicates the whether the window is minimized, maximized, or neither minimized nor maximized.
 	/// </summary>
-	[Flags]
-	public enum KeyModifiers
+	public enum WindowMode
 	{
-		None = 0x0000,
-		LeftShift = 0x0001,
-		RightShift = 0x0002,
-		LeftControl = 0x0040,
-		RightControl = 0x0080,
-		LeftAlt = 0x0100,
-		RightAlt = 0x0200,
-		LeftGui = 0x0400,
-		RightGui = 0x0800,
-		Num = 0x1000,
-		Caps = 0x2000,
-		Mode = 0x4000,
-		Reserved = 0x8000,
+		/// <summary>
+		///   Indicates that the window is neither minimized nor maximized.
+		/// </summary>
+		Normal,
 
-		Control = LeftControl | RightControl,
-		Shift = LeftShift | RightShift,
-		Alt = LeftAlt | RightAlt,
-		Gui = LeftGui | RightGui
+		/// <summary>
+		///   Indicates that the window is maximized, filling the entire screen.
+		/// </summary>
+		Maximized,
+
+		/// <summary>
+		///   Indicates that the window is minimized and invisible.
+		/// </summary>
+		Minimized,
+
+		/// <summary>
+		///   Indicates that the window is in borderless fullscreen mode, filling the entire screen.
+		/// </summary>
+		Fullscreen
 	}
 }

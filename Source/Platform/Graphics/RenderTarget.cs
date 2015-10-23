@@ -40,6 +40,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="window">The window whose back buffer should be represented by the render target.</param>
 		internal RenderTarget(Window window)
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
@@ -156,14 +157,24 @@ namespace PointWars.Platform.Graphics
 		}
 
 		/// <summary>
+		///   Binds the render target for rendering.
+		/// </summary>
+		private void Bind()
+		{
+			if (IsBackBuffer && Change(ref State.Window, _window))
+				_window.GraphicsDevice.MakeCurrent(_window);
+
+			if (Change(ref State.RenderTarget, this))
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
+		}
+
+		/// <summary>
 		///   Clears the render target.
 		/// </summary>
 		/// <param name="color">The color the color buffer should be set to.</param>
 		public void Clear(Color color)
 		{
-			if (Change(ref State.RenderTarget, this))
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
-
+			Bind();
 			SetViewport();
 
 			glClearColor(color.Red / 255.0f, color.Green / 255.0f, color.Blue / 255.0f, color.Alpha / 255.0f);
@@ -179,9 +190,7 @@ namespace PointWars.Platform.Graphics
 		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
 		public void Draw(int primitiveCount, int vertexOffset)
 		{
-			if (Change(ref State.RenderTarget, this))
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
-
+			Bind();
 			SetViewport();
 			State.Validate();
 
@@ -201,9 +210,7 @@ namespace PointWars.Platform.Graphics
 		/// <param name="vertexOffset">The value that should be added to each index before reading a vertex from the vertex buffer.</param>
 		public void DrawIndexed(int indexCount, int indexOffset, int vertexOffset)
 		{
-			if (Change(ref State.RenderTarget, this))
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
-
+			Bind();
 			SetViewport();
 			State.Validate();
 

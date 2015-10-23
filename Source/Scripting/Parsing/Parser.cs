@@ -302,6 +302,21 @@ namespace PointWars.Scripting.Parsing
 		}
 
 		/// <summary>
+		///   Parses a Vector2 value of the format 100;100.
+		/// </summary>
+		public static Vector2 ParseVector2(InputStream inputStream)
+		{
+			var width = ParseFloat32(inputStream);
+
+			if (inputStream.Peek() != ';')
+				throw new ParseException(inputStream, "Expected two values of type '{0}' separated by ';'.", TypeRegistry.GetDescription<float>());
+
+			inputStream.Skip(1);
+			var height = ParseFloat32(inputStream);
+			return new Size(width, height);
+		}
+
+		/// <summary>
 		///   Parses a configurable input of the form 'Key.A', 'Key.A+Control', 'Mouse.Left+Alt+Shift', etc.
 		/// </summary>
 		public static ConfigurableInput ParseConfigurableInput(InputStream inputStream)
@@ -531,7 +546,10 @@ namespace PointWars.Scripting.Parsing
 			var positive = sign == '+';
 
 			if (negative && !allowNegative)
+			{
+				inputStream.State = state;
 				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
+			}
 
 			if (negative || positive)
 				inputStream.Skip(1);
@@ -539,7 +557,10 @@ namespace PointWars.Scripting.Parsing
 			// Parse the integer part, if any -- it may be missing if a fractional part follows
 			var count = inputStream.Skip(Char.IsDigit);
 			if (count == 0 && (!allowDecimal || inputStream.Peek() != '.'))
+			{
+				inputStream.State = state;
 				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
+			}
 
 			// If a fractional part is allowed, parse it, but there must be at least one digit following
 			if (allowDecimal && inputStream.Peek() == '.')
@@ -548,7 +569,10 @@ namespace PointWars.Scripting.Parsing
 				count = inputStream.Skip(Char.IsDigit);
 
 				if (count == 0)
+				{
+					inputStream.State = state;
 					throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
+				}
 			}
 
 			// Convert everything from the first digit (or sign or decimal point) to the last digit followed by a non-digit character
@@ -558,10 +582,12 @@ namespace PointWars.Scripting.Parsing
 			}
 			catch (FormatException)
 			{
+				inputStream.State = state;
 				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 			catch (OverflowException)
 			{
+				inputStream.State = state;
 				throw new ParseException(inputStream, "The value lies outside the range of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 		}
