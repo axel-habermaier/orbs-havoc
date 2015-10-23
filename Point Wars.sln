@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Point Wars", "Source\Point Wars.csproj", "{6DEA5A72-611A-4A3C-8EF9-E017A1192041}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B26366D0-7AC7-40A3-BA52-8B77D425D4DE} = {B26366D0-7AC7-40A3-BA52-8B77D425D4DE}
+	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Assets", "Assets\Assets.fsproj", "{B26366D0-7AC7-40A3-BA52-8B77D425D4DE}"
 EndProject

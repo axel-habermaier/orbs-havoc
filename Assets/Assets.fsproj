@@ -76,6 +76,7 @@
   -->
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)Dependencies/Packages\SharpFont.Dependencies.2.6\bin\msvc12\x64/freetype6.dll" DestinationFolder="$(OutDir)" Condition="'$(OS)' == 'Windows_NT'" />
+    <Exec Command="&quot;$(TargetPath)&quot;" WorkingDirectory="$(OutDir)" Condition="'$(OS)' == 'Windows_NT'" />
   </Target>
   <ItemGroup>
     <None Include="Fonts\LiberationMono-Regular.ttf" />
@@ -87,8 +88,8 @@
     <Compile Include="Code\FontCompiler.fs" />
     <Compile Include="Code\ShaderCompiler.fs" />
     <Compile Include="Code\Program.fs" />
-    <None Include="Shaders\SpriteBatch.vert" />
-    <None Include="Shaders\SpriteBatch.frag" />
+    <EmbeddedResource Include="Shaders\SpriteBatch.vert" />
+    <EmbeddedResource Include="Shaders\SpriteBatch.frag" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis">
