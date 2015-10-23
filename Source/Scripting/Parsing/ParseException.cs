@@ -40,18 +40,22 @@ namespace PointWars.Scripting.Parsing
 		{
 			Assert.ArgumentNotNull(inputStream, nameof(inputStream));
 
-			Input = inputStream.Input;
-			Position = inputStream.State.Position;
+			InputStream = inputStream;
 		}
+
+		/// <summary>
+		///   Gets the input stream the exception was raised for.
+		/// </summary>
+		public InputStream InputStream { get; }
 
 		/// <summary>
 		///   Gets zero-based position within the input where the parse error occurred.
 		/// </summary>
-		public int Position { get; }
+		public int Position => InputStream.State.Position;
 
 		/// <summary>
 		///   Gets the input that was parsed.
 		/// </summary>
-		public string Input { get; }
+		public string Input => InputStream.Input;
 	}
 }

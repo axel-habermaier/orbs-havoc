@@ -67,7 +67,7 @@ namespace PointWars.Scripting
 			Register(Parser.ParseSize, null, s => $"{s.Width}x{s.Height}", "0x0", "-10x10.5", "1920x1200");
 			Register(Parser.ParseEnumerationLiteral<Key>, "Key", null, "A", "B", "LeftControl", "Return", "F1");
 			Register(Parser.ParseEnumerationLiteral<MouseButton>, "Mouse Button", null, "Left", "Right", "Middle", "XButton1", "XButton2");
-			Register(Parser.ParseConfigurableInput, null, null, "Key.A+Control", "Mouse.Left+Alt", "Mouse.XButton1+Shift+Alt");
+			Register(Parser.ParseConfigurableInput, null, null, "[Key.A+Control]", "[Mouse.Left+Alt]", "[Mouse.XButton1+Shift+Alt]");
 		}
 
 		/// <summary>

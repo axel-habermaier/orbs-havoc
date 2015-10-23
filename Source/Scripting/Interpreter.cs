@@ -130,8 +130,6 @@ namespace PointWars.Scripting
 			}
 			catch (ParseException e)
 			{
-				Log.Error("{0}", input);
-				Log.Error("{0}^", new string(' ', e.Position));
 				Log.Error("{0}", e.Message);
 			}
 		}

@@ -83,7 +83,7 @@ namespace PointWars.UserInterface
 		public int Position
 		{
 			get { return _position; }
-			private set
+			set
 			{
 				_position = Math.Min(_text.Length, value);
 				_position = Math.Max(0, _position);

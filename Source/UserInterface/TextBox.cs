@@ -143,28 +143,80 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Injects a key press event.
 		/// </summary>
-		/// <param name="key">The key that was pressed.</param>
-		public void InjectKeyPress(Key key)
+		public void InjectKeyPress(Key key, KeyModifiers modifiers)
 		{
 			Assert.NotDisposed(this);
 
-			if (key == Key.Right)
-				_caret.Move(1);
+			switch (key)
+			{
+				case Key.Right:
+					if ((modifiers & KeyModifiers.Control) == KeyModifiers.Control)
+						_caret.Position = GetBeginningOfNextWord();
+					else
+						_caret.Move(1);
+					break;
+				case Key.Left:
+					if ((modifiers & KeyModifiers.Control) == KeyModifiers.Control)
+						_caret.Position = GetBeginningOfPreviousWord();
+					else
+						_caret.Move(-1);
+					break;
+				case Key.Home:
+					_caret.MoveToBeginning();
+					break;
+				case Key.End:
+					_caret.MoveToEnd();
+					break;
+				case Key.Backspace:
+					_caret.RemovePreviousCharacter();
+					break;
+				case Key.Delete:
+				case Key.NumpadDecimal:
+					_caret.RemoveCurrentCharacter();
+					break;
+				default:
+					return;
+			}
+		}
 
-			if (key == Key.Left)
-				_caret.Move(-1);
+		/// <summary>
+		///     Gets the index of the beginning of the next word.
+		/// </summary>
+		private int GetBeginningOfNextWord()
+		{
+			using (var text = new TextString(Text))
+			{
+				var encounteredWhitespace = false;
+				for (var i = _caret.Position; i < text.Length; ++i)
+				{
+					if (Char.IsWhiteSpace(text[i]))
+						encounteredWhitespace = true;
+					else if (encounteredWhitespace)
+						return i;
+				}
 
-			if (key == Key.Home)
-				_caret.MoveToBeginning();
+				return text.Length;
+			}
+		}
 
-			if (key == Key.End)
-				_caret.MoveToEnd();
+		/// <summary>
+		///     Gets the index of the beginning of the previous word.
+		/// </summary>
+		private int GetBeginningOfPreviousWord()
+		{
+			using (var text = new TextString(Text))
+			{
+				var encounteredNonWhitespace = false;
+				for (var i = _caret.Position; i > 0; --i)
+				{
+					if (!Char.IsWhiteSpace(text[i - 1]))
+						encounteredNonWhitespace = true;
+					else if (encounteredNonWhitespace)
+						return i;
+				}
 
-			if (key == Key.Backspace)
-				_caret.RemovePreviousCharacter();
-
-			if (key == Key.Delete)
-				_caret.RemoveCurrentCharacter();
+				return 0;
+			}
 		}
 
 		/// <summary>

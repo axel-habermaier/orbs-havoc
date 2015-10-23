@@ -140,10 +140,9 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Injects a key press event.
 		/// </summary>
-		/// <param name="key">The key that was pressed.</param>
-		public void InjectKeyPress(Key key)
+		public void InjectKeyPress(Key key, KeyModifiers modifiers)
 		{
-			_input.InjectKeyPress(key);
+			_input.InjectKeyPress(key, modifiers);
 		}
 
 		/// <summary>

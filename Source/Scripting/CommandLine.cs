@@ -81,7 +81,7 @@ namespace PointWars.Scripting
 				}
 				catch (ParseException e)
 				{
-					Log.Error("Command line parsing error: {0}", e.Message);
+					Log.Error("{0}", e.Message);
 				}
 
 				i = position;

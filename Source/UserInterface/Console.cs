@@ -177,9 +177,14 @@ namespace PointWars.UserInterface
 			Commands.OnShowConsole -= ShowConsole;
 			Log.OnLog -= ShowLogEntry;
 
-			_input.CharEntered -= OnCharEntered;
-			_inputDevice.Keyboard.KeyPressed -= OnKeyPressed;
-			_inputDevice.Mouse.Wheel -= OnMouseWheelMoved;
+			if (_input != null)
+			{
+				_input.CharEntered -= OnCharEntered;
+				_inputDevice.Keyboard.KeyPressed -= OnKeyPressed;
+			}
+
+			if (_inputDevice != null)
+				_inputDevice.Mouse.Wheel -= OnMouseWheelMoved;
 
 			_input.SafeDispose();
 			_prompt.SafeDispose();
@@ -202,7 +207,7 @@ namespace PointWars.UserInterface
 		private void OnKeyPressed(Key key, int scanCode, KeyModifiers modifiers)
 		{
 			if (_isOpened)
-				_prompt.InjectKeyPress(key);
+				_prompt.InjectKeyPress(key, modifiers);
 		}
 
 		/// <summary>

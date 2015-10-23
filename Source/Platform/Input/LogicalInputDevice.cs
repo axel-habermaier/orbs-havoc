@@ -183,7 +183,7 @@ namespace PointWars.Platform.Input
 				{
 					var layer = (InputLayer)(1 << (i - 1));
 					if (InputLayer != layer)
-						Log.Debug("Input layer has been switched to {0}.", layer);
+						Log.Debug("Input layer has been switched to '{0}'.", layer);
 
 					InputLayer = layer;
 					break;

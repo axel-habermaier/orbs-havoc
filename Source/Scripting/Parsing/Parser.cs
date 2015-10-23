@@ -318,17 +318,35 @@ namespace PointWars.Scripting.Parsing
 				throw new ParseException(inputStream, "'[' is never closed.");
 			}
 
+			inputStream.State = state;
 			inputStream.Skip(1);
-			var input = inputStream.Substring(state.Position + 1, inputStream.State.Position - state.Position - 2);
-			var parts = input.Split(new[] { "+" }, StringSplitOptions.RemoveEmptyEntries).Select(part => part.ToLower());
 
 			var modifiers = KeyModifiers.None;
 			Key? key = null;
 			MouseButton? button = null;
 
-			foreach (var part in parts)
+			while (true)
 			{
-				switch (part)
+				inputStream.SkipWhitespaces();
+				if (inputStream.Peek() == ']')
+					break;
+
+				if (inputStream.Peek() == '+')
+				{
+					inputStream.Skip(1);
+					inputStream.SkipWhitespaces();
+				}
+
+				var begin = inputStream.State;
+				inputStream.Skip(c => c != '+' && c != ']');
+
+				var value = inputStream.Substring(begin.Position, inputStream.State.Position - begin.Position);
+				var normalizedValue = value.ToLower().Trim();
+
+				if (normalizedValue == String.Empty)
+					throw new ParseException(inputStream, "Unexpected token '{0}'.", inputStream.Peek());
+
+				switch (normalizedValue)
 				{
 					case "control":
 						modifiers |= KeyModifiers.Control;
@@ -340,18 +358,34 @@ namespace PointWars.Scripting.Parsing
 						modifiers |= KeyModifiers.Shift;
 						break;
 					default:
-						if (part.StartsWith("key."))
-							key = (Key)Enum.Parse(typeof(Key), part.Substring("key.".Length), ignoreCase: true);
-						else if (part.StartsWith("mouse."))
-							button = (MouseButton)Enum.Parse(typeof(MouseButton), part.Substring("mouse.".Length), ignoreCase: true);
-						else
-							throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", part);
+						try
+						{
+							if (normalizedValue.StartsWith("key."))
+								key = (Key)Enum.Parse(typeof(Key), normalizedValue.Substring("key.".Length), ignoreCase: true);
+							else if (normalizedValue.StartsWith("mouse."))
+								button = (MouseButton)Enum.Parse(typeof(MouseButton), normalizedValue.Substring("mouse.".Length), ignoreCase: true);
+							else
+							{
+								inputStream.State = begin;
+								throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", value.Trim());
+							}
+						}
+						catch (ArgumentException)
+						{
+							inputStream.State = begin;
+							throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", value.Trim());
+						}
 						break;
+				}
+
+				if (key != null && button != null)
+				{
+					inputStream.State = begin;
+					throw new ParseException(inputStream, "Input cannot use both key and mouse button at the same time.");
 				}
 			}
 
-			if (key != null && button != null)
-				throw new ParseException(inputStream, "Input cannot use both key and mouse button at the same time.");
+			inputStream.Skip(1);
 
 			if (key != null)
 				return new ConfigurableInput(key.Value, modifiers);
@@ -359,6 +393,7 @@ namespace PointWars.Scripting.Parsing
 			if (button != null)
 				return new ConfigurableInput(button.Value, modifiers);
 
+			inputStream.State = state;
 			throw new ParseException(inputStream, "Input must use a key or a mouse button.");
 		}
 
@@ -367,29 +402,36 @@ namespace PointWars.Scripting.Parsing
 		/// </summary>
 		internal static Instruction ParseInstruction(InputStream inputStream)
 		{
-			// Skip all leading white space
-			inputStream.SkipWhitespaces();
+			try
+			{
+				// Skip all leading white space
+				inputStream.SkipWhitespaces();
 
-			if (inputStream.EndOfInput)
-				throw new ParseException(inputStream, "Expected a valid cvar or command name.");
+				if (inputStream.EndOfInput)
+					throw new ParseException(inputStream, "Expected a valid cvar or command name.");
 
-			// Parse the cvar or command name
-			var state = inputStream.State;
-			var name = ParseIdentifier(inputStream);
+				// Parse the cvar or command name
+				var state = inputStream.State;
+				var name = ParseIdentifier(inputStream);
 
-			// Check if a cvar has been referenced and if so, return the appropriate instruction
-			ICvar cvar;
-			if (CvarRegistry.TryFind(name, out cvar))
-				return Parse(inputStream, cvar);
+				// Check if a cvar has been referenced and if so, return the appropriate instruction
+				ICvar cvar;
+				if (CvarRegistry.TryFind(name, out cvar))
+					return Parse(inputStream, cvar);
 
-			// Check if a command has been referenced and if so, return the appropriate instruction
-			ICommand command;
-			if (CommandRegistry.TryFind(name, out command))
-				return Parse(inputStream, command);
+				// Check if a command has been referenced and if so, return the appropriate instruction
+				ICommand command;
+				if (CommandRegistry.TryFind(name, out command))
+					return Parse(inputStream, command);
 
-			// If the name refers to neither a cvar nor a command, give up
-			inputStream.State = state;
-			throw new ParseException(inputStream, $"Unknown cvar or command '{name}'.");
+				// If the name refers to neither a cvar nor a command, give up
+				inputStream.State = state;
+				throw new ParseException(inputStream, $"Unknown cvar or command '{name}'.");
+			}
+			catch (ParseException e)
+			{
+				throw new ParseException(e.InputStream, "{0}\n{1}^\n{2}", e.Input, new string(' ', e.Position), e.Message);
+			}
 		}
 
 		/// <summary>
