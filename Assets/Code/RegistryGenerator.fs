@@ -187,7 +187,10 @@ let generateCommands () =
                 writer.NewLine()
 
             for command in commands do
-                let parameters = String.Join(", ", command.ParameterList.Parameters.Select(fun p -> sprintf "%A %A" p.Type p.Identifier))
+                let parameters = String.Join(", ", command.ParameterList.Parameters.Select(fun p -> 
+                    if p.Default <> null then sprintf "%A %A = %A" p.Type p.Identifier p.Default.Value
+                    else sprintf "%A %A" p.Type p.Identifier)
+                )
                 writer.AppendLine "%s" (command.GetLeadingTrivia().ToString().Trim())
                 writer.AppendLine "[DebuggerHidden]"
                 writer.AppendLine "public static %A %A(%s)" command.ReturnType command.Identifier parameters

@@ -22,6 +22,7 @@
 
 namespace PointWars
 {
+	using System.Threading;
 	using Math;
 	using Platform;
 	using Platform.Graphics;
@@ -134,7 +135,7 @@ namespace PointWars
 		/// <summary>
 		///   Runs the application.
 		/// </summary>
-		public void Run()
+		public unsafe void Run()
 		{
 			_running = true;
 
@@ -144,26 +145,56 @@ namespace PointWars
 			using (new Assets())
 			using (SpriteBatch = new SpriteBatch())
 			using (var bindings = new BindingCollection(InputDevice))
+			using (var debugOverlay = new DebugOverlay())
 			{
 				Console.Initialize(Window.Size, InputDevice, Assets.DefaultFont);
 				Initialize();
+				Commands.Help();
 
 				while (_running)
 				{
-					HandleInput();
+					double updateTime, drawTime;
 
-					bindings.Update();
-					Console.Update();
-					Update();
+					// Perform the necessary updates for the frame
+					using (TimeMeasurement.Measure(&updateTime))
+					{
+						HandleInput();
 
-					GraphicsDevice.BeginFrame();
+						bindings.Update();
+						debugOverlay.Update(Window.Size);
+						Console.Update();
+						Update();
+					}
 
-					Draw();
-					Console.Draw(SpriteBatch);
-					SpriteBatch.DrawBatch(Window.BackBuffer);
+					// Ensure that CPU and GPU are synchronized after this point, i.e., the GPU lags behind by
+					// at most GraphicsDevice.FrameLag frames
+					GraphicsDevice.SyncWithCpu();
 
-					GraphicsDevice.EndFrame();
+					// Draw the current frame
+					using (TimeMeasurement.Measure(&drawTime))
+					{
+						GraphicsDevice.BeginFrame();
+
+						Draw();
+
+						debugOverlay.Draw(SpriteBatch);
+						Console.Draw(SpriteBatch);
+						SpriteBatch.DrawBatch(Window.BackBuffer);
+
+						GraphicsDevice.EndFrame();
+					}
+
+					// Present the contents of the window's backbuffer
 					Window.Present();
+
+					// Save CPU when there are no focused windows
+					if (!Window.HasFocus)
+						Thread.Sleep(10);
+
+					// Update the debug overlay
+					debugOverlay.GpuFrameTime = GraphicsDevice.FrameTime;
+					debugOverlay.CpuUpdateTime = updateTime;
+					debugOverlay.CpuRenderTime = drawTime;
 				}
 			}
 		}

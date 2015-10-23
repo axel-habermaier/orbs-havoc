@@ -90,7 +90,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   The timer that is used to periodically update the statistics.
 		/// </summary>
-		private readonly Timer _timer = new Timer(1000.0 / UpdateFrequency);
+		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -154,11 +154,12 @@ namespace PointWars.UserInterface
 
 			_builder.Append("Platform:    ").Append(PlatformInfo.Platform).Append(" ").Append(IntPtr.Size * 8).Append("bit\n");
 			_builder.Append("Debug Mode:  ").Append(PlatformInfo.IsDebug.ToString().ToLower()).Append("\n");
-			_builder.Append("# of GCs:    ").Append(_garbageCollections).Append("\n");
+			_builder.Append("VSync:       ").Append(Cvars.Vsync.ToString().ToLower()).Append("\n");
+			_builder.Append("# of GCs:    ").Append(_garbageCollections).Append("\n\n");
 			_builder.Append("GPU Time:    ").Append(_gpuFrameTime.Average.ToString("F2")).Append("ms\n");
 			_builder.Append("CPU Time:    ").Append(_cpuFrameTime.Average.ToString("F2")).Append("ms\n");
 			_builder.Append("Update Time: ").Append(_cpuUpdateTime.Average.ToString("F2")).Append("ms\n");
-			_builder.Append("Render Time: ").Append(_cpuRenderTime.Average.ToString("F2")).Append("ms\n");
+			_builder.Append("Render Time: ").Append(_cpuRenderTime.Average.ToString("F2")).Append("ms");
 
 			_platformInfo.Text = _builder.ToString();
 			_builder.Clear();

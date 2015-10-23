@@ -95,18 +95,23 @@ namespace PointWars.Platform.Graphics
 		public double FrameTime { get; private set; }
 
 		/// <summary>
-		///   Marks the beginning of a frame, properly synchronizing the GPU and the CPU.
+		///   Ensures that the CPU and GPU are synchronized, so that the actual frame lag is less
+		///   than or equal to the maximum allowed one.
 		/// </summary>
-		public void BeginFrame()
+		internal void SyncWithCpu()
 		{
-			// Make sure the GPU is not more than FrameLag frames behind, so let's wait for the completion of the synced
-			// query issued FrameLag frames ago
 			uint isSynced;
 			do
 			{
 				isSynced = glClientWaitSync(_syncQueries[_syncedIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 0);
 			} while (isSynced != GL_CONDITION_SATISFIED && isSynced != GL_ALREADY_SIGNALED);
+		}
 
+		/// <summary>
+		///   Marks the beginning of a frame, properly synchronizing the GPU and the CPU.
+		/// </summary>
+		public void BeginFrame()
+		{
 			// Get the GPU frame time for the frame that we just synced
 			ulong begin, end;
 			glGetQueryObjectui64v(_beginQueries[_syncedIndex], GL_QUERY_RESULT, &begin);
