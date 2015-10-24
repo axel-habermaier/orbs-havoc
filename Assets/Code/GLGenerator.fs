@@ -208,4 +208,4 @@ let generateIL () =
         )
     )
 
-    File.WriteAllText ("../../Source/Platform/Graphics/OpenGL3.g.asm", writer.ToString())
+    File.WriteAllText ("../../Source/Point Wars/Platform/Graphics/OpenGL3.g.asm", writer.ToString())

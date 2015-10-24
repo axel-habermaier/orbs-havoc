@@ -1,0 +1,26 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<ItemGroup>
+		<AvailableItemName Include="Shader" />  
+	</ItemGroup>
+	
+	<PropertyGroup>
+		<ShaderOutputs>@(Shader->'$(TargetDir)obj\Shaders\%(Filename)%(Extension)')</ShaderOutputs>
+		<AssetBundle>$(TargetDir)AssetBundle.pak</AssetBundle>
+	</PropertyGroup>
+	
+	<ItemGroup> 
+		<CompiledShaders Include="@(Shader->'$(TargetDir)obj\Shaders\%(Filename)%(Extension)')" />
+	</ItemGroup>
+	
+	<Target Name="CompileShaders" BeforeTargets="BeforeBuild" Inputs="@(Shader);$(OutDir)pwc.exe" Outputs="$(ShaderOutputs)">
+		<Exec Command="$(OutDir)pwc.exe shaders &quot;%(Shader.FullPath)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled shaders '%(Shader.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
+		<Exec Command="$(OutDir)pwc.exe @(CompiledShaders->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled asset bundle." />
+	</Target>
+	
+</Project>

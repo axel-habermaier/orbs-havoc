@@ -84,7 +84,7 @@ let private writeValidators (writer : CodeWriter) (node : SyntaxNode) =
     ) (fun () -> writer.Append ", ")
 
 let generateCvars () =
-    let syntaxTree = SyntaxFactory.ParseSyntaxTree (File.ReadAllText "../../Source/Scripting/Cvars.cs")
+    let syntaxTree = SyntaxFactory.ParseSyntaxTree (File.ReadAllText "../../Source/Point Wars/Scripting/Cvars.cs")
     let root = syntaxTree.GetRoot()
     let writer = CodeWriter ()
 
@@ -160,10 +160,10 @@ let generateCvars () =
         )
     )
 
-    File.WriteAllText("../../Source/Scripting/Cvars.g.cs", writer.ToString())
+    File.WriteAllText("../../Source/Point Wars/Scripting/Cvars.g.cs", writer.ToString())
 
 let generateCommands () =
-    let syntaxTree = SyntaxFactory.ParseSyntaxTree (File.ReadAllText "../../Source/Scripting/Commands.cs")
+    let syntaxTree = SyntaxFactory.ParseSyntaxTree (File.ReadAllText "../../Source/Point Wars/Scripting/Commands.cs")
     let root = syntaxTree.GetRoot()
     let writer = CodeWriter ()
 
@@ -252,4 +252,4 @@ let generateCommands () =
         )
     )
 
-    File.WriteAllText("../../Source/Scripting/Commands.g.cs", writer.ToString())
+    File.WriteAllText("../../Source/Point Wars/Scripting/Commands.g.cs", writer.ToString())

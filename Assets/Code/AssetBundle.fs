@@ -116,7 +116,7 @@ type AssetBundle () =
         )
 
         File.WriteAllBytes("Assets.pak", outputBuffer.ToArray())
-        File.WriteAllText("../../Source/Rendering/Assets.g.cs", writer.ToString())
+        File.WriteAllText("../../Source/Point Wars/Rendering/Assets.g.cs", writer.ToString())
 
 module Bundle =
     let create () =
