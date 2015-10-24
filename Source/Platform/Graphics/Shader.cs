@@ -34,8 +34,8 @@ namespace PointWars.Platform.Graphics
 	public sealed unsafe class Shader : GraphicsObject
 	{
 		private const int LogBufferLength = 4096;
-		private uint _fragmentShader;
-		private uint _vertexShader;
+		private int _fragmentShader;
+		private int _vertexShader;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -117,7 +117,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Loads a shader of the given type.
 		/// </summary>
-		private static uint LoadShader(uint shaderType, string shaderCode)
+		private static int LoadShader(int shaderType, string shaderCode)
 		{
 			var shader = glCreateShader(shaderType);
 			if (shader == 0)

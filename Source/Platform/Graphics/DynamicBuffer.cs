@@ -37,23 +37,23 @@ namespace PointWars.Platform.Graphics
 	/// </summary>
 	public class DynamicBuffer : DisposableObject
 	{
-		private const uint MapMode = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
-		private const uint ChunkCount = 3;
+		private const int MapMode = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
+		private const int ChunkCount = 3;
 
 		/// <summary>
 		///   The size of a single chunk in bytes.
 		/// </summary>
-		private uint _chunkSize;
+		private int _chunkSize;
 
 		/// <summary>
 		///   The index of the current chunk that the dynamic vertex buffer uses for mapping and drawing operations.
 		/// </summary>
-		private uint _currentChunk;
+		private int _currentChunk;
 
 		/// <summary>
 		///   The number of elements stored in each chunk.
 		/// </summary>
-		private uint _elementCount;
+		private int _elementCount;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -72,7 +72,7 @@ namespace PointWars.Platform.Graphics
 		///   Gets the vertex offset that must be applied to a drawing operation when the data of the last buffer mapping operation
 		///   should be drawn.
 		/// </summary>
-		public int VertexOffset => (int)(_currentChunk * _elementCount);
+		public int VertexOffset => _currentChunk * _elementCount;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -80,16 +80,16 @@ namespace PointWars.Platform.Graphics
 		/// <typeparam name="T">The type of the data stored in the vertex buffer.</typeparam>
 		/// <param name="bufferType">The type of the buffer.</param>
 		/// <param name="elementCount">The number of elements of type T that the buffer should be able to store.</param>
-		public static unsafe DynamicBuffer Create<T>(uint bufferType, uint elementCount)
+		public static unsafe DynamicBuffer Create<T>(int bufferType, int elementCount)
 			where T : struct
 		{
-			Assert.ArgumentInRange(elementCount, 1u, UInt32.MaxValue, nameof(elementCount));
+			Assert.ArgumentInRange(elementCount, 1, Int32.MaxValue, nameof(elementCount));
 
 			return new DynamicBuffer
 			{
-				Buffer = new Buffer(bufferType, GL_DYNAMIC_DRAW, (uint)(elementCount * ChunkCount * Marshal.SizeOf(typeof(T))), null),
+				Buffer = new Buffer(bufferType, GL_DYNAMIC_DRAW, elementCount * ChunkCount * Marshal.SizeOf(typeof(T)), null),
 				_elementCount = elementCount,
-				_chunkSize = (uint)(elementCount * Marshal.SizeOf(typeof(T)))
+				_chunkSize = elementCount * Marshal.SizeOf(typeof(T))
 			};
 		}
 
@@ -115,7 +115,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="offset">A zero-based index denoting the first byte of the next chunk that should be mapped.</param>
 		/// <param name="byteCount">The number of bytes of the next chunk that should be mapped.</param>
-		public BufferData MapRange(uint offset, uint byteCount)
+		public BufferData MapRange(int offset, int byteCount)
 		{
 			Assert.ArgumentSatisfies(offset < _chunkSize, nameof(offset), "Offset is out-of-bounds.");
 			Assert.ArgumentSatisfies(byteCount <= _chunkSize - offset, nameof(byteCount), "Size is out-of-bounds.");

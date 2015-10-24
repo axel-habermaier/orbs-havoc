@@ -138,17 +138,14 @@ let rec private mapType (glType : string) =
     let glType = if glType.EndsWith("*") then mapType(glType.Substring(0, glType.Length - 1)) + "*" else glType
     match glType with
     | "GLboolean" -> "bool"
-    | "GLuint" | "GLenum" | "GLbitfield" -> "uint32"
+    | "GLuint" | "GLenum" | "GLbitfield" -> "int32"
     | "GLint" | "GLsizei" | "GLsizeiptr" | "GLfixed" | "GLclampx" | "GLinptrARB" | "GLsizeiptrARB" -> "int32"
     | "GLsync" | "GLintptr" | "GLDEBUGPROC" -> "void*"
     | "GLfloat" | "GLclampf" -> "float32"
     | "GLdouble" -> "float64"
-    | "GLubyte" -> "uint8"
-    | "GLbyte" -> "int8"
-    | "GLushort" -> "uint16"
-    | "GLshort" -> "int16"
-    | "GLuint64" -> "uint64"
-    | "GLint64" -> "int64"
+    | "GLubyte" | "GLbyte" -> "uint8"
+    | "GLushort" | "GLshort" -> "int16"
+    | "GLuint64" | "GLint64" -> "int64"
     | "GLchar" -> "uint8"
     | glType -> glType
 
@@ -170,7 +167,7 @@ let generateIL () =
                     if isHex then UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture)
                     else UInt32.TryParse(value)
 
-                if success then "uint32" else "uint64"
+                if success then "int32" else "int64"
 
             writer.AppendLine ".field public static literal %s %s = %s(%s)" constantType enum.Name constantType enum.Value
         writer.NewLine()

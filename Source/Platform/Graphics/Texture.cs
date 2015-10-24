@@ -42,7 +42,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		public Texture(Size size, uint format, void* data)
+		public Texture(Size size, int format, void* data)
 		{
 			Initialize(size, format, data);
 		}
@@ -90,7 +90,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Initializes the texture.
 		/// </summary>
-		private void Initialize(Size size, uint format, void* data)
+		private void Initialize(Size size, int format, void* data)
 		{
 			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
 
@@ -99,7 +99,7 @@ namespace PointWars.Platform.Graphics
 			Handle = Allocate(glGenTextures, nameof(Texture));
 
 			glBindTexture(GL_TEXTURE_2D, Handle);
-			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
 			CheckErrors();
 		}
 

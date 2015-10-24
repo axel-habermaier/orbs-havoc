@@ -32,34 +32,34 @@ namespace PointWars.Platform.Graphics
 	/// </summary>
 	public sealed unsafe class Buffer : GraphicsObject
 	{
-		private readonly uint _type;
+		private readonly int _type;
 		private bool _isMapped;
 
 		/// <summary>
 		///   Initializes a new buffer.
 		/// </summary>
-		public Buffer(uint bufferType, uint usage, uint sizeInBytes, void* data)
+		public Buffer(int bufferType, int usage, int sizeInBytes, void* data)
 		{
 			Handle = Allocate(glGenBuffers, nameof(Buffer));
 			SizeInBytes = sizeInBytes;
 			_type = bufferType;
 
 			glBindBuffer(_type, Handle);
-			glBufferData(_type, (int)SizeInBytes, data, usage);
+			glBufferData(_type, SizeInBytes, data, usage);
 			CheckErrors();
 		}
 
 		/// <summary>
 		///   Gets the size of the buffer in bytes.
 		/// </summary>
-		public uint SizeInBytes { get; }
+		public int SizeInBytes { get; }
 
 		/// <summary>
 		///   Maps the buffer and returns a pointer that the CPU can access. The operations that are allowed on the
 		///   returned pointer depend on the given map mode.
 		/// </summary>
 		/// <param name="mapMode">Indicates which CPU operations are allowed on the buffer memory.</param>
-		public BufferData Map(uint mapMode)
+		public BufferData Map(int mapMode)
 		{
 			Assert.NotDisposed(this);
 			Assert.That(!_isMapped, "Buffer is already mapped.");
@@ -82,16 +82,16 @@ namespace PointWars.Platform.Graphics
 		/// <param name="mapMode">Indicates which CPU operations are allowed on the buffer memory.</param>
 		/// <param name="offsetInBytes">A zero-based index denoting the first byte of the buffer that should be mapped.</param>
 		/// <param name="byteCount">The number of bytes that should be mapped.</param>
-		public BufferData MapRange(uint mapMode, uint offsetInBytes, uint byteCount)
+		public BufferData MapRange(int mapMode, int offsetInBytes, int byteCount)
 		{
 			Assert.NotDisposed(this);
 			Assert.That(offsetInBytes < SizeInBytes, "Invalid offset.");
-			Assert.InRange(byteCount, 1u, SizeInBytes - 1);
+			Assert.InRange(byteCount, 1, SizeInBytes - 1);
 			Assert.That(offsetInBytes + byteCount <= SizeInBytes, "Buffer overflow.");
 			Assert.That(!_isMapped, "Buffer is already mapped.");
 
 			glBindBuffer(_type, Handle);
-			var mappedBuffer = glMapBufferRange(_type, (void*)offsetInBytes, (int)byteCount, mapMode);
+			var mappedBuffer = glMapBufferRange(_type, (void*)offsetInBytes, byteCount, mapMode);
 			CheckErrors();
 
 			if (mappedBuffer == null)
@@ -120,12 +120,12 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Binds the constant buffer to the given slot without uploading any possible changes of the buffer to the GPU.
 		/// </summary>
-		public void Bind(uint slot)
+		public void Bind(int slot)
 		{
 			Assert.NotDisposed(this);
-			Assert.InRange(slot, 0u, GraphicsState.ConstantBufferSlotCount);
+			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
 
-			if (Change(State.ConstantBuffers, (int)slot, this))
+			if (Change(State.ConstantBuffers, slot, this))
 				glBindBufferBase(GL_UNIFORM_BUFFER, slot, Handle);
 
 			CheckErrors();
@@ -141,7 +141,7 @@ namespace PointWars.Platform.Graphics
 			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
 			glBindBuffer(_type, Handle);
-			glBufferSubData(_type, (void*)0, (int)SizeInBytes, data);
+			glBufferSubData(_type, (void*)0, SizeInBytes, data);
 			CheckErrors();
 		}
 

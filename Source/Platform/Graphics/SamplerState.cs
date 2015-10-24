@@ -33,15 +33,15 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		private SamplerState(uint filter, uint addressMode)
+		private SamplerState(int filter, int addressMode)
 		{
 			Handle = Allocate(glGenSamplers, nameof(SamplerState));
 
-			glSamplerParameteri(Handle, GL_TEXTURE_MIN_FILTER, (int)filter);
-			glSamplerParameteri(Handle, GL_TEXTURE_MAG_FILTER, (int)filter);
-			glSamplerParameteri(Handle, GL_TEXTURE_WRAP_S, (int)addressMode);
-			glSamplerParameteri(Handle, GL_TEXTURE_WRAP_T, (int)addressMode);
-			glSamplerParameteri(Handle, GL_TEXTURE_WRAP_R, (int)addressMode);
+			glSamplerParameteri(Handle, GL_TEXTURE_MIN_FILTER, filter);
+			glSamplerParameteri(Handle, GL_TEXTURE_MAG_FILTER, filter);
+			glSamplerParameteri(Handle, GL_TEXTURE_WRAP_S, addressMode);
+			glSamplerParameteri(Handle, GL_TEXTURE_WRAP_T, addressMode);
+			glSamplerParameteri(Handle, GL_TEXTURE_WRAP_R, addressMode);
 
 			CheckErrors();
 		}

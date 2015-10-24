@@ -34,7 +34,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   The maximum number of constant buffers that can be bound simultaneously.
 		/// </summary>
-		public const uint ConstantBufferSlotCount = 14;
+		public const int ConstantBufferSlotCount = 14;
 
 		/// <summary>
 		///   The constant buffers that are currently bound.

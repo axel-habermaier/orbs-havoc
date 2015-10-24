@@ -42,7 +42,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Gets the graphics object's underlying OpenGL handle.
 		/// </summary>
-		protected uint Handle { get; set; }
+		protected int Handle { get; set; }
 
 		/// <summary>
 		///   In debug builds, checks for OpenGL errors.
@@ -86,12 +86,12 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate the object.</param>
 		/// <param name="type">A user-friendly name of the type of the allocated object.</param>
-		protected static uint Allocate(Allocator allocator, string type)
+		protected static int Allocate(Allocator allocator, string type)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNullOrWhitespace(type, nameof(type));
 
-			uint handle = 0;
+			var handle = 0;
 			allocator(1, &handle);
 			CheckErrors();
 
@@ -106,7 +106,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="deallocator">The deallocator that should be used to allocate the object.</param>
 		/// <param name="obj">The object that should be deallocated.</param>
-		protected static void Deallocate(Deallocator deallocator, uint obj)
+		protected static void Deallocate(Deallocator deallocator, int obj)
 		{
 			Assert.ArgumentNotNull(deallocator, nameof(deallocator));
 
@@ -183,7 +183,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Casts the graphics object to its underlying OpenGL handle.
 		/// </summary>
-		public static implicit operator uint(GraphicsObject obj)
+		public static implicit operator int(GraphicsObject obj)
 		{
 			Assert.ArgumentNotNull(obj, nameof(obj));
 			return obj.Handle;
@@ -194,13 +194,13 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="count">The number of objects that should be allocated.</param>
 		/// <param name="objects">A pointer to the allocated objects.</param>
-		protected delegate void Allocator(int count, uint* objects);
+		protected delegate void Allocator(int count, int* objects);
 
 		/// <summary>
 		///   Represents a pointer to an OpenGL deallocation function.
 		/// </summary>
 		/// <param name="count">The number of objects that should be deallocated.</param>
 		/// <param name="objects">A pointer to the objects that should be deallocated.</param>
-		protected delegate void Deallocator(int count, uint* objects);
+		protected delegate void Deallocator(int count, int* objects);
 	}
 }

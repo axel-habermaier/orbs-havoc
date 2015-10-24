@@ -32,7 +32,7 @@ namespace PointWars.Platform
 	/// <summary>
 	///   Provides access to SDL2 functions, constants, and types.
 	/// </summary>
-	public unsafe static class SDL2
+	public static unsafe class SDL2
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		public delegate int SDL_EventFilter(void* userdata, void* sdlevent);
@@ -41,7 +41,7 @@ namespace PointWars.Platform
 
 		private const string LibraryName = "SDL2.dll";
 		public const int SDL_NUM_SCANCODES = 512;
-        public const uint SDL_INIT_TIMER = 0x00000001;
+		public const uint SDL_INIT_TIMER = 0x00000001;
 		public const uint SDL_INIT_AUDIO = 0x00000010;
 		public const uint SDL_INIT_VIDEO = 0x00000020;
 		public const uint SDL_INIT_JOYSTICK = 0x00000200;
@@ -419,7 +419,7 @@ namespace PointWars.Platform
 		public static extern int SDL_GetWindowDisplayMode(void* window, out SDL_DisplayMode mode);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern unsafe int SDL_GL_LoadLibrary(void* path);
+		public static extern int SDL_GL_LoadLibrary(void* path);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_GL_UnloadLibrary();
@@ -1139,7 +1139,7 @@ namespace PointWars.Platform
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public unsafe struct SDL_TextEditingEvent
+		public struct SDL_TextEditingEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1150,7 +1150,7 @@ namespace PointWars.Platform
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public unsafe struct SDL_TextInputEvent
+		public struct SDL_TextInputEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1481,7 +1481,7 @@ namespace PointWars.Platform
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public unsafe struct SDL_HapticDirection
+		public struct SDL_HapticDirection
 		{
 			public byte type;
 			public fixed int dir [3];
@@ -1523,7 +1523,7 @@ namespace PointWars.Platform
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public unsafe struct SDL_HapticCondition
+		public struct SDL_HapticCondition
 		{
 			public ushort type;
 			public SDL_HapticDirection direction;

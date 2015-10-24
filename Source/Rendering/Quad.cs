@@ -38,7 +38,7 @@ namespace PointWars.Rendering
 		///   Creates a dynamic vertex buffer that holds the given number of quads.
 		/// </summary>
 		/// <param name="quadCount">The number of quads that the dynamic vertex buffer should be able to hold.</param>
-		public static DynamicBuffer CreateDynamicVertexBuffer(uint quadCount)
+		public static DynamicBuffer CreateDynamicVertexBuffer(int quadCount)
 		{
 			return DynamicBuffer.Create<Vertex>(GL_ARRAY_BUFFER, quadCount * 4);
 		}

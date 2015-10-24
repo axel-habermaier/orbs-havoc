@@ -33,13 +33,13 @@ namespace PointWars.Platform.Graphics
 	/// </summary>
 	public sealed unsafe class GraphicsDevice : GraphicsObject
 	{
-		private const uint MaxFrameLag = 3;
-		private readonly uint[] _beginQueries = new uint[MaxFrameLag];
+		private const int MaxFrameLag = 3;
+		private readonly int[] _beginQueries = new int[MaxFrameLag];
 		private readonly void* _context;
 		private readonly void* _contextWindow;
-		private readonly uint[] _endQueries = new uint[MaxFrameLag];
+		private readonly int[] _endQueries = new int[MaxFrameLag];
 		private readonly void*[] _syncQueries = new void*[MaxFrameLag];
-		private uint _syncedIndex;
+		private int _syncedIndex;
 
 		/// <summary>
 		///   Initializes the graphics device.
@@ -125,7 +125,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		internal void SyncWithCpu()
 		{
-			uint isSynced;
+			int isSynced;
 			do
 			{
 				isSynced = glClientWaitSync(_syncQueries[_syncedIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 0);
@@ -138,7 +138,7 @@ namespace PointWars.Platform.Graphics
 		public void BeginFrame()
 		{
 			// Get the GPU frame time for the frame that we just synced
-			ulong begin, end;
+			long begin, end;
 			glGetQueryObjectui64v(_beginQueries[_syncedIndex], GL_QUERY_RESULT, &begin);
 			glGetQueryObjectui64v(_endQueries[_syncedIndex], GL_QUERY_RESULT, &end);
 			FrameTime = (end - begin) / 1000000.0f;

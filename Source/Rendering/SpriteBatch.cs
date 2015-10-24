@@ -145,31 +145,31 @@ namespace PointWars.Rendering
 		{
 			// Initialize the indices; this can be done once, so after the indices are copied to the index buffer,
 			// we never have to change the index buffer again
-			const uint numIndices = MaxQuads * 6;
-			var indices = new uint[numIndices];
+			const int numIndices = MaxQuads * 6;
+			var indices = new int[numIndices];
 			ushort index = 0;
 
 			for (var i = 0; i < numIndices; index += 4)
 			{
 				// Indices for the first triangle of the quad
 				indices[i++] = index;
-				indices[i++] = (uint)(index + 1);
-				indices[i++] = (uint)(index + 2);
+				indices[i++] = index + 1;
+				indices[i++] = index + 2;
 
 				// Indices for the second triangle of the quad
-				indices[i++] = (uint)(index + 3);
-				indices[i++] = (uint)(index + 1);
-				indices[i++] = (uint)(index + 2);
+				indices[i++] = index + 3;
+				indices[i++] = index + 1;
+				indices[i++] = index + 2;
 			}
 
 			// Initialize the graphics objects
 			fixed (void* data = indices)
 			{
 				_vertexBuffer = Quad.CreateDynamicVertexBuffer(MaxQuads);
-				_indexBuffer = new Buffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, numIndices * sizeof(uint), data);
+				_indexBuffer = new Buffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, numIndices * sizeof(int), data);
 				_vertexLayout = new VertexLayout(_vertexBuffer.Buffer, _indexBuffer);
-				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STREAM_DRAW, (uint)sizeof(Matrix), null);
-				_worldMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW, (uint)sizeof(Matrix), null);
+				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STREAM_DRAW, sizeof(Matrix), null);
+				_worldMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW, sizeof(Matrix), null);
 			}
 
 			using (var pointer = new BufferPointer(new byte[] { 255, 255, 255, 255 }))
