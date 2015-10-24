@@ -23,7 +23,7 @@
 namespace PointWars.Platform.Input
 {
 	using System;
-	using Math;
+	using System.Numerics;
 	using Memory;
 	using Utilities;
 	using static SDL2;

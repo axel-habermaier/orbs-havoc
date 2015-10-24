@@ -22,7 +22,7 @@
 
 namespace PointWars.Scripting.Validators
 {
-	using Math;
+	using System.Numerics;
 	using Platform;
 	using Utilities;
 

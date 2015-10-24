@@ -65,7 +65,8 @@ namespace PointWars.Platform.Input
 			{
 				if (value)
 					SDL_StartTextInput();
-				else SDL_StopTextInput();
+				else
+					SDL_StopTextInput();
 			}
 		}
 

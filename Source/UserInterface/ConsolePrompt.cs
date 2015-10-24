@@ -25,7 +25,6 @@ namespace PointWars.UserInterface
 	using System;
 	using System.Linq;
 	using System.Text;
-	using Math;
 	using Platform;
 	using Platform.Input;
 	using Platform.Logging;

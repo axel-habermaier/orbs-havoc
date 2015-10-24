@@ -22,8 +22,8 @@
 
 namespace PointWars.Platform.Graphics
 {
+	using System.Numerics;
 	using System.Runtime.InteropServices;
-	using Math;
 	using Rendering;
 
 	/// <summary>

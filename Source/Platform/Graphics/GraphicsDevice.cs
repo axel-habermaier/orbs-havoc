@@ -125,11 +125,9 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		internal void SyncWithCpu()
 		{
-			int isSynced;
-			do
-			{
+			var isSynced = GL_UNSIGNALED;
+			while (isSynced != GL_CONDITION_SATISFIED && isSynced != GL_ALREADY_SIGNALED)
 				isSynced = glClientWaitSync(_syncQueries[_syncedIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 0);
-			} while (isSynced != GL_CONDITION_SATISFIED && isSynced != GL_ALREADY_SIGNALED);
 		}
 
 		/// <summary>

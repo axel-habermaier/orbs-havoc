@@ -22,8 +22,8 @@
 
 namespace PointWars.Rendering
 {
+	using System.Numerics;
 	using System.Runtime.InteropServices;
-	using Math;
 	using Platform.Graphics;
 	using Utilities;
 	using static Platform.Graphics.OpenGL3;
@@ -109,12 +109,12 @@ namespace PointWars.Rendering
 		/// </summary>
 		/// <param name="quad">The quad that should be transformed.</param>
 		/// <param name="matrix">The transformation matrix that should be applied.</param>
-		public static void Transform(ref Quad quad, ref Matrix matrix)
+		public static void Transform(ref Quad quad, ref Matrix4x4 matrix)
 		{
-			quad.BottomLeft.Position = Vector2.Transform(ref quad.BottomLeft.Position, ref matrix);
-			quad.BottomRight.Position = Vector2.Transform(ref quad.BottomRight.Position, ref matrix);
-			quad.TopLeft.Position = Vector2.Transform(ref quad.TopLeft.Position, ref matrix);
-			quad.TopRight.Position = Vector2.Transform(ref quad.TopRight.Position, ref matrix);
+			quad.BottomLeft.Position = Vector2.Transform(quad.BottomLeft.Position, matrix);
+			quad.BottomRight.Position = Vector2.Transform(quad.BottomRight.Position, matrix);
+			quad.TopLeft.Position = Vector2.Transform(quad.TopLeft.Position, matrix);
+			quad.TopRight.Position = Vector2.Transform(quad.TopRight.Position, matrix);
 		}
 
 		/// <summary>
@@ -143,10 +143,10 @@ namespace PointWars.Rendering
 		/// </param>
 		public static Quad FromLine(Vector2 start, Vector2 end, Color color, float width, Rectangle? textureArea = null)
 		{
-			if (MathUtils.Equals(width, 0) || MathUtils.Equals((start - end).LengthSquared, 0))
+			if (MathUtils.Equals(width, 0) || MathUtils.Equals((start - end).LengthSquared(), 0))
 				return new Quad();
 
-			var length = (end - start).Length;
+			var length = (end - start).Length();
 			var rotation = MathUtils.ComputeAngle(start, end, new Vector2(1, 0));
 
 			return FromLine(start, length, rotation, color, width, textureArea);
@@ -177,8 +177,8 @@ namespace PointWars.Rendering
 			var quad = new Quad(rectangle, color, textureArea);
 
 			// Construct the transformation matrix and draw the transformed quad
-			var transformMatrix = Matrix.CreateRotationZ(-rotation) *
-								  Matrix.CreateTranslation(position.X, position.Y, 0);
+			var transformMatrix = Matrix4x4.CreateRotationZ(-rotation) *
+								  Matrix4x4.CreateTranslation(position.X, position.Y, 0);
 
 			Transform(ref quad, ref transformMatrix);
 			return quad;

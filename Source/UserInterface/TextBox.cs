@@ -23,7 +23,6 @@
 namespace PointWars.UserInterface
 {
 	using System;
-	using Math;
 	using Platform.Input;
 	using Platform.Memory;
 	using Rendering;
@@ -180,7 +179,7 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///     Gets the index of the beginning of the next word.
+		///   Gets the index of the beginning of the next word.
 		/// </summary>
 		private int GetBeginningOfNextWord()
 		{
@@ -200,7 +199,7 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///     Gets the index of the beginning of the previous word.
+		///   Gets the index of the beginning of the previous word.
 		/// </summary>
 		private int GetBeginningOfPreviousWord()
 		{

@@ -41,12 +41,6 @@ namespace PointWars.Platform
 #endif
 
 		/// <summary>
-		///   The type of the platform the application is running on.
-		/// </summary>
-		public static readonly PlatformType Platform =
-			Environment.OSVersion.Platform == PlatformID.Win32NT ? PlatformType.Windows : PlatformType.Linux;
-
-		/// <summary>
 		///   Indicates whether the application was built in debug mode.
 		/// </summary>
 		public const bool IsDebug =
@@ -55,5 +49,11 @@ namespace PointWars.Platform
 #else
 			false;
 #endif
+
+		/// <summary>
+		///   The type of the platform the application is running on.
+		/// </summary>
+		public static readonly PlatformType Platform =
+			Environment.OSVersion.Platform == PlatformID.Win32NT ? PlatformType.Windows : PlatformType.Linux;
 	}
 }

@@ -23,7 +23,7 @@
 namespace PointWars.UserInterface
 {
 	using System;
-	using Math;
+	using System.Numerics;
 	using Platform.Memory;
 	using Rendering;
 	using Utilities;

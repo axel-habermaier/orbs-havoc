@@ -24,7 +24,7 @@ namespace PointWars.UserInterface
 {
 	using System;
 	using System.Collections.Generic;
-	using Math;
+	using System.Numerics;
 	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
@@ -238,7 +238,7 @@ namespace PointWars.UserInterface
 				return;
 
 			// Draw the background
-			spriteBatch.WorldMatrix = Matrix.Identity;
+			spriteBatch.WorldMatrix = Matrix4x4.Identity;
 			spriteBatch.UseScissorTest = false;
 			spriteBatch.Layer = Int32.MaxValue - 1;
 
@@ -252,7 +252,7 @@ namespace PointWars.UserInterface
 			_content.Draw(spriteBatch);
 
 			spriteBatch.Layer = 0;
-			spriteBatch.WorldMatrix = Matrix.Identity;
+			spriteBatch.WorldMatrix = Matrix4x4.Identity;
 		}
 
 		/// <summary>

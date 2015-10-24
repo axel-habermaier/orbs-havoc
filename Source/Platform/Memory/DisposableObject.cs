@@ -25,7 +25,6 @@ namespace PointWars.Platform.Memory
 	using System;
 	using System.Diagnostics;
 	using JetBrains.Annotations;
-	using Logging;
 	using Utilities;
 
 	/// <summary>
@@ -84,9 +83,9 @@ namespace PointWars.Platform.Memory
 		protected abstract void OnDisposing();
 
 #if DEBUG
-		/// <summary>
-		///   A description for the instance in order to make debugging easier.
-		/// </summary>
+	/// <summary>
+	///   A description for the instance in order to make debugging easier.
+	/// </summary>
 		private string _description;
 
 		/// <summary>

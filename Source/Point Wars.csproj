@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\NetworkProtocol.cs" />
@@ -87,14 +88,9 @@
     <Compile Include="Platform\SDL2.cs" />
     <Compile Include="Platform\WindowMode.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Math\MathUtils.cs" />
-    <Compile Include="Math\Matrix.cs" />
-    <Compile Include="Math\Range.cs" />
-    <Compile Include="Math\Rectangle.cs" />
-    <Compile Include="Math\Size.cs" />
-    <Compile Include="Math\Vector2.cs" />
-    <Compile Include="Math\Vector3.cs" />
-    <Compile Include="Math\Vector4.cs" />
+    <Compile Include="Utilities\MathUtils.cs" />
+    <Compile Include="Utilities\Rectangle.cs" />
+    <Compile Include="Utilities\Size.cs" />
     <Compile Include="Platform\FileSystem.cs" />
     <Compile Include="Platform\FileSystemException.cs" />
     <Compile Include="Platform\Input\Key.cs" />

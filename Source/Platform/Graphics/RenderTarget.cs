@@ -23,7 +23,6 @@
 namespace PointWars.Platform.Graphics
 {
 	using Logging;
-	using Math;
 	using Rendering;
 	using Utilities;
 	using static OpenGL3;

@@ -23,11 +23,11 @@
 namespace PointWars.Platform
 {
 	using System;
+	using System.Numerics;
 	using System.Text;
 	using Graphics;
 	using Input;
 	using Logging;
-	using Math;
 	using Memory;
 	using Scripting;
 	using Utilities;
@@ -84,7 +84,7 @@ namespace PointWars.Platform
 					break;
 			}
 
-			_window = SDL_CreateWindow(title, position.IntegralX, position.IntegralY, size.IntegralWidth, size.IntegralHeight, flags);
+			_window = SDL_CreateWindow(title, (int)position.X, (int)position.Y, size.IntegralWidth, size.IntegralHeight, flags);
 			if (_window == null)
 				Log.Die("Failed to create window: {0}", SDL_GetError());
 

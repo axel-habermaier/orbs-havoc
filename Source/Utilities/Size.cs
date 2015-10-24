@@ -20,10 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Math
+namespace PointWars.Utilities
 {
 	using System;
 	using System.Globalization;
+	using System.Numerics;
 	using System.Runtime.InteropServices;
 
 	/// <summary>

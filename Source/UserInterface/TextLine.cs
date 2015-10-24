@@ -22,7 +22,8 @@
 
 namespace PointWars.UserInterface
 {
-	using Math;
+	using System.Numerics;
+	using Utilities;
 
 	/// <summary>
 	///   Represents a line of text.

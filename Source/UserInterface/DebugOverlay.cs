@@ -23,8 +23,8 @@
 namespace PointWars.UserInterface
 {
 	using System;
+	using System.Numerics;
 	using System.Text;
-	using Math;
 	using Platform;
 	using Platform.Memory;
 	using Rendering;
@@ -63,6 +63,11 @@ namespace PointWars.UserInterface
 		private readonly Label _platformInfo;
 
 		/// <summary>
+		///   The static debug overlay output.
+		/// </summary>
+		private readonly string _staticOutput;
+
+		/// <summary>
 		///   The total CPU frame time in milliseconds that is displayed by the debug overlay.
 		/// </summary>
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
@@ -86,11 +91,6 @@ namespace PointWars.UserInterface
 		///   The GPU frame time in milliseconds that is displayed by the debug overlay.
 		/// </summary>
 		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
-
-		/// <summary>
-		///   The static debug overlay output.
-		/// </summary>
-		private readonly string _staticOutput;
 
 		/// <summary>
 		///   The timer that is used to periodically update the statistics.
@@ -181,7 +181,7 @@ namespace PointWars.UserInterface
 		internal void Draw(SpriteBatch spriteBatch)
 		{
 			spriteBatch.Layer = Int32.MaxValue - 2;
-			spriteBatch.WorldMatrix = Matrix.Identity;
+			spriteBatch.WorldMatrix = Matrix4x4.Identity;
 
 			if (Cvars.ShowDebugOverlay)
 				_platformInfo.Draw(spriteBatch);

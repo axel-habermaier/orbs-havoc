@@ -24,8 +24,8 @@ namespace PointWars.Rendering
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Numerics;
 	using System.Runtime.InteropServices;
-	using Math;
 	using Platform.Graphics;
 	using Platform.Logging;
 	using Platform.Memory;
@@ -116,7 +116,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   The projection matrix used by the sprite batch.
 		/// </summary>
-		private Matrix _projectionMatrix;
+		private Matrix4x4 _projectionMatrix;
 
 		/// <summary>
 		///   The sampler state that should be used for drawing.
@@ -136,7 +136,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   The world matrix used by the sprite batch.
 		/// </summary>
-		private Matrix _worldMatrix = Matrix.Identity;
+		private Matrix4x4 _worldMatrix = Matrix4x4.Identity;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -168,8 +168,8 @@ namespace PointWars.Rendering
 				_vertexBuffer = Quad.CreateDynamicVertexBuffer(MaxQuads);
 				_indexBuffer = new Buffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, numIndices * sizeof(int), data);
 				_vertexLayout = new VertexLayout(_vertexBuffer.Buffer, _indexBuffer);
-				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STREAM_DRAW, sizeof(Matrix), null);
-				_worldMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW, sizeof(Matrix), null);
+				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STREAM_DRAW, sizeof(Matrix4x4), null);
+				_worldMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW, sizeof(Matrix4x4), null);
 			}
 
 			using (var pointer = new BufferPointer(new byte[] { 255, 255, 255, 255 }))
@@ -181,7 +181,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Gets or sets the world matrix used by the sprite batch.
 		/// </summary>
-		public unsafe Matrix WorldMatrix
+		public unsafe Matrix4x4 WorldMatrix
 		{
 			get { return _worldMatrix; }
 			set
@@ -196,7 +196,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Gets or sets the projection matrix used by the sprite batch.
 		/// </summary>
-		public unsafe Matrix ProjectionMatrix
+		public unsafe Matrix4x4 ProjectionMatrix
 		{
 			get { return _projectionMatrix; }
 			set
@@ -332,7 +332,7 @@ namespace PointWars.Rendering
 			var rectangle = new Rectangle(-size.Width / 2.0f, -size.Height / 2.0f, size.Width, size.Height);
 			var quad = new Quad(rectangle, color, textureArea);
 
-			var rotationMatrix = Matrix.CreateRotationZ(rotation);
+			var rotationMatrix = Matrix4x4.CreateRotationZ(rotation);
 			var unrotatedPosition = new Vector3(position.X, position.Y, 0);
 			var offset = new Vector2(unrotatedPosition.X, unrotatedPosition.Y);
 
@@ -371,10 +371,10 @@ namespace PointWars.Rendering
 			var shift = new Vector2(-size.Width, -size.Height) * 0.5f;
 			var quad = new Quad(new Rectangle(shift, size), color);
 
-			var rotation = Matrix.CreateRotationZ(angle);
+			var rotation = Matrix4x4.CreateRotationZ(angle);
 			Quad.Transform(ref quad, ref rotation);
 
-			var translation = Matrix.CreateTranslation(position.X, position.Y, 0);
+			var translation = Matrix4x4.CreateTranslation(position.X, position.Y, 0);
 			Quad.Transform(ref quad, ref translation);
 
 			Draw(ref quad, texture);
@@ -446,7 +446,7 @@ namespace PointWars.Rendering
 		/// <param name="width">The width of the line.</param>
 		public void DrawLine(Vector2 start, Vector2 end, Color color, float width)
 		{
-			if (MathUtils.Equals(width, 0) || MathUtils.Equals((start - end).LengthSquared, 0))
+			if (MathUtils.Equals(width, 0) || MathUtils.Equals((start - end).LengthSquared(), 0))
 				return;
 
 			var quad = Quad.FromLine(start, end, color, width);
@@ -760,7 +760,7 @@ namespace PointWars.Rendering
 			public bool UseScissorTest;
 			public int LastSection;
 			public int NumQuads;
-			public Matrix WorldMatrix;
+			public Matrix4x4 WorldMatrix;
 
 			/// <summary>
 			///   Used to compare the layers of two section lists.

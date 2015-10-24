@@ -22,7 +22,7 @@
 
 namespace PointWars.Platform.Graphics
 {
-	using Math;
+	using System.Numerics;
 	using Utilities;
 	using static OpenGL3;
 

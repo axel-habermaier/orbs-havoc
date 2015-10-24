@@ -22,7 +22,6 @@
 
 namespace PointWars.Scripting.Validators
 {
-	using Math;
 	using Platform;
 	using Utilities;
 

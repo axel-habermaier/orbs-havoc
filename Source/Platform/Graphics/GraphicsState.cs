@@ -23,7 +23,6 @@
 namespace PointWars.Platform.Graphics
 {
 	using System.Diagnostics;
-	using Math;
 	using Utilities;
 
 	/// <summary>

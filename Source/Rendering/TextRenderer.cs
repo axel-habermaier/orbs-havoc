@@ -22,7 +22,6 @@
 
 namespace PointWars.Rendering
 {
-	using Math;
 	using Platform.Graphics;
 	using Utilities;
 

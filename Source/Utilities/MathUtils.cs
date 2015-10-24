@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Math
+namespace PointWars.Utilities
 {
 	using System;
-	using Utilities;
+	using System.Numerics;
 
 	/// <summary>
 	///   Provides math utility functions.
@@ -127,7 +127,7 @@ namespace PointWars.Math
 			var startToEnd = end - start;
 
 			// The rotation is computed from the dot product of the two direction vectors.
-			var rotation = (float)Math.Acos(Vector2.Dot(startToEnd, relativeTo) / startToEnd.Length / relativeTo.Length);
+			var rotation = (float)Math.Acos(Vector2.Dot(startToEnd, relativeTo) / startToEnd.Length() / relativeTo.Length());
 
 			// Math.Acos can only return results in the first and second quadrant, so make sure we rotate correctly if the rotation
 			// actually extends into the third or fourth quadrant

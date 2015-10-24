@@ -22,8 +22,8 @@
 
 namespace PointWars
 {
+	using System.Numerics;
 	using System.Threading;
-	using Math;
 	using Platform;
 	using Platform.Graphics;
 	using Platform.Input;
@@ -225,7 +225,7 @@ namespace PointWars
 		/// </summary>
 		private void OnWindowResized(Size size)
 		{
-			SpriteBatch.ProjectionMatrix = Matrix.CreateOrthographic(0, size.Width, size.Height, 0, 0, 1);
+			SpriteBatch.ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(0, size.Width, size.Height, 0, 0, 1);
 			Console.ChangeSize(size);
 		}
 	}

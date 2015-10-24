@@ -22,11 +22,10 @@
 
 namespace PointWars.Platform.Graphics
 {
-	using Math;
 	using Memory;
 	using Utilities;
 	using static OpenGL3;
-	
+
 	/// <summary>
 	///   Represents a 2-dimensional texture.
 	/// </summary>
