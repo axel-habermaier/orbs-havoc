@@ -88,6 +88,11 @@ namespace PointWars.UserInterface
 		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
 
 		/// <summary>
+		///   The static debug overlay output.
+		/// </summary>
+		private readonly string _staticOutput;
+
+		/// <summary>
 		///   The timer that is used to periodically update the statistics.
 		/// </summary>
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
@@ -99,6 +104,11 @@ namespace PointWars.UserInterface
 		{
 			_platformInfo = new Label(Assets.DefaultFont) { LineSpacing = 2, Alignment = TextAlignment.Bottom };
 			_timer.Timeout += UpdateStatistics;
+
+			_builder.Append("Platform:    ").Append(PlatformInfo.Platform).Append(" ").Append(IntPtr.Size * 8).Append("bit\n");
+			_builder.Append("Debug Mode:  ").Append(PlatformInfo.IsDebug.ToString().ToLower()).Append("\n");
+			_staticOutput = _builder.ToString();
+			_builder.Clear();
 		}
 
 		/// <summary>
@@ -152,8 +162,7 @@ namespace PointWars.UserInterface
 			if (!Cvars.ShowDebugOverlay)
 				return;
 
-			_builder.Append("Platform:    ").Append(PlatformInfo.Platform).Append(" ").Append(IntPtr.Size * 8).Append("bit\n");
-			_builder.Append("Debug Mode:  ").Append(PlatformInfo.IsDebug.ToString().ToLower()).Append("\n");
+			_builder.Append(_staticOutput);
 			_builder.Append("VSync:       ").Append(Cvars.Vsync.ToString().ToLower()).Append("\n");
 			_builder.Append("# of GCs:    ").Append(_garbageCollections).Append("\n\n");
 			_builder.Append("GPU Time:    ").Append(_gpuFrameTime.Average.ToString("F2")).Append("ms\n");
