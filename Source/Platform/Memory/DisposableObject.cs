@@ -25,6 +25,7 @@ namespace PointWars.Platform.Memory
 	using System;
 	using System.Diagnostics;
 	using JetBrains.Annotations;
+	using Logging;
 	using Utilities;
 
 	/// <summary>

@@ -71,7 +71,7 @@ let hasAttribute (node : SyntaxNode) (attribute : string) =
 let getValidators (node : SyntaxNode) =
     node.DescendantNodes().OfType<AttributeSyntax>().Where(fun a -> 
         let name = a.Name.ToString() 
-        name <> "Cvar" && name <> "Command" && name <> "SystemOnly" && name <> "Persistent"
+        name <> "DefaultValue" && name <> "SystemOnly" && name <> "Persistent"
     ).ToArray()
 
 let private writeValidators (writer : CodeWriter) (node : SyntaxNode) =
@@ -90,6 +90,7 @@ let generateCvars () =
 
     writer.AppendLine("namespace PointWars.Scripting")
     writer.AppendBlockStatement (fun () ->
+        writer.AppendLine "#pragma warning disable 0105"
         writer.AppendLine "using System;"
         writer.AppendLine "using System.Diagnostics;"
         writer.AppendLine "using Utilities;"
@@ -138,7 +139,8 @@ let generateCvars () =
             writer.AppendBlockStatement (fun () ->
                 for cvar in cvars do
                     let runtimeName = getRuntimeName (cvar.Identifier.ToString())
-                    let defaultValue = cvar.DescendantNodes().OfType<AttributeSyntax>().First().ArgumentList.Arguments.First().ToString().Trim()
+                    let defaultValue = cvar.DescendantNodes().OfType<AttributeSyntax>().Where(fun a -> a.Name.ToString() = "DefaultValue").First()
+                    let defaultValue = defaultValue.ArgumentList.Arguments.First().ToString().Trim()
                     let defaultValue = 
                         if cvar.Type.ToString() <> "string" && defaultValue.StartsWith("\"") then 
                             defaultValue.Substring(1, defaultValue.Length - 2)
@@ -158,7 +160,7 @@ let generateCvars () =
         )
     )
 
-    File.WriteAllText("../../Source/Scripting/Cvars.gen.cs", writer.ToString())
+    File.WriteAllText("../../Source/Scripting/Cvars.g.cs", writer.ToString())
 
 let generateCommands () =
     let syntaxTree = SyntaxFactory.ParseSyntaxTree (File.ReadAllText "../../Source/Scripting/Commands.cs")
@@ -171,6 +173,7 @@ let generateCommands () =
 
     writer.AppendLine("namespace PointWars.Scripting")
     writer.AppendBlockStatement (fun () ->
+        writer.AppendLine "#pragma warning disable 0105"
         writer.AppendLine "using System;"
         writer.AppendLine "using System.Diagnostics;"
         writer.AppendLine "using Utilities;"
@@ -249,4 +252,4 @@ let generateCommands () =
         )
     )
 
-    File.WriteAllText("../../Source/Scripting/Commands.gen.cs", writer.ToString())
+    File.WriteAllText("../../Source/Scripting/Commands.g.cs", writer.ToString())

@@ -35,7 +35,6 @@ namespace PointWars.Scripting
 		/// <summary>
 		///   Immediately exits the application.
 		/// </summary>
-		[Command]
 		void Exit();
 
 		/// <summary>
@@ -43,14 +42,12 @@ namespace PointWars.Scripting
 		///   help text about the usage of cvars and commands in general.
 		/// </summary>
 		/// <param name="name">The name of the cvar or the command for which the description should be displayed.</param>
-		[Command]
 		void Help(string name = "");
 
 		/// <summary>
 		///   Resets the given cvar to its default value.
 		/// </summary>
 		/// <param name="cvar">The name of the cvar that should be reset to its default value.</param>
-		[Command]
 		void Reset([NotEmpty] string cvar);
 
 		/// <summary>
@@ -60,7 +57,6 @@ namespace PointWars.Scripting
 		///   The search pattern of the cvars that should be listed. For instance, "draw" lists all cvars that have the string
 		///   "draw" in their name. The pattern is case-insensitive; use "*" to list all cvars.
 		/// </param>
-		[Command]
 		void ListCvars([NotEmpty] string pattern = "*");
 
 		/// <summary>
@@ -70,34 +66,29 @@ namespace PointWars.Scripting
 		///   The search pattern of the commands that should be listed. For instance, "draw" lists all commands that have the
 		///   string "draw" in their name. The pattern is case-insensitive; use "*" to list all commands.
 		/// </param>
-		[Command]
 		void ListCommands([NotEmpty] string pattern = "*");
 
 		/// <summary>
 		///   Executes the given command.
 		/// </summary>
 		/// <param name="command">The command that should be executed, including its arguments.</param>
-		[Command]
 		void Execute([NotEmpty] string command);
 
 		/// <summary>
 		///   Processes the commands in the given file.
 		/// </summary>
 		/// <param name="fileName">The name of the file in the application's user directory that should be processed.</param>
-		[Command]
 		void Process([NotEmpty, FileName] string fileName);
 
 		/// <summary>
 		///   Saves the persistent cvars into the given file.
 		/// </summary>
 		/// <param name="fileName">The name of the file in the application's user directory the cvars should be written to.</param>
-		[Command]
 		void Persist([NotEmpty, FileName] string fileName);
 
 		/// <summary>
 		///   Prints information about the application.
 		/// </summary>
-		[Command]
 		void PrintAppInfo();
 
 		/// <summary>
@@ -106,46 +97,39 @@ namespace PointWars.Scripting
 		/// </summary>
 		/// <param name="trigger">The trigger that triggers the command.</param>
 		/// <param name="command">The command (including the arguments) that should be executed when the trigger is fired.</param>
-		[Command]
 		void Bind(InputTrigger trigger, [NotEmpty] string command);
 
 		/// <summary>
 		///   Unbinds all commands currently bound to a logical input.
 		/// </summary>
 		/// <param name="trigger">The trigger that should be unbound.</param>
-		[Command]
 		void Unbind(InputTrigger trigger);
 
 		/// <summary>
 		///   Removes all command bindings.
 		/// </summary>
-		[Command]
 		void UnbindAll();
 
 		/// <summary>
 		///   Lists all active bindings.
 		/// </summary>
-		[Command]
 		void ListBindings();
 
 		/// <summary>
 		///   Shows or hides the console.
 		/// </summary>
 		/// <param name="show">A value of 'true' indicates that the console should be shown.</param>
-		[Command]
 		void ShowConsole(bool show);
 
 		/// <summary>
 		///   Reloads all currently loaded assets.
 		/// </summary>
-		[Command]
 		void ReloadAssets();
 
 		/// <summary>
 		///   Toggles the value of a Boolean console variable.
 		/// </summary>
 		/// <param name="cvar">The name of console variable whose value should be toggled.</param>
-		[Command]
 		void Toggle([NotEmpty] string cvar);
 
 		/// <summary>
@@ -154,13 +138,11 @@ namespace PointWars.Scripting
 		/// </summary>
 		/// <param name="serverName">The name of the server that is displayed in the Join screen.</param>
 		/// <param name="port">The port the server should use to communicate with the clients.</param>
-		[Command]
 		void StartServer([NotEmpty] string serverName = "Server", ushort port = NetworkProtocol.DefaultServerPort);
 
 		/// <summary>
 		///   Shuts down the currently running server.
 		/// </summary>
-		[Command]
 		void StopServer();
 
 		/// <summary>
@@ -168,20 +150,17 @@ namespace PointWars.Scripting
 		/// </summary>
 		/// <param name="ipAddress">The IP address of the server.</param>
 		/// <param name="port">The port of the server.</param>
-		[Command]
 		void Connect(IPAddress ipAddress, ushort port = NetworkProtocol.DefaultServerPort);
 
 		/// <summary>
 		///   Disconnects from the current game session.
 		/// </summary>
-		[Command]
 		void Disconnect();
 
 		/// <summary>
 		///   Sends a chat message to all peers.
 		/// </summary>
 		/// <param name="message">The message that should be sent.</param>
-		[Command]
 		void Say([NotEmpty, MaximumLength(NetworkProtocol.ChatMessageLength, checkUtf8Length: true)] string message);
 	}
 }

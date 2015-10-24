@@ -25,6 +25,7 @@ namespace PointWars.Platform.Memory
 	using System;
 	using System.Diagnostics;
 	using JetBrains.Annotations;
+	using Logging;
 	using Utilities;
 
 	/// <summary>
@@ -131,9 +132,9 @@ namespace PointWars.Platform.Memory
 		}
 
 #if DEBUG
-	/// <summary>
-	///   A description for the instance in order to make debugging easier.
-	/// </summary>
+		/// <summary>
+		///   A description for the instance in order to make debugging easier.
+		/// </summary>
 		private string _description;
 
 		/// <summary>
@@ -141,9 +142,11 @@ namespace PointWars.Platform.Memory
 		/// </summary>
 		~PooledObject()
 		{
-			if (InUse)
-				Log.Error("A pooled object of type '{0}' was not returned to the pool.\nInstance description: '{1}'",
-					GetType().FullName, _description ?? "None");
+			if (!InUse)
+				return;
+
+			Log.Error("A pooled object of type '{0}' was not returned to the pool.\nInstance description: '{1}'",
+				GetType().FullName, _description ?? "None");
 		}
 #endif
 	}
