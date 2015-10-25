@@ -20,28 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-open System
-open System.Diagnostics
-open System.Globalization
-open System.Threading
-open Assets
-
-[<EntryPoint>]
-let main argv = 
-    Thread.CurrentThread.CurrentCulture <- CultureInfo.InvariantCulture;
-    Thread.CurrentThread.CurrentUICulture <- CultureInfo.InvariantCulture;
-
-    let stopwatch = Stopwatch ()
-    stopwatch.Start ()
-
-    printfn "Generating code..."
-
-    RegistryGenerator.generateCvars ()
-    RegistryGenerator.generateCommands ()
-    GLGenerator.generateIL ()
-
-    printfn "Generating asset bundle..."
-
-    Console.WriteLine("Completed ({0:F2}s).", (float)stopwatch.ElapsedMilliseconds / 1000.0);
-
-    0
+namespace AssetsCompiler
+{
+	public interface IExecutable
+	{
+		void Execute();
+	}
+}

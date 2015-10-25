@@ -23,35 +23,74 @@
 namespace AssetsCompiler
 {
 	using System;
-	using System.IO;
-	 
+	using System.Globalization;
+	using CommandLine;
+	using CommandLine.Text;
+	using JetBrains.Annotations;
+
 	public class Program
 	{
 		public static int Main(string[] args)
 		{
-			if (args.Length > 0 && args[0] == "shaders")
-			{ 
-				Console.WriteLine("COMPILING SHADERS");
-				for (var i = 1; i < args.Length; ++i)
-				{
-					Console.WriteLine("arg {0}: {1}", i, args[i]);
-
-					Directory.CreateDirectory("obj/Shaders");
-					File.WriteAllText(Path.Combine("obj/Shaders", Path.GetFileName(args[i])), "bla");
-				}
-			}
-			else
+			try
 			{
-				Console.WriteLine("COMPILING BUNDLE");
-				for (var i = 0; i < args.Length; ++i)
+				CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+				CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+		
+				//var index = 0;
+				//foreach (var arg in args)
+				//	Log.Info("{0}: {1}", index++, arg);
+
+				IExecutable executable = null;
+				var options = new Options();
+
+				if (!Parser.Default.ParseArguments(args, options, (verb, parsedCommand) => executable = (IExecutable)parsedCommand))
+					return -1;
+
+				executable.Execute();
+				return 0;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("A fatal compilation error occurred:");
+				Console.WriteLine("{0}", e.Message);
+				Console.WriteLine("{0}", e.StackTrace);
+
+				if (e.InnerException != null)
 				{
-					Console.WriteLine("arg {0}: {1}", i, args[i]);
+					Console.WriteLine("Inner exception:");
+					Console.WriteLine("{0}", e.InnerException.Message);
+					Console.WriteLine("{0}", e.InnerException.StackTrace);
 				}
 
-				File.WriteAllText("AssetBundle.pak", "bundl");
+				return -1;
+			}
+		}
+
+		[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+		private class Options
+		{
+			public Options()
+			{
 			}
 
-			return 0;
+			[VerbOption("shader", HelpText = "Compiles a shader.")]
+			public ShaderCompiler ShaderCompiler { get; set; }
+
+			[VerbOption("texture", HelpText = "Compiles a texture.")]
+			public TextureCompiler TextureCompiler { get; set; }
+
+			[VerbOption("font", HelpText = "Compiles a font.")]
+			public FontCompiler FontCompiler { get; set; }
+
+			[VerbOption("bundle", HelpText = "Compiles a bundle.")]
+			public BundleCompiler BundleCompiler { get; set; }
+
+			[HelpVerbOption]
+			public string GetUsage(string verb)
+			{
+				return HelpText.AutoBuild(this, verb);
+			}
 		}
 	}
 }

@@ -2,24 +2,30 @@
 
 	<ItemGroup>
 		<AvailableItemName Include="Shader" />  
+		<AvailableItemName Include="Font" /> 
 	</ItemGroup>
 	
 	<PropertyGroup>
-		<ShaderOutputs>@(Shader->'$(TargetDir)obj\Shaders\%(Filename)%(Extension)')</ShaderOutputs>
-		<AssetBundle>$(TargetDir)AssetBundle.pak</AssetBundle>
+		<AssetBundle>$(TargetDir)Assets.pak</AssetBundle>
 	</PropertyGroup>
 	
 	<ItemGroup> 
-		<CompiledShaders Include="@(Shader->'$(TargetDir)obj\Shaders\%(Filename)%(Extension)')" />
+		<CompiledShaders Include="@(Shader->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledFonts Include="@(Font->'$(TargetDir)obj\%(Identity)')" />
 	</ItemGroup>
 	
-	<Target Name="CompileShaders" BeforeTargets="BeforeBuild" Inputs="@(Shader);$(OutDir)pwc.exe" Outputs="$(ShaderOutputs)">
-		<Exec Command="$(OutDir)pwc.exe shaders &quot;%(Shader.FullPath)&quot;" WorkingDirectory="$(OutDir)" />
-		<Message Importance="High" Text="Compiled shaders '%(Shader.Identity)'." />
+	<Target Name="CompileShaders" BeforeTargets="BeforeBuild" Inputs="@(Shader);$(OutDir)pwc.exe" Outputs="@(Shader->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe shader --input &quot;%(Shader.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Shader.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled shader '%(Shader.Identity)'." />
 	</Target>
 	
-	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
-		<Exec Command="$(OutDir)pwc.exe @(CompiledShaders->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory="$(OutDir)" />
+	<Target Name="CompileFonts" BeforeTargets="BeforeBuild" Inputs="@(Font);$(OutDir)pwc.exe" Outputs="@(Font->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe font --input &quot;%(Font.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Font.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled font '%(Font.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);@(CompiledFonts);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
+		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;&quot; --output &quot;$(AssetBundle)&quot;" WorkingDirectory="$(OutDir)" />
 		<Message Importance="High" Text="Compiled asset bundle." />
 	</Target>
 	
