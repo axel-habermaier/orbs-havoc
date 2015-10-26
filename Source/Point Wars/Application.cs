@@ -99,14 +99,14 @@ namespace PointWars
 			Window.Resized += OnWindowResized;
 			Commands.OnExit += Exit;
 
-			Commands.Bind(Key.F1.WentDown(), "start_server TestServer");
-			Commands.Bind(Key.F2.WentDown(), "stop_server");
-			Commands.Bind(Key.F3.WentDown(), "connect ::1");
-			Commands.Bind(Key.F4.WentDown(), "disconnect");
-			Commands.Bind(Key.F5.WentDown(), "reload_assets");
+			Commands.Bind(Key.F1, "start_server TestServer");
+			Commands.Bind(Key.F2, "stop_server");
+			Commands.Bind(Key.F3, "connect ::1");
+			Commands.Bind(Key.F4, "disconnect");
+			Commands.Bind(Key.F5, "reload_assets");
 
-			Commands.Bind(Key.Escape.WentDown() & Key.LeftShift.IsPressed(), "exit");
-			Commands.Bind(Key.F10.WentDown(), "toggle show_debug_overlay");
+			Commands.Bind(new ConfigurableInput(Key.Escape, KeyModifiers.LeftShift), "exit");
+			Commands.Bind(Key.F10, "toggle show_debug_overlay");
 
 			OnWindowResized(Window.Size);
 			InputDevice.ActivateLayer(InputLayer.Game);

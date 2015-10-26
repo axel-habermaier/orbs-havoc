@@ -44,15 +44,17 @@ namespace PointWars.Scripting
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="trigger">The input that triggers the binding.</param>
 		/// <param name="input">The input that should trigger the execution of the instruction.</param>
 		/// <param name="command">The command string.</param>
 		/// <param name="instruction">The instruction that should be executed when the input is triggered.</param>
-		public Binding(LogicalInput input, string command, Instruction instruction)
+		public Binding(ConfigurableInput trigger, LogicalInput input, string command, Instruction instruction)
 			: this()
 		{
 			Assert.ArgumentNotNull(input, nameof(input));
 			Assert.ArgumentNotNullOrWhitespace(command, nameof(command));
 
+			Trigger = trigger;
 			Input = input;
 			Command = command;
 			_instruction = instruction;
@@ -61,20 +63,27 @@ namespace PointWars.Scripting
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="trigger">The input that triggers the binding.</param>
 		/// <param name="input">The input that should trigger the execution of the instruction.</param>
 		/// <param name="command">The command string.</param>
 		/// <param name="errorMessage">The error message that was generated while parsing the command.</param>
-		public Binding(LogicalInput input, string command, string errorMessage)
+		public Binding(ConfigurableInput trigger, LogicalInput input, string command, string errorMessage)
 			: this()
 		{
 			Assert.ArgumentNotNull(input, nameof(input));
 			Assert.ArgumentNotNullOrWhitespace(command, nameof(command));
 			Assert.ArgumentNotNullOrWhitespace(errorMessage, nameof(errorMessage));
 
+			Trigger = trigger;
 			Input = input;
 			Command = command;
 			_errorMessage = errorMessage;
 		}
+
+		/// <summary>
+		///   Gets the input that triggers the binding.
+		/// </summary>
+		public ConfigurableInput Trigger { get; }
 
 		/// <summary>
 		///   The original command string.

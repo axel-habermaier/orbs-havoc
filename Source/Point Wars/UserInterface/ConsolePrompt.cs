@@ -103,7 +103,7 @@ namespace PointWars.UserInterface
 			Assert.ArgumentNotNull(font, nameof(font));
 
 			_history = new string[MaxHistory];
-			_input = new TextBox(font) { Color = color };
+			_input = new TextBox(font, Console.MaxLength) { Color = color };
 			_prompt = new Label(font, Prompt) { Color = color };
 
 			try
@@ -173,9 +173,6 @@ namespace PointWars.UserInterface
 		/// <param name="c">The character that should be inserted.</param>
 		public void InsertCharacter(char c)
 		{
-			if (_input.Text.Length + 1 > Console.MaxLength)
-				return;
-
 			_input.InsertCharacter(c);
 			_autoCompletionList = null;
 		}

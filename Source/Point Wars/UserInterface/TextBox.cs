@@ -24,9 +24,11 @@ namespace PointWars.UserInterface
 {
 	using System;
 	using Platform.Input;
+	using Platform.Logging;
 	using Platform.Memory;
 	using Rendering;
 	using Utilities;
+	using static Platform.SDL2;
 
 	/// <summary>
 	///   Control for text input.
@@ -44,6 +46,11 @@ namespace PointWars.UserInterface
 		private readonly TextLayout _layout;
 
 		/// <summary>
+		///   The maximum allowed length of the input.
+		/// </summary>
+		private int _maxLength;
+
+		/// <summary>
 		///   The renderer for the text box' text.
 		/// </summary>
 		private TextRenderer _textRenderer;
@@ -52,10 +59,12 @@ namespace PointWars.UserInterface
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="font">The font that is used to draw the text.</param>
-		public TextBox(Font font)
+		/// <param name="maxLength">The maximum allowed length of the input.</param>
+		public TextBox(Font font, int maxLength)
 		{
+			_maxLength = maxLength;
 			_layout = new TextLayout(font, String.Empty);
-			_layout.LayoutChanged += text=> _textRenderer.RebuildCache(Font, text, _layout.LayoutData);
+			_layout.LayoutChanged += text => _textRenderer.RebuildCache(Font, text, _layout.LayoutData);
 			_caret.TextChanged += text => _layout.Text = text;
 
 			Text = String.Empty;
@@ -135,13 +144,15 @@ namespace PointWars.UserInterface
 		public void InsertCharacter(char c)
 		{
 			Assert.NotDisposed(this);
-			_caret.InsertCharacter(c);
+
+			if (Text.Length < _maxLength)
+				_caret.InsertCharacter(c);
 		}
 
 		/// <summary>
 		///   Injects a key press event.
 		/// </summary>
-		public void InjectKeyPress(Key key, KeyModifiers modifiers)
+		public unsafe void InjectKeyPress(Key key, KeyModifiers modifiers)
 		{
 			Assert.NotDisposed(this);
 
@@ -171,6 +182,17 @@ namespace PointWars.UserInterface
 				case Key.Delete:
 				case Key.NumpadDecimal:
 					_caret.RemoveCurrentCharacter();
+					break;
+				case Key.V:
+					if ((modifiers & KeyModifiers.Control) != 0 && SDL_HasClipboardText() != 0)
+					{
+						var text = SDL_GetClipboardText();
+						if (text == null)
+							Log.Error("Failed to retrieve clipboard text from OS: {0}", SDL_GetError());
+
+						foreach (var c in new string(text))
+							InsertCharacter(c);
+					}
 					break;
 				default:
 					return;

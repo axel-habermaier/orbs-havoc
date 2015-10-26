@@ -103,7 +103,7 @@ namespace PointWars.Scripting
 			{
 				builder.AppendFormat("'\\lightgrey{0}\\default' on ", group.Command);
 				builder.Append(String.Join(", ",
-					group.Bindings.Select(binding => $"\\lightgrey{TypeRegistry.ToString(binding.Input.Trigger)}\\default")));
+					group.Bindings.Select(binding => $"\\lightgrey{TypeRegistry.ToString(binding.Trigger)}\\default")));
 				builder.Append("\n");
 			}
 
@@ -129,12 +129,12 @@ namespace PointWars.Scripting
 		///   Invoked when the unbind command is used.
 		/// </summary>
 		/// <param name="trigger">The trigger that should be unbound.</param>
-		private void OnUnbind(InputTrigger trigger)
+		private void OnUnbind(ConfigurableInput trigger)
 		{
 			var removed = 0;
 			for (var i = 0; i < _bindings.Count; ++i)
 			{
-				if (!_bindings[i].Input.Trigger.Equals(trigger))
+				if (_bindings[i].Trigger != trigger)
 					continue;
 
 				++removed;
@@ -147,9 +147,8 @@ namespace PointWars.Scripting
 			else if (removed != 0)
 				Log.Info("{0} command bindings for '{1}' have been removed.", removed, TypeRegistry.ToString(trigger));
 			else
-				Log.Error("No binding could be found with trigger '{0}'. Note that the order of operands is important for combined triggers " +
-						  "(i.e., [Key(A,Pressed)|Key(B,Pressed)] is considered to be different from [Key(B,Pressed)|Key(A,Pressed)]). " +
-						  "Use the 'list_bindings' command to view all active bindings.", TypeRegistry.ToString(trigger));
+				Log.Error("No binding could be found with trigger '{0}'. Use the 'list_bindings' command to view all active bindings.",
+					TypeRegistry.ToString(trigger));
 		}
 
 		/// <summary>
@@ -157,18 +156,18 @@ namespace PointWars.Scripting
 		/// </summary>
 		/// <param name="trigger">The trigger that should be bound.</param>
 		/// <param name="command">The instruction that should be bound.</param>
-		private void OnBind(InputTrigger trigger, string command)
+		private void OnBind(ConfigurableInput trigger, string command)
 		{
-			var input = new LogicalInput(trigger, InputLayer.All);
+			var input = new LogicalInput(trigger.ToInputTrigger(KeyTriggerType.WentDown, MouseTriggerType.WentDown), InputLayer.All);
 			_device.Add(input);
 
 			try
 			{
-				_bindings.Add(new Binding(input, command, Parser.ParseInstruction(new InputStream(command))));
+				_bindings.Add(new Binding(trigger, input, command, Parser.ParseInstruction(new InputStream(command))));
 			}
 			catch (ParseException e)
 			{
-				_bindings.Add(new Binding(input, command, e.Message));
+				_bindings.Add(new Binding(trigger, input, command, e.Message));
 			}
 		}
 	}

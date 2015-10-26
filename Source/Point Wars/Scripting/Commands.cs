@@ -95,15 +95,15 @@ namespace PointWars.Scripting
 		///   Binds a command invocation to a logical input. Whenever the input is triggered, the command is invoked with the
 		///   specified arguments.
 		/// </summary>
-		/// <param name="trigger">The trigger that triggers the command.</param>
+		/// <param name="trigger">The input that triggers the command.</param>
 		/// <param name="command">The command (including the arguments) that should be executed when the trigger is fired.</param>
-		void Bind(InputTrigger trigger, [NotEmpty] string command);
+		void Bind(ConfigurableInput trigger, [NotEmpty] string command);
 
 		/// <summary>
 		///   Unbinds all commands currently bound to a logical input.
 		/// </summary>
-		/// <param name="trigger">The trigger that should be unbound.</param>
-		void Unbind(InputTrigger trigger);
+		/// <param name="trigger">The input that should be unbound.</param>
+		void Unbind(ConfigurableInput trigger);
 
 		/// <summary>
 		///   Removes all command bindings.

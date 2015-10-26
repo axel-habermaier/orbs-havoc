@@ -22,40 +22,13 @@
 
 namespace PointWars.Platform.Input
 {
-	using System;
 	using Utilities;
 
 	/// <summary>
 	///   Represents an input trigger that is triggered if a logical input device is in a certain state.
 	/// </summary>
-	public abstract class InputTrigger : IEquatable<InputTrigger>
+	public abstract class InputTrigger
 	{
-		/// <summary>
-		///   Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		public abstract bool Equals(InputTrigger other);
-
-		/// <summary>
-		///   Determines whether the specified object is equal to the current object.
-		/// </summary>
-		/// <param name="obj">The object to compare with the current object.</param>
-		public override bool Equals(object obj)
-		{
-			var trigger = obj as InputTrigger;
-			if (trigger == null)
-				return false;
-
-			return Equals(trigger);
-		}
-
-		/// <summary>
-		///   Serves as a hash function for a particular type.
-		/// </summary>
-		public override int GetHashCode()
-		{
-			throw new NotSupportedException();
-		}
-
 		/// <summary>
 		///   Evaluates the trigger, returning true to indicate that the trigger has fired.
 		/// </summary>

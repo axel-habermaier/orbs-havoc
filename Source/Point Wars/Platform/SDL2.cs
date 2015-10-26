@@ -620,8 +620,7 @@ namespace PointWars.Platform
 		public static extern int SDL_HasClipboardText();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GetClipboardText();
+		public static extern sbyte* SDL_GetClipboardText();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_SetClipboardText(

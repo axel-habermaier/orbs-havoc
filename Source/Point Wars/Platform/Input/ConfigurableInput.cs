@@ -22,13 +22,14 @@
 
 namespace PointWars.Platform.Input
 {
+	using System;
 	using System.Text;
 	using Utilities;
 
 	/// <summary>
 	///   Represents a configurable input.
 	/// </summary>
-	public struct ConfigurableInput
+	public struct ConfigurableInput : IEquatable<ConfigurableInput>
 	{
 		/// <summary>
 		///   Initializes a new instance.
@@ -43,7 +44,7 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
-		///   Initializes a new instance of the <see cref="T:System.Object" /> class.
+		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="mouseButton">The mouse button that triggers the input.</param>
 		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
@@ -57,26 +58,17 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Gets the key that triggers the input, or null if a mouse button triggers the input.
 		/// </summary>
-		public Key? Key { get; private set; }
+		public Key? Key { get; }
 
 		/// <summary>
 		///   Gets the mouse button that triggers the input, or null if a key triggers the input.
 		/// </summary>
-		public MouseButton? MouseButton { get; private set; }
+		public MouseButton? MouseButton { get; }
 
 		/// <summary>
 		///   Gets the modifier keys that must be pressed for the input to trigger.
 		/// </summary>
-		public KeyModifiers Modifiers { get; private set; }
-
-		/// <summary>
-		///   Creates a copy of the current instance with the given modifiers.
-		/// </summary>
-		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
-		public ConfigurableInput WithModifiers(KeyModifiers modifiers)
-		{
-			return new ConfigurableInput { Key = Key, MouseButton = MouseButton, Modifiers = modifiers };
-		}
+		public KeyModifiers Modifiers { get; }
 
 		/// <summary>
 		///   Implicitly creates a configurable input for the given key.
@@ -99,6 +91,84 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
+		///   Creates the an input trigger from the configurable input.
+		/// </summary>
+		/// <param name="keyTriggerType">Determines the type of a key input trigger.</param>
+		/// <param name="mouseTriggerType">Determines the type of a mouse input trigger.</param>
+		public InputTrigger ToInputTrigger(KeyTriggerType keyTriggerType, MouseTriggerType mouseTriggerType)
+		{
+			Assert.That(Key != null || MouseButton != null, "Invalid configurable input: Neither key nor mouse button required.");
+			Assert.That(Key == null || MouseButton == null, "Invalid configurable input: Either key or mouse button must be null.");
+
+			InputTrigger trigger = null;
+
+			if (Key != null)
+				trigger = new KeyTrigger(keyTriggerType, Key.Value);
+
+			if (MouseButton != null)
+				trigger = new MouseTrigger(mouseTriggerType, MouseButton.Value);
+
+			if ((Modifiers & KeyModifiers.Alt) != 0)
+				trigger &= Input.Key.LeftAlt.IsPressed() | Input.Key.RightAlt.IsPressed();
+
+			if ((Modifiers & KeyModifiers.Shift) != 0)
+				trigger &= Input.Key.LeftShift.IsPressed() | Input.Key.RightShift.IsPressed();
+
+			if ((Modifiers & KeyModifiers.Control) != 0)
+				trigger &= Input.Key.LeftControl.IsPressed() | Input.Key.RightControl.IsPressed();
+
+			return trigger;
+		}
+
+		/// <summary>
+		///   Checks if the inputs are equal.
+		/// </summary>
+		public bool Equals(ConfigurableInput other)
+		{
+			return Key == other.Key && MouseButton == other.MouseButton && Modifiers == other.Modifiers;
+		}
+
+		/// <summary>
+		///   Checks if the inputs are equal.
+		/// </summary>
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+				return false;
+			return obj is ConfigurableInput && Equals((ConfigurableInput)obj);
+		}
+
+		/// <summary>
+		///   Gets a hash code.
+		/// </summary>
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = Key.GetHashCode();
+				hashCode = (hashCode * 397) ^ MouseButton.GetHashCode();
+				hashCode = (hashCode * 397) ^ (int)Modifiers;
+				return hashCode;
+			}
+		}
+
+		/// <summary>
+		///   Checks if the inputs are equal.
+		/// </summary>
+		public static bool operator ==(ConfigurableInput left, ConfigurableInput right)
+		{
+			return left.Equals(right);
+		}
+
+		/// <summary>
+		///   Checks if the inputs are not equal.
+		/// </summary>
+		public static bool operator !=(ConfigurableInput left, ConfigurableInput right)
+		{
+			return !left.Equals(right);
+		}
+
+		/// <summary>
 		///   Returns a string representation of the configurable input.
 		/// </summary>
 		public override string ToString()
@@ -112,13 +182,13 @@ namespace PointWars.Platform.Input
 			if (MouseButton != null)
 				builder.Append("Mouse." + MouseButton.Value);
 
-			if ((Modifiers & KeyModifiers.Alt) == KeyModifiers.Alt)
+			if ((Modifiers & KeyModifiers.Alt) != 0)
 				builder.Append("+Alt");
 
-			if ((Modifiers & KeyModifiers.Shift) == KeyModifiers.Shift)
+			if ((Modifiers & KeyModifiers.Shift) != 0)
 				builder.Append("+Shift");
 
-			if ((Modifiers & KeyModifiers.Control) == KeyModifiers.Control)
+			if ((Modifiers & KeyModifiers.Control) != 0)
 				builder.Append("+Control");
 
 			builder.Append("]");

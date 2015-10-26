@@ -72,32 +72,7 @@ namespace PointWars.Platform.Input
 			_keyTriggerType = keyTriggerType;
 			_mouseTriggerType = mouseTriggerType;
 
-			CreateInputTrigger();
-		}
-
-		/// <summary>
-		///   Creates the actual input trigger from the configurable input.
-		/// </summary>
-		private void CreateInputTrigger()
-		{
-			var input = _configurableInput.Value;
-			Assert.That(input.Key != null || input.MouseButton != null, "Invalid configurable input: Neither key nor mouse button required.");
-			Assert.That(input.Key == null || input.MouseButton == null, "Invalid configurable input: Either key or mouse button must be null.");
-
-			if (input.Key != null)
-				_inputTrigger = new KeyTrigger(_keyTriggerType, input.Key.Value);
-
-			if (input.MouseButton != null)
-				_inputTrigger = new MouseTrigger(_mouseTriggerType, input.MouseButton.Value);
-
-			if ((input.Modifiers & KeyModifiers.Alt) == KeyModifiers.Alt)
-				_inputTrigger &= Key.LeftAlt.IsPressed() | Key.RightAlt.IsPressed();
-
-			if ((input.Modifiers & KeyModifiers.Shift) == KeyModifiers.Shift)
-				_inputTrigger &= Key.LeftShift.IsPressed() | Key.RightShift.IsPressed();
-
-			if ((input.Modifiers & KeyModifiers.Control) == KeyModifiers.Control)
-				_inputTrigger &= Key.LeftControl.IsPressed() | Key.RightControl.IsPressed();
+			_inputTrigger = configurableInput.Value.ToInputTrigger(keyTriggerType, mouseTriggerType);
 		}
 
 		/// <summary>
@@ -126,22 +101,7 @@ namespace PointWars.Platform.Input
 		/// </summary>
 		private void OnConfigurableInputChanged()
 		{
-			CreateInputTrigger();
-		}
-
-		/// <summary>
-		///   Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <returns>
-		///   true if the current object is equal to other; otherwise, false.
-		/// </returns>
-		public override bool Equals(InputTrigger other)
-		{
-			var trigger = other as ConfigurableTrigger;
-			if (trigger == null)
-				return false;
-
-			return _configurableInput == trigger._configurableInput;
+			_inputTrigger = _configurableInput.Value.ToInputTrigger(_keyTriggerType, _mouseTriggerType);
 		}
 
 		/// <summary>

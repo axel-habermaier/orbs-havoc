@@ -55,21 +55,6 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
-		///   Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <returns>
-		///   true if the current object is equal to other; otherwise, false.
-		/// </returns>
-		public override bool Equals(InputTrigger other)
-		{
-			var trigger = other as KeyTrigger;
-			if (trigger == null)
-				return false;
-
-			return _key == trigger._key && _triggerType == trigger._triggerType;
-		}
-
-		/// <summary>
 		///   Evaluates the trigger, returning true to indicate that the trigger has fired.
 		/// </summary>
 		/// <param name="device">The logical input device that should be used to evaluate the trigger.</param>

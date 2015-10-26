@@ -40,7 +40,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   The maximum length of all console input or output.
 		/// </summary>
-		public const int MaxLength = 4096;
+		public const int MaxLength = 2048;
 
 		/// <summary>
 		///   The display color of error messages.

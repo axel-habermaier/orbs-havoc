@@ -66,19 +66,6 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
-		///   Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		public override bool Equals(InputTrigger other)
-		{
-			var trigger = other as ScanCodeKeyTrigger;
-			if (trigger == null)
-				return false;
-
-			return _scanCode == trigger._scanCode && _triggerType == trigger._triggerType && _device == trigger._device &&
-				   _state.Equals(trigger._state);
-		}
-
-		/// <summary>
 		///   Evaluates the trigger, returning true to indicate that the trigger has fired.
 		/// </summary>
 		/// <param name="device">The logical input device that should be used to evaluate the trigger.</param>
