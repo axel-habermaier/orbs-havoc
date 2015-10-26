@@ -115,7 +115,7 @@ namespace PointWars.Scripting
 		{
 			var builder = new StringBuilder();
 
-			foreach (var cvar in CvarRegistry.All.Where(cvar => cvar.Persistent))
+			foreach (var cvar in Cvars.All.Where(cvar => cvar.Persistent))
 			{
 				var value = TypeRegistry.ToString(cvar.Value);
 

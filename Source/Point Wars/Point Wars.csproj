@@ -136,7 +136,9 @@
     <Compile Include="Scripting\BindingCollection.cs" />
     <Compile Include="Scripting\CommandLine.cs" />
     <Compile Include="Scripting\CommandParameter.cs" />
-    <Compile Include="Scripting\CommandRegistry.cs" />
+    <Compile Include="Scripting\Commands.Registry.cs">
+      <DependentUpon>Commands.cs</DependentUpon>
+    </Compile>
     <Compile Include="Scripting\Commands.g.cs">
       <DependentUpon>Commands.cs</DependentUpon>
     </Compile>
@@ -146,15 +148,21 @@
     <Compile Include="Scripting\Command`3.cs" />
     <Compile Include="Scripting\ConfigurationFile.cs" />
     <Compile Include="Scripting\Cvar.cs" />
-    <Compile Include="Scripting\CvarRegistry.cs" />
+    <Compile Include="Scripting\Cvars.Registry.cs">
+      <DependentUpon>Cvars.cs</DependentUpon>
+    </Compile>
     <Compile Include="Scripting\Cvars.g.cs">
       <DependentUpon>Cvars.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\Help.cs" />
     <Compile Include="Scripting\ICommand.cs" />
-    <Compile Include="Scripting\Commands.cs" />
+    <Compile Include="Scripting\Commands.cs">
+      <Registry>true</Registry>
+    </Compile>
     <Compile Include="Scripting\ICvar.cs" />
-    <Compile Include="Scripting\Cvars.cs" />
+    <Compile Include="Scripting\Cvars.cs">
+      <Registry>true</Registry>
+    </Compile>
     <Compile Include="Scripting\Parsing\InputStream.cs" />
     <Compile Include="Scripting\Instruction.cs" />
     <Compile Include="Scripting\Interpreter.cs" />
@@ -199,18 +207,23 @@
   <ItemGroup>
     <IL Include="Properties\AssemblyInfo.asm" />
     <IL Include="Platform\Memory\CopyBlock.asm" />
-    <IL Include="Platform\Graphics\OpenGL3.g.asm">
-      <DependentUpon>GraphicsDevice.cs</DependentUpon>
-    </IL>
   </ItemGroup>
   <ItemGroup>
-    <Shader Include="Rendering\Shaders\AnotherShader - Copy.glsl" />
+    <Shader Include="Rendering\Shaders\AnotherShader2.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Rendering\Fonts\DefaultFont.font" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Rendering\Fonts\LiberationMono-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <IL Include="Platform\Graphics\OpenGL3.g.asm">
+      <DependentUpon>OpenGL.xml</DependentUpon>
+    </IL>
+  </ItemGroup>
+  <ItemGroup>
+    <OpenGL Include="Platform\Graphics\OpenGL.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

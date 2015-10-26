@@ -42,25 +42,36 @@ namespace AssetsCompiler
 		public string Textures { get; set; }
 
 		[Option("output", Required = true, HelpText = "The path to the output bundle file.")]
-		public string OutFile { get; set; }
+		public string PakFile { get; set; }
+
+		[Option("code", Required = true, HelpText = "The path to the generated code file.")]
+		public string CodeFile { get; set; }
 
 		public void Execute()
 		{
-			var shaders = Shaders.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-			var fonts = Fonts.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-			var textures = Textures.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+			var shaders = Shaders.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(shader => shader).ToArray();
+			var fonts = Fonts.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(font => font).ToArray();
+			var textures = Textures.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(texture => texture).ToArray();
+			var assets = shaders
+				.Select(shader => new { Type = "Shader", Name = Path.GetFileNameWithoutExtension(shader), File = shader })
+				.Concat(fonts.Select(font => new { Type = "Font", Name = Path.GetFileNameWithoutExtension(font), File = font }).OrderBy(s => s.Name))
+				.Concat(textures.Select(texture => new { Type = "Texture", Name = Path.GetFileNameWithoutExtension(texture), File = texture }))
+				.ToArray();
 
-			// bundles with the same sequence of asset types should have the same hash
+			// bundles with the same sequence of asset types and names should have the same hash
 			byte[] hash;
 			using (var cryptoProvider = new MD5CryptoServiceProvider())
-				hash = cryptoProvider.ComputeHash(Encoding.UTF8.GetBytes($"{shaders.Length}-{fonts.Length}-{textures.Length}"));
+			{
+				var types = $"{shaders.Length}-{fonts.Length}-{textures.Length}";
+				var names = String.Join(";", assets.Select(asset => asset.File));
+				hash = cryptoProvider.ComputeHash(Encoding.UTF8.GetBytes($"{types};{names}"));
+			}
 
-			var content = new MemoryStream();
-			var files = shaders.Concat(fonts).Concat(textures);
-			foreach (var fileContent in files.Select(File.ReadAllBytes))
-				content.Write(fileContent, 0, fileContent.Length);
+			var uncompressedContent = new MemoryStream();
+			foreach (var fileContent in assets.Select(asset => File.ReadAllBytes(asset.File)))
+				uncompressedContent.Write(fileContent, 0, fileContent.Length);
 
-			var contentArray = content.ToArray();
+			var contentArray = uncompressedContent.ToArray();
 			byte[] compressedContent;
 			using (var output = new MemoryStream())
 			{
@@ -69,14 +80,63 @@ namespace AssetsCompiler
 				compressedContent = output.ToArray();
 			}
 
-			using (var stream = File.Create(OutFile))
-			using (var writer = new BinaryWriter(stream))
+			using (var stream = File.Create(PakFile))
+			using (var pakWriter = new BinaryWriter(stream))
 			{
-				writer.Write(hash);
-				writer.Write(contentArray.Length);
-				writer.Write(compressedContent.Length);
-				writer.Write(compressedContent);
+				pakWriter.Write(hash);
+				pakWriter.Write(contentArray.Length);
+				pakWriter.Write(compressedContent.Length);
+				pakWriter.Write(compressedContent);
 			}
+
+			var writer = new CodeWriter();
+			writer.WriterHeader();
+
+			writer.AppendLine("namespace PointWars.Rendering");
+			writer.AppendBlockStatement(() =>
+			{
+				writer.AppendLine("using System;");
+				writer.AppendLine("using Platform.Graphics;");
+				writer.AppendLine("using Platform.Memory;");
+				writer.NewLine();
+
+				writer.AppendLine("partial class Assets");
+				writer.AppendBlockStatement(() =>
+				{
+					var hashBytes = String.Join(", ", hash.Select(b => b.ToString()));
+					writer.AppendLine($"private static readonly Guid Guid = new Guid(new byte[] {{ {hashBytes} }});");
+					writer.NewLine();
+
+					foreach (var asset in assets)
+						writer.AppendLine($"public static {asset.Type} {asset.Name} {{ get; private set; }}");
+
+					writer.NewLine();
+					writer.AppendLine("private static void LoadAssets(ref BufferReader reader)");
+					writer.AppendBlockStatement(() =>
+					{
+						foreach (var asset in assets)
+							writer.AppendLine($"{asset.Name} = {asset.Type}.Create(ref reader);");
+					});
+
+					writer.NewLine();
+					writer.AppendLine("private static void ReloadAssets(ref BufferReader reader)");
+					writer.AppendBlockStatement(() =>
+					{
+						foreach (var asset in assets)
+							writer.AppendLine($"{asset.Name}.Load(ref reader);");
+					});
+
+					writer.NewLine();
+					writer.AppendLine("private static void DisposeAssets()");
+					writer.AppendBlockStatement(() =>
+					{
+						foreach (var asset in assets)
+							writer.AppendLine($"{asset.Name}.SafeDispose();");
+					});
+				});
+			});
+
+			File.WriteAllText(CodeFile, writer.ToString());
 		}
 	}
 }

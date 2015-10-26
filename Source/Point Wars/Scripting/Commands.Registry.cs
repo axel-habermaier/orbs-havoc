@@ -27,44 +27,44 @@ namespace PointWars.Scripting
 	using Utilities;
 
 	/// <summary>
-	///   Provides access to all cvars.
+	///   Provides access to all commands.
 	/// </summary>
-	public static class CvarRegistry
+	public static partial class Commands
 	{
 		/// <summary>
-		///   The registered cvars.
+		///   The registered commands.
 		/// </summary>
-		private static readonly Dictionary<string, ICvar> Cvars = new Dictionary<string, ICvar>();
+		private static readonly Dictionary<string, ICommand> RegisteredCommands = new Dictionary<string, ICommand>();
 
 		/// <summary>
-		///   Gets all registered cvars.
+		///   Gets all registered commands.
 		/// </summary>
-		internal static IEnumerable<ICvar> All => Cvars.Values;
+		internal static IEnumerable<ICommand> All => RegisteredCommands.Values;
 
 		/// <summary>
-		///   Registers the given cvar.
+		///   Registers the given command.
 		/// </summary>
-		/// <param name="cvar">The cvar that should be registered.</param>
-		public static void Register(ICvar cvar)
+		/// <param name="command">The command that should be registered.</param>
+		private static void Register(ICommand command)
 		{
-			Assert.ArgumentNotNull(cvar, nameof(cvar));
-			Assert.NotNullOrWhitespace(cvar.Name, "The cvar cannot have an empty name.");
-			Assert.That(!Cvars.ContainsKey(cvar.Name), "A cvar with the name '{0}' has already been registered.", cvar.Name);
-			Assert.That(CommandRegistry.All.All(command => command.Name != cvar.Name),
-				"A command with the name '{0}' has already been registered.", cvar.Name);
+			Assert.ArgumentNotNull(command, nameof(command));
+			Assert.NotNullOrWhitespace(command.Name, "The command cannot have an empty name.");
+			Assert.That(!RegisteredCommands.ContainsKey(command.Name), "A command with the name '{0}' has already been registered.", command.Name);
+			Assert.That(Cvars.All.All(cvar => cvar.Name != command.Name),
+				"A cvar with the name '{0}' has already been registered.", command.Name);
 
-			Cvars.Add(cvar.Name, cvar);
+			RegisteredCommands.Add(command.Name, command);
 		}
 
 		/// <summary>
-		///   Finds the cvar with the given name. Returns false if no such cvar is found.
+		///   Finds the command with the given name. Returns false if no such command is found.
 		/// </summary>
-		/// <param name="name">The name of the cvar that should be returned.</param>
-		/// <param name="cvar">The cvar with the given name, if it is found.</param>
-		internal static bool TryFind(string name, out ICvar cvar)
+		/// <param name="name">The name of the command that should be returned.</param>
+		/// <param name="command">The command with the given name, if it is found.</param>
+		internal static bool TryFind(string name, out ICommand command)
 		{
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));
-			return Cvars.TryGetValue(name, out cvar);
+			return RegisteredCommands.TryGetValue(name, out command);
 		}
 	}
 }

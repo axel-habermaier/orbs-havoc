@@ -73,15 +73,12 @@ namespace AssetsCompiler
 						.OrderBy(glyph => glyph.Height)
 						.ToArray();
 
-					var kernings = (
-						face.FaceFlags.HasFlag(FaceFlags.Kerning)
-							? from left in glyphs
-							  from right in glyphs
-							  let offset = (int)face.GetKerning(left.Index, right.Index, KerningMode.Default).X
-							  where offset != 0
-							  select new Kerning { Left = left, Right = right, Offset = offset }
-							: Enumerable.Empty<Kerning>()
-						).ToArray();
+					var kernings =
+						(from left in glyphs
+						 from right in glyphs
+						 let offset = (int)face.GetKerning(left.Index, right.Index, KerningMode.Default).X
+						 where offset != 0
+						 select new { Left = left, Right = right, Offset = offset }).ToArray();
 
 					var bitmapSize = Layout(glyphs);
 					using (var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height, PixelFormat.Format32bppArgb))
@@ -96,7 +93,6 @@ namespace AssetsCompiler
 
 					// Write font metadata
 					writer.Write((ushort)lineHeight);
-
 					writer.Write((ushort)glyphs.Length);
 					writer.Write((uint)kernings.Length);
 
@@ -241,13 +237,6 @@ namespace AssetsCompiler
 			public int Width;
 			public int Height;
 			public Rectangle Area;
-		}
-
-		private struct Kerning
-		{
-			public Glyph Left;
-			public Glyph Right;
-			public int Offset;
 		}
 	}
 }

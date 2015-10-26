@@ -77,6 +77,9 @@ namespace PointWars.Platform.Graphics
 			if (SDL_GL_ExtensionSupported("GL_ARB_shading_language_420pack") == 0)
 				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_shading_language_420pack' is not supported.");
 
+			if (SDL_GL_ExtensionSupported("GL_ARB_buffer_storage") == 0)
+				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_buffer_storage' is not supported.");
+
 			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
 				new string((sbyte*)glGetString(GL_VENDOR)));
 			Log.Info("OpenGL version: {0}", new string((sbyte*)glGetString(GL_VERSION)));

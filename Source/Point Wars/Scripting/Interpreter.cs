@@ -74,7 +74,7 @@ namespace PointWars.Scripting
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));
 
 			ICvar cvar;
-			if (!CvarRegistry.TryFind(name, out cvar))
+			if (!Cvars.TryFind(name, out cvar))
 				Log.Warn("Unknown cvar '{0}'.", name);
 			else
 			{
@@ -107,7 +107,7 @@ namespace PointWars.Scripting
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));
 
 			ICvar cvar;
-			if (!CvarRegistry.TryFind(name, out cvar))
+			if (!Cvars.TryFind(name, out cvar))
 				Log.Warn("Unknown cvar '{0}'.", name);
 			else
 				cvar.SetValue(cvar.DefaultValue, true);
@@ -149,7 +149,7 @@ namespace PointWars.Scripting
 		/// <param name="pattern">The name pattern of the commands that should be listed.</param>
 		private static void OnListCommands(string pattern)
 		{
-			ListElements(CommandRegistry.All, pattern, command => command.Name, command => command.Description);
+			ListElements(Commands.All, pattern, command => command.Name, command => command.Description);
 		}
 
 		/// <summary>
@@ -158,7 +158,7 @@ namespace PointWars.Scripting
 		/// <param name="pattern">The name pattern of the cvars that should be listed.</param>
 		private static void OnListCvars(string pattern)
 		{
-			ListElements(CvarRegistry.All, pattern, cvar => cvar.Name, cvar => cvar.Description);
+			ListElements(Cvars.All, pattern, cvar => cvar.Name, cvar => cvar.Description);
 		}
 
 		/// <summary>

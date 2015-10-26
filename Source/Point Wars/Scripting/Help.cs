@@ -57,9 +57,9 @@ namespace PointWars.Scripting
 
 			if (String.IsNullOrWhiteSpace(name))
 				PrintHelp();
-			else if (CvarRegistry.TryFind(name, out cvar))
+			else if (Cvars.TryFind(name, out cvar))
 				PrintCvarHelp(cvar);
-			else if (CommandRegistry.TryFind(name, out command))
+			else if (Commands.TryFind(name, out command))
 				PrintCommandHelp(command);
 			else
 				Log.Error("'{0}' is neither a cvar nor a command.", name);

@@ -55,8 +55,8 @@ namespace AssetsCompiler
 				var fragmentShader = Encoding.UTF8.GetBytes(Preamble + match.Groups["fs"].Value.Trim());
 
 				writer.Write(vertexShader.Length);
-				writer.Write(fragmentShader.Length);
 				writer.Write(vertexShader);
+				writer.Write(fragmentShader.Length);
 				writer.Write(fragmentShader);
 			}
 		}

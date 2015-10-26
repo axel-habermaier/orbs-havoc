@@ -1,15 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24606.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Point Wars", "Source\Point Wars\Point Wars.csproj", "{6DEA5A72-611A-4A3C-8EF9-E017A1192041}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D033840C-E29D-4ADC-9ACF-27FA38E24FA5} = {D033840C-E29D-4ADC-9ACF-27FA38E24FA5}
-		{B26366D0-7AC7-40A3-BA52-8B77D425D4DE} = {B26366D0-7AC7-40A3-BA52-8B77D425D4DE}
 	EndProjectSection
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Assets", "Assets\Assets.fsproj", "{B26366D0-7AC7-40A3-BA52-8B77D425D4DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assets Compiler", "Source\Assets Compiler\Assets Compiler.csproj", "{D033840C-E29D-4ADC-9ACF-27FA38E24FA5}"
 EndProject
@@ -23,10 +20,6 @@ Global
 		{6DEA5A72-611A-4A3C-8EF9-E017A1192041}.Debug|x64.Build.0 = Debug|x64
 		{6DEA5A72-611A-4A3C-8EF9-E017A1192041}.Release|x64.ActiveCfg = Release|x64
 		{6DEA5A72-611A-4A3C-8EF9-E017A1192041}.Release|x64.Build.0 = Release|x64
-		{B26366D0-7AC7-40A3-BA52-8B77D425D4DE}.Debug|x64.ActiveCfg = Debug|x64
-		{B26366D0-7AC7-40A3-BA52-8B77D425D4DE}.Debug|x64.Build.0 = Debug|x64
-		{B26366D0-7AC7-40A3-BA52-8B77D425D4DE}.Release|x64.ActiveCfg = Release|x64
-		{B26366D0-7AC7-40A3-BA52-8B77D425D4DE}.Release|x64.Build.0 = Release|x64
 		{D033840C-E29D-4ADC-9ACF-27FA38E24FA5}.Debug|x64.ActiveCfg = Debug|x64
 		{D033840C-E29D-4ADC-9ACF-27FA38E24FA5}.Debug|x64.Build.0 = Debug|x64
 		{D033840C-E29D-4ADC-9ACF-27FA38E24FA5}.Release|x64.ActiveCfg = Release|x64

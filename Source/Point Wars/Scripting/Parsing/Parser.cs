@@ -432,12 +432,12 @@ namespace PointWars.Scripting.Parsing
 
 				// Check if a cvar has been referenced and if so, return the appropriate instruction
 				ICvar cvar;
-				if (CvarRegistry.TryFind(name, out cvar))
+				if (Cvars.TryFind(name, out cvar))
 					return Parse(inputStream, cvar);
 
 				// Check if a command has been referenced and if so, return the appropriate instruction
 				ICommand command;
-				if (CommandRegistry.TryFind(name, out command))
+				if (Commands.TryFind(name, out command))
 					return Parse(inputStream, command);
 
 				// If the name refers to neither a cvar nor a command, give up

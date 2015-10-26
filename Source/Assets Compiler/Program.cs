@@ -36,7 +36,7 @@ namespace AssetsCompiler
 			{
 				CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 				CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-		
+
 				//var index = 0;
 				//foreach (var arg in args)
 				//	Log.Info("{0}: {1}", index++, arg);
@@ -70,12 +70,11 @@ namespace AssetsCompiler
 		[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 		private class Options
 		{
-			public Options()
-			{
-			}
-
 			[VerbOption("shader", HelpText = "Compiles a shader.")]
 			public ShaderCompiler ShaderCompiler { get; set; }
+
+			[VerbOption("registry", HelpText = "Generates registry code.")]
+			public RegistryGenerator RegistryGenerator { get; set; }
 
 			[VerbOption("texture", HelpText = "Compiles a texture.")]
 			public TextureCompiler TextureCompiler { get; set; }
@@ -85,6 +84,9 @@ namespace AssetsCompiler
 
 			[VerbOption("bundle", HelpText = "Compiles a bundle.")]
 			public BundleCompiler BundleCompiler { get; set; }
+
+			[VerbOption("opengl", HelpText = "Generates OpenGL bindings.")]
+			public GLGenerator GLGenerator { get; set; }
 
 			[HelpVerbOption]
 			public string GetUsage(string verb)
