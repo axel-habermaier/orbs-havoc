@@ -36,6 +36,11 @@ namespace PointWars.Network
 		public const uint AppIdentifier = 0xf61137c5;
 
 		/// <summary>
+		///     The factor that angles sent over the network are scaled with.
+		/// </summary>
+		public const float AngleFactor = 100.0f;
+
+		/// <summary>
 		///   The duration in milliseconds that the connection waits for a new packet from the remote peer before the connection is
 		///   considered to be dropped.
 		/// </summary>
