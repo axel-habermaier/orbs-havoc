@@ -5,9 +5,9 @@
 		mat4 ProjectionMatrix;
 	};
 
-	layout(std140, binding = 1) uniform WorldMatrixBuffer
+	layout(std140, binding = 1) uniform PositionOffsetBuffer
 	{
-		mat4 WorldMatrix;
+		vec2 PositionOffset;
 	};
 
 	layout(location = 0) in vec2 Position;
@@ -19,7 +19,7 @@
 
 	void main()
 	{
-		gl_Position = ProjectionMatrix * WorldMatrix * vec4(Position, 0, 1);
+		gl_Position = ProjectionMatrix * vec4(Position + PositionOffset, 0, 1);
 		OutTexCoords = TexCoords;
 		OutColor = Color;
 	}

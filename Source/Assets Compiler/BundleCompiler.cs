@@ -63,7 +63,7 @@ namespace AssetsCompiler
 			using (var cryptoProvider = new MD5CryptoServiceProvider())
 			{
 				var types = $"{shaders.Length}-{fonts.Length}-{textures.Length}";
-				var names = String.Join(";", assets.Select(asset => asset.File));
+				var names = String.Join("\n", assets.Select(asset => asset.Name));
 				hash = cryptoProvider.ComputeHash(Encoding.UTF8.GetBytes($"{types};{names}"));
 			}
 

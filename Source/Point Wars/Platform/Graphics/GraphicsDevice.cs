@@ -24,7 +24,6 @@ namespace PointWars.Platform.Graphics
 {
 	using System;
 	using Logging;
-	using Scripting;
 	using static OpenGL3;
 	using static SDL2;
 
@@ -103,9 +102,6 @@ namespace PointWars.Platform.Graphics
 
 				CheckErrors();
 			}
-
-			Cvars.VsyncChanged += SetVsync;
-			SetVsync();
 		}
 
 		/// <summary>
@@ -175,7 +171,6 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Cvars.VsyncChanged -= SetVsync;
 			SamplerState.Dispose();
 
 			for (var i = 0; i < MaxFrameLag; ++i)
@@ -187,15 +182,6 @@ namespace PointWars.Platform.Graphics
 
 			SDL_GL_DeleteContext(_context);
 			SDL_DestroyWindow(_contextWindow);
-		}
-
-		/// <summary>
-		///   Changes the vertical synchronization setting.
-		/// </summary>
-		private static void SetVsync()
-		{
-			if (SDL_GL_SetSwapInterval(Cvars.Vsync ? 1 : 0) != 0)
-				Log.Warn("Failed to change vsync mode: {0}", SDL_GetError());
 		}
 	}
 }

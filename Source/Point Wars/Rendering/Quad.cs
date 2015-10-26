@@ -26,7 +26,6 @@ namespace PointWars.Rendering
 	using System.Runtime.InteropServices;
 	using Platform.Graphics;
 	using Utilities;
-	using static Platform.Graphics.OpenGL3;
 
 	/// <summary>
 	///   Represents a rectangle with possibly non-axis aligned edges.
@@ -34,15 +33,6 @@ namespace PointWars.Rendering
 	[StructLayout(LayoutKind.Sequential)]
 	public struct Quad
 	{
-		/// <summary>
-		///   Creates a dynamic vertex buffer that holds the given number of quads.
-		/// </summary>
-		/// <param name="quadCount">The number of quads that the dynamic vertex buffer should be able to hold.</param>
-		public static DynamicBuffer CreateDynamicVertexBuffer(int quadCount)
-		{
-			return DynamicBuffer.Create<Vertex>(GL_ARRAY_BUFFER, quadCount * 4);
-		}
-
 		/// <summary>
 		///   The vertex that conceptually represents the bottom left corner of the quad.
 		/// </summary>

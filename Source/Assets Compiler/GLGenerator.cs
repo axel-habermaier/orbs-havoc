@@ -31,6 +31,8 @@ namespace AssetsCompiler
 
 	public class GLGenerator : IExecutable
 	{
+		private static readonly string[] Extensions = { "GL_ARB_buffer_storage" };
+
 		[Option("input", Required = true, HelpText = "The path to the input OpenGL file.")]
 		public string InFile { get; set; }
 
@@ -84,53 +86,71 @@ namespace AssetsCompiler
 			seed.Enums.Clear();
 			seed.Funcs.Clear();
 
-			var gl = spec.Root.Elements("feature")
-						 .OrderBy(e => e.Attribute("number").Value)
-						 .Where(e => e.Attribute("api").Value == "gl" && e.Attribute("number").Value[0] <= '3')
-						 .Aggregate(seed, (info, e) =>
-						 {
-							 var removedFuncs = e
-								 .Descendants("remove")
-								 .SelectMany(f => f.Descendants("command"))
-								 .Select(f => f.Attribute("name").Value);
+			var gl = spec
+				.Root.Elements("feature")
+				.OrderBy(e => e.Attribute("number").Value)
+				.Where(e => e.Attribute("api").Value == "gl" && e.Attribute("number").Value[0] <= '3')
+				.Aggregate(seed, (info, e) =>
+				{
+					var removedFuncs = e
+						.Descendants("remove")
+						.SelectMany(f => f.Descendants("command"))
+						.Select(f => f.Attribute("name").Value);
 
-							 var removedEnums = e
-								 .Descendants("remove")
-								 .SelectMany(f => f.Descendants("enum"))
-								 .Select(f => f.Attribute("name").Value);
+					var removedEnums = e
+						.Descendants("remove")
+						.SelectMany(f => f.Descendants("enum"))
+						.Select(f => f.Attribute("name").Value);
 
-							 var requiredFuncs = e
-								 .Descendants("require")
-								 .Where(f => f.Attribute("profile") == null || f.Attribute("profile").Value == "core")
-								 .SelectMany(f => f.Descendants("command"))
-								 .Select(f => f.Attribute("name").Value)
-								 .Union(info.Funcs.Select(f => f.Name))
-								 .Except(removedFuncs)
-								 .Distinct()
-								 .Select(f => funcs[f])
-								 .ToList();
+					var requiredFuncs = e
+						.Descendants("require")
+						.Where(f => f.Attribute("profile") == null || f.Attribute("profile").Value == "core")
+						.SelectMany(f => f.Descendants("command"))
+						.Select(f => f.Attribute("name").Value)
+						.Union(info.Funcs.Select(f => f.Name))
+						.Except(removedFuncs)
+						.Distinct()
+						.Select(f => funcs[f])
+						.ToList();
 
-							 var requiredEnums =
-								 (e.Attribute("number").Value == "1.0"
-									 ? requiredFuncs
-										 .SelectMany(g => g.Params)
-										 .Select(g => g.Group)
-										 .Where(g => g != null && groups.ContainsKey(g))
-										 .SelectMany(g => groups[g].Select(h => h.Name))
-									 : e
-										 .Descendants("require")
-										 .Where(f => f.Attribute("profile") == null || f.Attribute("profile").Value == "core")
-										 .SelectMany(f => f.Descendants("enum"))
-										 .Select(f => f.Attribute("name").Value)
-									 )
-									 .Union(info.Enums.Select(f => f.Name))
-									 .Except(removedEnums)
-									 .Distinct()
-									 .Select(f => enums[f])
-									 .ToList();
+					var requiredEnums =
+						(e.Attribute("number").Value == "1.0"
+							? requiredFuncs
+								.SelectMany(g => g.Params)
+								.Select(g => g.Group)
+								.Where(g => g != null && groups.ContainsKey(g))
+								.SelectMany(g => groups[g].Select(h => h.Name))
+							: e
+								.Descendants("require")
+								.Where(f => f.Attribute("profile") == null || f.Attribute("profile").Value == "core")
+								.SelectMany(f => f.Descendants("enum"))
+								.Select(f => f.Attribute("name").Value)
+							)
+							.Union(info.Enums.Select(f => f.Name))
+							.Except(removedEnums)
+							.Distinct()
+							.Select(f => enums[f])
+							.ToList();
 
-							 return new { Funcs = requiredFuncs, Enums = requiredEnums };
-						 });
+					return new { Funcs = requiredFuncs, Enums = requiredEnums };
+				});
+
+			foreach (var extension in Extensions)
+			{
+				gl.Enums.AddRange(spec
+					.Descendants("extension")
+					.Where(e => e.Attribute("name").Value == extension)
+					.SelectMany(e => e.Descendants("enum"))
+					.Select(e => enums[e.Attribute("name").Value])
+					.Except(gl.Enums));
+
+				gl.Funcs.AddRange(spec
+					.Descendants("extension")
+					.Where(e => e.Attribute("name").Value == extension)
+					.SelectMany(e => e.Descendants("command"))
+					.Select(e => funcs[e.Attribute("name").Value])
+					.Except(gl.Funcs));
+			}
 
 			var writer = new CodeWriter();
 			writer.WriterHeader();
@@ -204,12 +224,10 @@ namespace AssetsCompiler
 				case "GLbitfield":
 				case "GLint":
 				case "GLsizei":
-				case "GLsizeiptr":
 				case "GLfixed":
 				case "GLclampx":
-				case "GLinptrARB":
-				case "GLsizeiptrARB":
 					return "int32";
+				case "GLsizeiptr":
 				case "GLsync":
 				case "GLintptr":
 				case "GLDEBUGPROC":
@@ -221,6 +239,7 @@ namespace AssetsCompiler
 					return "float64";
 				case "GLubyte":
 				case "GLbyte":
+				case "GLchar":
 					return "uint8";
 				case "GLushort":
 				case "GLshort":
@@ -228,8 +247,6 @@ namespace AssetsCompiler
 				case "GLuint64":
 				case "GLint64":
 					return "int64";
-				case "GLchar":
-					return "uint8";
 				default:
 					return glType;
 			}

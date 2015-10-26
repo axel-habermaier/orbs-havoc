@@ -29,6 +29,7 @@ namespace PointWars.Platform
 	using Input;
 	using Logging;
 	using Memory;
+	using Rendering;
 	using Scripting;
 	using Utilities;
 	using static SDL2;
@@ -93,6 +94,11 @@ namespace PointWars.Platform
 
 			GraphicsDevice = graphicsDevice;
 			BackBuffer = new RenderTarget(this);
+			BackBuffer.Clear(Colors.Black);
+			Present();
+
+			Cvars.VsyncChanged += SetVsync;
+			SetVsync();
 		}
 
 		/// <summary>
@@ -245,6 +251,7 @@ namespace PointWars.Platform
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			Cvars.VsyncChanged -= SetVsync;
 			GraphicsDevice.MakeCurrent();
 
 			BackBuffer.SafeDispose();
@@ -427,6 +434,15 @@ namespace PointWars.Platform
 				desktopArea.Left + desktopArea.Width - MinimumOverlap);
 			position.Y = MathUtils.Clamp(position.Y, desktopArea.Top - size.Height + MinimumOverlap,
 				desktopArea.Top + desktopArea.Height - MinimumOverlap);
+		}
+
+		/// <summary>
+		///   Changes the vertical synchronization setting.
+		/// </summary>
+		private static void SetVsync()
+		{
+			if (SDL_GL_SetSwapInterval(Cvars.Vsync ? 1 : 0) != 0)
+				Log.Warn("Failed to change vsync mode: {0}", SDL_GetError());
 		}
 	}
 }

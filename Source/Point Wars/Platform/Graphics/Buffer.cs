@@ -45,7 +45,21 @@ namespace PointWars.Platform.Graphics
 			_type = bufferType;
 
 			glBindBuffer(_type, Handle);
-			glBufferData(_type, SizeInBytes, data, usage);
+			glBufferData(_type, (void*)SizeInBytes, data, usage);
+			CheckErrors();
+		}
+
+		/// <summary>
+		///   Initializes a new buffer.
+		/// </summary>
+		public Buffer(int bufferType, int sizeInBytes)
+		{
+			Handle = Allocate(glGenBuffers, nameof(Buffer));
+			SizeInBytes = sizeInBytes;
+			_type = bufferType;
+			
+			glBindBuffer(_type, Handle);
+			glBufferStorage(_type, (void*)SizeInBytes, null, GL_MAP_WRITE_BIT | GL_MAP_COHERENT_BIT | GL_MAP_PERSISTENT_BIT);
 			CheckErrors();
 		}
 
@@ -86,12 +100,12 @@ namespace PointWars.Platform.Graphics
 		{
 			Assert.NotDisposed(this);
 			Assert.That(offsetInBytes < SizeInBytes, "Invalid offset.");
-			Assert.InRange(byteCount, 1, SizeInBytes - 1);
+			Assert.InRange(byteCount, 0, SizeInBytes);
 			Assert.That(offsetInBytes + byteCount <= SizeInBytes, "Buffer overflow.");
 			Assert.That(!_isMapped, "Buffer is already mapped.");
 
 			glBindBuffer(_type, Handle);
-			var mappedBuffer = glMapBufferRange(_type, (void*)offsetInBytes, byteCount, mapMode);
+			var mappedBuffer = glMapBufferRange(_type, (void*)offsetInBytes, (void*)byteCount, mapMode);
 			CheckErrors();
 
 			if (mappedBuffer == null)
@@ -118,7 +132,7 @@ namespace PointWars.Platform.Graphics
 		}
 
 		/// <summary>
-		///   Binds the constant buffer to the given slot without uploading any possible changes of the buffer to the GPU.
+		///   Binds the uniform buffer to the given slot.
 		/// </summary>
 		public void Bind(int slot)
 		{
@@ -127,6 +141,22 @@ namespace PointWars.Platform.Graphics
 
 			if (Change(State.ConstantBuffers, slot, this))
 				glBindBufferBase(GL_UNIFORM_BUFFER, slot, Handle);
+
+			CheckErrors();
+		}
+
+		/// <summary>
+		///   Binds the uniform buffer to the given slot.
+		/// </summary>
+		public void Bind(int slot, int offset, int sizeInBytes)
+		{
+			Assert.NotDisposed(this);
+			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
+
+			// Do not track state in this case, as we're very unlikely to bind the same uniform buffer
+			// with the same offset and sizes twice
+			Change(State.ConstantBuffers, slot, null);
+			glBindBufferRange(GL_UNIFORM_BUFFER, slot, Handle, (void*)offset, (void*)sizeInBytes);
 
 			CheckErrors();
 		}
@@ -141,7 +171,7 @@ namespace PointWars.Platform.Graphics
 			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
 			glBindBuffer(_type, Handle);
-			glBufferSubData(_type, (void*)0, SizeInBytes, data);
+			glBufferSubData(_type, (void*)0, (void*)SizeInBytes, data);
 			CheckErrors();
 		}
 

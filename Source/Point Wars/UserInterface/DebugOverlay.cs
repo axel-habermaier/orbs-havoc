@@ -181,7 +181,7 @@ namespace PointWars.UserInterface
 		internal void Draw(SpriteBatch spriteBatch)
 		{
 			spriteBatch.Layer = Int32.MaxValue - 2;
-			spriteBatch.WorldMatrix = Matrix4x4.Identity;
+			spriteBatch.PositionOffset = Vector2.Zero;
 
 			if (Cvars.ShowDebugOverlay)
 				_platformInfo.Draw(spriteBatch);

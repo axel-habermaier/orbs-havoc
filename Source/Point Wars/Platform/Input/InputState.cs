@@ -22,12 +22,10 @@
 
 namespace PointWars.Platform.Input
 {
-	using System;
-
 	/// <summary>
 	///   Represents the state of an input key or button.
 	/// </summary>
-	public struct InputState : IEquatable<InputState>
+	public struct InputState
 	{
 		/// <summary>
 		///   Gets a value indicating whether the key or button is currently being pressed down.
@@ -51,18 +49,6 @@ namespace PointWars.Platform.Input
 		///   when the key or button is pressed, i.e., when WentDown is true.
 		/// </summary>
 		public bool IsRepeated { get; private set; }
-
-		/// <summary>
-		///   Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <returns>
-		///   true if the current object is equal to other; otherwise, false.
-		/// </returns>
-		public bool Equals(InputState other)
-		{
-			return IsPressed == other.IsPressed && IsRepeated == other.IsRepeated && WentDown == other.WentDown &&
-				   WentUp == other.WentUp;
-		}
 
 		/// <summary>
 		///   Updates the input state when the key or button has been pressed.

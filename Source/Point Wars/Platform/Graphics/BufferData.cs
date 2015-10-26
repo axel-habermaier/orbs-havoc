@@ -94,5 +94,13 @@ namespace PointWars.Platform.Graphics
 
 			MemCopy.Copy((byte*)_pointer + offsetInBytes, data, sizeInBytes);
 		}
+
+		/// <summary>
+		///   Implicitly gets the underlying buffer pointer.
+		/// </summary>
+		public static implicit operator void*(BufferData bufferData)
+		{
+			return bufferData._pointer;
+		}
 	}
 }

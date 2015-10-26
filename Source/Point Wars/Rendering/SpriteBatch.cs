@@ -25,7 +25,6 @@ namespace PointWars.Rendering
 	using System;
 	using System.Collections.Generic;
 	using System.Numerics;
-	using System.Runtime.InteropServices;
 	using Platform.Graphics;
 	using Platform.Logging;
 	using Platform.Memory;
@@ -44,9 +43,24 @@ namespace PointWars.Rendering
 		private const int MaxQuads = UInt16.MaxValue;
 
 		/// <summary>
+		///   The maximum number of position offsets that can be used.
+		/// </summary>
+		private const int MaxPositionOffsets = 64;
+
+		/// <summary>
 		///   The index buffer that is used for drawing.
 		/// </summary>
 		private readonly Buffer _indexBuffer;
+
+		/// <summary>
+		///   The uniform buffer providing the shader with the position offsets.
+		/// </summary>
+		private readonly DynamicBuffer _positionOffsetBuffer;
+
+		/// <summary>
+		///   The position offsets used by the sprite batch.
+		/// </summary>
+		private readonly Vector2[] _positionOffsets = new Vector2[MaxPositionOffsets];
 
 		/// <summary>
 		///   The uniform buffer providing the shader with the projection matrix.
@@ -57,11 +71,6 @@ namespace PointWars.Rendering
 		///   The list of all quads.
 		/// </summary>
 		private readonly Quad[] _quads = new Quad[MaxQuads];
-
-		/// <summary>
-		///   The size of a single quad in bytes.
-		/// </summary>
-		private readonly int _quadSize = Marshal.SizeOf(typeof(Quad));
 
 		/// <summary>
 		///   The vertex buffer that is used for drawing.
@@ -79,11 +88,6 @@ namespace PointWars.Rendering
 		private readonly Texture _whiteTexture;
 
 		/// <summary>
-		///   The uniform buffer providing the shader with the projection matrix.
-		/// </summary>
-		private readonly Buffer _worldMatrixBuffer;
-
-		/// <summary>
 		///   The blend state that should be used for drawing.
 		/// </summary>
 		private BlendState _blendState = BlendState.Premultiplied;
@@ -97,6 +101,11 @@ namespace PointWars.Rendering
 		///   The index of the section list that is currently being used.
 		/// </summary>
 		private int _currentSectionList = -1;
+
+		/// <summary>
+		///   The number of position offsets that are currently used.
+		/// </summary>
+		private int _numPositionOffsets;
 
 		/// <summary>
 		///   The number of quads that are currently queued.
@@ -134,11 +143,6 @@ namespace PointWars.Rendering
 		private Section[] _sections = new Section[16];
 
 		/// <summary>
-		///   The world matrix used by the sprite batch.
-		/// </summary>
-		private Matrix4x4 _worldMatrix = Matrix4x4.Identity;
-
-		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		public unsafe SpriteBatch()
@@ -165,11 +169,12 @@ namespace PointWars.Rendering
 			// Initialize the graphics objects
 			fixed (void* data = indices)
 			{
-				_vertexBuffer = Quad.CreateDynamicVertexBuffer(MaxQuads);
+				_vertexBuffer = new DynamicBuffer(GL_ARRAY_BUFFER, MaxQuads * 4, sizeof(Vertex));
 				_indexBuffer = new Buffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, numIndices * sizeof(int), data);
 				_vertexLayout = new VertexLayout(_vertexBuffer.Buffer, _indexBuffer);
-				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STREAM_DRAW, sizeof(Matrix4x4), null);
-				_worldMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW, sizeof(Matrix4x4), null);
+				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STATIC_DRAW, sizeof(Matrix4x4), null);
+				// Position offsets must be of type Vector4 due to OpenGL uniform buffer alignment requirements
+				_positionOffsetBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, MaxPositionOffsets, sizeof(Vector4));
 			}
 
 			using (var pointer = new BufferPointer(new byte[] { 255, 255, 255, 255 }))
@@ -179,19 +184,9 @@ namespace PointWars.Rendering
 		}
 
 		/// <summary>
-		///   Gets or sets the world matrix used by the sprite batch.
+		///   Gets or sets the position offset used by the sprite batch.
 		/// </summary>
-		public unsafe Matrix4x4 WorldMatrix
-		{
-			get { return _worldMatrix; }
-			set
-			{
-				Assert.NotDisposed(this);
-
-				_worldMatrix = value;
-				_worldMatrixBuffer.Copy(&value);
-			}
-		}
+		public Vector2 PositionOffset { get; set; }
 
 		/// <summary>
 		///   Gets or sets the projection matrix used by the sprite batch.
@@ -265,7 +260,7 @@ namespace PointWars.Rendering
 			_indexBuffer.SafeDispose();
 			_vertexLayout.SafeDispose();
 			_projectionMatrixBuffer.SafeDispose();
-			_worldMatrixBuffer.SafeDispose();
+			_positionOffsetBuffer.SafeDispose();
 		}
 
 		/// <summary>
@@ -393,7 +388,7 @@ namespace PointWars.Rendering
 			if (!CheckQuadCount(1))
 				return;
 
-			ChangeTexture(texture);
+			ChangeSection(texture);
 
 			// Add the quad to the list
 			_quads[_numQuads++] = quad;
@@ -469,7 +464,7 @@ namespace PointWars.Rendering
 			if (count == 0 || !CheckQuadCount(count))
 				return;
 
-			ChangeTexture(texture);
+			ChangeSection(texture);
 
 			// Add the quads to the list and update the quad counts
 			Array.Copy(quads, 0, _quads, _numQuads, count);
@@ -481,7 +476,7 @@ namespace PointWars.Rendering
 		///   Draws all batched sprites.
 		/// </summary>
 		/// <param name="renderTarget">The render target the sprite batch should draw to.</param>
-		public unsafe void DrawBatch(RenderTarget renderTarget)
+		public void DrawBatch(RenderTarget renderTarget)
 		{
 			Assert.That(SamplerState != null, "No sampler state has been set.");
 			Assert.NotDisposed(this);
@@ -493,14 +488,13 @@ namespace PointWars.Rendering
 			// Sort the section lists by layer
 			Array.Sort(_sectionLists, 0, _numSectionLists, SectionList.LayerComparer.Instance);
 
-			// Prepare the vertex buffer
-			UpdateVertexBuffer();
+			// Prepare the vertex buffer and the position offset buffer
+			UpdateBuffers();
 
 			// Set the shared GPU state
 			Assets.SpriteBatchShader.Bind();
 			_vertexLayout.Bind();
 			_projectionMatrixBuffer.Bind(0);
-			_worldMatrixBuffer.Bind(1);
 
 			// Draw the quads, starting with the lowest layer
 			var offset = 0;
@@ -513,7 +507,8 @@ namespace PointWars.Rendering
 				sectionList.SamplerState.Bind();
 				sectionList.BlendState.Bind();
 
-				_worldMatrixBuffer.Copy(&sectionList.WorldMatrix);
+				// Bind the correct position offset
+				_positionOffsetBuffer.Bind(1, sectionList.PostitionOffsetIndex, 1);
 
 				if (!sectionList.UseScissorTest)
 					glDisable(GL_SCISSOR_TEST);
@@ -546,6 +541,7 @@ namespace PointWars.Rendering
 		private void Reset()
 		{
 			_numQuads = 0;
+			_numPositionOffsets = 1;
 			_numSections = 0;
 			_numSectionLists = 0;
 			_currentSectionList = -1;
@@ -574,46 +570,47 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Copies the quads to the vertex buffer, sorted by texture.
 		/// </summary>
-		private unsafe void UpdateVertexBuffer()
+		private unsafe void UpdateBuffers()
 		{
-			using (var vertexData = _vertexBuffer.Map())
+			var vertexData = (Quad*)_vertexBuffer.Map();
+			fixed (Quad* quads = _quads)
 			{
-				var offset = 0;
-
-				fixed (Quad* quadsPtr = &_quads[0])
+				for (var i = 0; i < _numSectionLists; ++i)
 				{
-					var quads = new IntPtr(quadsPtr);
-					for (var i = 0; i < _numSectionLists; ++i)
+					var section = _sectionLists[i].FirstSection;
+					while (section != -1)
 					{
-						var section = _sectionLists[i].FirstSection;
-						while (section != -1)
-						{
-							// Calculate the offsets into the arrays and the amount of bytes to copy
-							var vertexOffset = offset * _quadSize;
-							var quadOffset = quads + _sections[section].Offset * _quadSize;
-							var bytes = _sections[section].NumQuads * _quadSize;
+						// Calculate the offsets into the arrays and the amount of bytes to copy
+						var quadOffset = quads + _sections[section].Offset;
+						var bytes = _sections[section].NumQuads * sizeof(Quad);
 
-							// Copy the entire section to the vertex buffer
-							vertexData.Write(quadOffset, vertexOffset, bytes);
+						// Copy the entire section to the vertex buffer
+						MemCopy.Copy(vertexData, quadOffset, bytes);
 
-							// Update the section list's total quad count
-							_sectionLists[i].NumQuads += _sections[section].NumQuads;
+						// Update the section list's total quad count
+						_sectionLists[i].NumQuads += _sections[section].NumQuads;
 
-							// Update the offset and advance to the next section
-							offset += _sections[section].NumQuads;
-							section = _sections[section].Next;
-						}
+						// Update the offset and advance to the next section
+						vertexData += _sections[section].NumQuads;
+						section = _sections[section].Next;
 					}
 				}
+			}
+
+			fixed (Vector2* offsets = _positionOffsets)
+			{
+				var buffer = (Vector4*)_positionOffsetBuffer.Map();
+				for (var i = 0; i < _numPositionOffsets; ++i)
+					buffer[i] = new Vector4(offsets[i], 0, 0);
 			}
 		}
 
 		/// <summary>
-		///   Checks whether the current texture has to be changed, and if so, creates a new section and possibly a new section
-		///   list. Or, if any rendering settings have been changed, a new section and/or section list might be added as well.
+		///   Checks whether the current section has to be changed, and if so, creates a new one and possibly
+		///   a new section list.
 		/// </summary>
 		/// <param name="texture">The texture that should be used for newly added quads.</param>
-		private void ChangeTexture(Texture texture)
+		private void ChangeSection(Texture texture)
 		{
 			// If nothing has changed, just continue to append to the current section
 			if (_currentSectionList != -1 && _currentSection != -1 && SectionListMatches(_currentSectionList, texture))
@@ -643,6 +640,14 @@ namespace PointWars.Rendering
 
 			if (!known)
 			{
+				var positionOffsetIndex = 0;
+				if (PositionOffset != Vector2.Zero)
+				{
+					_positionOffsets[_numPositionOffsets] = PositionOffset;
+					positionOffsetIndex = _numPositionOffsets;
+					++_numPositionOffsets;
+				}
+
 				_currentSectionList = _numSectionLists;
 				AddSectionList(new SectionList
 				{
@@ -655,7 +660,8 @@ namespace PointWars.Rendering
 					FirstSection = _numSections,
 					LastSection = _numSections,
 					NumQuads = 0,
-					WorldMatrix = WorldMatrix
+					PositionOffset = PositionOffset,
+					PostitionOffsetIndex = positionOffsetIndex
 				});
 			}
 
@@ -677,7 +683,7 @@ namespace PointWars.Rendering
 
 			return list.Texture == texture && list.BlendState == BlendState && list.Layer == Layer &&
 				   list.SamplerState == SamplerState && list.UseScissorTest == UseScissorTest &&
-				   list.ScissorArea == ScissorArea && list.WorldMatrix == WorldMatrix;
+				   list.ScissorArea == ScissorArea && list.PositionOffset == PositionOffset;
 		}
 
 		/// <summary>
@@ -760,7 +766,8 @@ namespace PointWars.Rendering
 			public bool UseScissorTest;
 			public int LastSection;
 			public int NumQuads;
-			public Matrix4x4 WorldMatrix;
+			public Vector2 PositionOffset;
+			public int PostitionOffsetIndex;
 
 			/// <summary>
 			///   Used to compare the layers of two section lists.

@@ -238,7 +238,7 @@ namespace PointWars.UserInterface
 				return;
 
 			// Draw the background
-			spriteBatch.WorldMatrix = Matrix4x4.Identity;
+			spriteBatch.PositionOffset = Vector2.Zero;
 			spriteBatch.UseScissorTest = false;
 			spriteBatch.Layer = Int32.MaxValue - 1;
 
@@ -252,7 +252,7 @@ namespace PointWars.UserInterface
 			_content.Draw(spriteBatch);
 
 			spriteBatch.Layer = 0;
-			spriteBatch.WorldMatrix = Matrix4x4.Identity;
+			spriteBatch.PositionOffset = Vector2.Zero;
 		}
 
 		/// <summary>
