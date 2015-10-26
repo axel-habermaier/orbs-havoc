@@ -239,7 +239,7 @@ namespace PointWars.UserInterface
 
 			// Draw the background
 			spriteBatch.PositionOffset = Vector2.Zero;
-			spriteBatch.UseScissorTest = false;
+			spriteBatch.ScissorArea = null;
 			spriteBatch.Layer = Int32.MaxValue - 1;
 
 			var consoleArea = new Rectangle(0, 0, _size.Width, _prompt.ActualArea.Bottom + _margin.Height);

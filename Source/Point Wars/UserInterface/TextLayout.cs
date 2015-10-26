@@ -24,14 +24,13 @@ namespace PointWars.UserInterface
 {
 	using System;
 	using System.Numerics;
-	using Platform.Memory;
 	using Rendering;
 	using Utilities;
 
 	/// <summary>
 	///   Determines a layout for a text based on the font, desired with, alignment, etc.
 	/// </summary>
-	internal class TextLayout : DisposableObject
+	internal class TextLayout
 	{
 		/// <summary>
 		///   The alignment of the text within the desired area.
@@ -74,6 +73,11 @@ namespace PointWars.UserInterface
 		private float _lineSpacing;
 
 		/// <summary>
+		///   The text that is layouted.
+		/// </summary>
+		private string _text;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="font">The font that is used to determine the size of the individual characters.</param>
@@ -84,13 +88,8 @@ namespace PointWars.UserInterface
 			Assert.ArgumentNotNull(text, nameof(text));
 
 			Font = font;
-			TextString = text;
+			Text = text;
 		}
-
-		/// <summary>
-		///   Gets the text that is layouted.
-		/// </summary>
-		public TextString Text { get; private set; }
 
 		/// <summary>
 		///   Gets the layouting data for the individual characters of the layouted text.
@@ -100,22 +99,21 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets or sets the text that should be layouted.
 		/// </summary>
-		public string TextString
+		public string Text
 		{
-			get { return Text.SourceString; }
+			get { return _text; }
 			set
 			{
 				Assert.ArgumentNotNull(value, nameof(value));
 
-				if (Text.SourceString == value)
+				if (_text == value)
 					return;
 
-				Text.Dispose();
-				Text = new TextString(value);
+				_text = value;
 				_dirty = true;
 
-				if (_characterAreas == null || Text.Length > _characterAreas.Length)
-					_characterAreas = new Rectangle[Text.Length];
+				if (_characterAreas == null || _text.Length > _characterAreas.Length)
+					_characterAreas = new Rectangle[_text.Length];
 			}
 		}
 
@@ -200,17 +198,9 @@ namespace PointWars.UserInterface
 		public Rectangle ActualArea { get; private set; }
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		protected override void OnDisposing()
-		{
-			Text.Dispose();
-		}
-
-		/// <summary>
 		///   Raised when the layout has changed.
 		/// </summary>
-		public event Action LayoutChanged;
+		public event Action<TextString> LayoutChanged;
 
 		/// <summary>
 		///   Updates the layout if any changes have been made since the last layout update that
@@ -226,11 +216,14 @@ namespace PointWars.UserInterface
 			_lineCount = 0;
 			_dirty = false;
 
-			ComputeCharacterAreasAndLines();
-			AlignLines();
-			ComputeActualArea();
+			using (var text = TextString.Create(Text))
+			{
+				ComputeCharacterAreasAndLines(text);
+				AlignLines();
+				ComputeActualArea();
 
-			LayoutChanged?.Invoke();
+				LayoutChanged?.Invoke(text);
+			}
 		}
 
 		/// <summary>
@@ -290,7 +283,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Creates the character areas and lines for the text.
 		/// </summary>
-		private void ComputeCharacterAreasAndLines()
+		private void ComputeCharacterAreasAndLines(TextString text)
 		{
 			// The offset that is applied to all character positions
 			var offset = _desiredArea.Position;
@@ -299,7 +292,7 @@ namespace PointWars.UserInterface
 			var line = new TextLine(DesiredArea.Left, DesiredArea.Top, Font.LineHeight);
 
 			// Initialize the token stream and get the first token
-			var stream = new TextTokenStream(_font, Text, _desiredArea.Width);
+			var stream = new TextTokenStream(_font, text, _desiredArea.Width);
 			var token = stream.GetNextToken();
 			while (token.Type != TextTokenType.EndOfText)
 			{
@@ -308,7 +301,7 @@ namespace PointWars.UserInterface
 					case TextTokenType.Space:
 					case TextTokenType.Word:
 						// Compute the areas of the characters referenced by the word token
-						ComputeCharacterAreas(token.Sequence, ref offset);
+						ComputeCharacterAreas(text, token.Sequence, ref offset);
 
 						// The new width of the current line is the delta between the current offset in X direction
 						// and the left edge of the desired area
@@ -318,7 +311,7 @@ namespace PointWars.UserInterface
 						break;
 					case TextTokenType.WrappedSpace:
 						// Compute the areas of the characters referenced by the word token
-						ComputeCharacterAreas(token.Sequence, ref offset);
+						ComputeCharacterAreas(text, token.Sequence, ref offset);
 
 						// The width of the line shouldn't change as the space is actually wrapped to the next line;
 						// however, we still want to know (for instance, for the calculation of the caret position) that
@@ -421,12 +414,13 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Computes the character areas of the characters in the given sequence.
 		/// </summary>
+		/// <param name="text">The text the area is computed for.</param>
 		/// <param name="sequence">The sequence whose character areas should be computed.</param>
 		/// <param name="offset">The offset of the character position.</param>
-		private void ComputeCharacterAreas(TextSequence sequence, ref Vector2 offset)
+		private void ComputeCharacterAreas(TextString text, TextSequence sequence, ref Vector2 offset)
 		{
 			for (var i = sequence.FirstCharacter; i < sequence.LastCharacter; ++i)
-				_characterAreas[i] = _font.GetGlyphArea(Text, sequence.FirstCharacter, i, ref offset);
+				_characterAreas[i] = _font.GetGlyphArea(text, sequence.FirstCharacter, i, ref offset);
 		}
 
 		/// <summary>
@@ -488,7 +482,9 @@ namespace PointWars.UserInterface
 				_characterAreas[i] = _characterAreas[i].Offset(offset);
 
 			ActualArea = ActualArea.Offset(offset);
-			LayoutChanged?.Invoke();
+
+			using (var text = TextString.Create(Text))
+				LayoutChanged?.Invoke(text);
 		}
 	}
 }

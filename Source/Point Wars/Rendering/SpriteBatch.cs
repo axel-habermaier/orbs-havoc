@@ -88,11 +88,6 @@ namespace PointWars.Rendering
 		private readonly Texture _whiteTexture;
 
 		/// <summary>
-		///   The blend state that should be used for drawing.
-		/// </summary>
-		private BlendState _blendState = BlendState.Premultiplied;
-
-		/// <summary>
 		///   The index of the section that is currently in use.
 		/// </summary>
 		private int _currentSection = -1;
@@ -126,11 +121,6 @@ namespace PointWars.Rendering
 		///   The projection matrix used by the sprite batch.
 		/// </summary>
 		private Matrix4x4 _projectionMatrix;
-
-		/// <summary>
-		///   The sampler state that should be used for drawing.
-		/// </summary>
-		private SamplerState _samplerState = SamplerState.Bilinear;
 
 		/// <summary>
 		///   A mapping from a texture to its corresponding section list.
@@ -189,7 +179,7 @@ namespace PointWars.Rendering
 		public Vector2 PositionOffset { get; set; }
 
 		/// <summary>
-		///   Gets or sets the projection matrix used by the sprite batch.
+		///   Gets or sets the projection matrix used by the sprite batch. Changes are expected to be very infrequent.
 		/// </summary>
 		public unsafe Matrix4x4 ProjectionMatrix
 		{
@@ -206,42 +196,18 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Gets or sets the sampler state that should be used for drawing.
 		/// </summary>
-		public SamplerState SamplerState
-		{
-			get { return _samplerState; }
-			set
-			{
-				Assert.ArgumentNotNull(value, nameof(value));
-				Assert.NotDisposed(this);
-
-				_samplerState = value;
-			}
-		}
+		public SamplerState SamplerState { get; set; } = SamplerState.Bilinear;
 
 		/// <summary>
 		///   Gets or sets the blend state that should be used for drawing.
 		/// </summary>
-		public BlendState BlendState
-		{
-			get { return _blendState; }
-			set
-			{
-				Assert.ArgumentInRange(value, nameof(value));
-				Assert.NotDisposed(this);
-
-				_blendState = value;
-			}
-		}
+		public BlendState BlendState { get; set; } = BlendState.Premultiplied;
 
 		/// <summary>
-		///   Gets or sets the scissor area that should be used for the scissor test.
+		///   Gets or sets the scissor area that should be used for the scissor test. A value of null indicates that the scissor test is
+		///   disabled.
 		/// </summary>
-		public Rectangle ScissorArea { get; set; }
-
-		/// <summary>
-		///   Gets or sets a value indicating whether a scissor test should be performed during rendering.
-		/// </summary>
-		public bool UseScissorTest { get; set; }
+		public Rectangle? ScissorArea { get; set; }
 
 		/// <summary>
 		///   Gets or sets the layer of all subsequent drawing operations. All sprites within the same layer are drawn in some
@@ -404,7 +370,7 @@ namespace PointWars.Rendering
 		/// <param name="position">The position of the text's top left corner.</param>
 		public void DrawText(Font font, string text, Color color, Vector2 position)
 		{
-			using (var textString = new TextString(text))
+			using (var textString = TextString.Create(text))
 				DrawText(font, textString, color, position);
 		}
 
@@ -510,16 +476,16 @@ namespace PointWars.Rendering
 				// Bind the correct position offset
 				_positionOffsetBuffer.Bind(1, sectionList.PostitionOffsetIndex, 1);
 
-				if (!sectionList.UseScissorTest)
+				if (sectionList.ScissorArea == null)
 					glDisable(GL_SCISSOR_TEST);
 				else
 				{
 					glEnable(GL_SCISSOR_TEST);
 					glScissor(
-						MathUtils.RoundIntegral(sectionList.ScissorArea.Left),
-						MathUtils.RoundIntegral(renderTarget.Size.Height - sectionList.ScissorArea.Height - sectionList.ScissorArea.Top),
-						MathUtils.RoundIntegral(sectionList.ScissorArea.Width),
-						MathUtils.RoundIntegral(sectionList.ScissorArea.Height));
+						MathUtils.RoundIntegral(sectionList.ScissorArea.Value.Left),
+						MathUtils.RoundIntegral(renderTarget.Size.Height - sectionList.ScissorArea.Value.Height - sectionList.ScissorArea.Value.Top),
+						MathUtils.RoundIntegral(sectionList.ScissorArea.Value.Width),
+						MathUtils.RoundIntegral(sectionList.ScissorArea.Value.Height));
 				}
 
 				// Draw and increase the offset
@@ -655,7 +621,6 @@ namespace PointWars.Rendering
 					SamplerState = SamplerState,
 					Texture = texture,
 					ScissorArea = ScissorArea,
-					UseScissorTest = UseScissorTest,
 					Layer = Layer,
 					FirstSection = _numSections,
 					LastSection = _numSections,
@@ -681,9 +646,8 @@ namespace PointWars.Rendering
 		{
 			var list = _sectionLists[sectionList];
 
-			return list.Texture == texture && list.BlendState == BlendState && list.Layer == Layer &&
-				   list.SamplerState == SamplerState && list.UseScissorTest == UseScissorTest &&
-				   list.ScissorArea == ScissorArea && list.PositionOffset == PositionOffset;
+			return list.Texture == texture && list.Layer == Layer && list.BlendState == BlendState &&
+				   list.SamplerState == SamplerState && list.ScissorArea == ScissorArea && list.PositionOffset == PositionOffset;
 		}
 
 		/// <summary>
@@ -730,8 +694,7 @@ namespace PointWars.Rendering
 
 			/// <summary>
 			///   The index of the next section of the quad list using the same texture and rendering settings or -1 if this is the
-			///   last
-			///   section.
+			///   last section.
 			/// </summary>
 			public int Next;
 
@@ -761,9 +724,8 @@ namespace PointWars.Rendering
 			public int FirstSection;
 			public int Layer;
 			public SamplerState SamplerState;
-			public Rectangle ScissorArea;
+			public Rectangle? ScissorArea;
 			public Texture Texture;
-			public bool UseScissorTest;
 			public int LastSection;
 			public int NumQuads;
 			public Vector2 PositionOffset;

@@ -55,9 +55,8 @@ namespace PointWars.UserInterface
 		public TextBox(Font font)
 		{
 			_layout = new TextLayout(font, String.Empty);
-			_layout.LayoutChanged += () => _textRenderer.RebuildCache(Font, _layout.Text, _layout.LayoutData);
-
-			_caret.TextChanged += text => _layout.TextString = text;
+			_layout.LayoutChanged += text=> _textRenderer.RebuildCache(Font, text, _layout.LayoutData);
+			_caret.TextChanged += text => _layout.Text = text;
 
 			Text = String.Empty;
 			Color = new Color(255, 255, 255, 255);
@@ -101,13 +100,13 @@ namespace PointWars.UserInterface
 		/// </summary>
 		public string Text
 		{
-			get { return _layout.TextString; }
+			get { return _layout.Text; }
 			set
 			{
 				Assert.NotDisposed(this);
 
-				_layout.TextString = value;
-				_caret.TextString = value;
+				_layout.Text = value;
+				_caret.Text = value;
 			}
 		}
 
@@ -149,13 +148,13 @@ namespace PointWars.UserInterface
 			switch (key)
 			{
 				case Key.Right:
-					if ((modifiers & KeyModifiers.Control) == KeyModifiers.Control)
+					if ((modifiers & KeyModifiers.Control) != 0)
 						_caret.Position = GetBeginningOfNextWord();
 					else
 						_caret.Move(1);
 					break;
 				case Key.Left:
-					if ((modifiers & KeyModifiers.Control) == KeyModifiers.Control)
+					if ((modifiers & KeyModifiers.Control) != 0)
 						_caret.Position = GetBeginningOfPreviousWord();
 					else
 						_caret.Move(-1);
@@ -183,7 +182,7 @@ namespace PointWars.UserInterface
 		/// </summary>
 		private int GetBeginningOfNextWord()
 		{
-			using (var text = new TextString(Text))
+			using (var text = TextString.Create(Text))
 			{
 				var encounteredWhitespace = false;
 				for (var i = _caret.Position; i < text.Length; ++i)
@@ -203,7 +202,7 @@ namespace PointWars.UserInterface
 		/// </summary>
 		private int GetBeginningOfPreviousWord()
 		{
-			using (var text = new TextString(Text))
+			using (var text = TextString.Create(Text))
 			{
 				var encounteredNonWhitespace = false;
 				for (var i = _caret.Position; i > 0; --i)
@@ -240,7 +239,6 @@ namespace PointWars.UserInterface
 		protected override void OnDisposing()
 		{
 			_caret.SafeDispose();
-			_layout.SafeDispose();
 		}
 	}
 }

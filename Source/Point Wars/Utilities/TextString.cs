@@ -32,7 +32,7 @@ namespace PointWars.Utilities
 	/// <summary>
 	///   Represents a text that may optionally contain color specifiers.
 	/// </summary>
-	public struct TextString : IDisposable
+	public sealed class TextString : PooledObject
 	{
 		/// <summary>
 		///   The marker that introduces a color specifier.
@@ -42,12 +42,7 @@ namespace PointWars.Utilities
 		/// <summary>
 		///   Pools list of color ranges.
 		/// </summary>
-		private static readonly ObjectPool<List<ColorRange>> ColorRangePool = new ObjectPool<List<ColorRange>>(hasGlobalLifetime: true);
-
-		/// <summary>
-		///   Pools list of color ranges.
-		/// </summary>
-		private static readonly ObjectPool<StringBuilder> StringBuilderPool = new ObjectPool<StringBuilder>(hasGlobalLifetime: true);
+		private static readonly ObjectPool<TextString> TextStringPool = new ObjectPool<TextString>(hasGlobalLifetime: true);
 
 		/// <summary>
 		///   Maps characters to colors. The character plus the color marker comprise a color specifier. For instance, 'white'
@@ -71,38 +66,17 @@ namespace PointWars.Utilities
 		/// <summary>
 		///   The color ranges defined by the text.
 		/// </summary>
-		private readonly List<ColorRange> _colorRanges;
+		private readonly List<ColorRange> _colorRanges = new List<ColorRange>();
 
 		/// <summary>
 		///   The text with the color specifiers removed.
 		/// </summary>
-		private readonly StringBuilder _text;
-
-		/// <summary>
-		///   Creates a new text instance.
-		/// </summary>
-		/// <param name="textString">
-		///   The string, possibly containing color specifiers, that is the source for the text.
-		/// </param>
-		public TextString(string textString)
-			: this()
-		{
-			Assert.ArgumentNotNull(textString, nameof(textString));
-
-			_text = StringBuilderPool.Allocate();
-			_colorRanges = ColorRangePool.Allocate();
-
-			_text.Clear();
-			_colorRanges.Clear();
-
-			SourceString = textString;
-			ProcessSourceText();
-		}
+		private readonly StringBuilder _text = new StringBuilder();
 
 		/// <summary>
 		///   Gets the source string that might contain color specifiers.
 		/// </summary>
-		public string SourceString { get; }
+		public string SourceString { get; private set; }
 
 		/// <summary>
 		///   Gets the length of the text, excluding all color specifiers.
@@ -123,7 +97,6 @@ namespace PointWars.Utilities
 			get
 			{
 				Assert.InRange(index, 0, _text.Length - 1);
-
 				return _text[index];
 			}
 		}
@@ -144,12 +117,23 @@ namespace PointWars.Utilities
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///   Creates a new text instance.
 		/// </summary>
-		public void Dispose()
+		/// <param name="textString">
+		///   The string, possibly containing color specifiers, that is the source for the text.
+		/// </param>
+		public static TextString Create(string textString)
 		{
-			ColorRangePool.Free(_colorRanges);
-			StringBuilderPool.Free(_text);
+			Assert.ArgumentNotNull(textString, nameof(textString));
+
+			var text = TextStringPool.Allocate();
+			text._text.Clear();
+			text._colorRanges.Clear();
+
+			text.SourceString = textString;
+			text.ProcessSourceText();
+
+			return text;
 		}
 
 		/// <summary>

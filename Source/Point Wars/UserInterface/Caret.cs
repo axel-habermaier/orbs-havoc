@@ -41,12 +41,12 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   The string that is used to visualize the caret.
 		/// </summary>
-		private TextString _caretVisual = new TextString("_");
+		private readonly TextString _caretVisual = TextString.Create("_");
 
 		/// <summary>
 		///   The clock that is used to determine whether the caret should be visible.
 		/// </summary>
-		private Clock _clock;
+		private Clock _clock = new Clock();
 
 		/// <summary>
 		///   The logical position of the caret, corresponding to an index of a character of the editable text.
@@ -56,13 +56,13 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   The text that can be edited with the caret.
 		/// </summary>
-		private TextString _text = new TextString(String.Empty);
+		private TextString _text = TextString.Create(String.Empty);
 
 		/// <summary>
 		///   Gets or sets the text that can be edited with the caret. If the text is changed, the caret
 		///   is automatically moved to the end of the text.
 		/// </summary>
-		public string TextString
+		public string Text
 		{
 			get { return _text.SourceString; }
 			set
@@ -72,7 +72,7 @@ namespace PointWars.UserInterface
 				if (_text.SourceString == value)
 					return;
 
-				ChangeText(new TextString(value));
+				ChangeText(TextString.Create(value));
 				_position = _text.Length;
 			}
 		}
@@ -103,7 +103,7 @@ namespace PointWars.UserInterface
 		/// <param name="text">The new text.</param>
 		private void ChangeText(TextString text)
 		{
-			_text.Dispose();
+			_text.SafeDispose();
 			_text = text;
 
 			TextChanged?.Invoke(_text.SourceString);
@@ -153,7 +153,7 @@ namespace PointWars.UserInterface
 			var insertIndex = _text.MapToSource(_position);
 			var source = _text.SourceString.Insert(insertIndex, c.ToString());
 
-			var text = new TextString(source);
+			var text = TextString.Create(source);
 			ChangeText(text);
 
 			// Due to the insertion, less characters might now be visible and we have to adjust the caret position accordingly. To do that,
@@ -183,7 +183,7 @@ namespace PointWars.UserInterface
 			if (position != 0)
 				position = _text.MapToSource(position - 1) + 1;
 
-			var text = new TextString(_text.SourceString.Remove(position, 1));
+			var text = TextString.Create(_text.SourceString.Remove(position, 1));
 			ChangeText(text);
 
 			// The caret position doesn't change, but we have to ensure that it does not get out of bounds
@@ -211,7 +211,7 @@ namespace PointWars.UserInterface
 
 			var sourceString = _text.SourceString.Remove(removalIndex, 1);
 
-			var text = new TextString(sourceString);
+			var text = TextString.Create(sourceString);
 			ChangeText(text);
 
 			// Due to the deletion, more characters might now be visible and we have to adjust the caret position accordingly. To do that,
@@ -253,8 +253,8 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			_caretVisual.Dispose();
-			_text.Dispose();
+			_text.SafeDispose();
+			_caretVisual.SafeDispose();
 		}
 	}
 }

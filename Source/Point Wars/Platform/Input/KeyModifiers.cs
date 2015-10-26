@@ -28,7 +28,7 @@ namespace PointWars.Platform.Input
 	///   Specifies a set of key modifiers.
 	/// </summary>
 	[Flags]
-	public enum KeyModifiers
+	public enum KeyModifiers : ushort
 	{
 		None = 0x0000,
 		LeftShift = 0x0001,

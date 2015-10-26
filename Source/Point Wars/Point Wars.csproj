@@ -55,7 +55,6 @@
     <Compile Include="Network\NetworkProtocol.cs" />
     <Compile Include="Platform\Graphics\BlendState.cs" />
     <Compile Include="Platform\Graphics\Buffer.cs" />
-    <Compile Include="Platform\Graphics\BufferData.cs" />
     <Compile Include="Platform\Graphics\DynamicBuffer.cs" />
     <Compile Include="Platform\Graphics\GraphicsDevice.cs" />
     <Compile Include="Platform\Graphics\GraphicsObject.cs" />

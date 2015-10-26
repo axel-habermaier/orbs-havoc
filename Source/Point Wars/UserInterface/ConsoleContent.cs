@@ -124,7 +124,6 @@ namespace PointWars.UserInterface
 			if (_numLabels == 0)
 				return;
 
-			spriteBatch.UseScissorTest = true;
 			spriteBatch.ScissorArea = _area;
 
 			// We draw the labels aligned to the bottom of the content area. Therefore, we apply an offset
@@ -147,7 +146,7 @@ namespace PointWars.UserInterface
 					_labels[i].Draw(spriteBatch);
 			}
 
-			spriteBatch.UseScissorTest = false;
+			spriteBatch.ScissorArea = null;
 		}
 
 		/// <summary>

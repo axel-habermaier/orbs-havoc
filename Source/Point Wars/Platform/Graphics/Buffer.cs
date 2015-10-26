@@ -73,7 +73,7 @@ namespace PointWars.Platform.Graphics
 		///   returned pointer depend on the given map mode.
 		/// </summary>
 		/// <param name="mapMode">Indicates which CPU operations are allowed on the buffer memory.</param>
-		public BufferData Map(int mapMode)
+		public void* Map(int mapMode)
 		{
 			Assert.NotDisposed(this);
 			Assert.That(!_isMapped, "Buffer is already mapped.");
@@ -86,7 +86,7 @@ namespace PointWars.Platform.Graphics
 				Log.Die("Failed to map buffer.");
 
 			_isMapped = true;
-			return new BufferData(this, mappedBuffer);
+			return mappedBuffer;
 		}
 
 		/// <summary>
@@ -96,7 +96,7 @@ namespace PointWars.Platform.Graphics
 		/// <param name="mapMode">Indicates which CPU operations are allowed on the buffer memory.</param>
 		/// <param name="offsetInBytes">A zero-based index denoting the first byte of the buffer that should be mapped.</param>
 		/// <param name="byteCount">The number of bytes that should be mapped.</param>
-		public BufferData MapRange(int mapMode, int offsetInBytes, int byteCount)
+		public void* MapRange(int mapMode, int offsetInBytes, int byteCount)
 		{
 			Assert.NotDisposed(this);
 			Assert.That(offsetInBytes < SizeInBytes, "Invalid offset.");
@@ -112,7 +112,7 @@ namespace PointWars.Platform.Graphics
 				Log.Die("Failed to map buffer.");
 
 			_isMapped = true;
-			return new BufferData(this, mappedBuffer);
+			return mappedBuffer;
 		}
 
 		/// <summary>

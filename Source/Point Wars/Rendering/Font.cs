@@ -76,7 +76,7 @@ namespace PointWars.Rendering
 		{
 			Assert.ArgumentNotNull(textString, nameof(textString));
 
-			using (var text = new TextString(textString))
+			using (var text = TextString.Create(textString))
 				return MeasureWidth(text, 0, text.Length);
 		}
 
@@ -99,7 +99,7 @@ namespace PointWars.Rendering
 		{
 			Assert.ArgumentNotNull(textString, nameof(textString));
 
-			using (var text = new TextString(textString))
+			using (var text = TextString.Create(textString))
 				return MeasureWidth(text, start, end);
 		}
 

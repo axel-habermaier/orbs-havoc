@@ -56,16 +56,16 @@ namespace PointWars.UserInterface
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="font">The font that should be used for drawing the text.</param>
-		/// <param name="text">The text that should be displayed.</param>
-		public Label(Font font, string text)
+		/// <param name="label">The label that should be displayed.</param>
+		public Label(Font font, string label)
 		{
 			Assert.ArgumentNotNull(font, nameof(font));
-			Assert.ArgumentNotNull(text, nameof(text));
+			Assert.ArgumentNotNull(label, nameof(label));
 
 			Commands.OnReloadAssets += OnReloadAssets;
 
-			_layout = new TextLayout(font, text);
-			_layout.LayoutChanged += () => _textRenderer.RebuildCache(Font, _layout.Text, _layout.LayoutData);
+			_layout = new TextLayout(font, label);
+			_layout.LayoutChanged += text => _textRenderer.RebuildCache(Font, text, _layout.LayoutData);
 
 			Color = Colors.White;
 
@@ -79,11 +79,11 @@ namespace PointWars.UserInterface
 		/// </summary>
 		public string Text
 		{
-			get { return _layout.TextString; }
+			get { return _layout.Text; }
 			set
 			{
 				Assert.NotDisposed(this);
-				_layout.TextString = value;
+				_layout.Text = value;
 			}
 		}
 
@@ -180,7 +180,6 @@ namespace PointWars.UserInterface
 		protected override void OnDisposing()
 		{
 			Commands.OnReloadAssets -= OnReloadAssets;
-			_layout.SafeDispose();
 		}
 
 		/// <summary>
