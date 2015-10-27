@@ -258,6 +258,10 @@ namespace PointWars.Rendering
 			{
 				var index = buffer.ReadByte();
 
+				// The invalid character is the first glyph
+				if (i == 0)
+					index = 0;
+
 				// Read the texture coordinates
 				var x = buffer.ReadUInt16();
 				var y = buffer.ReadUInt16();

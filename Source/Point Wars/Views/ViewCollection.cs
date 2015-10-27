@@ -22,11 +22,12 @@
 
 namespace PointWars.Views
 {
+	using System;
 	using System.Numerics;
 	using Platform.Memory;
 	using Rendering;
-	using UserInterface;
 	using Utilities;
+	using Console = UserInterface.Console;
 
 	/// <summary>
 	///   Represents a collection of application views.
@@ -51,6 +52,7 @@ namespace PointWars.Views
 			{
 				Console,
 				DebugOverlay,
+				MessageBoxes,
 				MainMenu,
 				GameSession
 			};
@@ -65,6 +67,11 @@ namespace PointWars.Views
 		///   Gets the main menu view.
 		/// </summary>
 		public MainMenuView MainMenu { get; } = new MainMenuView();
+
+		/// <summary>
+		///   Gets the view containing the messages boxes.
+		/// </summary>
+		public MessageBoxesView MessageBoxes { get; } = new MessageBoxesView();
 
 		/// <summary>
 		///   Gets the console view.
@@ -99,6 +106,7 @@ namespace PointWars.Views
 			foreach (var view in _views)
 			{
 				view.Views = this;
+				view.UIContext.Initialize(view.InputDevice, view.InputLayer);
 				view.Initialize();
 			}
 		}
@@ -122,8 +130,7 @@ namespace PointWars.Views
 		{
 			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
-			var i = 0;
-			// ReSharper disable once LoopCanBePartlyConvertedToQuery
+			var i = Byte.MaxValue;
 			foreach (var view in _views)
 			{
 				if (!view.IsActive)
@@ -136,7 +143,7 @@ namespace PointWars.Views
 				view.Draw(spriteBatch);
 				Assert.That(spriteBatch.Layer < i * LayersPerView + LayersPerView, "The view used too many layers.");
 
-				++i;
+				--i;
 			}
 		}
 

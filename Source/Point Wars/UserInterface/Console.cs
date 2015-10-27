@@ -238,21 +238,14 @@ namespace PointWars.UserInterface
 				return;
 
 			// Draw the background
-			spriteBatch.PositionOffset = Vector2.Zero;
-			spriteBatch.ScissorArea = null;
-			spriteBatch.Layer = Int32.MaxValue - 1;
-
 			var consoleArea = new Rectangle(0, 0, _size.Width, _prompt.ActualArea.Bottom + _margin.Height);
 			spriteBatch.Draw(consoleArea, BackgroundColor);
 
 			// Draw the prompt and content
-			spriteBatch.Layer = Int32.MaxValue;
+			++spriteBatch.Layer;
 
 			_prompt.Draw(spriteBatch);
 			_content.Draw(spriteBatch);
-
-			spriteBatch.Layer = 0;
-			spriteBatch.PositionOffset = Vector2.Zero;
 		}
 
 		/// <summary>

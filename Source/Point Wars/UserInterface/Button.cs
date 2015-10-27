@@ -23,7 +23,8 @@
 namespace PointWars.UserInterface
 {
 	using System;
-	using System.Numerics;
+	using Platform.Input;
+	using Platform.Memory;
 	using Rendering;
 	using Utilities;
 
@@ -33,7 +34,6 @@ namespace PointWars.UserInterface
 	public sealed class Button : UIElement
 	{
 		private readonly Label _label;
-		private Rectangle _area;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -43,6 +43,32 @@ namespace PointWars.UserInterface
 		{
 			Assert.ArgumentNotNull(label, nameof(label));
 			_label = new Label(label) { TextAlignment = TextAlignment.Centered | TextAlignment.Middle };
+
+			NormalStyle = new Style
+			{
+				Background = new Color(0x5F00588B),
+				Foreground = Colors.White,
+				BorderColor = new Color(0xFF055674),
+				BorderThickness = 1
+			};
+
+			HoveredStyle = new Style
+			{
+				Background = new Color(0x5F0082CE),
+				Foreground = Colors.White,
+				BorderColor = new Color(0xFF055674),
+				BorderThickness = 1
+			};
+
+			ActiveStyle = new Style
+			{
+				Background = new Color(0x5F009CF7),
+				Foreground = Colors.White,
+				BorderColor = new Color(0xFF055674),
+				BorderThickness = 1
+			};
+
+			Padding = new Thickness(7, 5, 7, 5);
 		}
 
 		/// <summary>
@@ -64,69 +90,44 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Gets or sets the button's background color.
+		///   Gets or sets the callback that is invoked when the button has been clicked.
 		/// </summary>
-		public Color Background { get; set; } = new Color(0x5F00588B);
+		public Action Clicked { get; set; }
 
 		/// <summary>
-		///   Gets or sets the button's foreground color.
+		///   Gets the area occupied by the UI element's contents.
 		/// </summary>
-		public Color Foreground { get; set; } = Colors.White;
-
-		/// <summary>
-		///   Gets or sets the button's border color.
-		/// </summary>
-		public Color BorderColor { get; set; } = new Color(0xFF055674);
-
-		/// <summary>
-		///   Gets or sets the button's border thickness.
-		/// </summary>
-		public float BorderThickness { get; set; } = 1;
-
-		/// <summary>
-		///   Gets or sets the button's padding, i.e., the margin between its label and its border.
-		/// </summary>
-		public Thickness Padding { get; set; } = new Thickness(7, 3, 7, 3);
-
-		/// <summary>
-		///   Gets or sets the UI element's desired area before layouting.
-		/// </summary>
-		public override Rectangle Area
+		public override Rectangle ContentArea
 		{
-			get
-			{
-				var area = _label.Area;
-				var size = new Size(
-					Math.Max(area.Width + Padding.Width + BorderThickness, _area.Width),
-					Math.Max(area.Height + Padding.Height + BorderThickness, _area.Height));
+			get { return _label.ContentArea; }
+			set { _label.ContentArea = value; }
+		}
 
-				return new Rectangle(_area.Position, size);
-			}
-			set
-			{
-				_area = value;
+		/// <summary>
+		///   Disposes the object, releasing all managed and unmanaged resources.
+		/// </summary>
+		protected override void OnDisposing()
+		{
+			_label.SafeDispose();
+		}
 
-				var position = value.Position + new Vector2(Padding.Left, Padding.Top);
-				var size = new Size(value.Size.Width - Padding.Width - BorderThickness, value.Size.Height - Padding.Height - BorderThickness);
-				_label.Area = new Rectangle(position, size);
-			}
+		/// <summary>
+		///   Invoked when a mouse button was released while the UI element was hovered.
+		/// </summary>
+		/// <param name="button">The button that has been released.</param>
+		public override void OnMouseUp(MouseButton button)
+		{
+			base.OnMouseUp(button);
+			Clicked?.Invoke();
 		}
 
 		/// <summary>
 		///   Draws the UI element.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
-		public override void Draw(SpriteBatch spriteBatch)
+		protected override void DrawCore(SpriteBatch spriteBatch)
 		{
-			if (Background != Colors.Transparent)
-				spriteBatch.Draw(Area, Background);
-
-			if (BorderThickness > 0 && BorderColor != Colors.Transparent)
-				spriteBatch.DrawOutline(Area, BorderColor, BorderThickness);
-
-			++spriteBatch.Layer;
 			_label.Draw(spriteBatch);
-			--spriteBatch.Layer;
 		}
 	}
 }

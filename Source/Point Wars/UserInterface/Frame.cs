@@ -20,45 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Input
+namespace PointWars.UserInterface
 {
-	using System;
+	using Rendering;
+	using Utilities;
 
 	/// <summary>
-	///   Represents an input layer. The active input layer of a logical input device determines which logical inputs are
-	///   triggered. Input layers are prioritized, with higher-numbered layers having higher priorities.
+	///   Represents a simple frame with a background and a border.
 	/// </summary>
-	[Flags]
-	public enum InputLayer : uint
+	public sealed class Frame : UIElement
 	{
 		/// <summary>
-		///   Indicates that no input layer is active.
+		///   Initializes a new instance.
 		/// </summary>
-		None = 0,
+		public Frame()
+		{
+			NormalStyle = new Style
+			{
+				BorderThickness = 1,
+				Background = new Color(0xFF002033),
+				BorderColor = new Color(0xFF055674),
+				Foreground = Colors.White
+			};
+		}
 
 		/// <summary>
-		///   The input layer used by all input to the game.
+		///   Gets or sets the area occupied by the UI element's contents.
 		/// </summary>
-		Game = 1,
+		public override Rectangle ContentArea { get; set; }
 
 		/// <summary>
-		///   The input layer used by the chat input.
+		///   Draws the UI element.
 		/// </summary>
-		Chat = 2,
-
-		/// <summary>
-		///   The input layer used by all menus.
-		/// </summary>
-		Menu = 4,
-
-		/// <summary>
-		///   The input layer used by the console.
-		/// </summary>
-		Console = 8,
-
-		/// <summary>
-		///   Represents all input layers.
-		/// </summary>
-		All = 0xFFFFFFFF
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
+		protected override void DrawCore(SpriteBatch spriteBatch)
+		{
+			// Nothing to do here
+		}
 	}
 }

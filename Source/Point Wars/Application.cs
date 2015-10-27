@@ -83,7 +83,6 @@ namespace PointWars
 			Commands.Bind(new ConfigurableInput(Key.Escape, KeyModifiers.LeftShift), "exit");
 			Commands.Bind(Key.F10, "toggle show_debug_overlay");
 
-			InputDevice.ActivateLayer(InputLayer.Game);
 			Resize(Window.Size);
 		}
 

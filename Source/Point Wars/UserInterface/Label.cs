@@ -53,10 +53,11 @@ namespace PointWars.UserInterface
 			_layout.LayoutChanged += text => _textRenderer.RebuildCache(Font, text, _layout.LayoutData);
 
 			Color = Colors.White;
+			SizeToContent = true;
 
 			// Use a large value for the default area; however, don't use Int32.MaxValue because of
 			// integer arithmetic overflowing problems
-			Area = new Rectangle(0, 0, Int16.MaxValue, Int16.MaxValue);
+			_layout.DesiredArea = new Rectangle(0, 0, Int16.MaxValue, Int16.MaxValue);
 		}
 
 		/// <summary>
@@ -69,26 +70,6 @@ namespace PointWars.UserInterface
 			{
 				Assert.NotDisposed(this);
 				_layout.Text = value;
-			}
-		}
-
-		/// <summary>
-		///   Gets or sets the label's area.
-		/// </summary>
-		public override Rectangle Area
-		{
-			get
-			{
-				Assert.NotDisposed(this);
-
-				// Ensure that the layout is up to date
-				_layout.UpdateLayout();
-				return _layout.ActualArea;
-			}
-			set
-			{
-				Assert.NotDisposed(this);
-				_layout.DesiredArea = value;
 			}
 		}
 
@@ -145,10 +126,30 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Gets or sets the label's content area.
+		/// </summary>
+		public override Rectangle ContentArea
+		{
+			get
+			{
+				Assert.NotDisposed(this);
+
+				// Ensure that the layout is up to date
+				_layout.UpdateLayout();
+				return _layout.ActualArea;
+			}
+			set
+			{
+				Assert.NotDisposed(this);
+				_layout.DesiredArea = value;
+			}
+		}
+
+		/// <summary>
 		///   Draws the label using the given sprite batch.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the label.</param>
-		public override void Draw(SpriteBatch spriteBatch)
+		protected override void DrawCore(SpriteBatch spriteBatch)
 		{
 			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 			Assert.NotDisposed(this);

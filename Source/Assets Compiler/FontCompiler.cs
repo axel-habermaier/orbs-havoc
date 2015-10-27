@@ -67,10 +67,9 @@ namespace AssetsCompiler
 					var lineHeight = (int)face.Size.Metrics.Height;
 					var baseline = lineHeight + (int)face.Size.Metrics.Descender;
 
-					var glyphs = characters
-						.Select(c => LoadGlyph(face, c, aliased))
-						.Where(glyph => glyph.Bitmap != null)
-						.OrderBy(glyph => glyph.Height)
+					// The first glyph must be the invalid character
+					var glyphs = new[] { LoadGlyph(face, invalidChar, aliased) }
+						.Concat(characters.Select(c => LoadGlyph(face, c, aliased)).OrderBy(glyph => glyph.Height))
 						.ToArray();
 
 					var kernings =
@@ -85,7 +84,7 @@ namespace AssetsCompiler
 					{
 						using (var graphics = Graphics.FromImage(bitmap))
 						{
-							foreach (var glyph in glyphs)
+							foreach (var glyph in glyphs.Where(glyph => glyph.Bitmap != null))
 								graphics.DrawImage(glyph.Bitmap, new Point(glyph.Area.Left, glyph.Area.Top));
 						}
 						TextureCompiler.Compile(writer, bitmap);
@@ -99,11 +98,7 @@ namespace AssetsCompiler
 					// Write glyph metadata
 					foreach (var glyph in glyphs)
 					{
-						// Glyphs are identified by their character ASCII id, except for the invalid character, which must lie at index 0
-						if (glyph.Character == invalidChar)
-							writer.Write((byte)0);
-						else
-							writer.Write((byte)glyph.Character);
+						writer.Write((byte)glyph.Character);
 
 						// Write the font map texture coordinates in pixels
 						writer.Write((ushort)glyph.Area.Left);

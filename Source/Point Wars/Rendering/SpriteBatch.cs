@@ -239,8 +239,8 @@ namespace PointWars.Rendering
 		{
 			// Make sure there is no overdraw at the corners that would be visible depending on the opacity and blend mode
 			DrawLine(rectangle.TopLeft, rectangle.TopRight, color, thickness);
-			DrawLine(rectangle.BottomLeft + new Vector2(1, -1), rectangle.TopLeft + new Vector2(1, 1), color, thickness);
-			DrawLine(rectangle.TopRight + new Vector2(0, 1), rectangle.BottomRight - new Vector2(0, 1), color, thickness);
+			DrawLine(rectangle.BottomLeft + new Vector2(1, -2), rectangle.TopLeft + new Vector2(1, 0), color, thickness);
+			DrawLine(rectangle.TopRight, rectangle.BottomRight - new Vector2(0, 1), color, thickness);
 			DrawLine(rectangle.BottomLeft - new Vector2(0, 1), rectangle.BottomRight - new Vector2(0, 1), color, thickness);
 		}
 

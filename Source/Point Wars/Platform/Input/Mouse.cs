@@ -76,12 +76,44 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
+		///   Gets a value indicating whether the mouse is currently within the window.
+		/// </summary>
+		public unsafe bool InsideWindow => SDL_GetMouseFocus() != null;
+
+		/// <summary>
 		///   Raised when the mouse wheel is scrolled.
 		/// </summary>
 		public event Action<MouseWheelDirection> Wheel
 		{
 			add { _window.MouseWheel += value; }
 			remove { _window.MouseWheel -= value; }
+		}
+
+		/// <summary>
+		///   Raised when a mouse button was pressed.
+		/// </summary>
+		public event Action<MouseButton, Vector2, bool> Pressed
+		{
+			add { _window.MousePressed += value; }
+			remove { _window.MousePressed -= value; }
+		}
+
+		/// <summary>
+		///   Raised when a mouse button was released.
+		/// </summary>
+		public event Action<MouseButton, Vector2> Released
+		{
+			add { _window.MouseReleased += value; }
+			remove { _window.MouseReleased -= value; }
+		}
+
+		/// <summary>
+		///   Raised when the mouse has been moved.
+		/// </summary>
+		public event Action<Vector2> Moved
+		{
+			add { _window.MouseMoved += value; }
+			remove { _window.MouseMoved -= value; }
 		}
 
 		/// <summary>

@@ -22,27 +22,18 @@
 
 namespace PointWars.Views
 {
-	using System.Numerics;
-	using Platform.Input;
+	using System.Collections.Generic;
+	using Platform.Memory;
 	using Rendering;
-	using Scripting;
 	using UserInterface;
 	using Utilities;
 
 	/// <summary>
-	///   Represents the application's main menu when no game session is active.
+	///   Shows open message boxes.
 	/// </summary>
-	internal sealed class MainMenuView : View
+	internal sealed class MessageBoxesView : View
 	{
-		private UIElement[] _elements;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public MainMenuView()
-			: base(InputLayer.Menu)
-		{
-		}
+		private readonly List<MessageBox> _messageBoxes = new List<MessageBox>();
 
 		/// <summary>
 		///   Initializes the view.
@@ -50,26 +41,19 @@ namespace PointWars.Views
 		public override void Initialize()
 		{
 			IsActive = true;
-
-			var buttonArea = new Rectangle(Vector2.Zero, 200, 0);
-			_elements = new UIElement[]
-			{
-				new Label(Application.Name) { Font = Assets.Moonhouse80, Margin = new Thickness(0, 0, 0, 30) },
-				new Button("Start Game") { Font = Assets.Moonhouse24, Area = buttonArea },
-				new Button("Join Game") { Font = Assets.Moonhouse24, Area = buttonArea },
-				new Button("Options") { Font = Assets.Moonhouse24, Area = buttonArea },
-				new Button("Exit") { Font = Assets.Moonhouse24, Area = buttonArea, Clicked = OnExit }
-			};
-
-			UIContext.Add(_elements);
 		}
 
 		/// <summary>
-		///   Handles clicks on the Exit button.
+		///   Shows the given message box.
 		/// </summary>
-		private void OnExit()
+		/// <param name="messageBox">The message box that should be shown.</param>
+		public void Show(MessageBox messageBox)
 		{
-			Views.MessageBoxes.Show(new MessageBox("Are you sure?", "Do you really want to quit the application?").WithButton("Yes", Commands.Exit));
+			Assert.ArgumentNotNull(messageBox, nameof(messageBox));
+
+			messageBox.Register(UIContext);
+			messageBox.Resize(Window.Size);
+			_messageBoxes.Add(messageBox);
 		}
 
 		/// <summary>
@@ -78,12 +62,27 @@ namespace PointWars.Views
 		/// <param name="size">The new size available to the view.</param>
 		public override void Resize(Size size)
 		{
-			var area = new Rectangle(Vector2.Zero, size);
+			foreach (var messageBox in _messageBoxes)
+				messageBox.Resize(size);
+		}
 
-			Layout.ResetLayoutedPositions(_elements);
-			Layout.StackVertically(margin: 6, elements: _elements);
-			Layout.CenterVertically(area, _elements);
-			Layout.CenterEachHorizontally(area, _elements);
+		/// <summary>
+		///   Draws the view's contents.
+		/// </summary>
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
+		public override void Draw(SpriteBatch spriteBatch)
+		{
+			foreach (var messageBox in _messageBoxes)
+				messageBox.Draw(spriteBatch);
+		}
+
+		/// <summary>
+		///   Disposes the object, releasing all managed and unmanaged resources.
+		/// </summary>
+		protected override void OnDisposing()
+		{
+			_messageBoxes.SafeDisposeAll();
+			base.OnDisposing();
 		}
 	}
 }

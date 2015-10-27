@@ -26,6 +26,7 @@ namespace PointWars.Views
 	using Platform.Input;
 	using Platform.Memory;
 	using Rendering;
+	using UserInterface;
 	using Utilities;
 
 	/// <summary>
@@ -33,7 +34,6 @@ namespace PointWars.Views
 	/// </summary>
 	internal abstract class View : DisposableObject
 	{
-		private readonly InputLayer _inputLayer;
 		private bool _isActive;
 
 		/// <summary>
@@ -43,13 +43,23 @@ namespace PointWars.Views
 		protected View(InputLayer inputLayer = InputLayer.None)
 		{
 			Assert.ArgumentInRange(inputLayer, nameof(inputLayer));
-			_inputLayer = inputLayer;
+			InputLayer = inputLayer;
 		}
+
+		/// <summary>
+		///   Gets the input layer used by the view.
+		/// </summary>
+		public InputLayer InputLayer { get; }
 
 		/// <summary>
 		///   Gets or sets the view collection the view belongs to.
 		/// </summary>
 		public ViewCollection Views { get; set; }
+
+		/// <summary>
+		///   Gets the context for the view's UI elements.
+		/// </summary>
+		public UIContext UIContext { get; } = new UIContext();
 
 		/// <summary>
 		///   Gets the window the view is drawn in.
@@ -73,15 +83,16 @@ namespace PointWars.Views
 					return;
 
 				_isActive = value;
+
 				if (_isActive)
 				{
 					Activate();
-					InputDevice.ActivateLayer(_inputLayer);
+					InputDevice.ActivateLayer(InputLayer);
 				}
 				else
 				{
 					Deactivate();
-					InputDevice.DeactivateLayer(_inputLayer);
+					InputDevice.DeactivateLayer(InputLayer);
 				}
 			}
 		}
@@ -128,6 +139,7 @@ namespace PointWars.Views
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
 		public virtual void Draw(SpriteBatch spriteBatch)
 		{
+			UIContext.Draw(spriteBatch);
 		}
 
 		/// <summary>
@@ -135,6 +147,7 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			UIContext.SafeDispose();
 		}
 	}
 }

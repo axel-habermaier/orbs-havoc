@@ -77,9 +77,9 @@ namespace PointWars.UserInterface
 		public static TextBox FocusedTextBox { get; private set; }
 
 		/// <summary>
-		///   Gets or sets the text box's area.
+		///   Gets or sets the text box's content area.
 		/// </summary>
-		public override Rectangle Area
+		public override Rectangle ContentArea
 		{
 			get
 			{
@@ -180,7 +180,7 @@ namespace PointWars.UserInterface
 
 			if (!HasFocus)
 				return;
-
+			
 			switch (key)
 			{
 				case Key.Right:
@@ -267,7 +267,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Draws the text box.
 		/// </summary>
-		public override void Draw(SpriteBatch spriteBatch)
+		protected override void DrawCore(SpriteBatch spriteBatch)
 		{
 			Assert.NotDisposed(this);
 			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));

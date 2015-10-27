@@ -232,6 +232,11 @@ namespace PointWars.Platform
 		public event Action<MouseButton, Vector2> MouseReleased;
 
 		/// <summary>
+		///   Raised when the mouse has been moved.
+		/// </summary>
+		public event Action<Vector2> MouseMoved;
+
+		/// <summary>
 		///   Raised when the mouse wheel was moved.
 		/// </summary>
 		public event Action<MouseWheelDirection> MouseWheel;
@@ -245,6 +250,16 @@ namespace PointWars.Platform
 		///   Raised when the user requested the window to be closed.
 		/// </summary>
 		public event Action Closing;
+
+		/// <summary>
+		///   Raised when the window lost the focus.
+		/// </summary>
+		public event Action LostFocus;
+
+		/// <summary>
+		///   Raised when the window gained the focus.
+		/// </summary>
+		public event Action GainedFocus;
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
@@ -322,9 +337,11 @@ namespace PointWars.Platform
 								break;
 							case SDL_WINDOWEVENT_FOCUS_GAINED:
 								HasFocus = true;
+								GainedFocus?.Invoke();
 								break;
 							case SDL_WINDOWEVENT_FOCUS_LOST:
 								HasFocus = false;
+								LostFocus?.Invoke();
 								break;
 							case SDL_WINDOWEVENT_CLOSE:
 								_shouldClose = true;
@@ -360,8 +377,10 @@ namespace PointWars.Platform
 					case SDL_MOUSEWHEEL:
 						MouseWheel?.Invoke(e.wheel.y < 0 ? MouseWheelDirection.Down : MouseWheelDirection.Up);
 						break;
-					case SDL_TEXTEDITING:
 					case SDL_MOUSEMOTION:
+						MouseMoved?.Invoke(new Vector2(e.motion.x, e.motion.y));
+						break;
+					case SDL_TEXTEDITING:
 					case SDL_QUIT:
 						// Don't care
 						break;

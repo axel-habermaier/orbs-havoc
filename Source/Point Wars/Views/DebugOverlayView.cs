@@ -23,6 +23,7 @@
 namespace PointWars.Views
 {
 	using System;
+	using System.Numerics;
 	using System.Text;
 	using Platform;
 	using Platform.Memory;
@@ -127,8 +128,7 @@ namespace PointWars.Views
 		/// <param name="size">The new size available to the view.</param>
 		public override void Resize(Size size)
 		{
-			const int padding = 5;
-			_platformInfo.Area = new Rectangle(padding, padding, size.Width - 2 * padding, size.Height - 2 * padding);
+			_platformInfo.AlignBottom(new Rectangle(Vector2.Zero, size));
 		}
 
 		/// <summary>
@@ -136,7 +136,15 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Initialize()
 		{
-			_platformInfo = new Label { Font = Assets.DefaultFont, LineSpacing = 2, TextAlignment = TextAlignment.Bottom };
+			_platformInfo = new Label
+			{
+				Font = Assets.DefaultFont,
+				LineSpacing = 2,
+				Padding = new Thickness(15),
+				Margin = new Thickness(5),
+				NormalStyle = { Background = new Color(0xAA000000) },
+				Area = new Rectangle(0, 0, 500, 500)
+			};
 			_timer.Timeout += UpdateStatistics;
 
 			_builder.Append("Platform:    ").Append(PlatformInfo.Platform).Append(" ").Append(IntPtr.Size * 8).Append("bit\n");
@@ -146,6 +154,7 @@ namespace PointWars.Views
 
 			Cvars.ShowDebugOverlayChanged += ChangeActivation;
 			ChangeActivation();
+			UpdateStatistics();
 		}
 
 		/// <summary>
@@ -208,6 +217,8 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			base.OnDisposing();
+
 			Cvars.ShowDebugOverlayChanged -= ChangeActivation;
 
 			_platformInfo.SafeDispose();

@@ -49,6 +49,11 @@ namespace PointWars.Platform.Input
 		private readonly ActivationState[] _layerStates = new ActivationState[Enum.GetValues(typeof(InputLayer)).Length];
 
 		/// <summary>
+		///   The window the input device belongs to.
+		/// </summary>
+		private readonly Window _window;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window that should be associated with this logical device.</param>
@@ -56,6 +61,7 @@ namespace PointWars.Platform.Input
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
 
+			_window = window;
 			Keyboard = new Keyboard(window);
 			Mouse = new Mouse(window);
 		}
@@ -74,6 +80,29 @@ namespace PointWars.Platform.Input
 		///   Gets the mouse that is associated with this logical device.
 		/// </summary>
 		public Mouse Mouse { get; }
+
+		/// <summary>
+		///   Raised when the input device's associated window lost the focus.
+		/// </summary>
+		public event Action LostFocus
+		{
+			add { _window.LostFocus += value; }
+			remove { _window.LostFocus -= value; }
+		}
+
+		/// <summary>
+		///   Raised when the input device's associated window gained the focus.
+		/// </summary>
+		public event Action GainedFocus
+		{
+			add { _window.GainedFocus += value; }
+			remove { _window.GainedFocus -= value; }
+		}
+
+		/// <summary>
+		///   Raised when the input layer has been changed.
+		/// </summary>
+		public event Action<InputLayer> InputLayerChanged;
 
 		/// <summary>
 		///   Registers a logical input on the logical input device. Subsequently, the logical input's IsTriggered
@@ -168,7 +197,10 @@ namespace PointWars.Platform.Input
 				{
 					var layer = (InputLayer)(1 << (i - 1));
 					if (InputLayer != layer)
+					{
 						Log.Debug("Input layer has been switched to '{0}'.", layer);
+						InputLayerChanged?.Invoke(layer);
+					}
 
 					InputLayer = layer;
 					break;

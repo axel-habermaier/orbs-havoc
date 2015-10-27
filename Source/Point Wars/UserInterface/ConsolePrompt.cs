@@ -134,7 +134,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets the actual area of the prompt.
 		/// </summary>
-		public Rectangle ActualArea => new Rectangle(_area.Left, _area.Top, _area.Width, _input.Area.Height);
+		public Rectangle ActualArea => new Rectangle(_area.Left, _area.Top, _area.Width, _input.ContentArea.Height);
 
 		/// <summary>
 		///   Changes the focus of the prompt.
@@ -174,9 +174,8 @@ namespace PointWars.UserInterface
 		{
 			_area = area;
 
-			_input.Area = new Rectangle(area.Left + _prompt.Area.Width, area.Top,
-				area.Width - _prompt.Area.Width, 0);
-			_prompt.Area = new Rectangle(area.Left, area.Top, Int16.MaxValue, 0);
+			_input.ContentArea = new Rectangle(area.Left + _prompt.ContentArea.Width, area.Top, area.Width - _prompt.ContentArea.Width, 0);
+			_prompt.ContentArea = new Rectangle(area.Left, area.Top, Int16.MaxValue, 0);
 		}
 
 		/// <summary>

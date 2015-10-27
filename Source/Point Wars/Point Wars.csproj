@@ -53,13 +53,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UserInterface\Button.cs" />
-    <Compile Include="UserInterface\LayoutExtensions.cs" />
+    <Compile Include="UserInterface\Frame.cs" />
+    <Compile Include="UserInterface\MessageBox.cs" />
+    <Compile Include="UserInterface\Style.cs" />
+    <Compile Include="UserInterface\UIContext.cs" />
+    <Compile Include="UserInterface\Layout.cs" />
     <Compile Include="UserInterface\Thickness.cs" />
     <Compile Include="UserInterface\UIElement.cs" />
     <Compile Include="Views\ConsoleView.cs" />
     <Compile Include="Views\DebugOverlayView.cs" />
     <Compile Include="Views\GameSessionView.cs" />
     <Compile Include="Views\MainMenuView.cs" />
+    <Compile Include="Views\MessageBoxesView.cs" />
     <Compile Include="Views\View.cs" />
     <Compile Include="Network\NetworkProtocol.cs" />
     <Compile Include="Platform\Graphics\BlendState.cs" />
@@ -223,7 +228,9 @@
     <Font Include="Rendering\Fonts\Moonhouse24.font" />
     <Font Include="Rendering\Fonts\Moonhouse80.font" />
     <None Include="Rendering\Fonts\LiberationMono-Regular.ttf" />
+    <None Include="Rendering\Fonts\LiberationSans-Regular.ttf" />
     <None Include="Rendering\Fonts\moonhouse.ttf" />
+    <Font Include="Rendering\Fonts\LiberationSans16.font" />
   </ItemGroup>
   <ItemGroup>
     <IL Include="Platform\Graphics\OpenGL3.g.asm">
