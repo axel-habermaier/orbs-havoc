@@ -45,7 +45,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   The maximum number of position offsets that can be used.
 		/// </summary>
-		private const int MaxPositionOffsets = 64;
+		private const int MaxPositionOffsets = 16;
 
 		/// <summary>
 		///   The index buffer that is used for drawing.
@@ -163,10 +163,14 @@ namespace PointWars.Rendering
 				_indexBuffer = new Buffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, numIndices * sizeof(int), data);
 				_vertexLayout = new VertexLayout(_vertexBuffer.Buffer, _indexBuffer);
 				_projectionMatrixBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STATIC_DRAW, sizeof(Matrix4x4), null);
-				// Position offsets must be of type Vector4 due to OpenGL uniform buffer alignment requirements
-				_positionOffsetBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, MaxPositionOffsets, sizeof(Vector4));
 			}
 
+			// Respect the OpenGL uniform buffer alignment requirements
+			int alignment;
+			glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &alignment);
+			_positionOffsetBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, MaxPositionOffsets, alignment);
+
+			// The default texture that is used for non-textured quads
 			using (var pointer = new BufferPointer(new byte[] { 255, 255, 255, 255 }))
 				_whiteTexture = new Texture(new Size(1, 1), GL_RGBA, pointer);
 
@@ -564,9 +568,9 @@ namespace PointWars.Rendering
 
 			fixed (Vector2* offsets = _positionOffsets)
 			{
-				var buffer = (Vector4*)_positionOffsetBuffer.Map();
-				for (var i = 0; i < _numPositionOffsets; ++i)
-					buffer[i] = new Vector4(offsets[i], 0, 0);
+				var buffer = (byte*)_positionOffsetBuffer.Map();
+				for (var i = 0; i < _numPositionOffsets; ++i, buffer += _positionOffsetBuffer.ElementSize)
+					*((Vector2*)buffer) = offsets[i];
 			}
 		}
 

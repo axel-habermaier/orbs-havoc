@@ -39,11 +39,6 @@ namespace PointWars.Platform.Graphics
 		private const int ChunkCount = 3;
 
 		/// <summary>
-		///   The number of elements stored in each chunk.
-		/// </summary>
-		private readonly int _elementCount;
-
-		/// <summary>
 		///   The persistently mapped pointer to the OpenGL buffer contents.
 		/// </summary>
 		private readonly void* _pointer;
@@ -52,11 +47,6 @@ namespace PointWars.Platform.Graphics
 		///   The index of the current chunk that the dynamic vertex buffer uses for mapping and drawing operations.
 		/// </summary>
 		private int _currentChunk;
-
-		/// <summary>
-		///   The size of a single element in bytes.
-		/// </summary>
-		private readonly int _elementSize;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -69,10 +59,20 @@ namespace PointWars.Platform.Graphics
 			var bufferSize = ChunkCount * elementCount * elementSize;
 			Buffer = new Buffer(bufferType, bufferSize);
 
-			_elementCount = elementCount;
-			_elementSize = elementSize;
+			ElementCount = elementCount;
+			ElementSize = elementSize;
 			_pointer = Buffer.MapRange(MapMode, 0, bufferSize);
 		}
+
+		/// <summary>
+		///   Gets the number of elements stored in each chunk.
+		/// </summary>
+		public int ElementCount { get; }
+
+		/// <summary>
+		///   Gets the size of a single element in bytes.
+		/// </summary>
+		public int ElementSize { get; }
 
 		/// <summary>
 		///   Gets the underlying vertex buffer. The returned buffer should only be used to initialize vertex layouts;
@@ -84,7 +84,7 @@ namespace PointWars.Platform.Graphics
 		///   Gets the vertex offset that must be applied to a drawing operation when the data of the last buffer mapping operation
 		///   should be drawn.
 		/// </summary>
-		public int VertexOffset => _currentChunk * _elementCount;
+		public int VertexOffset => _currentChunk * ElementCount;
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
@@ -101,10 +101,10 @@ namespace PointWars.Platform.Graphics
 		/// <param name="offset">A zero-based index denoting the first byte of the next chunk that should be mapped.</param>
 		public void* Map(int offset = 0)
 		{
-			Assert.ArgumentSatisfies(offset < _elementSize * _elementCount, nameof(offset), "Offset is out-of-bounds.");
+			Assert.ArgumentSatisfies(offset < ElementSize * ElementCount, nameof(offset), "Offset is out-of-bounds.");
 
 			_currentChunk = (_currentChunk + 1) % ChunkCount;
-			return (byte*)_pointer + _currentChunk * _elementSize * _elementCount + offset;
+			return (byte*)_pointer + _currentChunk * ElementSize * ElementCount + offset;
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		public void Bind(int slot)
 		{
-			Bind(slot, 0, _elementSize * _elementCount);
+			Bind(slot, 0, ElementSize * ElementCount);
 		}
 
 		/// <summary>
@@ -122,10 +122,10 @@ namespace PointWars.Platform.Graphics
 		{
 			Assert.NotDisposed(this);
 			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
-			Assert.InRange(elementOffset, 0, _elementCount);
-			Assert.InRange(elementCount, 0, _elementCount);
+			Assert.InRange(elementOffset, 0, ElementCount);
+			Assert.InRange(elementCount, 0, ElementCount);
 
-			Buffer.Bind(slot, _currentChunk * _elementSize * _elementCount + elementOffset * _elementSize, elementCount * _elementSize);
+			Buffer.Bind(slot, _currentChunk * ElementSize * ElementCount + elementOffset * ElementSize, elementCount * ElementSize);
 		}
 	}
 }
