@@ -47,7 +47,7 @@ namespace PointWars.Platform
 		/// <summary>
 		///   The minimum supported window size.
 		/// </summary>
-		public static readonly Size MinimumSize = new Size(320, 240);
+		public static readonly Size MinimumSize = new Size(800, 600);
 
 		/// <summary>
 		///   The maximum supported window size.
@@ -55,7 +55,6 @@ namespace PointWars.Platform
 		public static readonly Size MaximumSize = new Size(4096, 2160);
 
 		private readonly void* _window;
-
 		private bool _shouldClose;
 
 		/// <summary>
@@ -170,6 +169,8 @@ namespace PointWars.Platform
 		{
 			get
 			{
+				Assert.NotDisposed(this);
+
 				var flags = SDL_GetWindowFlags(_window);
 
 				if ((flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP)
