@@ -23,15 +23,13 @@
 namespace PointWars.UserInterface
 {
 	using System;
-	using Platform.Memory;
 	using Rendering;
-	using Scripting;
 	using Utilities;
 
 	/// <summary>
 	///   Represents a text label.
 	/// </summary>
-	public sealed class Label : DisposableObject
+	public sealed class Label : UIElement
 	{
 		/// <summary>
 		///   The layout of the label's text.
@@ -46,25 +44,12 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="font">The font that should be used for drawing the text.</param>
-		public Label(Font font)
-			: this(font, String.Empty)
-		{
-		}
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="font">The font that should be used for drawing the text.</param>
 		/// <param name="label">The label that should be displayed.</param>
-		public Label(Font font, string label)
+		public Label(string label = "")
 		{
-			Assert.ArgumentNotNull(font, nameof(font));
 			Assert.ArgumentNotNull(label, nameof(label));
 
-			Commands.OnReloadAssets += OnReloadAssets;
-
-			_layout = new TextLayout(font, label);
+			_layout = new TextLayout(Assets.DefaultFont, label);
 			_layout.LayoutChanged += text => _textRenderer.RebuildCache(Font, text, _layout.LayoutData);
 
 			Color = Colors.White;
@@ -90,9 +75,16 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets or sets the label's area.
 		/// </summary>
-		public Rectangle Area
+		public override Rectangle Area
 		{
-			get { return _layout.DesiredArea; }
+			get
+			{
+				Assert.NotDisposed(this);
+
+				// Ensure that the layout is up to date
+				_layout.UpdateLayout();
+				return _layout.ActualArea;
+			}
 			set
 			{
 				Assert.NotDisposed(this);
@@ -142,7 +134,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets or sets the alignment of the label's text.
 		/// </summary>
-		public TextAlignment Alignment
+		public TextAlignment TextAlignment
 		{
 			get { return _layout.Alignment; }
 			set
@@ -153,40 +145,10 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Gets the actual text rendering area. Usually, the actual area is smaller than the desired size.
-		///   If any words overlap, however, the actual area is bigger.
-		/// </summary>
-		public Rectangle ActualArea
-		{
-			get
-			{
-				// Ensure that the layout is up to date
-				_layout.UpdateLayout();
-				return _layout.ActualArea;
-			}
-		}
-
-		/// <summary>
-		///   Invoked when assets are reloaded. Relayouts the label's text just in case that the font has been changed.
-		/// </summary>
-		private void OnReloadAssets()
-		{
-			_layout.Relayout();
-		}
-
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		protected override void OnDisposing()
-		{
-			Commands.OnReloadAssets -= OnReloadAssets;
-		}
-
-		/// <summary>
 		///   Draws the label using the given sprite batch.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the label.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		public override void Draw(SpriteBatch spriteBatch)
 		{
 			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 			Assert.NotDisposed(this);

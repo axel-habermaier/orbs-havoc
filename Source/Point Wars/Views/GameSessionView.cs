@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,40 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Input
+namespace PointWars.Views
 {
-	using System;
+	using Platform.Input;
 
 	/// <summary>
-	///   Represents an input layer. The active input layer of a logical input device determines which logical inputs are
-	///   triggered. Input layers are prioritized, with higher-numbered layers having higher priorities.
+	///   Represents the application view of playing a game session.
 	/// </summary>
-	[Flags]
-	public enum InputLayer
+	internal sealed class GameSessionView : View
 	{
 		/// <summary>
-		///   Indicates that no input layer is active.
+		///   Initializes a new instance.
 		/// </summary>
-		None = 0,
-
-		/// <summary>
-		///   The input layer used by all input to the game.
-		/// </summary>
-		Game = 1,
-
-		/// <summary>
-		///   The input layer used by the chat input.
-		/// </summary>
-		Chat = 2,
-
-		/// <summary>
-		///   The input layer used by the console.
-		/// </summary>
-		Console = 8,
-
-		/// <summary>
-		///   Represents all input layers.
-		/// </summary>
-		All = Game | Chat | Console
+		public GameSessionView()
+			: base(InputLayer.Game)
+		{
+		}
 	}
 }

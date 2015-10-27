@@ -52,6 +52,15 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UserInterface\Button.cs" />
+    <Compile Include="UserInterface\LayoutExtensions.cs" />
+    <Compile Include="UserInterface\Thickness.cs" />
+    <Compile Include="UserInterface\UIElement.cs" />
+    <Compile Include="Views\ConsoleView.cs" />
+    <Compile Include="Views\DebugOverlayView.cs" />
+    <Compile Include="Views\GameSessionView.cs" />
+    <Compile Include="Views\MainMenuView.cs" />
+    <Compile Include="Views\View.cs" />
     <Compile Include="Network\NetworkProtocol.cs" />
     <Compile Include="Platform\Graphics\BlendState.cs" />
     <Compile Include="Platform\Graphics\Buffer.cs" />
@@ -65,6 +74,7 @@
     <Compile Include="Platform\Graphics\Texture.cs" />
     <Compile Include="Platform\Graphics\Vertex.cs" />
     <Compile Include="Platform\Graphics\VertexLayout.cs" />
+    <Compile Include="Platform\Input\ActivationState.cs" />
     <Compile Include="Platform\Input\BinaryInputTrigger.cs" />
     <Compile Include="Platform\Input\BinaryInputTriggerType.cs" />
     <Compile Include="Platform\Input\ConfigurableInput.cs" />
@@ -87,6 +97,7 @@
     <Compile Include="Platform\SDL2.cs" />
     <Compile Include="Platform\WindowMode.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Views\ViewCollection.cs" />
     <Shader Include="Rendering\Shaders\SpriteBatchShader.glsl" />
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\Rectangle.cs" />
@@ -182,7 +193,6 @@
     <Compile Include="UserInterface\ConsoleContent.cs" />
     <Compile Include="UserInterface\ConsoleInput.cs" />
     <Compile Include="UserInterface\ConsolePrompt.cs" />
-    <Compile Include="UserInterface\DebugOverlay.cs" />
     <Compile Include="UserInterface\Label.cs" />
     <Compile Include="UserInterface\TextAlignment.cs" />
     <Compile Include="UserInterface\TextAlignmentExtensions.cs" />
@@ -210,7 +220,10 @@
     <Font Include="Rendering\Fonts\DefaultFont.font" />
   </ItemGroup>
   <ItemGroup>
+    <Font Include="Rendering\Fonts\Moonhouse24.font" />
+    <Font Include="Rendering\Fonts\Moonhouse80.font" />
     <None Include="Rendering\Fonts\LiberationMono-Regular.ttf" />
+    <None Include="Rendering\Fonts\moonhouse.ttf" />
   </ItemGroup>
   <ItemGroup>
     <IL Include="Platform\Graphics\OpenGL3.g.asm">

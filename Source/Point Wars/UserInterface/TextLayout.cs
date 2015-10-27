@@ -232,11 +232,11 @@ namespace PointWars.UserInterface
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the debug visualizations.</param>
 		public void DrawDebugVisualizations(SpriteBatch spriteBatch)
 		{
-			//spriteBatch.Draw(DesiredArea, Texture2D.White, new Color(0.2f, 0.2f, 0.2f, 0.3f));
-			//spriteBatch.Draw(ActualArea, Texture2D.White, new Color(0, 0, 0.5f, 0.3f));
-
-			//for (var i = 0; i < _lineCount; ++i)
-			//	spriteBatch.Draw(_lines[i].Area, Texture2D.White, new Color(0, 0.5f, 0, 0.3f));
+//			spriteBatch.Draw(DesiredArea, new Color(0.2f, 0.2f, 0.2f, 0.3f));
+//			spriteBatch.Draw(ActualArea, new Color(0, 0, 0.5f, 0.3f));
+//
+//			for (var i = 0; i < _lineCount; ++i)
+//				spriteBatch.Draw(_lines[i].Area, new Color(0, 0.5f, 0, 0.3f));
 		}
 
 		/// <summary>
@@ -352,13 +352,13 @@ namespace PointWars.UserInterface
 				if (_alignment.IsRightAligned())
 					delta.X = _desiredArea.Width - _lines[i].Area.Width;
 				else if (_alignment.IsHorizontallyCentered())
-					delta.X = (_desiredArea.Width - _lines[i].Area.Width) / 2;
+					delta.X = MathUtils.Round((_desiredArea.Width - _lines[i].Area.Width) / 2);
 
 				// Compute delta in Y direction
 				if (_alignment.IsBottomAligned())
 					delta.Y = _desiredArea.Height - totalHeight;
 				else if (_alignment.IsVerticallyCentered())
-					delta.Y = (_desiredArea.Height - totalHeight) / 2;
+					delta.Y = MathUtils.Round((_desiredArea.Height - totalHeight) / 2);
 
 				// Move the line, if necessary
 				if (delta != Vector2.Zero)
@@ -431,7 +431,7 @@ namespace PointWars.UserInterface
 		{
 			if (_lineCount == 0)
 			{
-				// FIXME: This is only correct for left/top-aligned layouts
+				// TODO: This is only correct for left/top-aligned layouts
 				ActualArea = new Rectangle(_desiredArea.Left, _desiredArea.Top, 0, 0);
 				return;
 			}

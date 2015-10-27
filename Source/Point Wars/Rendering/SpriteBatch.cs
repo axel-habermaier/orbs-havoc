@@ -293,9 +293,8 @@ namespace PointWars.Rendering
 			var rectangle = new Rectangle(-size.Width / 2.0f, -size.Height / 2.0f, size.Width, size.Height);
 			var quad = new Quad(rectangle, color, textureArea);
 
-			var rotationMatrix = Matrix4x4.CreateRotationZ(rotation);
-			var unrotatedPosition = new Vector3(position.X, position.Y, 0);
-			var offset = new Vector2(unrotatedPosition.X, unrotatedPosition.Y);
+			var rotationMatrix = Matrix3x2.CreateRotation(rotation);
+			var offset = new Vector2(position.X, position.Y);
 
 			Quad.Transform(ref quad, ref rotationMatrix);
 			Quad.Offset(ref quad, ref offset);
@@ -332,10 +331,10 @@ namespace PointWars.Rendering
 			var shift = new Vector2(-size.Width, -size.Height) * 0.5f;
 			var quad = new Quad(new Rectangle(shift, size), color);
 
-			var rotation = Matrix4x4.CreateRotationZ(angle);
+			var rotation = Matrix3x2.CreateRotation(angle);
 			Quad.Transform(ref quad, ref rotation);
 
-			var translation = Matrix4x4.CreateTranslation(position.X, position.Y, 0);
+			var translation = Matrix3x2.CreateTranslation(position);
 			Quad.Transform(ref quad, ref translation);
 
 			Draw(ref quad, texture);

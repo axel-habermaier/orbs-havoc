@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -23,37 +23,52 @@
 namespace PointWars.Platform.Input
 {
 	using System;
+	using Utilities;
 
 	/// <summary>
-	///   Represents an input layer. The active input layer of a logical input device determines which logical inputs are
-	///   triggered. Input layers are prioritized, with higher-numbered layers having higher priorities.
+	///   Represents an input activation state with deferred updates. The state is considered active for as long as Count != 0.
 	/// </summary>
-	[Flags]
-	public enum InputLayer
+	internal struct ActivationState
 	{
 		/// <summary>
-		///   Indicates that no input layer is active.
+		///   The current activation count.
 		/// </summary>
-		None = 0,
+		public ushort Count;
 
 		/// <summary>
-		///   The input layer used by all input to the game.
+		///   The pending activation and deactivation requests.
 		/// </summary>
-		Game = 1,
+		public short Pending;
 
 		/// <summary>
-		///   The input layer used by the chat input.
+		///   Executes all deferred updates to the state.
 		/// </summary>
-		Chat = 2,
+		public void Update()
+		{
+			Count = (ushort)(Count + Pending);
+			Pending = 0;
+		}
 
 		/// <summary>
-		///   The input layer used by the console.
+		///   Handles a deferred activation request.
 		/// </summary>
-		Console = 8,
+		public void Activate()
+		{
+			Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
+			Assert.That(Count + Pending + 1 < UInt16.MaxValue, "Too many activations.");
+
+			++Pending;
+		}
 
 		/// <summary>
-		///   Represents all input layers.
+		///   Handles a deferred deactivation request.
 		/// </summary>
-		All = Game | Chat | Console
+		public void Deactivate()
+		{
+			Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
+			Assert.That(Count + Pending > 0, "Imbalanced call to deactivate.");
+
+			--Pending;
+		}
 	}
 }

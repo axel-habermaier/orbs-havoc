@@ -104,7 +104,7 @@ namespace PointWars.UserInterface
 
 			_history = new string[MaxHistory];
 			_input = new TextBox(font, Console.MaxLength) { Color = color };
-			_prompt = new Label(font, Prompt) { Color = color };
+			_prompt = new Label(Prompt) { Font = font, Color = color };
 
 			try
 			{
@@ -134,7 +134,19 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets the actual area of the prompt.
 		/// </summary>
-		public Rectangle ActualArea => new Rectangle(_area.Left, _area.Top, _area.Width, _input.ActualArea.Height);
+		public Rectangle ActualArea => new Rectangle(_area.Left, _area.Top, _area.Width, _input.Area.Height);
+
+		/// <summary>
+		///   Changes the focus of the prompt.
+		/// </summary>
+		/// <param name="focus">Indicates whether the prompt has the focus.</param>
+		public void SetFocus(bool focus)
+		{
+			if (focus)
+				_input.Focus();
+			else
+				_input.Unfocus();
+		}
 
 		/// <summary>
 		///   Injects a key press event.
@@ -162,8 +174,8 @@ namespace PointWars.UserInterface
 		{
 			_area = area;
 
-			_input.Area = new Rectangle(area.Left + _prompt.ActualArea.Width, area.Top,
-				area.Width - _prompt.ActualArea.Width, 0);
+			_input.Area = new Rectangle(area.Left + _prompt.Area.Width, area.Top,
+				area.Width - _prompt.Area.Width, 0);
 			_prompt.Area = new Rectangle(area.Left, area.Top, Int16.MaxValue, 0);
 		}
 

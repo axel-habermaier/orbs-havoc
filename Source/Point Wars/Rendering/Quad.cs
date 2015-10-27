@@ -99,7 +99,7 @@ namespace PointWars.Rendering
 		/// </summary>
 		/// <param name="quad">The quad that should be transformed.</param>
 		/// <param name="matrix">The transformation matrix that should be applied.</param>
-		public static void Transform(ref Quad quad, ref Matrix4x4 matrix)
+		public static void Transform(ref Quad quad, ref Matrix3x2 matrix)
 		{
 			quad.BottomLeft.Position = Vector2.Transform(quad.BottomLeft.Position, matrix);
 			quad.BottomRight.Position = Vector2.Transform(quad.BottomRight.Position, matrix);
@@ -165,10 +165,9 @@ namespace PointWars.Rendering
 			// rectangle lies on the start point of the line.
 			var rectangle = new Rectangle(0, -width / 2.0f, length, width);
 			var quad = new Quad(rectangle, color, textureArea);
-
+			
 			// Construct the transformation matrix and draw the transformed quad
-			var transformMatrix = Matrix4x4.CreateRotationZ(-rotation) *
-								  Matrix4x4.CreateTranslation(position.X, position.Y, 0);
+			var transformMatrix = Matrix3x2.CreateRotation(rotation) * Matrix3x2.CreateTranslation(position);
 
 			Transform(ref quad, ref transformMatrix);
 			return quad;

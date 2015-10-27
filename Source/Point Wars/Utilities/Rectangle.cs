@@ -26,6 +26,7 @@ namespace PointWars.Utilities
 	using System.Globalization;
 	using System.Numerics;
 	using System.Runtime.InteropServices;
+	using JetBrains.Annotations;
 
 	/// <summary>
 	///   Represents a rectangle.
@@ -155,10 +156,32 @@ namespace PointWars.Utilities
 		public Vector2 BottomRight => Position + new Vector2(Width, Height);
 
 		/// <summary>
+		///   Returns a copy of the rectangle moved to the given position.
+		/// </summary>
+		/// <param name="x">The new position of the rectangle's left edge.</param>
+		/// <param name="y">The new position of the rectangle's top edge.</param>
+		[Pure]
+		public Rectangle MoveTo(float x, float y)
+		{
+			return new Rectangle(x, y, Width, Height);
+		}
+
+		/// <summary>
+		///   Returns a copy of the rectangle moved to the given position.
+		/// </summary>
+		/// <param name="position">The new position of the rectangle.</param>
+		[Pure]
+		public Rectangle MoveTo(Vector2 position)
+		{
+			return MoveTo(position.X, position.Y);
+		}
+
+		/// <summary>
 		///   Returns a copy of the rectangle with the given offsets added to the position of the returned rectangle.
 		/// </summary>
 		/// <param name="x">The offset that should be applied to the rectangle's left edge.</param>
 		/// <param name="y">The offset that should be applied to the rectangle's top edge.</param>
+		[Pure]
 		public Rectangle Offset(float x, float y)
 		{
 			return new Rectangle(Left + x, Top + y, Width, Height);
@@ -168,6 +191,7 @@ namespace PointWars.Utilities
 		///   Returns a copy of the rectangle with the given offsets added to the position of the returned rectangle.
 		/// </summary>
 		/// <param name="offset">The offset that should be applied to the rectangle's position.</param>
+		[Pure]
 		public Rectangle Offset(Vector2 offset)
 		{
 			return Offset(offset.X, offset.Y);
@@ -178,6 +202,7 @@ namespace PointWars.Utilities
 		///   by the given amount in both directions, and the rectangle is moved by the given amount in the (left, up) direction.
 		/// </summary>
 		/// <param name="amount">The amount that the rectangle should be enlarged in both X and Y directions.</param>
+		[Pure]
 		public Rectangle Enlarge(float amount)
 		{
 			return Enlarge(amount, amount);
@@ -188,6 +213,7 @@ namespace PointWars.Utilities
 		///   by the given amount in both directions, and the rectangle is moved by the given amounts in the (left, up) direction.
 		/// </summary>
 		/// <param name="amount">The amount that the rectangle should be enlarged in both X and Y directions.</param>
+		[Pure]
 		public Rectangle Enlarge(Vector2 amount)
 		{
 			return Enlarge(amount.X, amount.Y);
@@ -199,6 +225,7 @@ namespace PointWars.Utilities
 		/// </summary>
 		/// <param name="x">The amount that the rectangle should be enlarged in X-direction.</param>
 		/// <param name="y">The amount that the rectangle should be enlarged in Y-direction.</param>
+		[Pure]
 		public Rectangle Enlarge(float x, float y)
 		{
 			return new Rectangle(Left - x, Top - y, Width + 2 * x, Height + 2 * y);
@@ -273,6 +300,7 @@ namespace PointWars.Utilities
 		///   Checks whether this rectangle intersects with the given rectangle.
 		/// </summary>
 		/// <param name="rectangle">The rectangle that should be checked.</param>
+		[Pure]
 		public bool Intersects(Rectangle rectangle)
 		{
 			var xOverlap = (Left >= rectangle.Left && Left <= rectangle.Right) ||
@@ -288,6 +316,7 @@ namespace PointWars.Utilities
 		///   Checks whether the given point lies within the rectangle.
 		/// </summary>
 		/// <param name="point">The point that should be checked.</param>
+		[Pure]
 		public bool Intersects(Vector2 point)
 		{
 			return point.X >= Left && point.X <= Right && point.Y >= Top && point.Y <= Bottom;

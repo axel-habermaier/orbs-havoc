@@ -82,8 +82,8 @@ namespace PointWars
 							platform.Initialize();
 
 							Initialized = true;
-							var app = new Application(console);
-							app.Run();
+							var app = new Application();
+							app.Run(console);
 
 							ConfigurationFile.WriteAutoExec();
 							Log.Info("{0} has shut down.", Application.Name);

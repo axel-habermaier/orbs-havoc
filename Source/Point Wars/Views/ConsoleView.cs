@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,40 +20,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Input
+namespace PointWars.Views
 {
-	using System;
+	using Platform.Input;
+	using Rendering;
+	using UserInterface;
+	using Utilities;
 
 	/// <summary>
-	///   Represents an input layer. The active input layer of a logical input device determines which logical inputs are
-	///   triggered. Input layers are prioritized, with higher-numbered layers having higher priorities.
+	///   Represents the console.
 	/// </summary>
-	[Flags]
-	public enum InputLayer
+	internal sealed class ConsoleView : View
 	{
 		/// <summary>
-		///   Indicates that no input layer is active.
+		///   Initializes a new instance.
 		/// </summary>
-		None = 0,
+		/// <param name="console">The console that should be used by the console view.</param>
+		public ConsoleView(Console console)
+			: base(InputLayer.Console)
+		{
+			Assert.ArgumentNotNull(console, nameof(console));
+			Console = console;
+		}
 
 		/// <summary>
-		///   The input layer used by all input to the game.
+		///   Gets the console that is shown.
 		/// </summary>
-		Game = 1,
+		public Console Console { get; }
 
 		/// <summary>
-		///   The input layer used by the chat input.
+		///   Changes the size available to the view.
 		/// </summary>
-		Chat = 2,
+		/// <param name="size">The new size available to the view.</param>
+		public override void Resize(Size size)
+		{
+			Console.ChangeSize(size);
+		}
 
 		/// <summary>
-		///   The input layer used by the console.
+		///   Initializes the view.
 		/// </summary>
-		Console = 8,
+		public override void Initialize()
+		{
+			Console.Initialize(Window.Size, InputDevice, Assets.DefaultFont);
+		}
 
 		/// <summary>
-		///   Represents all input layers.
+		///   Updates the view's state.
 		/// </summary>
-		All = Game | Chat | Console
+		public override void Update()
+		{
+			Console.Update();
+			IsActive = Console.IsOpened;
+		}
+
+		/// <summary>
+		///   Draws the view's contents.
+		/// </summary>
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
+		public override void Draw(SpriteBatch spriteBatch)
+		{
+			Console.Draw(spriteBatch);
+		}
 	}
 }

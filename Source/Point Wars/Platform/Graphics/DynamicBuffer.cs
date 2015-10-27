@@ -122,7 +122,7 @@ namespace PointWars.Platform.Graphics
 		{
 			Assert.NotDisposed(this);
 			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
-			Assert.InRange(elementOffset, 0, elementCount);
+			Assert.InRange(elementOffset, 0, _elementCount);
 			Assert.InRange(elementCount, 0, _elementCount);
 
 			Buffer.Bind(slot, _currentChunk * _elementSize * _elementCount + elementOffset * _elementSize, elementCount * _elementSize);

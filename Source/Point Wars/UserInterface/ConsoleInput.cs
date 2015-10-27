@@ -22,7 +22,6 @@
 
 namespace PointWars.UserInterface
 {
-	using System;
 	using Platform.Input;
 	using Platform.Memory;
 
@@ -134,28 +133,6 @@ namespace PointWars.UserInterface
 		///   Gets the logical input for the console's auto-completion action in backwards direction.
 		/// </summary>
 		public LogicalInput AutoCompletePrevious { get; }
-
-		/// <summary>
-		///   Invoked when the activation state of the console has been changed.
-		/// </summary>
-		public void OnActivationChanged(bool activated)
-		{
-			if (activated)
-				_device.ActivateLayer(InputLayer.Console);
-			else
-				_device.DeactivateLayer(InputLayer.Console);
-
-			_device.TextInputEnabled = activated;
-		}
-
-		/// <summary>
-		///   Raised when a text was entered.
-		/// </summary>
-		public event Action<string> TextEntered
-		{
-			add { _device.Keyboard.TextEntered += value; }
-			remove { _device.Keyboard.TextEntered -= value; }
-		}
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.

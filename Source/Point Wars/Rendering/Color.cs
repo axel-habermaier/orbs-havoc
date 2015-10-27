@@ -130,7 +130,7 @@ namespace PointWars.Rendering
 		/// </summary>
 		public override string ToString()
 		{
-			return string.Format("Red: {0}, Green: {1}, Blue: {2}, Alpha: {3}", Red, Green, Blue, Alpha);
+			return $"Red: {Red}, Green: {Green}, Blue: {Blue}, Alpha: {Alpha}";
 		}
 
 		/// <summary>

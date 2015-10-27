@@ -33,7 +33,7 @@ namespace PointWars.UserInterface
 	/// <summary>
 	///   Control for text input.
 	/// </summary>
-	public sealed class TextBox : DisposableObject
+	public sealed class TextBox : UIElement
 	{
 		/// <summary>
 		///   The caret of the text box.
@@ -48,7 +48,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   The maximum allowed length of the input.
 		/// </summary>
-		private int _maxLength;
+		private readonly int _maxLength;
 
 		/// <summary>
 		///   The renderer for the text box' text.
@@ -72,27 +72,14 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Gets or sets the label's area.
+		///   Gets the text box that currently has the keyboard focus.
 		/// </summary>
-		public Rectangle Area
-		{
-			get { return _layout.DesiredArea; }
-			set
-			{
-				Assert.NotDisposed(this);
-
-				// Subtract the caret width from the desired area's size to ensure that we always have
-				// enough space left to draw the caret
-				var width = value.Width - _caret.GetWidth(_layout.Font);
-				_layout.DesiredArea = new Rectangle(value.Left, value.Top, width, value.Height);
-			}
-		}
+		public static TextBox FocusedTextBox { get; private set; }
 
 		/// <summary>
-		///   Gets the actual text rendering area. Usually, the actual area is smaller than the desired size.
-		///   If any words overlap, however, the actual area is bigger.
+		///   Gets or sets the text box's area.
 		/// </summary>
-		public Rectangle ActualArea
+		public override Rectangle Area
 		{
 			get
 			{
@@ -101,6 +88,15 @@ namespace PointWars.UserInterface
 				// Ensure that the layout is up to date
 				_layout.UpdateLayout();
 				return _layout.ActualArea;
+			}
+			set
+			{
+				Assert.NotDisposed(this);
+
+				// Subtract the caret width from the desired area's size to ensure that we always have
+				// enough space left to draw the caret
+				var width = value.Width - _caret.GetWidth(_layout.Font);
+				_layout.DesiredArea = new Rectangle(value.Left, value.Top, width, value.Height);
 			}
 		}
 
@@ -138,6 +134,32 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Gets a value indicating whether the text box has the keyboard focus.
+		/// </summary>
+		private bool HasFocus => FocusedTextBox == this;
+
+		/// <summary>
+		///   Gives the text box the keyboard focus.
+		/// </summary>
+		public void Focus()
+		{
+			FocusedTextBox = this;
+			Keyboard.TextInputEnabled = true;
+		}
+
+		/// <summary>
+		///   Removes the keyboard focus from the text box.
+		/// </summary>
+		public void Unfocus()
+		{
+			if (!HasFocus)
+				return;
+
+			FocusedTextBox = null;
+			Keyboard.TextInputEnabled = false;
+		}
+
+		/// <summary>
 		///   Inserts the given character at the current caret position.
 		/// </summary>
 		/// <param name="c">The character that should be inserted.</param>
@@ -145,7 +167,7 @@ namespace PointWars.UserInterface
 		{
 			Assert.NotDisposed(this);
 
-			if (Text.Length < _maxLength)
+			if (HasFocus && Text.Length < _maxLength)
 				_caret.InsertCharacter(c);
 		}
 
@@ -155,6 +177,9 @@ namespace PointWars.UserInterface
 		public unsafe void InjectKeyPress(Key key, KeyModifiers modifiers)
 		{
 			Assert.NotDisposed(this);
+
+			if (!HasFocus)
+				return;
 
 			switch (key)
 			{
@@ -242,7 +267,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Draws the text box.
 		/// </summary>
-		public void Draw(SpriteBatch spriteBatch)
+		public override void Draw(SpriteBatch spriteBatch)
 		{
 			Assert.NotDisposed(this);
 			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
@@ -250,6 +275,9 @@ namespace PointWars.UserInterface
 			_layout.UpdateLayout();
 			_layout.DrawDebugVisualizations(spriteBatch);
 			_textRenderer.DrawCached(spriteBatch, _layout.Font.Texture);
+
+			if (!HasFocus)
+				return;
 
 			var position = _layout.ComputeCaretPosition(_caret.Position);
 			_caret.Draw(spriteBatch, _layout.Font, position);

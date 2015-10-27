@@ -87,7 +87,7 @@ namespace PointWars.UserInterface
 			_labels = new Label[MaxLabels];
 
 			for (var i = 0; i < MaxLabels; ++i)
-				_labels[i] = new Label(font, String.Empty) { LineSpacing = LineSpacing };
+				_labels[i] = new Label(String.Empty) { Font = font, LineSpacing = LineSpacing };
 		}
 
 		/// <summary>
@@ -103,7 +103,7 @@ namespace PointWars.UserInterface
 				// Return the delta between the oldest label's top value and the newest label's bottom
 				// value. When the top label is overwritten after a buffer overflow, its top value won't be
 				// set to 0 in order to avoid repositioning all lines.
-				return _labels[_numLabels - 1].ActualArea.Bottom - _labels[0].ActualArea.Top;
+				return _labels[_numLabels - 1].Area.Bottom - _labels[0].Area.Top;
 			}
 		}
 
@@ -133,14 +133,14 @@ namespace PointWars.UserInterface
 			// top value. Consequently, the oldest label's top edge corresponds to the content area's bottom edge.
 			// We then move up the origin by the total label height, such that the newest label's lower edge 
 			// is perfectly aligned with the content area's lower edge. And last, we add the current scroll offset.
-			var offsetY = _area.Bottom - _labels[0].ActualArea.Top - TotalLabelHeight + _scrollOffset;
+			var offsetY = _area.Bottom - _labels[0].Area.Top - TotalLabelHeight + _scrollOffset;
 			spriteBatch.PositionOffset = new Vector2(_area.Left, offsetY);
 
 			// Draw the labels, but only those that are at least partially visible
 			for (var i = 0; i < _numLabels; ++i)
 			{
-				var topIsInside = _labels[i].ActualArea.Top + offsetY < _area.Bottom;
-				var bottomIsInside = _labels[i].ActualArea.Bottom + offsetY > _area.Top;
+				var topIsInside = _labels[i].Area.Top + offsetY < _area.Bottom;
+				var bottomIsInside = _labels[i].Area.Bottom + offsetY > _area.Top;
 
 				if (topIsInside && bottomIsInside)
 					_labels[i].Draw(spriteBatch);
@@ -194,7 +194,7 @@ namespace PointWars.UserInterface
 			// Position the label right below the previous one
 			var area = new Rectangle(0, 0, _area.Width, 0);
 			if (_numLabels != 0)
-				area = area.Offset(0, _labels[_numLabels - 1].ActualArea.Bottom + LineSpacing);
+				area = area.Offset(0, _labels[_numLabels - 1].Area.Bottom + LineSpacing);
 
 			_labels[_numLabels].Area = area;
 			++_numLabels;
@@ -275,7 +275,7 @@ namespace PointWars.UserInterface
 			for (var i = 0; i < _numLabels; ++i)
 			{
 				_labels[i].Area = new Rectangle(0, offsetY, _area.Width, 0);
-				offsetY += _labels[i].ActualArea.Height + LineSpacing;
+				offsetY += _labels[i].Area.Height + LineSpacing;
 			}
 
 			// Ensure that at least the oldest line is visible; that might not be the case after a resize if the

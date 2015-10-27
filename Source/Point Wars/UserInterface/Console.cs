@@ -133,7 +133,7 @@ namespace PointWars.UserInterface
 
 				_isOpened = value;
 				_prompt.Clear();
-				_input.OnActivationChanged(value);
+				_prompt.SetFocus(value);
 			}
 		}
 
@@ -156,7 +156,7 @@ namespace PointWars.UserInterface
 
 			Commands.OnShowConsole += ShowConsole;
 
-			_input.TextEntered += OnTextEntered;
+			_inputDevice.Keyboard.TextEntered += OnTextEntered;
 			_inputDevice.Keyboard.KeyPressed += OnKeyPressed;
 			_inputDevice.Mouse.Wheel += OnMouseWheelMoved;
 
@@ -179,7 +179,7 @@ namespace PointWars.UserInterface
 
 			if (_input != null)
 			{
-				_input.TextEntered -= OnTextEntered;
+				_inputDevice.Keyboard.TextEntered -= OnTextEntered;
 				_inputDevice.Keyboard.KeyPressed -= OnKeyPressed;
 			}
 

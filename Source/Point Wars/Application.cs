@@ -32,6 +32,7 @@ namespace PointWars
 	using Scripting;
 	using UserInterface;
 	using Utilities;
+	using Views;
 
 	/// <summary>
 	///   Represents the application.
@@ -43,42 +44,14 @@ namespace PointWars
 		/// </summary>
 		public const string Name = "Point Wars";
 
-		/// <summary>
-		///   Indicates whether the application is currently running.
-		/// </summary>
 		private bool _running;
-
-		/// <summary>
-		///   Initializes the application.
-		/// </summary>
-		public Application(Console console)
-		{
-			Assert.ArgumentNotNull(console, nameof(console));
-			Assert.That(Current == null, "The application has already been initialized.");
-
-			Current = this;
-			Console = console;
-		}
-
-		/// <summary>
-		///   The console used by the application.
-		/// </summary>
-		public Console Console { get; }
-
-		/// <summary>
-		///   Gets the current application instance.
-		/// </summary>
-		public static Application Current { get; private set; }
+		private SpriteBatch _spriteBatch;
+		private ViewCollection _views;
 
 		/// <summary>
 		///   Gets the application's window.
 		/// </summary>
 		public Window Window { get; private set; }
-
-		/// <summary>
-		///   Gets the application's sprite batch.
-		/// </summary>
-		public SpriteBatch SpriteBatch { get; private set; }
 
 		/// <summary>
 		///   Gets the application's input device.
@@ -95,8 +68,10 @@ namespace PointWars
 		/// </summary>
 		private void Initialize()
 		{
+			_views.Initialize();
+
 			Window.Closing += Exit;
-			Window.Resized += OnWindowResized;
+			Window.Resized += Resize;
 			Commands.OnExit += Exit;
 
 			Commands.Bind(Key.F1, "start_server TestServer");
@@ -108,41 +83,26 @@ namespace PointWars
 			Commands.Bind(new ConfigurableInput(Key.Escape, KeyModifiers.LeftShift), "exit");
 			Commands.Bind(Key.F10, "toggle show_debug_overlay");
 
-			OnWindowResized(Window.Size);
 			InputDevice.ActivateLayer(InputLayer.Game);
-		}
-
-		/// <summary>
-		///   Updates the application state.
-		/// </summary>
-		private void Update()
-		{
-		}
-
-		/// <summary>
-		///   Draws the current frame.
-		/// </summary>
-		private void Draw()
-		{
-			Window.BackBuffer.Clear(Colors.Black);
+			Resize(Window.Size);
 		}
 
 		/// <summary>
 		///   Runs the application.
 		/// </summary>
-		public unsafe void Run()
+		/// <param name="console">The console that should be used by the application.</param>
+		public unsafe void Run(Console console)
 		{
 			_running = true;
 
 			using (GraphicsDevice = new GraphicsDevice())
 			using (Window = new Window(GraphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
 			using (InputDevice = new LogicalInputDevice(Window))
-			using (new Assets())
-			using (SpriteBatch = new SpriteBatch())
 			using (var bindings = new BindingCollection(InputDevice))
-			using (var debugOverlay = new DebugOverlay())
+			using (new Assets())
+			using (_spriteBatch = new SpriteBatch())
+			using (_views = new ViewCollection(this, console))
 			{
-				Console.Initialize(Window.Size, InputDevice, Assets.DefaultFont);
 				Initialize();
 				Commands.Help();
 
@@ -154,11 +114,9 @@ namespace PointWars
 					using (TimeMeasurement.Measure(&updateTime))
 					{
 						HandleInput();
-
 						bindings.Update();
-						debugOverlay.Update(Window.Size);
-						Console.Update();
-						Update();
+
+						_views.Update();
 					}
 
 					// Ensure that CPU and GPU are synchronized after this point, i.e., the GPU lags behind by
@@ -169,12 +127,10 @@ namespace PointWars
 					using (TimeMeasurement.Measure(&drawTime))
 					{
 						GraphicsDevice.BeginFrame();
+						Window.BackBuffer.Clear(Colors.Black);
 
-						Draw();
-
-						debugOverlay.Draw(SpriteBatch);
-						Console.Draw(SpriteBatch);
-						SpriteBatch.DrawBatch(Window.BackBuffer);
+						_views.Draw(_spriteBatch);
+						_spriteBatch.DrawBatch(Window.BackBuffer);
 
 						GraphicsDevice.EndFrame();
 					}
@@ -187,9 +143,9 @@ namespace PointWars
 						Thread.Sleep(10);
 
 					// Update the debug overlay
-					debugOverlay.GpuFrameTime = GraphicsDevice.FrameTime;
-					debugOverlay.CpuUpdateTime = updateTime;
-					debugOverlay.CpuRenderTime = drawTime;
+					_views.DebugOverlay.GpuFrameTime = GraphicsDevice.FrameTime;
+					_views.DebugOverlay.CpuUpdateTime = updateTime;
+					_views.DebugOverlay.CpuRenderTime = drawTime;
 				}
 			}
 		}
@@ -221,12 +177,12 @@ namespace PointWars
 		}
 
 		/// <summary>
-		///   Handles window resizing events.
+		///   Resizes the application's views.
 		/// </summary>
-		private void OnWindowResized(Size size)
+		private void Resize(Size size)
 		{
-			SpriteBatch.ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(0, size.Width, size.Height, 0, 0, 1);
-			Console.ChangeSize(size);
+			_spriteBatch.ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(0, size.Width, size.Height, 0, 0, 1);
+			_views.Resize(size);
 		}
 	}
 }

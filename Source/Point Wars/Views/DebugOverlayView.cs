@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,21 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.UserInterface
+namespace PointWars.Views
 {
 	using System;
-	using System.Numerics;
 	using System.Text;
 	using Platform;
 	using Platform.Memory;
 	using Rendering;
 	using Scripting;
+	using UserInterface;
 	using Utilities;
 
 	/// <summary>
-	///   Manages statistics about the performance of the application and other information useful for debugging.
+	///   Shows statistics about the performance of the application and other information useful for debugging.
 	/// </summary>
-	public sealed class DebugOverlay : DisposableObject
+	internal sealed class DebugOverlayView : View
 	{
 		/// <summary>
 		///   The update frequency of the statistics in Hz.
@@ -56,16 +56,6 @@ namespace PointWars.UserInterface
 		///   valid instance of an object, it is an indication that a garbage collection has occurred.
 		/// </summary>
 		private readonly WeakReference _gcCheck = new WeakReference(new object());
-
-		/// <summary>
-		///   The label that is used to draw platform info and frame stats.
-		/// </summary>
-		private readonly Label _platformInfo;
-
-		/// <summary>
-		///   The static debug overlay output.
-		/// </summary>
-		private readonly string _staticOutput;
 
 		/// <summary>
 		///   The total CPU frame time in milliseconds that is displayed by the debug overlay.
@@ -93,23 +83,19 @@ namespace PointWars.UserInterface
 		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
 
 		/// <summary>
+		///   The label that is used to draw platform info and frame stats.
+		/// </summary>
+		private Label _platformInfo;
+
+		/// <summary>
+		///   The static debug overlay output.
+		/// </summary>
+		private string _staticOutput;
+
+		/// <summary>
 		///   The timer that is used to periodically update the statistics.
 		/// </summary>
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		internal DebugOverlay()
-		{
-			_platformInfo = new Label(Assets.DefaultFont) { LineSpacing = 2, Alignment = TextAlignment.Bottom };
-			_timer.Timeout += UpdateStatistics;
-
-			_builder.Append("Platform:    ").Append(PlatformInfo.Platform).Append(" ").Append(IntPtr.Size * 8).Append("bit\n");
-			_builder.Append("Debug Mode:  ").Append(PlatformInfo.IsDebug.ToString().ToLower()).Append("\n");
-			_staticOutput = _builder.ToString();
-			_builder.Clear();
-		}
 
 		/// <summary>
 		///   Sets the GPU frame time in milliseconds that is displayed by the debug overlay.
@@ -136,19 +122,53 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Updates the statistics.
+		///   Changes the size available to the view.
 		/// </summary>
-		/// <param name="size">The size of the area that the statistics should be drawn on.</param>
-		internal void Update(Size size)
+		/// <param name="size">The new size available to the view.</param>
+		public override void Resize(Size size)
 		{
+			const int padding = 5;
+			_platformInfo.Area = new Rectangle(padding, padding, size.Width - 2 * padding, size.Height - 2 * padding);
+		}
+
+		/// <summary>
+		///   Initializes the view.
+		/// </summary>
+		public override void Initialize()
+		{
+			_platformInfo = new Label { Font = Assets.DefaultFont, LineSpacing = 2, TextAlignment = TextAlignment.Bottom };
+			_timer.Timeout += UpdateStatistics;
+
+			_builder.Append("Platform:    ").Append(PlatformInfo.Platform).Append(" ").Append(IntPtr.Size * 8).Append("bit\n");
+			_builder.Append("Debug Mode:  ").Append(PlatformInfo.IsDebug.ToString().ToLower()).Append("\n");
+			_staticOutput = _builder.ToString();
+			_builder.Clear();
+
+			Cvars.ShowDebugOverlayChanged += ChangeActivation;
+			ChangeActivation();
+		}
+
+		/// <summary>
+		///   Changes the view's activation state.
+		/// </summary>
+		private void ChangeActivation()
+		{
+			IsActive = Cvars.ShowDebugOverlay;
+		}
+
+		/// <summary>
+		///   Updates the view's state.
+		/// </summary>
+		public override void Update()
+		{
+			if (!IsActive)
+				return;
+
 			if (!_gcCheck.IsAlive)
 			{
 				++_garbageCollections;
 				_gcCheck.Target = new object();
 			}
-
-			const int padding = 5;
-			_platformInfo.Area = new Rectangle(padding, padding, size.Width - 2 * padding, size.Height - 2 * padding);
 
 			_cpuFrameTime.AddMeasurement(_cpuUpdateTime.LastValue + _cpuRenderTime.LastValue);
 			_timer.Update();
@@ -175,16 +195,12 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Draws the statistics.
+		///   Draws the view's contents.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the statistics.</param>
-		internal void Draw(SpriteBatch spriteBatch)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
+		public override void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Layer = Int32.MaxValue - 2;
-			spriteBatch.PositionOffset = Vector2.Zero;
-
-			if (Cvars.ShowDebugOverlay)
-				_platformInfo.Draw(spriteBatch);
+			_platformInfo.Draw(spriteBatch);
 		}
 
 		/// <summary>
@@ -192,6 +208,8 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			Cvars.ShowDebugOverlayChanged -= ChangeActivation;
+
 			_platformInfo.SafeDispose();
 			_timer.Timeout -= UpdateStatistics;
 		}

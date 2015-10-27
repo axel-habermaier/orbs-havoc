@@ -49,11 +49,6 @@ namespace PointWars.Platform.Input
 		private readonly ActivationState[] _layerStates = new ActivationState[Enum.GetValues(typeof(InputLayer)).Length];
 
 		/// <summary>
-		///   A value indicating whether the logical input device provides text input.
-		/// </summary>
-		private ActivationState _textInput = new ActivationState();
-
-		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window that should be associated with this logical device.</param>
@@ -79,22 +74,6 @@ namespace PointWars.Platform.Input
 		///   Gets the mouse that is associated with this logical device.
 		/// </summary>
 		public Mouse Mouse { get; }
-
-		/// <summary>
-		///   Gets or sets a value indicating whether the logical input device provides text input. The actual update is deferred
-		///   until the next frame. Text input is only disabled if the deactivation count matches the activation count.
-		/// </summary>
-		public bool TextInputEnabled
-		{
-			get { return _textInput.Count != 0; }
-			set
-			{
-				if (value)
-					_textInput.Activate();
-				else
-					_textInput.Deactivate();
-			}
-		}
 
 		/// <summary>
 		///   Registers a logical input on the logical input device. Subsequently, the logical input's IsTriggered
@@ -133,6 +112,9 @@ namespace PointWars.Platform.Input
 		{
 			Assert.ArgumentInRange(layer, nameof(layer));
 
+			if (layer == InputLayer.None)
+				return;
+
 			for (var i = 0; i < 32; ++i)
 			{
 				if ((int)layer == 1 << i)
@@ -154,6 +136,9 @@ namespace PointWars.Platform.Input
 		public void DeactivateLayer(InputLayer layer)
 		{
 			Assert.ArgumentInRange(layer, nameof(layer));
+
+			if (layer == InputLayer.None)
+				return;
 
 			for (var i = 1; i < 32; ++i)
 			{
@@ -190,10 +175,6 @@ namespace PointWars.Platform.Input
 				}
 			}
 
-			// Update the text input state
-			_textInput.Update();
-			Keyboard.TextInputEnabled = TextInputEnabled;
-
 			// Update all inputs
 			foreach (var input in _inputs)
 				input.Update(this);
@@ -209,53 +190,6 @@ namespace PointWars.Platform.Input
 		{
 			Keyboard.SafeDispose();
 			Mouse.SafeDispose();
-		}
-
-		/// <summary>
-		///   Represents an activation state with deferred updates. The state is considered active for as long as Count != 0.
-		/// </summary>
-		private struct ActivationState
-		{
-			/// <summary>
-			///   The current activation count.
-			/// </summary>
-			public ushort Count;
-
-			/// <summary>
-			///   The pending activation and deactivation requests.
-			/// </summary>
-			public short Pending;
-
-			/// <summary>
-			///   Executes all deferred updates to the state.
-			/// </summary>
-			public void Update()
-			{
-				Count = (ushort)(Count + Pending);
-				Pending = 0;
-			}
-
-			/// <summary>
-			///   Handles a deferred activation request.
-			/// </summary>
-			public void Activate()
-			{
-				Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
-				Assert.That(Count + Pending + 1 < UInt16.MaxValue, "Too many activations.");
-
-				++Pending;
-			}
-
-			/// <summary>
-			///   Handles a deferred deactivation request.
-			/// </summary>
-			public void Deactivate()
-			{
-				Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
-				Assert.That(Count + Pending > 0, "Imbalanced call to deactivate.");
-
-				--Pending;
-			}
 		}
 	}
 }

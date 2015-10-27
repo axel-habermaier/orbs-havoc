@@ -68,7 +68,7 @@ namespace PointWars.Scripting
 		/// </summary>
 		public void Update()
 		{
-			if (_device.TextInputEnabled || Application.Current.Console.IsOpened)
+			if (Keyboard.TextInputEnabled)
 				return;
 
 			foreach (var binding in _bindings)
