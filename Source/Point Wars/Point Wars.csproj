@@ -77,7 +77,9 @@
     <Compile Include="UserInterface\Controls\Label.cs" />
     <Compile Include="UserInterface\Controls\TextBox.cs" />
     <Compile Include="UserInterface\HorizontalAlignment.cs" />
+    <Compile Include="UserInterface\Input\Caret.cs" />
     <Compile Include="UserInterface\Input\ConfigurableBinding.cs" />
+    <Compile Include="UserInterface\Cursor.cs" />
     <Compile Include="UserInterface\Input\InputBinding.cs" />
     <Compile Include="UserInterface\Input\InputEventArgs.cs" />
     <Compile Include="UserInterface\Input\KeyBinding.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="UserInterface\Input\MouseWheelBinding.cs" />
     <Compile Include="UserInterface\Input\MouseWheelEventArgs.cs" />
     <Compile Include="UserInterface\Input\ScanCodeBinding.cs" />
+    <Compile Include="UserInterface\Input\TextInputEventArgs.cs" />
     <Compile Include="UserInterface\Input\TriggerMode.cs" />
     <Compile Include="UserInterface\IScrollAware.cs" />
     <Compile Include="UserInterface\IScrollController.cs" />
@@ -276,9 +279,6 @@
   <ItemGroup>
     <Font Include="Rendering\Fonts\Moonhouse24.font" />
     <Font Include="Rendering\Fonts\Moonhouse80.font" />
-    <None Include="Rendering\Fonts\LiberationMono-Regular.ttf" />
-    <None Include="Rendering\Fonts\LiberationSans-Regular.ttf" />
-    <None Include="Rendering\Fonts\moonhouse.ttf" />
     <Font Include="Rendering\Fonts\LiberationSans16.font" />
     <Compile Include="UserInterface\UIElement.Input.cs" />
   </ItemGroup>
@@ -289,6 +289,16 @@
   </ItemGroup>
   <ItemGroup>
     <OpenGL Include="Platform\Graphics\OpenGL.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Cursor Include="Rendering\Textures\PointerCursor.png">
+      <HotSpotX>0</HotSpotX>
+      <HotSpotY>0</HotSpotY>
+    </Cursor>
+    <Cursor Include="Rendering\Textures\TextCursor.png">
+      <HotSpotX>7</HotSpotX>
+      <HotSpotY>7</HotSpotY>
+    </Cursor>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

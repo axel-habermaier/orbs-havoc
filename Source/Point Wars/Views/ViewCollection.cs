@@ -24,8 +24,11 @@ namespace PointWars.Views
 {
 	using System;
 	using System.Numerics;
+	using Platform;
+	using Platform.Input;
 	using Platform.Memory;
 	using Rendering;
+	using UserInterface;
 	using Utilities;
 	using Console = UserInterfaceOld.Console;
 
@@ -144,6 +147,35 @@ namespace PointWars.Views
 				Assert.That(spriteBatch.Layer < i * LayersPerView + LayersPerView, "The view used too many layers.");
 
 				--i;
+			}
+
+			DrawCursor();
+		}
+
+		/// <summary>
+		///     Draws the mouse cursor.
+		/// </summary>
+		void DrawCursor()
+		{
+			foreach (var view in _views)
+			{
+				if (!view.IsActive || view.InputLayer == InputLayer.None)
+					continue;
+
+				// Check if the hovered element or any of its parents override the default cursor
+				Cursor cursor = null;
+				var element = view.RootElement.HitTest(Application.InputDevice.Mouse.Position, boundsTestOnly: true);
+
+				while (element != null && cursor == null)
+				{
+					cursor = element.Cursor;
+					element = element.Parent;
+				}
+
+				cursor = cursor ?? Assets.PointerCursor;
+				cursor.Draw();
+
+				break;
 			}
 		}
 

@@ -84,6 +84,7 @@
     <Compile Include="CodeWriter.cs" />
     <Compile Include="GLGenerator.cs" />
     <Compile Include="RegistryGenerator.cs" />
+    <Compile Include="CursorCompiler.cs" />
     <Compile Include="TextureCompiler.cs" />
     <Compile Include="FontCompiler.cs" />
     <Compile Include="ShaderCompiler.cs" />

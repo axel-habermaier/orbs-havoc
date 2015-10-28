@@ -79,6 +79,9 @@ namespace AssetsCompiler
 			[VerbOption("texture", HelpText = "Compiles a texture.")]
 			public TextureCompiler TextureCompiler { get; set; }
 
+			[VerbOption("cursor", HelpText = "Compiles a cursor.")]
+			public CursorCompiler CursorCompiler { get; set; }
+
 			[VerbOption("font", HelpText = "Compiles a font.")]
 			public FontCompiler FontCompiler { get; set; }
 

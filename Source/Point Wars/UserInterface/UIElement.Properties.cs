@@ -99,6 +99,12 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Gets or sets the cursor that is displayed when the mouse hovers an UI element or any of its children.
+		///   If null, the displayed cursor is determined by the hovered child element or the default cursor is displayed.
+		/// </summary>
+		public Cursor Cursor { get; set; }
+
+		/// <summary>
 		///   Gets or sets the background color of the UI element.
 		/// </summary>
 		public Color Background { get; set; } = Colors.Transparent;

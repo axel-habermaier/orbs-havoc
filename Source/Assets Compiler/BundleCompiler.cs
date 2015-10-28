@@ -32,16 +32,19 @@ namespace AssetsCompiler
 
 	public class BundleCompiler : IExecutable
 	{
-		[Option("shaders", Required = true, HelpText = "The path to the input shader file.")]
+		[Option("shaders", Required = true, HelpText = "The path to the input shader files.")]
 		public string Shaders { get; set; }
 
-		[Option("fonts", Required = true, HelpText = "The path to the input fonts file.")]
+		[Option("fonts", Required = true, HelpText = "The path to the input font files.")]
 		public string Fonts { get; set; }
 
-		[Option("textures", Required = true, HelpText = "The path to the input texture file.")]
+		[Option("textures", Required = true, HelpText = "The path to the input texture files.")]
 		public string Textures { get; set; }
 
-		[Option("output", Required = true, HelpText = "The path to the output bundle file.")]
+		[Option("cursors", Required = true, HelpText = "The path to the input cursor files.")]
+		public string Cursors { get; set; }
+
+		[Option("output", Required = true, HelpText = "The path to the output bundle files.")]
 		public string PakFile { get; set; }
 
 		[Option("code", Required = true, HelpText = "The path to the generated code file.")]
@@ -52,10 +55,12 @@ namespace AssetsCompiler
 			var shaders = Shaders.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(shader => shader).ToArray();
 			var fonts = Fonts.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(font => font).ToArray();
 			var textures = Textures.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(texture => texture).ToArray();
+			var cursors = Cursors.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(cursor => cursor).ToArray();
 			var assets = shaders
 				.Select(shader => new { Type = "Shader", Name = Path.GetFileNameWithoutExtension(shader), File = shader })
 				.Concat(fonts.Select(font => new { Type = "Font", Name = Path.GetFileNameWithoutExtension(font), File = font }).OrderBy(s => s.Name))
 				.Concat(textures.Select(texture => new { Type = "Texture", Name = Path.GetFileNameWithoutExtension(texture), File = texture }))
+				.Concat(cursors.Select(cursor => new { Type = "Cursor", Name = Path.GetFileNameWithoutExtension(cursor), File = cursor }))
 				.ToArray();
 
 			// bundles with the same sequence of asset types and names should have the same hash
@@ -98,6 +103,7 @@ namespace AssetsCompiler
 				writer.AppendLine("using System;");
 				writer.AppendLine("using Platform.Graphics;");
 				writer.AppendLine("using Platform.Memory;");
+				writer.AppendLine("using UserInterface;");
 				writer.NewLine();
 
 				writer.AppendLine("partial class Assets");

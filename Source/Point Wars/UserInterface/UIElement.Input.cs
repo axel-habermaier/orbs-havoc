@@ -32,8 +32,6 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse entered event.
 		/// </summary>
-		/// <param name="hoveredElement">The currently hovered UI element.</param>
-		/// <param name="e">The event arguments that should be passed to the MouseLeaveEvent.</param>
 		protected static void OnMouseEntered(UIElement hoveredElement, MouseEventArgs e)
 		{
 			while (hoveredElement != null)
@@ -48,8 +46,6 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse left event.
 		/// </summary>
-		/// <param name="unhoveredElement">The UI element that is no longer hovered.</param>
-		/// <param name="e">The event arguments that should be passed to the MouseLeaveEvent.</param>
 		protected static void OnMouseLeft(UIElement unhoveredElement, MouseEventArgs e)
 		{
 			while (unhoveredElement != null)
@@ -105,6 +101,18 @@ namespace PointWars.UserInterface
 			while (element != null && !e.Handled)
 			{
 				element.OnKeyReleased(e);
+				element = element.Parent;
+			}
+		}
+
+		/// <summary>
+		///   Handles a text entered event.
+		/// </summary>
+		protected static void OnTextEntered(UIElement element, TextInputEventArgs e)
+		{
+			while (element != null && !e.Handled)
+			{
+				element.OnTextEntered(e);
 				element = element.Parent;
 			}
 		}

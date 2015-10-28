@@ -61,6 +61,7 @@ namespace PointWars.UserInterface.Controls
 			_inputDevice.Mouse.Released -= MouseReleased;
 			_inputDevice.Keyboard.KeyPressed -= KeyPressed;
 			_inputDevice.Keyboard.KeyReleased -= KeyReleased;
+			_inputDevice.Keyboard.TextEntered -= TextEntered;
 		}
 
 		/// <summary>
@@ -96,9 +97,8 @@ namespace PointWars.UserInterface.Controls
 			_inputDevice.Mouse.Released += MouseReleased;
 			_inputDevice.Keyboard.KeyPressed += KeyPressed;
 			_inputDevice.Keyboard.KeyReleased += KeyReleased;
+			_inputDevice.Keyboard.TextEntered += TextEntered;
 		}
-
-
 
 		/// <summary>
 		///   Handles changes to the input layer.
@@ -109,7 +109,19 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Handles a mouse press event.
+		///   Handles a text entered event.
+		/// </summary>
+		private void TextEntered(string text)
+		{
+			if (!_isActive || _hoveredElement == null)
+				return;
+
+			var args = TextInputEventArgs.Create(text);
+			OnTextEntered(_hoveredElement, args);
+		}
+
+		/// <summary>
+		///   Handles a mouse pressed event.
 		/// </summary>
 		private void MousePressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
@@ -121,7 +133,7 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Handles a mouse release event.
+		///   Handles a mouse released event.
 		/// </summary>
 		private void MouseReleased(MouseButton button, Vector2 position)
 		{
@@ -133,7 +145,7 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Handles a key press event.
+		///   Handles a key pressed event.
 		/// </summary>
 		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
@@ -145,7 +157,7 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Handles a key release event.
+		///   Handles a key released event.
 		/// </summary>
 		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
@@ -163,7 +175,7 @@ namespace PointWars.UserInterface.Controls
 		private void UpdateHoveredElement(Vector2 position)
 		{
 			UIElement hoveredElement = null;
-			if (!_isActive || _inputDevice.Mouse.InsideWindow)
+			if (_isActive && _inputDevice.Mouse.InsideWindow)
 				hoveredElement = HitTest(new Vector2(position.X, position.Y), boundsTestOnly: false);
 
 			if (hoveredElement == _hoveredElement)

@@ -3,6 +3,8 @@
 	<ItemGroup>
 		<AvailableItemName Include="Shader" />  
 		<AvailableItemName Include="Font" /> 
+		<AvailableItemName Include="Texture" /> 
+		<AvailableItemName Include="Cursor" /> 
 		<AvailableItemName Include="OpenGL" /> 
 	</ItemGroup>
 	
@@ -13,6 +15,8 @@
 	<ItemGroup> 
 		<CompiledShaders Include="@(Shader->'$(TargetDir)obj\%(Identity)')" />
 		<CompiledFonts Include="@(Font->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledTextures Include="@(Texture->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledCursors Include="@(Cursor->'$(TargetDir)obj\%(Identity)')" />
 	</ItemGroup>
 	
 	<Target Name="CompileShaders" BeforeTargets="BeforeBuild" Inputs="@(Shader);$(OutDir)pwc.exe" Outputs="@(Shader->'$(TargetDir)obj\%(Identity)')">
@@ -25,8 +29,18 @@
 		<Message Importance="High" Text="Compiled font '%(Font.Identity)'." />
 	</Target>
 	
-	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);@(CompiledFonts);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
-		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;&quot; --output &quot;$(AssetBundle)&quot; --code &quot;../../Source/Point Wars/Rendering/Assets.g.cs&quot;" WorkingDirectory="$(OutDir)" />
+	<Target Name="CompileTextures" BeforeTargets="BeforeBuild" Inputs="@(Texture);$(OutDir)pwc.exe" Outputs="@(Texture->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe texture --input &quot;%(Texture.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Texture.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled texture '%(Texture.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileCursors" BeforeTargets="BeforeBuild" Inputs="@(Cursor);$(OutDir)pwc.exe" Outputs="@(Cursor->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe cursor --input &quot;%(Cursor.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Cursor.Identity)&quot; --hotspotX %(Cursor.HotSpotX) --hotspotY %(Cursor.HotSpotY)" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled cursor '%(Cursor.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);@(CompiledFonts);@(CompiledTextures);@(CompiledCursors);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
+		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;@(CompiledTextures->'%(FullPath)')&quot; --cursors &quot;@(CompiledCursors->'%(FullPath)')&quot; --output &quot;$(AssetBundle)&quot; --code &quot;../../Source/Point Wars/Rendering/Assets.g.cs&quot;" WorkingDirectory="$(OutDir)" />
 		<Message Importance="High" Text="Compiled asset bundle." />
 	</Target>
 	

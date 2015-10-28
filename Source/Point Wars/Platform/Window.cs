@@ -84,7 +84,10 @@ namespace PointWars.Platform
 					break;
 			}
 
-			_window = SDL_CreateWindow(title, (int)position.X, (int)position.Y, size.IntegralWidth, size.IntegralHeight, flags);
+			var x = MathUtils.RoundIntegral(position.X);
+			var y = MathUtils.RoundIntegral(position.Y);
+
+            _window = SDL_CreateWindow(title, x, y, size.IntegralWidth, size.IntegralHeight, flags);
 			if (_window == null)
 				Log.Die("Failed to create window: {0}", SDL_GetError());
 

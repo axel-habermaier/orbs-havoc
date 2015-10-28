@@ -124,6 +124,13 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Invoked when a text has been entered while the UI element is focused.
+		/// </summary>
+		protected virtual void OnTextEntered(TextInputEventArgs args)
+		{
+		}
+
+		/// <summary>
 		///   Handles an input event.
 		/// </summary>
 		private void HandleInputEvent(InputEventArgs e)

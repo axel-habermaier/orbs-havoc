@@ -63,7 +63,7 @@ namespace PointWars.Views
 				Margin = new Thickness(0, 0, 0, 30),
 			});
 
-			stackPanel.Add(CreateButton("Start Game", () => { }));
+            stackPanel.Add(CreateButton("Start Game", () => { }));
 			stackPanel.Add(CreateButton("Join Game", () => { }));
 			stackPanel.Add(CreateButton("Options", () => { }));
 			stackPanel.Add(CreateButton("Exit", OnExit));
