@@ -22,7 +22,6 @@
 
 namespace PointWars.UserInterface
 {
-	using Rendering;
 	using Utilities;
 
 	/// <summary>

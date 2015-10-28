@@ -24,6 +24,7 @@ namespace PointWars.UserInterface.Controls
 {
 	using System;
 	using System.Numerics;
+	using Assets;
 	using Input;
 	using Platform.Input;
 	using Platform.Logging;

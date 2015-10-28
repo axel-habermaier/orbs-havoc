@@ -618,12 +618,12 @@ namespace PointWars.UserInterface
 			InheritsForeground = 32,
 
 			/// <summary>
-			/// Indicates whether the mouse is currently hovering the UI element or any of its children.
+			///   Indicates whether the mouse is currently hovering the UI element or any of its children.
 			/// </summary>
 			IsMouseOver = 64,
 
 			/// <summary>
-			/// Indicates whether the mouse is currently pressed down on the UI element or any of its children.
+			///   Indicates whether the mouse is currently pressed down on the UI element or any of its children.
 			/// </summary>
 			IsActive = 128
 		}

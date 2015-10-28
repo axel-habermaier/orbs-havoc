@@ -23,6 +23,7 @@
 namespace PointWars.Views
 {
 	using System;
+	using Assets;
 	using Platform.Input;
 	using Rendering;
 	using Scripting;

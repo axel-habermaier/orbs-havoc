@@ -97,7 +97,7 @@ namespace PointWars
 			using (Window = new Window(GraphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
 			using (InputDevice = new LogicalInputDevice(Window))
 			using (var bindings = new BindingCollection(InputDevice))
-			using (new Assets())
+			using (new Assets.Assets())
 			using (_spriteBatch = new SpriteBatch())
 			using (_views = new ViewCollection(this, console))
 			{

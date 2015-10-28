@@ -27,6 +27,7 @@ namespace PointWars.UserInterfaceOld
 	using Platform.Logging;
 	using Platform.Memory;
 	using Rendering;
+	using UserInterface;
 	using Utilities;
 	using static Platform.SDL2;
 

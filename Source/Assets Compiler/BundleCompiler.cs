@@ -97,7 +97,7 @@ namespace AssetsCompiler
 			var writer = new CodeWriter();
 			writer.WriterHeader();
 
-			writer.AppendLine("namespace PointWars.Rendering");
+			writer.AppendLine("namespace PointWars.Assets");
 			writer.AppendBlockStatement(() =>
 			{
 				writer.AppendLine("using System;");

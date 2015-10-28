@@ -25,9 +25,11 @@ namespace PointWars.Rendering
 	using System;
 	using System.Collections.Generic;
 	using System.Numerics;
+	using Assets;
 	using Platform.Graphics;
 	using Platform.Logging;
 	using Platform.Memory;
+	using UserInterface;
 	using Utilities;
 	using static Platform.Graphics.OpenGL3;
 	using Buffer = Platform.Graphics.Buffer;

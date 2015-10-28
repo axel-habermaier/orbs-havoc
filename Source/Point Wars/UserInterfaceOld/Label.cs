@@ -23,7 +23,9 @@
 namespace PointWars.UserInterfaceOld
 {
 	using System;
+	using Assets;
 	using Rendering;
+	using UserInterface;
 	using Utilities;
 
 	/// <summary>

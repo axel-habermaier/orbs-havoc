@@ -26,6 +26,7 @@ namespace PointWars.UserInterfaceOld
 	using System.Numerics;
 	using Platform.Memory;
 	using Rendering;
+	using UserInterface;
 	using Utilities;
 
 	/// <summary>

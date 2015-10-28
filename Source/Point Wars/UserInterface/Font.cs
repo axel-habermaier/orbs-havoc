@@ -20,11 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Rendering
+namespace PointWars.UserInterface
 {
 	using System.Numerics;
 	using Platform.Graphics;
 	using Platform.Memory;
+	using Rendering;
 	using Utilities;
 
 	/// <summary>

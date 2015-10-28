@@ -30,6 +30,7 @@ namespace PointWars.UserInterfaceOld
 	using Platform.Memory;
 	using Rendering;
 	using Scripting;
+	using UserInterface;
 	using Utilities;
 
 	/// <summary>

@@ -23,6 +23,7 @@
 namespace PointWars.UserInterface.Controls
 {
 	using System;
+	using Assets;
 	using Input;
 	using Platform.Input;
 	using Rendering;

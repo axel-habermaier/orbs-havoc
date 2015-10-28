@@ -23,6 +23,7 @@
 namespace PointWars.Rendering
 {
 	using Platform.Graphics;
+	using UserInterface;
 	using Utilities;
 
 	/// <summary>

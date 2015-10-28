@@ -24,6 +24,7 @@ namespace PointWars.Views
 {
 	using System;
 	using System.Numerics;
+	using Assets;
 	using Platform;
 	using Platform.Input;
 	using Platform.Memory;

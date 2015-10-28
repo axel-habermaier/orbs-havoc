@@ -155,7 +155,7 @@
     <Compile Include="Platform\WindowMode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Views\ViewCollection.cs" />
-    <Shader Include="Rendering\Shaders\SpriteBatchShader.glsl" />
+    <Shader Include="Assets\Shaders\SpriteBatchShader.glsl" />
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\Rectangle.cs" />
     <Compile Include="Utilities\Size.cs" />
@@ -188,13 +188,13 @@
     <Compile Include="Application.cs" />
     <Compile Include="Platform\Window.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\Assets.cs" />
-    <Compile Include="Rendering\Assets.g.cs">
+    <Compile Include="Assets\Assets.cs" />
+    <Compile Include="Assets\Assets.g.cs">
       <DependentUpon>Assets.cs</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Color.cs" />
     <Compile Include="Rendering\Colors.cs" />
-    <Compile Include="Rendering\Font.cs" />
+    <Compile Include="UserInterface\Font.cs" />
     <Compile Include="Rendering\Quad.cs" />
     <Compile Include="Rendering\SpriteBatch.cs" />
     <Compile Include="Rendering\TextRenderer.cs" />
@@ -274,12 +274,12 @@
     <IL Include="Platform\Memory\CopyBlock.asm" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Rendering\Fonts\DefaultFont.font" />
+    <Font Include="Assets\Fonts\DefaultFont.font" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Rendering\Fonts\Moonhouse24.font" />
-    <Font Include="Rendering\Fonts\Moonhouse80.font" />
-    <Font Include="Rendering\Fonts\LiberationSans16.font" />
+    <Font Include="Assets\Fonts\Moonhouse24.font" />
+    <Font Include="Assets\Fonts\Moonhouse80.font" />
+    <Font Include="Assets\Fonts\LiberationSans16.font" />
     <Compile Include="UserInterface\UIElement.Input.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -291,11 +291,11 @@
     <OpenGL Include="Platform\Graphics\OpenGL.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Cursor Include="Rendering\Textures\PointerCursor.png">
+    <Cursor Include="Assets\Textures\PointerCursor.png">
       <HotSpotX>0</HotSpotX>
       <HotSpotY>0</HotSpotY>
     </Cursor>
-    <Cursor Include="Rendering\Textures\TextCursor.png">
+    <Cursor Include="Assets\Textures\TextCursor.png">
       <HotSpotX>7</HotSpotX>
       <HotSpotY>7</HotSpotY>
     </Cursor>

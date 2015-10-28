@@ -22,6 +22,7 @@
 
 namespace PointWars.Views
 {
+	using Assets;
 	using Platform.Input;
 	using Rendering;
 	using UserInterfaceOld;
