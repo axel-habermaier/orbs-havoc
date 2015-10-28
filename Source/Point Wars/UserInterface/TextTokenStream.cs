@@ -103,7 +103,7 @@ namespace PointWars.UserInterface
 					// Word tokens might be split into several tokens if they don't fit into a single line
 					return HandleWordToken();
 				default:
-					Assert.That(false, "Unexpected token type.");
+					Assert.NotReached("Unexpected token type.");
 					return TextToken.EndOfText;
 			}
 		}
@@ -142,7 +142,7 @@ namespace PointWars.UserInterface
 			// If allowedWidth is zero, this means that either the line already is perfectly full or
 			// we're about to add the second part of a previously split word; in any case, return a wrap token and
 			// deal with the word on the next iteration
-			if (allowedWidth <= 0)
+			if (MathUtils.Equals(allowedWidth, 0))
 			{
 				_lineWidth = 0;
 				return TextToken.Wrap;

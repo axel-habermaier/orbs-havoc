@@ -45,13 +45,24 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="text">The text for which the sequence should be created.</param>
+		/// <param name="text">The text the sequence should be created for.</param>
 		/// <param name="index">The index of the first character in the sequence.</param>
 		public TextSequence(TextString text, int index)
 			: this()
 		{
 			FirstCharacter = index;
 			LastCharacter = FindFirstWhitespace(text, index + 1);
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="text">The text for which the sequence should be created.</param>
+		public TextSequence(TextString text)
+			: this()
+		{
+			FirstCharacter = 0;
+			LastCharacter = text.Length;
 		}
 
 		/// <summary>
@@ -75,7 +86,7 @@ namespace PointWars.UserInterface
 		/// </summary>
 		/// <param name="font">The font that should be used to determine the width of sequence.</param>
 		/// <param name="text">The text the sequence was created for.</param>
-		public int ComputeWidth(Font font, TextString text)
+		public float ComputeWidth(Font font, TextString text)
 		{
 			if (text.Length == 0)
 				return 0;
@@ -106,7 +117,7 @@ namespace PointWars.UserInterface
 		private int FindSplitIndex(Font font, TextString text, float allowedWidth)
 		{
 			var splitIndex = FirstCharacter;
-			var width = 0;
+			var width = 0.0f;
 
 			for (; splitIndex < LastCharacter; ++splitIndex)
 			{

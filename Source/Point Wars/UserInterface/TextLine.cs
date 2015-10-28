@@ -22,32 +22,15 @@
 
 namespace PointWars.UserInterface
 {
-	using System.Numerics;
-	using Utilities;
-
 	/// <summary>
 	///   Represents a line of text.
 	/// </summary>
 	internal struct TextLine
 	{
 		/// <summary>
-		///   Initializes a new instance.
+		///   Gets the with of the text line.
 		/// </summary>
-		/// <param name="left">The position of the line's left edge.</param>
-		/// <param name="top">The position of the line's top edge.</param>
-		/// <param name="lineHeight">The height of the line.</param>
-		public TextLine(float left, float top, float lineHeight)
-			: this()
-		{
-			Area = new Rectangle(left, top, 0, lineHeight);
-			FirstCharacter = -1;
-			LastCharacter = -1;
-		}
-
-		/// <summary>
-		///   Gets the area occupied by the text line.
-		/// </summary>
-		public Rectangle Area { get; private set; }
+		public float Width { get; private set; }
 
 		/// <summary>
 		///   Gets the index of the first character of the text line. A value of -1 indicates that the index has not yet
@@ -67,6 +50,18 @@ namespace PointWars.UserInterface
 		public bool IsInvalid => FirstCharacter == -1 || LastCharacter == -1 || FirstCharacter >= LastCharacter;
 
 		/// <summary>
+		///   Creates a new instance.
+		/// </summary>
+		public static TextLine Create()
+		{
+			return new TextLine
+			{
+				FirstCharacter = -1,
+				LastCharacter = -1
+			};
+		}
+
+		/// <summary>
 		///   Appends the given sequence to the line.
 		/// </summary>
 		/// <param name="sequence">The sequence that should be appended.</param>
@@ -77,16 +72,7 @@ namespace PointWars.UserInterface
 				FirstCharacter = sequence.FirstCharacter;
 
 			LastCharacter = sequence.LastCharacter;
-			Area = new Rectangle(Area.Left, Area.Top, width, Area.Height);
-		}
-
-		/// <summary>
-		///   Adds the given offsets to the position of the line.
-		/// </summary>
-		/// <param name="offset">The offset that should be applied to the line's position.</param>
-		public void Offset(Vector2 offset)
-		{
-			Area = Area.Offset(offset);
+			Width = width;
 		}
 	}
 }

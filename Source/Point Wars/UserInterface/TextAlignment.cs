@@ -22,42 +22,24 @@
 
 namespace PointWars.UserInterface
 {
-	using System;
-
 	/// <summary>
-	///   Describes the alignment of text.
+	///   Specifies whether some text is left-aligned, right-aligned, or centered.
 	/// </summary>
-	[Flags]
 	public enum TextAlignment
 	{
 		/// <summary>
-		///   Indicates that the text should be aligned to the left.
+		///   Indicates that the text left-aligned.
 		/// </summary>
-		Left = 1,
+		Left,
 
 		/// <summary>
-		///   Indicates that the text should be horizontally centered.
+		///   Indicates that the text is right-aligned.
 		/// </summary>
-		Centered = 2,
+		Right,
 
 		/// <summary>
-		///   Indicates that the text should be aligned to the right.
+		///   Indicates that the text is centered.
 		/// </summary>
-		Right = 4,
-
-		/// <summary>
-		///   Indicates that the text should be aligned to the top.
-		/// </summary>
-		Top = 8,
-
-		/// <summary>
-		///   Indicates that the text should be vertically centered.
-		/// </summary>
-		Middle = 16,
-
-		/// <summary>
-		///   Indicates that the text should be aligned to the bottom.
-		/// </summary>
-		Bottom = 32
+		Center
 	}
 }

@@ -29,7 +29,7 @@ namespace PointWars.Views
 	using Platform.Memory;
 	using Rendering;
 	using Scripting;
-	using UserInterface;
+	using UserInterfaceOld;
 	using Utilities;
 
 	/// <summary>

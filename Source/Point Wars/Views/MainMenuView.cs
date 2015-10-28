@@ -22,20 +22,18 @@
 
 namespace PointWars.Views
 {
-	using System.Numerics;
+	using System;
 	using Platform.Input;
 	using Rendering;
 	using Scripting;
 	using UserInterface;
-	using Utilities;
+	using UserInterface.Controls;
 
 	/// <summary>
 	///   Represents the application's main menu when no game session is active.
 	/// </summary>
 	internal sealed class MainMenuView : View
 	{
-		private UIElement[] _elements;
-
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
@@ -51,17 +49,50 @@ namespace PointWars.Views
 		{
 			IsActive = true;
 
-			var buttonArea = new Rectangle(Vector2.Zero, 200, 0);
-			_elements = new UIElement[]
+			var stackPanel = new StackPanel
 			{
-				new Label(Application.Name) { Font = Assets.Moonhouse80, Margin = new Thickness(0, 0, 0, 30) },
-				new Button("Start Game") { Font = Assets.Moonhouse24, Area = buttonArea },
-				new Button("Join Game") { Font = Assets.Moonhouse24, Area = buttonArea },
-				new Button("Options") { Font = Assets.Moonhouse24, Area = buttonArea },
-				new Button("Exit") { Font = Assets.Moonhouse24, Area = buttonArea, Clicked = OnExit }
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center
 			};
 
-			UIContext.Add(_elements);
+			stackPanel.Add(new Label(Application.Name)
+			{
+				Font = Assets.Moonhouse80,
+				Margin = new Thickness(0, 0, 0, 30),
+			});
+
+			stackPanel.Add(CreateButton("Start Game", () => { }));
+			stackPanel.Add(CreateButton("Join Game", () => { }));
+			stackPanel.Add(CreateButton("Options", () => { }));
+			stackPanel.Add(CreateButton("Exit", OnExit));
+
+			RootElement.Child = stackPanel;
+		}
+
+		/// <summary>
+		///   Creates a menu button.
+		/// </summary>
+		private static UIElement CreateButton(string label, Action onClick)
+		{
+			var button = new Button
+			{
+				Font = Assets.Moonhouse24,
+				Width = 200,
+				Child = new Border
+				{
+					Child = new Label(label) { TextAlignment = TextAlignment.Center },
+					BorderThickness = new Thickness(1),
+					BorderColor = new Color(0xFF055674),
+					NormalStyle = element => ((Border)element).Background = new Color(0x5F00588B),
+					HoveredStyle = element => ((Border)element).Background = new Color(0x5F0082CE),
+					ActiveStyle = element => ((Border)element).Background = new Color(0x5F009CF7),
+					Padding = new Thickness(7, 6, 7, 7)
+				},
+				Margin = new Thickness(4),
+			};
+
+			button.Click += onClick;
+			return button;
 		}
 
 		/// <summary>
@@ -69,21 +100,7 @@ namespace PointWars.Views
 		/// </summary>
 		private void OnExit()
 		{
-			Views.MessageBoxes.Show(new MessageBox("Are you sure?", "Do you really want to quit the application?").WithButton("Yes", Commands.Exit));
-		}
-
-		/// <summary>
-		///   Changes the size available to the view.
-		/// </summary>
-		/// <param name="size">The new size available to the view.</param>
-		public override void Resize(Size size)
-		{
-			var area = new Rectangle(Vector2.Zero, size);
-
-			Layout.ResetLayoutedPositions(_elements);
-			Layout.StackVertically(margin: 6, elements: _elements);
-			Layout.CenterVertically(area, _elements);
-			Layout.CenterEachHorizontally(area, _elements);
+			Views.MessageBoxes.Show(MessageBox.ShowConfimation("Are you sure?", "Do you really want to quit the application?", Commands.Exit));
 		}
 	}
 }

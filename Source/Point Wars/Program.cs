@@ -34,7 +34,7 @@ namespace PointWars
 	using Platform.Memory;
 	using Scripting;
 	using Utilities;
-	using Console = UserInterface.Console;
+	using Console = UserInterfaceOld.Console;
 
 	/// <summary>
 	///   Represents the application.

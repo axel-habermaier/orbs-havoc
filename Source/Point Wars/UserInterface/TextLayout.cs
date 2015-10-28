@@ -28,34 +28,29 @@ namespace PointWars.UserInterface
 	using Utilities;
 
 	/// <summary>
-	///   Determines a layout for a text based on the font, desired with, alignment, etc.
+	///   Represents layouted text.
 	/// </summary>
-	internal class TextLayout
+	internal struct TextLayout
 	{
 		/// <summary>
-		///   The alignment of the text within the desired area.
+		///   Caches the computed size during the arrange phase.
 		/// </summary>
-		private TextAlignment _alignment;
+		private LayoutInfo _arranged;
 
 		/// <summary>
-		///   The areas of the individual characters of the text.
+		///   The layouted areas of the individual characters of the text.
 		/// </summary>
 		private Rectangle[] _characterAreas;
 
 		/// <summary>
-		///   The desired drawing area of the text. If the text doesn't fit, it overlaps vertically.
+		///   The default text color.
 		/// </summary>
-		private Rectangle _desiredArea;
+		private Color _color;
 
 		/// <summary>
-		///   Indicates that the metadata is out of date.
+		///   A value indicating whether the cached text quads are dirty.
 		/// </summary>
 		private bool _dirty;
-
-		/// <summary>
-		///   The font that is used to determine the size of the individual characters.
-		/// </summary>
-		private Font _font;
 
 		/// <summary>
 		///   The number of lines that are currently used.
@@ -68,184 +63,95 @@ namespace PointWars.UserInterface
 		private TextLine[] _lines;
 
 		/// <summary>
-		///   The amount of spacing between lines.
+		///   Caches the computed size during the measure phase.
 		/// </summary>
-		private float _lineSpacing;
+		private LayoutInfo _measured;
 
 		/// <summary>
-		///   The text that is layouted.
+		///   The number of cached quads.
 		/// </summary>
-		private string _text;
+		private int _numQuads;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///   The draw position of the text.
 		/// </summary>
-		/// <param name="font">The font that is used to determine the size of the individual characters.</param>
-		/// <param name="text">The text that should be layouted.</param>
-		public TextLayout(Font font, string text)
+		private Vector2 _position;
+
+		/// <summary>
+		///   The quads of the text.
+		/// </summary>
+		private Quad[] _quads;
+
+		/// <summary>
+		///   Measures the size of the text.
+		/// </summary>
+		/// <param name="font">The font that should be used to draw the size of the individual characters.</param>
+		/// <param name="text">The text that should be layouted and measured.</param>
+		/// <param name="desiredSize">The size of the desired drawing area of the text. If the text doesn't fit, it overlaps vertically.</param>
+		/// <param name="lineSpacing">The amount of spacing between consecutive lines.</param>
+		/// <param name="alignment">The alignment of the text within the desired drawing area.</param>
+		/// <param name="wrapping">Indicates whether the text should be wrapped.</param>
+		public Size Measure(Font font, string text, Size desiredSize, int lineSpacing, TextAlignment alignment, TextWrapping wrapping)
 		{
 			Assert.ArgumentNotNull(font, nameof(font));
 			Assert.ArgumentNotNull(text, nameof(text));
+			Assert.ArgumentInRange(alignment, nameof(alignment));
+			Assert.ArgumentInRange(wrapping, nameof(wrapping));
 
-			Font = font;
-			Text = text;
+			if (text == String.Empty)
+				return new Size(0, font.LineHeight);
+
+			if (_measured.SizeOutdated(font, text, desiredSize, lineSpacing, alignment, wrapping))
+			{
+				_lineCount = 0;
+				_position = Vector2.Zero;
+
+				if (wrapping == TextWrapping.NoWrap)
+					_measured.ActualSize = new Size(font.MeasureWidth(text), font.LineHeight + lineSpacing);
+				else
+				{
+					ComputeCharacterAreasAndLines(ref _measured);
+					_measured.ActualSize = ComputeActualSize(ref _measured);
+				}
+			}
+
+			return _measured.ActualSize;
 		}
 
 		/// <summary>
-		///   Gets the layouting data for the individual characters of the layouted text.
+		///   Arranges the layouted text.
 		/// </summary>
-		public Rectangle[] LayoutData => _characterAreas;
-
-		/// <summary>
-		///   Gets or sets the text that should be layouted.
-		/// </summary>
-		public string Text
+		/// <param name="font">The font that should be used to draw the size of the individual characters.</param>
+		/// <param name="text">The text that should be layouted and measured.</param>
+		/// <param name="desiredSize">The size of the desired drawing area of the text. If the text doesn't fit, it overlaps vertically.</param>
+		/// <param name="lineSpacing">The amount of spacing between consecutive lines.</param>
+		/// <param name="alignment">The alignment of the text within the desired drawing area.</param>
+		/// <param name="wrapping">Indicates whether the text should be wrapped.</param>
+		public Size Arrange(Font font, string text, Size desiredSize, int lineSpacing, TextAlignment alignment, TextWrapping wrapping)
 		{
-			get { return _text; }
-			set
+			Assert.ArgumentNotNull(font, nameof(font));
+			Assert.ArgumentNotNull(text, nameof(text));
+			Assert.ArgumentInRange(alignment, nameof(alignment));
+			Assert.ArgumentInRange(wrapping, nameof(wrapping));
+
+			if (text == String.Empty)
 			{
-				Assert.ArgumentNotNull(value, nameof(value));
+				_arranged.Text = String.Empty;
+				return new Size(0, font.LineHeight);
+			}
 
-				if (_text == value)
-					return;
-
-				_text = value;
+			if (_arranged.SizeOutdated(font, text, desiredSize, lineSpacing, alignment, wrapping))
+			{
+				_lineCount = 0;
+				_position = Vector2.Zero;
 				_dirty = true;
 
-				if (_characterAreas == null || _text.Length > _characterAreas.Length)
-					_characterAreas = new Rectangle[_text.Length];
+				ComputeCharacterAreasAndLines(ref _arranged);
+				_arranged.ActualSize = ComputeActualSize(ref _arranged);
+				AlignLines(ref _arranged);
 			}
-		}
 
-		/// <summary>
-		///   Gets or sets the amount of spacing between lines.
-		/// </summary>
-		public float LineSpacing
-		{
-			get { return _lineSpacing; }
-			set
-			{
-				if (MathUtils.Equals(_lineSpacing, value))
-					return;
-
-				_lineSpacing = value;
-				_dirty = true;
-			}
-		}
-
-		/// <summary>
-		///   Gets or sets the desired drawing area of the text. If the text doesn't fit, it overlaps vertically.
-		/// </summary>
-		public Rectangle DesiredArea
-		{
-			get { return _desiredArea; }
-			set
-			{
-				if (_desiredArea == value)
-					return;
-
-				// Optimization: If only the position changed, we can move the lines and character areas without
-				// layouting the entire text again
-				var sizeChanged = _desiredArea.Size != value.Size;
-				var offset = value.Position - _desiredArea.Position;
-				_desiredArea = value;
-
-				if (sizeChanged)
-					_dirty = true;
-				else if (!_dirty)
-					OffsetPosition(offset);
-			}
-		}
-
-		/// <summary>
-		///   Gets or sets the font that is used to determine the size of the individual characters.
-		/// </summary>
-		public Font Font
-		{
-			get { return _font; }
-			set
-			{
-				Assert.ArgumentNotNull(value, nameof(value));
-
-				if (_font == value)
-					return;
-
-				_font = value;
-				_dirty = true;
-			}
-		}
-
-		/// <summary>
-		///   Gets or sets the alignment of the text within the desired area.
-		/// </summary>
-		public TextAlignment Alignment
-		{
-			get { return _alignment; }
-			set
-			{
-				if (_alignment == value)
-					return;
-
-				_alignment = value;
-				_dirty = true;
-			}
-		}
-
-		/// <summary>
-		///   Gets the actual text rendering area. Usually, the actual area is smaller than the desired area.
-		///   If any words overlap, however, the actual area is bigger.
-		/// </summary>
-		public Rectangle ActualArea { get; private set; }
-
-		/// <summary>
-		///   Raised when the layout has changed.
-		/// </summary>
-		public event Action<TextString> LayoutChanged;
-
-		/// <summary>
-		///   Updates the layout if any changes have been made since the last layout update that
-		///   might possibly affect the text's layout.
-		/// </summary>
-		public void UpdateLayout()
-		{
-			Assert.That(_characterAreas != null, "TextLayout is not initialized properly.");
-
-			if (!_dirty)
-				return;
-
-			_lineCount = 0;
-			_dirty = false;
-
-			using (var text = TextString.Create(Text))
-			{
-				ComputeCharacterAreasAndLines(text);
-				AlignLines();
-				ComputeActualArea();
-
-				LayoutChanged?.Invoke(text);
-			}
-		}
-
-		/// <summary>
-		///   Draws debugging visualizations of the sequences and lines.
-		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the debug visualizations.</param>
-		public void DrawDebugVisualizations(SpriteBatch spriteBatch)
-		{
-//			spriteBatch.Draw(DesiredArea, new Color(0.2f, 0.2f, 0.2f, 0.3f));
-//			spriteBatch.Draw(ActualArea, new Color(0, 0, 0.5f, 0.3f));
-//
-//			for (var i = 0; i < _lineCount; ++i)
-//				spriteBatch.Draw(_lines[i].Area, new Color(0, 0.5f, 0, 0.3f));
-		}
-
-		/// <summary>
-		///   Relayouts the text.
-		/// </summary>
-		public void Relayout()
-		{
-			_dirty = true;
-			UpdateLayout();
+			return _arranged.ActualSize;
 		}
 
 		/// <summary>
@@ -254,10 +160,10 @@ namespace PointWars.UserInterface
 		/// <param name="position">The logical position of the caret.</param>
 		public Vector2 ComputeCaretPosition(int position)
 		{
-			// The caret 'origin' as at the top left corner of the desired area; 
+			// The caret 'origin' is at the top left corner of the desired area; 
 			// non-left/top aligned layouts are not supported
-			if (position == 0)
-				return _desiredArea.Position;
+			if (position == 0 || String.IsNullOrEmpty(_arranged.Text))
+				return Vector2.Zero;
 
 			// Find the line that contains the caret
 			var lineIndex = 0;
@@ -271,103 +177,165 @@ namespace PointWars.UserInterface
 				--lineIndex;
 
 			// The caret position is relative to the line 'origin'
-			var result = _lines[lineIndex].Area.Position;
+			var lineY = lineIndex * _arranged.Font.LineHeight + Math.Max(0, lineIndex - 1) * _arranged.LineSpacing;
+			var result = new Vector2(0, lineY);
 
 			// Calculate the caret's offset from the line's left edge
 			if (!_lines[lineIndex].IsInvalid)
-				result.X += _font.MeasureWidth(Text, Math.Max(0, _lines[lineIndex].FirstCharacter), position);
+				result.X += _arranged.Font.MeasureWidth(_arranged.Text, Math.Max(0, _lines[lineIndex].FirstCharacter), position);
 
 			return result;
 		}
 
 		/// <summary>
+		///   Gets the index of the character closest to the given position.
+		/// </summary>
+		/// <param name="position">The position the closest character should be returned for.</param>
+		internal int GetCharacterIndexAt(Vector2 position)
+		{
+			if (String.IsNullOrEmpty(_arranged.Text))
+				return 0;
+
+			// Search for the correct line
+			var lineIndex = 0;
+			var lineHeight = _arranged.Font.LineHeight + _arranged.LineSpacing;
+
+			while (lineIndex < _lineCount - 1 && position.Y > 0)
+			{
+				if (position.Y < (lineIndex + 1) * lineHeight)
+					break;
+
+				++lineIndex;
+			}
+
+			// Search for the correct character on the line
+			var characterIndex = _lines[lineIndex].FirstCharacter;
+			var lastCharacter = lineIndex == _lineCount - 1 ? _lines[lineIndex].LastCharacter : _lines[lineIndex].LastCharacter - 1;
+			while (characterIndex < lastCharacter && position.X > 0)
+			{
+				var start = _arranged.Font.MeasureWidth(_arranged.Text, _lines[lineIndex].FirstCharacter, characterIndex);
+				var end = _arranged.Font.MeasureWidth(_arranged.Text, _lines[lineIndex].FirstCharacter, characterIndex + 1);
+
+				if (position.X <= end - (end - start) / 2)
+					break;
+
+				++characterIndex;
+			}
+
+			return characterIndex;
+		}
+
+		/// <summary>
+		///   Draws the layouted text.
+		/// </summary>
+		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
+		/// <param name="position">The position of the top left corner of the text's drawing area.</param>
+		/// <param name="color">The default color that should be used to draw the text.</param>
+		public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color)
+		{
+			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
+
+			if (String.IsNullOrWhiteSpace(_arranged.Text))
+				return;
+
+			Assert.That(_arranged.Font != null, "Arrange() must be called at least once before drawing.");
+			if (_dirty || position != _position || _color != color)
+			{
+				_numQuads = 0;
+
+				using (var text = TextString.Create(_arranged.Text))
+				{
+					// Ensure that the quads list does not have to be resized by setting its capacity to the number of
+					// characters; however, this wastes some space as not all characters generate quads
+					if (_quads == null || text.Length > _quads.Length)
+						_quads = new Quad[text.Length];
+
+					for (var i = 0; i < text.Length; ++i)
+					{
+						var area = _characterAreas[i].Offset(position);
+						Quad quad;
+
+						if (_arranged.Font.CreateGlyphQuad(text, i, ref area, color, out quad))
+							_quads[_numQuads++] = quad;
+					}
+				}
+			}
+
+			_dirty = false;
+			_position = position;
+			_color = color;
+
+			spriteBatch.Draw(_quads, _numQuads, _arranged.Font.Texture);
+		}
+
+		/// <summary>
 		///   Creates the character areas and lines for the text.
 		/// </summary>
-		private void ComputeCharacterAreasAndLines(TextString text)
+		/// <param name="layoutInfo">The layout info the layouting information should be obtained from.</param>
+		private void ComputeCharacterAreasAndLines(ref LayoutInfo layoutInfo)
 		{
 			// The offset that is applied to all character positions
-			var offset = _desiredArea.Position;
+			var offset = Vector2.Zero;
 
 			// The current line of text; the first line starts at the top left corner of the desired area
-			var line = new TextLine(DesiredArea.Left, DesiredArea.Top, Font.LineHeight);
+			var line = TextLine.Create();
 
 			// Initialize the token stream and get the first token
-			var stream = new TextTokenStream(_font, text, _desiredArea.Width);
-			var token = stream.GetNextToken();
-			while (token.Type != TextTokenType.EndOfText)
+			using (var text = TextString.Create(layoutInfo.Text))
 			{
-				switch (token.Type)
+				if (_characterAreas == null || text.Length > _characterAreas.Length)
+					_characterAreas = new Rectangle[text.Length];
+
+				if (layoutInfo.Wrapping == TextWrapping.NoWrap)
 				{
-					case TextTokenType.Space:
-					case TextTokenType.Word:
-						// Compute the areas of the characters referenced by the word token
-						ComputeCharacterAreas(text, token.Sequence, ref offset);
-
-						// The new width of the current line is the delta between the current offset in X direction
-						// and the left edge of the desired area
-						var lineWidth = offset.X - _desiredArea.Left;
-						line.Append(token.Sequence, lineWidth);
-
-						break;
-					case TextTokenType.WrappedSpace:
-						// Compute the areas of the characters referenced by the word token
-						ComputeCharacterAreas(text, token.Sequence, ref offset);
-
-						// The width of the line shouldn't change as the space is actually wrapped to the next line;
-						// however, we still want to know (for instance, for the calculation of the caret position) that
-						// the space conceptually belongs to this line
-						line.Append(token.Sequence, line.Area.Width);
-						StartNewLine(ref line, ref offset);
-
-						break;
-					case TextTokenType.Wrap:
-					case TextTokenType.NewLine:
-						StartNewLine(ref line, ref offset);
-						break;
-					default:
-						Assert.That(false, "Unexpected token type.");
-						break;
+					var sequence = new TextSequence(text);
+					ComputeCharacterAreas(ref layoutInfo, text, sequence, ref offset);
+					line.Append(sequence, offset.X);
 				}
+				else
+				{
+					var stream = new TextTokenStream(layoutInfo.Font, text, layoutInfo.DesiredSize.Width);
+					var token = stream.GetNextToken();
 
-				// Advance to the next token in the stream
-				token = stream.GetNextToken();
+					while (token.Type != TextTokenType.EndOfText)
+					{
+						switch (token.Type)
+						{
+							case TextTokenType.Space:
+							case TextTokenType.Word:
+								// Compute the areas of the characters referenced by the word token and append them to the current line
+								ComputeCharacterAreas(ref layoutInfo, text, token.Sequence, ref offset);
+								line.Append(token.Sequence, offset.X);
+
+								break;
+							case TextTokenType.WrappedSpace:
+								// Compute the areas of the characters referenced by the word token
+								ComputeCharacterAreas(ref layoutInfo, text, token.Sequence, ref offset);
+
+								// The width of the line shouldn't change as the space is actually wrapped to the next line;
+								// however, we still want to know (for instance, for the calculation of the caret position) that
+								// the space conceptually belongs to this line
+								line.Append(token.Sequence, line.Width);
+								StartNewLine(ref layoutInfo, ref line, ref offset);
+
+								break;
+							case TextTokenType.Wrap:
+							case TextTokenType.NewLine:
+								StartNewLine(ref layoutInfo, ref line, ref offset);
+								break;
+							default:
+								Assert.That(false, "Unexpected token type.");
+								break;
+						}
+
+						// Advance to the next token in the stream
+						token = stream.GetNextToken();
+					}
+				}
 			}
 
 			// Store the last line in the lines array
 			AddLine(line);
-		}
-
-		/// <summary>
-		///   Aligns the lines.
-		/// </summary>
-		private void AlignLines()
-		{
-			var totalHeight = ComputeHeight();
-			for (var i = 0; i < _lineCount; ++i)
-			{
-				// Move each quad of the line by the given deltas
-				var delta = Vector2.Zero;
-
-				// Compute delta in X direction
-				if (_alignment.IsRightAligned())
-					delta.X = _desiredArea.Width - _lines[i].Area.Width;
-				else if (_alignment.IsHorizontallyCentered())
-					delta.X = MathUtils.Round((_desiredArea.Width - _lines[i].Area.Width) / 2);
-
-				// Compute delta in Y direction
-				if (_alignment.IsBottomAligned())
-					delta.Y = _desiredArea.Height - totalHeight;
-				else if (_alignment.IsVerticallyCentered())
-					delta.Y = MathUtils.Round((_desiredArea.Height - totalHeight) / 2);
-
-				// Move the line, if necessary
-				if (delta != Vector2.Zero)
-				{
-					_lines[i].Offset(delta);
-					for (var j = _lines[i].FirstCharacter; j < _lines[i].LastCharacter; ++j)
-						_characterAreas[j] = _characterAreas[j].Offset(delta);
-				}
-			}
 		}
 
 		/// <summary>
@@ -395,96 +363,174 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Starts a new line.
 		/// </summary>
+		/// <param name="layoutInfo">The layout info the layouting information should be obtained from.</param>
 		/// <param name="line">The predecessor of the new line.</param>
 		/// <param name="offset">The position offset.</param>
-		private void StartNewLine(ref TextLine line, ref Vector2 offset)
+		private void StartNewLine(ref LayoutInfo layoutInfo, ref TextLine line, ref Vector2 offset)
 		{
-			// Store the current line in the lines array
+			// Store the current line in the lines array and create a new one
 			AddLine(line);
-
-			// Create a new line
-			var totalLineHeight = _font.LineHeight + _lineSpacing;
-			line = new TextLine(DesiredArea.Left, line.Area.Top + totalLineHeight, _font.LineHeight);
+			line = TextLine.Create();
 
 			// Update the offsets
-			offset.X = _desiredArea.Left;
-			offset.Y += totalLineHeight;
+			offset.X = 0;
+			offset.Y += layoutInfo.Font.LineHeight + layoutInfo.LineSpacing;
 		}
 
 		/// <summary>
 		///   Computes the character areas of the characters in the given sequence.
 		/// </summary>
-		/// <param name="text">The text the area is computed for.</param>
+		/// <param name="layoutInfo">The layout info the layouting information should be obtained from.</param>
+		/// <param name="text">The text that is layouted.</param>
 		/// <param name="sequence">The sequence whose character areas should be computed.</param>
 		/// <param name="offset">The offset of the character position.</param>
-		private void ComputeCharacterAreas(TextString text, TextSequence sequence, ref Vector2 offset)
+		private void ComputeCharacterAreas(ref LayoutInfo layoutInfo, TextString text, TextSequence sequence, ref Vector2 offset)
 		{
 			for (var i = sequence.FirstCharacter; i < sequence.LastCharacter; ++i)
-				_characterAreas[i] = _font.GetGlyphArea(text, sequence.FirstCharacter, i, ref offset);
+				_characterAreas[i] = layoutInfo.Font.GetGlyphArea(text, sequence.FirstCharacter, i, ref offset);
 		}
 
 		/// <summary>
-		///   Computes the actual text rendering area. Usually, the actual area is smaller than the desired area.
-		///   If any words overlap, however, the actual area is bigger.
+		///   Aligns the lines.
 		/// </summary>
-		private void ComputeActualArea()
+		/// <param name="layoutInfo">The layout info the layouting information should be obtained from.</param>
+		private void AlignLines(ref LayoutInfo layoutInfo)
 		{
-			if (_lineCount == 0)
-			{
-				// TODO: This is only correct for left/top-aligned layouts
-				ActualArea = new Rectangle(_desiredArea.Left, _desiredArea.Top, 0, 0);
+			if (layoutInfo.Alignment == TextAlignment.Left ||
+				(layoutInfo.Wrapping == TextWrapping.NoWrap && layoutInfo.DesiredSize.Width <= layoutInfo.ActualSize.Width))
 				return;
-			}
-
-			// The maximum line width
-			var width = 0.0f;
-			// The minimum line position in X direction
-			var x = Single.MaxValue;
 
 			for (var i = 0; i < _lineCount; ++i)
 			{
-				var area = _lines[i].Area;
+				// Move each quad of the line by the given deltas
+				var delta = Vector2.Zero;
 
-				if (area.Width > width)
-					width = area.Width;
+				if (layoutInfo.Alignment == TextAlignment.Right)
+					delta.X = layoutInfo.DesiredSize.Width - _lines[i].Width;
+				else if (layoutInfo.Alignment == TextAlignment.Center)
+					delta.X = MathUtils.Round((layoutInfo.DesiredSize.Width - _lines[i].Width) / 2);
 
-				if (area.Left < x)
-					x = area.Left;
+				// Move the line, if necessary
+				if (delta != Vector2.Zero)
+				{
+					for (var j = _lines[i].FirstCharacter; j < _lines[i].LastCharacter; ++j)
+						_characterAreas[j] = _characterAreas[j].Offset(delta);
+				}
+			}
+		}
+
+		/// <summary>
+		///   Computes the actual text rendering size. Usually, the actual size is smaller than the desired size.
+		///   If any words overlap, however, the actual size is bigger.
+		/// </summary>
+		/// <param name="layoutInfo">The layout info the layouting information should be obtained from.</param>
+		private Size ComputeActualSize(ref LayoutInfo layoutInfo)
+		{
+			var width = 0.0f;
+
+			for (var i = 0; i < _lineCount; ++i)
+			{
+				if (_lines[i].Width > width)
+					width = _lines[i].Width;
 			}
 
-			var y = _lines[0].Area.Top;
-			ActualArea = new Rectangle(x, y, width, ComputeHeight());
+			return new Size(width, ComputeHeight(ref layoutInfo));
 		}
 
 		/// <summary>
 		///   Computes the actual height of the text rendering area.
 		/// </summary>
-		private float ComputeHeight()
+		/// <param name="layoutInfo">The layout info the layouting information should be obtained from.</param>
+		private int ComputeHeight(ref LayoutInfo layoutInfo)
 		{
 			// We know that each line has a height of _font.LineHeight pixels. Additionally, after each line (except
 			// the last one), we have a spacing of _lineSpacing pixels.
-			return _lineCount * _font.LineHeight + Math.Max(0, _lineCount - 1) * _lineSpacing;
+			return _lineCount * layoutInfo.Font.LineHeight + Math.Max(0, _lineCount - 1) * layoutInfo.LineSpacing;
 		}
 
 		/// <summary>
-		///   Offsets the position of the lines and character areas without performing a full layout pass.
+		///   Performs hit test for the given position.
 		/// </summary>
-		/// <param name="offset">The position offset.</param>
-		private void OffsetPosition(Vector2 offset)
+		/// <param name="position">The position that should be checked for a hit.</param>
+		internal bool HitTest(Vector2 position)
 		{
-			if (_dirty || _characterAreas == null)
-				return;
+			// Check if the position lies within the text's bounding box. If not, there can be no hit.
+			var horizontalHit = position.X >= _position.X && position.X <= _position.X + _arranged.ActualSize.Width;
+			var verticalHit = position.Y >= _position.Y && position.Y <= _position.Y + _arranged.ActualSize.Height;
 
-			for (var i = 0; i < _lineCount; ++i)
-				_lines[i].Offset(offset);
+			return horizontalHit && verticalHit;
+		}
 
-			for (var i = 0; i < _lines[_lineCount - 1].LastCharacter; ++i)
-				_characterAreas[i] = _characterAreas[i].Offset(offset);
+		/// <summary>
+		///   Caches the sizes computed during the measure and arrange phases.
+		/// </summary>
+		private struct LayoutInfo
+		{
+			/// <summary>
+			///   The actual result text drawing size. Usually, the actual size is smaller than the desired size.
+			///   If any words overlap, however, the actual size is bigger.
+			/// </summary>
+			public Size ActualSize;
 
-			ActualArea = ActualArea.Offset(offset);
+			/// <summary>
+			///   The alignment of the text within the desired drawing area.
+			/// </summary>
+			public TextAlignment Alignment;
 
-			using (var text = TextString.Create(Text))
-				LayoutChanged?.Invoke(text);
+			/// <summary>
+			///   The desired drawing size of the text. If the text doesn't fit, it overlaps vertically.
+			/// </summary>
+			public Size DesiredSize;
+
+			/// <summary>
+			///   The font that is used to determine the size of the individual characters.
+			/// </summary>
+			public Font Font;
+
+			/// <summary>
+			///   The amount of spacing between consecutive lines.
+			/// </summary>
+			public int LineSpacing;
+
+			/// <summary>
+			///   The layouted text.
+			/// </summary>
+			public string Text;
+
+			/// <summary>
+			///   Indicates whether the text should be wrapped.
+			/// </summary>
+			public TextWrapping Wrapping;
+
+			/// <summary>
+			///   Indicates whether the actual size is outdated and needs to be recomputed with the given values.
+			/// </summary>
+			/// <param name="font">The font that should be used to draw the size of the individual characters.</param>
+			/// <param name="text">The text that should be layouted and measured.</param>
+			/// <param name="desiredSize">The size of the desired drawing area of the text. If the text doesn't fit, it overlaps vertically.</param>
+			/// <param name="lineSpacing">The amount of spacing between consecutive lines.</param>
+			/// <param name="alignment">The alignment of the text within the desired drawing area.</param>
+			/// <param name="wrapping">Indicates whether the text should be wrapped.</param>
+			public bool SizeOutdated(Font font, string text, Size desiredSize, int lineSpacing, TextAlignment alignment, TextWrapping wrapping)
+			{
+				Assert.ArgumentNotNull(font, nameof(font));
+				Assert.ArgumentNotNull(text, nameof(text));
+				Assert.ArgumentInRange(alignment, nameof(alignment));
+				Assert.ArgumentInRange(wrapping, nameof(wrapping));
+
+				if (Font == font && Text == text && DesiredSize == desiredSize && LineSpacing == lineSpacing &&
+					Alignment == alignment && Wrapping == wrapping)
+					return false;
+
+				Font = font;
+				Text = text;
+				DesiredSize = desiredSize;
+				LineSpacing = lineSpacing;
+				Alignment = alignment;
+				Wrapping = wrapping;
+
+				return true;
+			}
 		}
 	}
 }

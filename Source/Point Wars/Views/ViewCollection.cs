@@ -27,7 +27,7 @@ namespace PointWars.Views
 	using Platform.Memory;
 	using Rendering;
 	using Utilities;
-	using Console = UserInterface.Console;
+	using Console = UserInterfaceOld.Console;
 
 	/// <summary>
 	///   Represents a collection of application views.
@@ -106,7 +106,7 @@ namespace PointWars.Views
 			foreach (var view in _views)
 			{
 				view.Views = this;
-				view.UIContext.Initialize(view.InputDevice, view.InputLayer);
+				view.RootElement.Initialize(view.InputDevice, view.InputLayer);
 				view.Initialize();
 			}
 		}

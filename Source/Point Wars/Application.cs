@@ -30,7 +30,7 @@ namespace PointWars
 	using Platform.Logging;
 	using Rendering;
 	using Scripting;
-	using UserInterface;
+	using UserInterfaceOld;
 	using Utilities;
 	using Views;
 

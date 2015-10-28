@@ -22,10 +22,8 @@
 
 namespace PointWars.Views
 {
-	using System.Collections.Generic;
-	using Platform.Memory;
-	using Rendering;
-	using UserInterface;
+	using Platform.Input;
+	using UserInterface.Controls;
 	using Utilities;
 
 	/// <summary>
@@ -33,14 +31,23 @@ namespace PointWars.Views
 	/// </summary>
 	internal sealed class MessageBoxesView : View
 	{
-		private readonly List<MessageBox> _messageBoxes = new List<MessageBox>();
+		private readonly AreaPanel _areaPanel = new AreaPanel();
+		private int _lastZIndex;
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		public MessageBoxesView()
+			: base(InputLayer.MessageBox)
+		{
+		}
 
 		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
-			IsActive = true;
+			RootElement.Child = _areaPanel;
 		}
 
 		/// <summary>
@@ -51,38 +58,17 @@ namespace PointWars.Views
 		{
 			Assert.ArgumentNotNull(messageBox, nameof(messageBox));
 
-			messageBox.Register(UIContext);
-			messageBox.Resize(Window.Size);
-			_messageBoxes.Add(messageBox);
+			messageBox.ZIndex = _lastZIndex++;
+			_areaPanel.Add(messageBox);
 		}
 
 		/// <summary>
-		///   Changes the size available to the view.
+		///   Updates the view's state.
 		/// </summary>
-		/// <param name="size">The new size available to the view.</param>
-		public override void Resize(Size size)
+		public override void Update()
 		{
-			foreach (var messageBox in _messageBoxes)
-				messageBox.Resize(size);
-		}
-
-		/// <summary>
-		///   Draws the view's contents.
-		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public override void Draw(SpriteBatch spriteBatch)
-		{
-			foreach (var messageBox in _messageBoxes)
-				messageBox.Draw(spriteBatch);
-		}
-
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		protected override void OnDisposing()
-		{
-			_messageBoxes.SafeDisposeAll();
-			base.OnDisposing();
+			base.Update();
+			IsActive = _areaPanel.ChildrenCount != 0;
 		}
 	}
 }

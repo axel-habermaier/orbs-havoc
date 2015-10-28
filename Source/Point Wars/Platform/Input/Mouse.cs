@@ -81,6 +81,19 @@ namespace PointWars.Platform.Input
 		public unsafe bool InsideWindow => SDL_GetMouseFocus() != null;
 
 		/// <summary>
+		///   Gets the input state for the given button.
+		/// </summary>
+		/// <param name="button">The button the input state should be returned for.</param>
+		public InputState this[MouseButton button]
+		{
+			get
+			{
+				Assert.ArgumentInRange(button, nameof(button));
+				return _states[(int)button];
+			}
+		}
+
+		/// <summary>
 		///   Raised when the mouse wheel is scrolled.
 		/// </summary>
 		public event Action<MouseWheelDirection> Wheel

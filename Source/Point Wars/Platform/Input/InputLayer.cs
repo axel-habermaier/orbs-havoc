@@ -52,9 +52,14 @@ namespace PointWars.Platform.Input
 		Menu = 4,
 
 		/// <summary>
+		///   The input layer used by all message boxes.
+		/// </summary>
+		MessageBox = 8,
+
+		/// <summary>
 		///   The input layer used by the console.
 		/// </summary>
-		Console = 8,
+		Console = 16,
 
 		/// <summary>
 		///   Represents all input layers.

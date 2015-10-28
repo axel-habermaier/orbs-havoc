@@ -26,7 +26,7 @@ namespace PointWars.Views
 	using Platform.Input;
 	using Platform.Memory;
 	using Rendering;
-	using UserInterface;
+	using UserInterface.Controls;
 	using Utilities;
 
 	/// <summary>
@@ -59,7 +59,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets the context for the view's UI elements.
 		/// </summary>
-		public UIContext UIContext { get; } = new UIContext();
+		public RootUIElement RootElement { get; } = new RootUIElement();
 
 		/// <summary>
 		///   Gets the window the view is drawn in.
@@ -131,6 +131,8 @@ namespace PointWars.Views
 		/// </summary>
 		public virtual void Update()
 		{
+			if (IsActive)
+				RootElement.Update(Window.Size);
 		}
 
 		/// <summary>
@@ -139,7 +141,7 @@ namespace PointWars.Views
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
 		public virtual void Draw(SpriteBatch spriteBatch)
 		{
-			UIContext.Draw(spriteBatch);
+			RootElement.Draw(spriteBatch);
 		}
 
 		/// <summary>
@@ -147,7 +149,7 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			UIContext.SafeDispose();
+			RootElement.SafeDispose();
 		}
 	}
 }

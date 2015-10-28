@@ -226,5 +226,24 @@ namespace PointWars.Platform.Input
 		{
 			return IsRepeated(SDL_GetScancodeFromKey(key));
 		}
+
+		/// <summary>
+		///   Gets the set of key modifiers that are currently pressed.
+		/// </summary>
+		public KeyModifiers GetModifiers()
+		{
+			var modifiers = KeyModifiers.None;
+
+			if (IsPressed(Key.LeftAlt) || IsPressed(Key.RightAlt))
+				modifiers |= KeyModifiers.Alt;
+
+			if (IsPressed(Key.LeftControl) || IsPressed(Key.RightControl))
+				modifiers |= KeyModifiers.Control;
+
+			if (IsPressed(Key.LeftShift) || IsPressed(Key.RightShift))
+				modifiers |= KeyModifiers.Shift;
+
+			return modifiers;
+		}
 	}
 }
