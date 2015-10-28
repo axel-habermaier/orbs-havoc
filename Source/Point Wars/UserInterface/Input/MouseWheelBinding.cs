@@ -1,115 +1,80 @@
+// The MIT License (MIT)
+// 
+// Copyright (c) 2015, Axel Habermaier
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 namespace PointWars.UserInterface.Input
 {
+	using System;
+	using Platform.Input;
 	using Utilities;
 
 	/// <summary>
-	///     Represents an input binding that is triggered by turning the mouse wheel.
+	///   Represents an input binding that is triggered by turning the mouse wheel.
 	/// </summary>
 	public sealed class MouseWheelBinding : InputBinding
 	{
 		/// <summary>
-		///     The direction the mouse wheel must be turned in to trigger the binding. If null, both directions trigger the binding.
+		///   The direction the mouse wheel must be turned in to trigger the binding. If null, both directions trigger the binding.
 		/// </summary>
-		private MouseWheelDirection? _direction;
+		private readonly MouseWheelDirection? _direction;
 
 		/// <summary>
-		///     The key modifiers that must be pressed for the binding to trigger.
+		///   The key modifiers that must be pressed for the binding to trigger.
 		/// </summary>
-		private KeyModifiers _modifiers;
+		private readonly KeyModifiers _modifiers;
 
 		/// <summary>
-		///     Initializes a new instance.
+		///   Initializes a new instance.
 		/// </summary>
-		public MouseWheelBinding()
-		{
-		}
-
-		/// <summary>
-		///     Initializes a new instance.
-		/// </summary>
-		/// <param name="method">The name of the method that should be invoked when the binding is triggered.</param>
-		/// <param name="modifiers">The key modifiers that must be pressed for the binding to trigger.</param>
-		public MouseWheelBinding(string method, KeyModifiers modifiers = KeyModifiers.None)
-		{
-			Assert.ArgumentNotNullOrWhitespace(method, nameof(method));
-
-			Modifiers = modifiers;
-			Method = method;
-		}
-
-		/// <summary>
-		///     Initializes a new instance.
-		/// </summary>
+		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
 		/// <param name="direction">
-		///     The direction the mouse wheel must be turned in to trigger the binding. If null, both directions
-		///     trigger the binding.
+		///   The direction the mouse wheel must be turned in to trigger the binding. If null, both directions
+		///   trigger the binding.
 		/// </param>
-		/// <param name="method">The name of the method that should be invoked when the binding is triggered.</param>
 		/// <param name="modifiers">The key modifiers that must be pressed for the binding to trigger.</param>
-		public MouseWheelBinding(MouseWheelDirection direction, string method, KeyModifiers modifiers = KeyModifiers.None)
+		public MouseWheelBinding(Action callback, MouseWheelDirection? direction, KeyModifiers modifiers = KeyModifiers.None)
+			: base(callback, TriggerMode.OnActivation)
 		{
-			Assert.ArgumentInRange(direction, nameof(direction));
-			Assert.ArgumentNotNullOrWhitespace(method, nameof(method));
-
-			Direction = direction;
-			Modifiers = modifiers;
-			Method = method;
+			_direction = direction;
+			_modifiers = modifiers;
 		}
 
 		/// <summary>
-		///     Gets or sets the direction the mouse wheel must be turned in to trigger the binding. If null, both directions trigger
-		///     the binding.
-		/// </summary>
-		public MouseWheelDirection? Direction
-		{
-			get { return _direction; }
-			set
-			{
-				Assert.NotSealed(this);
-				if (_direction.HasValue)
-					Assert.ArgumentInRange(_direction.Value, nameof(_direction.Value));
-
-				_direction = value;
-			}
-		}
-
-		/// <summary>
-		///     Gets or sets the key modifiers that must be pressed for the binding to trigger.
-		/// </summary>
-		public KeyModifiers Modifiers
-		{
-			get { return _modifiers; }
-			set
-			{
-				Assert.NotSealed(this);
-				_modifiers = value;
-			}
-		}
-
-		/// <summary>
-		///     Checks whether the given event triggers the input binding.
+		///   Checks whether the given event triggers the input binding.
 		/// </summary>
 		/// <param name="args">The arguments of the event that should be checked.</param>
-		protected override bool IsTriggered(RoutedEventArgs args)
+		protected override bool IsTriggered(InputEventArgs args)
 		{
-			if (Preview && args.RoutedEvent != UIElement.PreviewMouseWheelEvent)
-				return false;
-
-			if (!Preview && args.RoutedEvent != UIElement.MouseWheelEvent)
-				return false;
-
 			var wheelEventArgs = args as MouseWheelEventArgs;
 			if (wheelEventArgs == null)
 				return false;
 
-			switch (Direction)
+			switch (_direction)
 			{
 				case MouseWheelDirection.Up:
-					return wheelEventArgs.Direction == MouseWheelDirection.Up && wheelEventArgs.Modifiers == Modifiers;
+					return wheelEventArgs.Direction == MouseWheelDirection.Up && wheelEventArgs.Modifiers == _modifiers;
 				case MouseWheelDirection.Down:
-					return wheelEventArgs.Direction == MouseWheelDirection.Down && wheelEventArgs.Modifiers == Modifiers;
+					return wheelEventArgs.Direction == MouseWheelDirection.Down && wheelEventArgs.Modifiers == _modifiers;
 				case null:
-					return wheelEventArgs.Modifiers == Modifiers;
+					return wheelEventArgs.Modifiers == _modifiers;
 				default:
 					Assert.NotReached("Unknown mouse wheel direction.");
 					return false;

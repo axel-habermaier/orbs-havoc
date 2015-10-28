@@ -23,6 +23,8 @@
 namespace PointWars.UserInterface.Controls
 {
 	using System;
+	using Input;
+	using Platform.Input;
 	using Rendering;
 	using Utilities;
 
@@ -31,6 +33,9 @@ namespace PointWars.UserInterface.Controls
 	/// </summary>
 	public sealed class MessageBox : Control
 	{
+		private Action _continuation1;
+		private Action _continuation2;
+
 		/// <summary>
 		///   Initializes the message box.
 		/// </summary>
@@ -44,6 +49,13 @@ namespace PointWars.UserInterface.Controls
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
 			Assert.ArgumentNotNull(button1, nameof(button1));
 			Assert.ArgumentNotNull(button2, nameof(button2));
+
+			Focusable = true;
+
+			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Enter, triggerMode: TriggerMode.OnDeactivation));
+			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Space, triggerMode: TriggerMode.OnDeactivation));
+			InputBindings.Add(new KeyBinding(Button1Clicked, Key.NumpadEnter, triggerMode: TriggerMode.OnDeactivation));
+			InputBindings.Add(new KeyBinding(Button2Clicked, Key.Escape, triggerMode: TriggerMode.OnDeactivation));
 
 			button1.Padding = new Thickness(0, 0, 3, 0);
 			Child = new Border
@@ -87,22 +99,52 @@ namespace PointWars.UserInterface.Controls
 		/// <param name="title">The title of the message box.</param>
 		/// <param name="message">The message of the message box.</param>
 		/// <param name="onConfirmed">The continuation that should be executed when the user confirmed.</param>
-		public static MessageBox ShowConfimation(string title, string message, Action onConfirmed)
+		public static MessageBox ShowOkCancel(string title, string message, Action onConfirmed)
 		{
-			Assert.ArgumentNotNull(onConfirmed, nameof(onConfirmed));
-
-			var messageBox = new MessageBox();
-			var okButton = messageBox.CreateButton("OK", onConfirmed);
-			var cancelButton = messageBox.CreateButton("Cancel");
+			var messageBox = new MessageBox { _continuation1 = onConfirmed };
+			var okButton = CreateButton("OK", messageBox.Button1Clicked);
+			var cancelButton = CreateButton("Cancel", messageBox.Button2Clicked);
 
 			messageBox.Initialize(title, message, okButton, cancelButton);
 			return messageBox;
 		}
 
 		/// <summary>
+		///   Creates a confirmation message box with a Yes and a No button.
+		/// </summary>
+		/// <param name="title">The title of the message box.</param>
+		/// <param name="message">The message of the message box.</param>
+		/// <param name="yesContinuation">The continuation that should be executed when the user pressed the Yes button.</param>
+		/// <param name="noContinuation">The continuation that should be executed when the user pressed the No button.</param>
+		public static MessageBox ShowYesNo(string title, string message, Action yesContinuation, Action noContinuation = null)
+		{
+			var messageBox = new MessageBox { _continuation1 = yesContinuation, _continuation2 = noContinuation };
+			var yesButton = CreateButton("Yes", messageBox.Button1Clicked);
+			var noButton = CreateButton("No", messageBox.Button2Clicked);
+
+			messageBox.Initialize(title, message, yesButton, noButton);
+			return messageBox;
+		}
+
+		/// <summary>
+		///   Creates a error message box.
+		/// </summary>
+		/// <param name="title">The title of the message box.</param>
+		/// <param name="message">The message of the message box.</param>
+		public static MessageBox ShowError(string title, string message)
+		{
+			var messageBox = new MessageBox();
+			var okButton = CreateButton("OK", messageBox.Button1Clicked);
+			var hiddenButton = new Button { Visibility = Visibility.Collapsed };
+
+			messageBox.Initialize(title, message, okButton, hiddenButton);
+			return messageBox;
+		}
+
+		/// <summary>
 		///   Creates a message box button.
 		/// </summary>
-		private Button CreateButton(string label, Action continuation = null)
+		private static Button CreateButton(string label, Action clickHandler)
 		{
 			var button = new Button
 			{
@@ -121,23 +163,37 @@ namespace PointWars.UserInterface.Controls
 				}
 			};
 
-			button.Click += OnButtonClicked(continuation);
+			button.Click += clickHandler;
 			return button;
 		}
 
 		/// <summary>
-		///   Generates the click handler for a message box button.
+		///   Handles a click on the first button.
 		/// </summary>
-		private Action OnButtonClicked(Action continuation)
+		private void Button1Clicked()
 		{
-			return () =>
-			{
-				continuation?.Invoke();
+			_continuation1?.Invoke();
+			Close();
+		}
 
-				var panel = Parent as Panel;
-				Assert.NotNull(panel, "Expected to message box's parent to be a panel.");
-				panel.Remove(this);
-			};
+		/// <summary>
+		///   Handles a click on the second button.
+		/// </summary>
+		private void Button2Clicked()
+		{
+			_continuation2?.Invoke();
+			Close();
+		}
+
+		/// <summary>
+		///   Closes the message box.
+		/// </summary>
+		private void Close()
+		{
+			var panel = Parent as Panel;
+			Assert.NotNull(panel, "Expected to message box's parent to be a panel.");
+
+			panel.Remove(this);
 		}
 	}
 }

@@ -23,8 +23,10 @@
 namespace PointWars.UserInterface
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Numerics;
 	using Controls;
+	using Input;
 	using Rendering;
 	using Utilities;
 
@@ -33,10 +35,10 @@ namespace PointWars.UserInterface
 	/// </summary>
 	public abstract partial class UIElement
 	{
-//		/// <summary>
-//		///   The list of input bindings associated with this UI element.
-//		/// </summary>
-//		private InputBindingCollection _inputBindings;
+		/// <summary>
+		///   The list of input bindings associated with this UI element.
+		/// </summary>
+		private List<InputBinding> _inputBindings;
 
 		/// <summary>
 		///   Caches the layouting information of the UI element during the measure and arrange phases for performance reasons.

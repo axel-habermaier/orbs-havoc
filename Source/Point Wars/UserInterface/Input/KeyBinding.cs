@@ -1,4 +1,26 @@
-﻿namespace PointWars.UserInterface.Input
+﻿// The MIT License (MIT)
+// 
+// Copyright (c) 2015, Axel Habermaier
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+namespace PointWars.UserInterface.Input
 {
 	using System;
 	using Platform.Input;
@@ -6,52 +28,34 @@
 	using Utilities;
 
 	/// <summary>
-	///     Represents an input binding that is triggered by a key event.
+	///   Represents an input binding that is triggered by a key event.
 	/// </summary>
 	public sealed class KeyBinding : InputBinding
 	{
-		/// <summary>
-		///     Initializes a new instance.
-		/// </summary>
-		public KeyBinding()
-		{
-		}
+		private readonly Key _key;
+		private readonly KeyModifiers _modifiers;
 
 		/// <summary>
-		///     Initializes a new instance.
+		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="key">The key that should activate the binding.</param>
 		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
+		/// <param name="key">The key that should activate the binding.</param>
 		/// <param name="modifiers">The key modifiers that must be pressed for the binding to trigger.</param>
-		public KeyBinding(Key key, Action callback, KeyModifiers modifiers = KeyModifiers.None)
+		/// <param name="triggerMode">Determines when the input binding should be triggered.</param>
+		public KeyBinding(Action callback, Key key, KeyModifiers modifiers = KeyModifiers.None, TriggerMode triggerMode = TriggerMode.OnActivation)
+			: base(callback, triggerMode)
 		{
-			Assert.ArgumentNotNull(callback, nameof(callback));
+			Assert.ArgumentInRange(key, nameof(key));
 
-			Key = key;
-			Modifiers = modifiers;
-			Method = method;
+			_key = key;
+			_modifiers = modifiers;
 		}
 
 		/// <summary>
-		///     Gets or sets the key that activates the binding.
-		/// </summary>
-		public Key Key { get; set; }
-
-		/// <summary>
-		///     Gets or sets the key modifiers that must be pressed for the binding to trigger.
-		/// </summary>
-		public KeyModifiers Modifiers { get; set; }
-
-		/// <summary>
-		///     Gets or sets a value indicating whether the binding is also be triggered when the OS reports a repeated key press.
-		/// </summary>
-		public bool TriggerOnRepeat { get; set; } = true;
-
-		/// <summary>
-		///     Checks whether the given event triggers the input binding.
+		///   Checks whether the given event triggers the input binding.
 		/// </summary>
 		/// <param name="args">The arguments of the event that should be checked.</param>
-		protected override bool IsTriggered(RoutedEventArgs args)
+		protected override bool IsTriggered(InputEventArgs args)
 		{
 			var keyEventArgs = args as KeyEventArgs;
 			if (keyEventArgs == null)
@@ -59,14 +63,13 @@
 
 			switch (TriggerMode)
 			{
-				case TriggerMode.Activated:
-					var downEvent = Preview ? UIElement.PreviewKeyDownEvent : UIElement.KeyDownEvent;
-					if (args.RoutedEvent == downEvent && keyEventArgs.Key == Key && keyEventArgs.Modifiers == Modifiers)
-						return keyEventArgs.WentDown || (keyEventArgs.IsRepeated && TriggerOnRepeat);
-					return false;
-				case TriggerMode.Deactivated:
-					var upEvent = Preview ? UIElement.PreviewKeyUpEvent : UIElement.KeyUpEvent;
-					return args.RoutedEvent == upEvent && (keyEventArgs.Key == Key || keyEventArgs.Modifiers != Modifiers);
+				case TriggerMode.OnActivation:
+					return keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.WentDown;
+				case TriggerMode.Repeatedly:
+					return keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers &&
+						   !keyEventArgs.KeyState.WentDown && keyEventArgs.KeyState.IsRepeated;
+				case TriggerMode.OnDeactivation:
+					return keyEventArgs.KeyState.WentUp && keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers;
 				default:
 					Log.Die("Unknown trigger mode.");
 					return false;

@@ -28,17 +28,12 @@ namespace PointWars.UserInterface.Input
 	/// <summary>
 	///   Provides information about key press and release events.
 	/// </summary>
-	public sealed class KeyEventArgs
+	public sealed class KeyEventArgs : InputEventArgs
 	{
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.
 		/// </summary>
 		private static readonly KeyEventArgs CachedInstance = new KeyEventArgs();
-
-		/// <summary>
-		///   The state of the key that was pressed or released.
-		/// </summary>
-		private InputState _state;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -61,25 +56,12 @@ namespace PointWars.UserInterface.Input
 		/// <summary>
 		///   Gets a value indicating whether the key or button is currently being pressed down.
 		/// </summary>
-		public bool IsPressed => _state.IsPressed;
+		public InputState KeyState => Keyboard[ScanCode];
 
 		/// <summary>
-		///   Gets a value indicating whether the key or button was pressed during the current frame. WentDown is
-		///   only true during the single frame when IsPressed changed from false to true.
+		///   Gets the keyboard that generated the event.
 		/// </summary>
-		public bool WentDown => _state.WentDown;
-
-		/// <summary>
-		///   Gets a value indicating whether the key or button was released during the current frame. WentUp is
-		///   only true during the single frame when IsPressed changed from true to false.
-		/// </summary>
-		public bool WentUp => _state.WentUp;
-
-		/// <summary>
-		///   Gets a value indicating whether a key or button repeat event occurred. IsRepeated is also true
-		///   when the key or button is pressed, i.e., when WentDown is true.
-		/// </summary>
-		public bool IsRepeated => _state.IsRepeated;
+		public Keyboard Keyboard { get; private set; }
 
 		/// <summary>
 		///   Gets the set of key modifiers that were pressed when the event was raised.
@@ -92,15 +74,15 @@ namespace PointWars.UserInterface.Input
 		/// <param name="keyboard">The keyboard device that raised the event.</param>
 		/// <param name="key">The key that was pressed or released.</param>
 		/// <param name="scanCode">The key's scan code.</param>
-		/// <param name="state">The state of the key.</param>
-		internal static KeyEventArgs Create(Keyboard keyboard, Key key, ScanCode scanCode, InputState state)
+		internal static KeyEventArgs Create(Keyboard keyboard, Key key, ScanCode scanCode)
 		{
 			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
 			Assert.ArgumentInRange(scanCode, nameof(scanCode));
 
+			CachedInstance.Handled = false;
+			CachedInstance.Keyboard = keyboard;
 			CachedInstance.Key = key;
 			CachedInstance.ScanCode = scanCode;
-			CachedInstance._state = state;
 			CachedInstance.Modifiers = keyboard.GetModifiers();
 
 			return CachedInstance;

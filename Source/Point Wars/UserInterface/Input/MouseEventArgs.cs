@@ -29,7 +29,7 @@ namespace PointWars.UserInterface.Input
 	/// <summary>
 	///   Provides information about mouse events.
 	/// </summary>
-	public class MouseEventArgs
+	public class MouseEventArgs : InputEventArgs
 	{
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.
@@ -42,11 +42,6 @@ namespace PointWars.UserInterface.Input
 		protected MouseEventArgs()
 		{
 		}
-
-		/// <summary>
-		///     Gets or sets a value indicating whether the event has been handled.
-		/// </summary>
-		public bool Handled { get; set; }
 
 		/// <summary>
 		///   Gets the mouse that generated the event.

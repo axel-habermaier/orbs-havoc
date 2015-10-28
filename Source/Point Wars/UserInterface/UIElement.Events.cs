@@ -23,7 +23,6 @@
 namespace PointWars.UserInterface
 {
 	using Input;
-	using Platform.Logging;
 
 	public partial class UIElement
 	{
@@ -95,6 +94,7 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected virtual void OnMousePressed(MouseButtonEventArgs args)
 		{
+			HandleInputEvent(args);
 			ActiveStyle?.Invoke(this);
 		}
 
@@ -103,7 +103,36 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected virtual void OnMouseReleased(MouseButtonEventArgs args)
 		{
+			HandleInputEvent(args);
 			HoveredStyle?.Invoke(this);
+		}
+
+		/// <summary>
+		///   Invoked when a key has been pressed while the UI element is focused.
+		/// </summary>
+		protected virtual void OnKeyPressed(KeyEventArgs args)
+		{
+			HandleInputEvent(args);
+		}
+
+		/// <summary>
+		///   Invoked when a key has been released while the UI element is focused.
+		/// </summary>
+		protected virtual void OnKeyReleased(KeyEventArgs args)
+		{
+			HandleInputEvent(args);
+		}
+
+		/// <summary>
+		///   Handles an input event.
+		/// </summary>
+		private void HandleInputEvent(InputEventArgs e)
+		{
+			if (_inputBindings == null || !IsAttachedToRoot)
+				return;
+
+			foreach (var binding in _inputBindings)
+				binding.HandleEvent(e);
 		}
 	}
 }

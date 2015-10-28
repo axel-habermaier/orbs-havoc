@@ -33,56 +33,39 @@ namespace PointWars.UserInterface.Input
 		/// <summary>
 		///   The callback that is invoked when the binding is triggered.
 		/// </summary>
-		private Action _callback;
+		private readonly Action _callback;
 
 		/// <summary>
-		///   The target method on the associated UI element that is invoked whenever the binding is triggered.
+		///   Initializes a new instance.
 		/// </summary>
-		private Action _targetMethod;
-
-		/// <summary>
-		///   The trigger mode of the input binding.
-		/// </summary>
-		private TriggerMode _triggerMode = TriggerMode.Activated;
-
-		/// <summary>
-		///   Gets or sets the callback that is invoked when the binding is triggered.
-		/// </summary>
-		public Action Callback
+		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
+		/// <param name="triggerMode">Determines when the input binding should be triggered.</param>
+		protected InputBinding(Action callback, TriggerMode triggerMode)
 		{
-			get { return _callback; }
-			set
-			{
-				Assert.ArgumentNotNull(value, nameof(value));
-				_callback = value;
-			}
+			Assert.ArgumentNotNull(callback, nameof(callback));
+			Assert.ArgumentInRange(triggerMode, nameof(triggerMode));
+
+			_callback = callback;
+			TriggerMode = triggerMode;
 		}
 
 		/// <summary>
-		///   Gets or sets the trigger mode of the input binding.
+		///   Gets the trigger mode of the input binding.
 		/// </summary>
-		public TriggerMode TriggerMode
-		{
-			get { return _triggerMode; }
-			set
-			{
-				Assert.ArgumentInRange(value, nameof(value));
-				_triggerMode = value;
-			}
-		}
+		protected TriggerMode TriggerMode { get; }
 
 		/// <summary>
 		///   Handles the given event, invoking the target method if the input binding is triggered.
 		/// </summary>
 		/// <param name="args">The arguments of the event that should be handled.</param>
-		internal void HandleEvent(RoutedEventArgs args)
+		internal void HandleEvent(InputEventArgs args)
 		{
 			Assert.ArgumentNotNull(args, nameof(args));
 
-			if (_targetMethod == null || !IsTriggered(args))
+			if (!IsTriggered(args))
 				return;
 
-			_targetMethod();
+			_callback();
 			args.Handled = true;
 		}
 
@@ -90,6 +73,6 @@ namespace PointWars.UserInterface.Input
 		///   Checks whether the given event triggers the input binding.
 		/// </summary>
 		/// <param name="args">The arguments of the event that should be checked.</param>
-		protected abstract bool IsTriggered(RoutedEventArgs args);
+		protected abstract bool IsTriggered(InputEventArgs args);
 	}
 }

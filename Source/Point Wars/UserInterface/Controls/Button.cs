@@ -57,7 +57,7 @@ namespace PointWars.UserInterface.Controls
 		{
 			base.OnMouseReleased(e);
 
-			if (e.Button != MouseButton.Left)
+			if (e.Button != MouseButton.Left || e.Handled)
 				return;
 
 			e.Handled = true;

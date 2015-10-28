@@ -1,41 +1,63 @@
-﻿namespace PointWars.UserInterface.Input
+﻿// The MIT License (MIT)
+// 
+// Copyright (c) 2015, Axel Habermaier
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+namespace PointWars.UserInterface.Input
 {
+	using System;
+	using Platform.Input;
 	using Platform.Logging;
 	using Scripting;
 	using Utilities;
 
 	/// <summary>
-	///     Represents a configurable input binding.
+	///   Represents a configurable input binding.
 	/// </summary>
 	public sealed class ConfigurableBinding : InputBinding
 	{
 		/// <summary>
-		///     The configurable input cvar that triggers the binding.
+		///   The configurable input cvar that triggers the binding.
 		/// </summary>
-		private Cvar<ConfigurableInput> _cvar;
+		private readonly Cvar<ConfigurableInput> _cvar;
 
 		/// <summary>
-		///     Gets or sets the configurable input cvar that triggers the binding.
+		///   Initializes a new instance.
 		/// </summary>
-		public Cvar<ConfigurableInput> Cvar
+		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
+		/// <param name="cvar">The configurable input cvar that should trigger the binding.</param>
+		/// <param name="triggerMode">Determines when the input binding should be triggered.</param>
+		public ConfigurableBinding(Action callback, Cvar<ConfigurableInput> cvar, TriggerMode triggerMode = TriggerMode.OnActivation)
+			: base(callback, triggerMode)
 		{
-			get { return _cvar; }
-			set
-			{
-				Assert.ArgumentNotNull(value, nameof(value));
-				Assert.NotSealed(this);
-
-				_cvar = value;
-			}
+			Assert.ArgumentNotNull(cvar, nameof(cvar));
+			_cvar = cvar;
 		}
 
 		/// <summary>
-		///     Checks whether the given event triggers the input binding.
+		///   Checks whether the given event triggers the input binding.
 		/// </summary>
 		/// <param name="args">The arguments of the event that should be checked.</param>
-		protected override bool IsTriggered(RoutedEventArgs args)
+		protected override bool IsTriggered(InputEventArgs args)
 		{
-			if (Cvar.Value.Key != null)
+			if (_cvar.Value.Key != null)
 			{
 				var keyEventArgs = args as KeyEventArgs;
 				if (keyEventArgs == null)
@@ -43,21 +65,22 @@
 
 				switch (TriggerMode)
 				{
-					case TriggerMode.Activated:
-						var downEvent = Preview ? UIElement.PreviewKeyDownEvent : UIElement.KeyDownEvent;
-						return args.RoutedEvent == downEvent && keyEventArgs.Key == Cvar.Value.Key &&
-							   keyEventArgs.Modifiers == Cvar.Value.Modifiers;
-					case TriggerMode.Deactivated:
-						var upEvent = Preview ? UIElement.PreviewKeyUpEvent : UIElement.KeyUpEvent;
-						return args.RoutedEvent == upEvent &&
-							   (keyEventArgs.Key == Cvar.Value.Key || keyEventArgs.Modifiers != Cvar.Value.Modifiers);
+					case TriggerMode.OnActivation:
+						return keyEventArgs.Key == _cvar.Value.Key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
+							   keyEventArgs.KeyState.WentDown;
+					case TriggerMode.Repeatedly:
+						return keyEventArgs.Key == _cvar.Value.Key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
+							   !keyEventArgs.KeyState.WentDown && keyEventArgs.KeyState.IsRepeated;
+					case TriggerMode.OnDeactivation:
+						return keyEventArgs.KeyState.WentUp && keyEventArgs.Key == _cvar.Value.Key &&
+							   keyEventArgs.Modifiers == _cvar.Value.Modifiers;
 					default:
 						Log.Die("Unknown trigger mode.");
 						return false;
 				}
 			}
 
-			if (Cvar.Value.MouseButton != null)
+			if (_cvar.Value.MouseButton != null)
 			{
 				var mouseEventArgs = args as MouseButtonEventArgs;
 				if (mouseEventArgs == null)
@@ -65,14 +88,13 @@
 
 				switch (TriggerMode)
 				{
-					case TriggerMode.Activated:
-						var downEvent = Preview ? UIElement.PreviewMouseDownEvent : UIElement.MouseDownEvent;
-						return args.RoutedEvent == downEvent &&
-							   (mouseEventArgs.Button == Cvar.Value.MouseButton && mouseEventArgs.Modifiers == Cvar.Value.Modifiers);
-					case TriggerMode.Deactivated:
-						var upEvent = Preview ? UIElement.PreviewMouseUpEvent : UIElement.MouseUpEvent;
-						return args.RoutedEvent == upEvent &&
-							   (mouseEventArgs.Button == Cvar.Value.MouseButton || mouseEventArgs.Modifiers != Cvar.Value.Modifiers);
+					case TriggerMode.OnActivation:
+					case TriggerMode.Repeatedly:
+						return mouseEventArgs.ButtonState.WentDown &&
+							   (mouseEventArgs.Button == _cvar.Value.MouseButton && mouseEventArgs.Modifiers == _cvar.Value.Modifiers);
+					case TriggerMode.OnDeactivation:
+						return mouseEventArgs.ButtonState.WentUp &&
+							   (mouseEventArgs.Button == _cvar.Value.MouseButton || mouseEventArgs.Modifiers != _cvar.Value.Modifiers);
 					default:
 						Log.Die("Unknown trigger mode.");
 						return false;

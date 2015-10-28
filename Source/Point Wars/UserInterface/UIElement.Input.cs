@@ -84,5 +84,29 @@ namespace PointWars.UserInterface
 				element = element.Parent;
 			}
 		}
+
+		/// <summary>
+		///   Handles a key pressed event.
+		/// </summary>
+		protected static void OnKeyPressed(UIElement element, KeyEventArgs e)
+		{
+			while (element != null && !e.Handled)
+			{
+				element.OnKeyPressed(e);
+				element = element.Parent;
+			}
+		}
+
+		/// <summary>
+		///   Handles a key released event.
+		/// </summary>
+		protected static void OnKeyReleased(UIElement element, KeyEventArgs e)
+		{
+			while (element != null && !e.Handled)
+			{
+				element.OnKeyReleased(e);
+				element = element.Parent;
+			}
+		}
 	}
 }

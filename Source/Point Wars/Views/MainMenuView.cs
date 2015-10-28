@@ -34,6 +34,8 @@ namespace PointWars.Views
 	/// </summary>
 	internal sealed class MainMenuView : View
 	{
+		private bool _exitMessageBoxOpen;
+
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
@@ -67,6 +69,7 @@ namespace PointWars.Views
 			stackPanel.Add(CreateButton("Exit", OnExit));
 
 			RootElement.Child = stackPanel;
+			Window.Closing += OnExit;
 		}
 
 		/// <summary>
@@ -100,7 +103,13 @@ namespace PointWars.Views
 		/// </summary>
 		private void OnExit()
 		{
-			Views.MessageBoxes.Show(MessageBox.ShowConfimation("Are you sure?", "Do you really want to quit the application?", Commands.Exit));
+			if (_exitMessageBoxOpen)
+				return;
+
+			_exitMessageBoxOpen = true;
+
+			Views.MessageBoxes.Show(MessageBox.ShowYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
+				Commands.Exit, () => _exitMessageBoxOpen = false));
 		}
 	}
 }

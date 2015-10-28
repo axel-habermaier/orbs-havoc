@@ -59,6 +59,8 @@ namespace PointWars.UserInterface.Controls
 			_inputDevice.InputLayerChanged -= InputLayerChanged;
 			_inputDevice.Mouse.Pressed -= MousePressed;
 			_inputDevice.Mouse.Released -= MouseReleased;
+			_inputDevice.Keyboard.KeyPressed -= KeyPressed;
+			_inputDevice.Keyboard.KeyReleased -= KeyReleased;
 		}
 
 		/// <summary>
@@ -92,6 +94,8 @@ namespace PointWars.UserInterface.Controls
 			_inputDevice.InputLayerChanged += InputLayerChanged;
 			_inputDevice.Mouse.Pressed += MousePressed;
 			_inputDevice.Mouse.Released += MouseReleased;
+			_inputDevice.Keyboard.KeyPressed += KeyPressed;
+			_inputDevice.Keyboard.KeyReleased += KeyReleased;
 		}
 
 
@@ -105,7 +109,7 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Handles a mouse click.
+		///   Handles a mouse press event.
 		/// </summary>
 		private void MousePressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
@@ -117,7 +121,7 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Handles a mouse click.
+		///   Handles a mouse release event.
 		/// </summary>
 		private void MouseReleased(MouseButton button, Vector2 position)
 		{
@@ -126,6 +130,30 @@ namespace PointWars.UserInterface.Controls
 
 			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, false, _inputDevice.Keyboard.GetModifiers());
 			OnMouseReleased(_hoveredElement, args);
+		}
+
+		/// <summary>
+		///   Handles a key press event.
+		/// </summary>
+		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
+		{
+			if (!_isActive || _hoveredElement == null)
+				return;
+
+			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
+			OnKeyPressed(_hoveredElement, args);
+		}
+
+		/// <summary>
+		///   Handles a key release event.
+		/// </summary>
+		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
+		{
+			if (!_isActive || _hoveredElement == null)
+				return;
+
+			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
+			OnKeyReleased(_hoveredElement, args);
 		}
 
 		/// <summary>

@@ -23,23 +23,13 @@
 namespace PointWars.UserInterface.Input
 {
 	/// <summary>
-	///   Describes the trigger mode of an input binding.
+	///   Provides information about input events.
 	/// </summary>
-	public enum TriggerMode
+	public class InputEventArgs
 	{
 		/// <summary>
-		///   The input binding is triggered when the input is activated.
+		///   Gets or sets a value indicating whether the event has been handled.
 		/// </summary>
-		OnActivation,
-
-		/// <summary>
-		///   The input binding is triggered when the input is activated or repeated.
-		/// </summary>
-		Repeatedly,
-
-		/// <summary>
-		///   The input binding is triggered when the input is deactivated.
-		/// </summary>
-		OnDeactivation
+		public bool Handled { get; set; }
 	}
 }

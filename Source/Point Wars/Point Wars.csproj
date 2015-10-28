@@ -77,8 +77,17 @@
     <Compile Include="UserInterface\Controls\Label.cs" />
     <Compile Include="UserInterface\Controls\TextBox.cs" />
     <Compile Include="UserInterface\HorizontalAlignment.cs" />
+    <Compile Include="UserInterface\Input\ConfigurableBinding.cs" />
+    <Compile Include="UserInterface\Input\InputBinding.cs" />
+    <Compile Include="UserInterface\Input\InputEventArgs.cs" />
+    <Compile Include="UserInterface\Input\KeyBinding.cs" />
+    <Compile Include="UserInterface\Input\KeyEventArgs.cs" />
     <Compile Include="UserInterface\Input\MouseButtonEventArgs.cs" />
     <Compile Include="UserInterface\Input\MouseEventArgs.cs" />
+    <Compile Include="UserInterface\Input\MouseWheelBinding.cs" />
+    <Compile Include="UserInterface\Input\MouseWheelEventArgs.cs" />
+    <Compile Include="UserInterface\Input\ScanCodeBinding.cs" />
+    <Compile Include="UserInterface\Input\TriggerMode.cs" />
     <Compile Include="UserInterface\IScrollAware.cs" />
     <Compile Include="UserInterface\IScrollController.cs" />
     <Compile Include="UserInterface\IScrollHandler.cs" />

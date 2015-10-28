@@ -70,7 +70,6 @@ namespace PointWars
 		{
 			_views.Initialize();
 
-			Window.Closing += Exit;
 			Window.Resized += Resize;
 			Commands.OnExit += Exit;
 

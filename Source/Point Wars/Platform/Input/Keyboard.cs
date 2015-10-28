@@ -61,6 +61,19 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
+		///   Gets the input state for the given button.
+		/// </summary>
+		/// <param name="scanCode">The scan code the input state should be returned for.</param>
+		public InputState this[ScanCode scanCode]
+		{
+			get
+			{
+				Assert.ArgumentInRange(scanCode, nameof(scanCode));
+				return _states[(int)scanCode];
+			}
+		}
+
+		/// <summary>
 		///   Get or sets a value indicating whether text input is enabled for the currently focused window.
 		/// </summary>
 		internal static bool TextInputEnabled

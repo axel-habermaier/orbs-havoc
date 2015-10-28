@@ -23,9 +23,11 @@
 namespace PointWars.UserInterface
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Numerics;
 	using Controls;
+	using Input;
 	using Rendering;
 	using Utilities;
 
@@ -369,8 +371,6 @@ namespace PointWars.UserInterface
 		/// </summary>
 		public UIElement Parent { get; private set; }
 
-		
-
 		/// <summary>
 		///   Gets the final render size of the UI element.
 		/// </summary>
@@ -401,9 +401,6 @@ namespace PointWars.UserInterface
 					_state |= State.AttachedToRoot;
 				else
 					_state &= ~State.AttachedToRoot;
-
-//				if (_inputBindings != null)
-//					_inputBindings.Active = value;
 
 				foreach (var child in GetChildren())
 					child.IsAttachedToRoot = value;
@@ -523,11 +520,11 @@ namespace PointWars.UserInterface
 		/// </summary>
 		internal bool CanBeFocused => IsAttachedToRoot && Focusable && IsVisible;
 
-//		/// <summary>
-//		///   Gets the list of input bindings associated with this UI element.
-//		/// </summary>
-//		public InputBindingCollection InputBindings
-//			=> _inputBindings ?? (_inputBindings = new InputBindingCollection(this) { Active = IsAttachedToRoot });
+		/// <summary>
+		///   Gets the list of input bindings associated with this UI element.
+		/// </summary>
+		public List<InputBinding> InputBindings
+			=> _inputBindings ?? (_inputBindings = new List<InputBinding>());
 
 		/// <summary>
 		///   Gets the root element the UI element is contained in or null if it isn't contained in any root element.

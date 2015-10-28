@@ -60,6 +60,8 @@ namespace PointWars.Views
 
 			messageBox.ZIndex = _lastZIndex++;
 			_areaPanel.Add(messageBox);
+
+			messageBox.Focus();
 		}
 
 		/// <summary>
