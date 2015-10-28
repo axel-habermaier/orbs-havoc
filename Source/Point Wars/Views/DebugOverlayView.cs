@@ -23,14 +23,11 @@
 namespace PointWars.Views
 {
 	using System;
-	using System.Numerics;
-	using System.Text;
-	using Assets;
 	using Platform;
-	using Platform.Memory;
 	using Rendering;
 	using Scripting;
-	using UserInterfaceOld;
+	using UserInterface;
+	using UserInterface.Controls;
 	using Utilities;
 
 	/// <summary>
@@ -48,55 +45,18 @@ namespace PointWars.Views
 		/// </summary>
 		private const int AverageSampleCount = 16;
 
-		/// <summary>
-		///   The string builder that is used to construct the output.
-		/// </summary>
-		private readonly StringBuilder _builder = new StringBuilder();
-
-		/// <summary>
-		///   A weak reference to an object to which no strong reference exists. When the weak reference is no longer set to a
-		///   valid instance of an object, it is an indication that a garbage collection has occurred.
-		/// </summary>
+		private readonly Label _cpuTimeLabel = new Label();
 		private readonly WeakReference _gcCheck = new WeakReference(new object());
-
-		/// <summary>
-		///   The total CPU frame time in milliseconds that is displayed by the debug overlay.
-		/// </summary>
+		private readonly Label _gcLabel = new Label("0");
+		private readonly Label _gpuTimeLabel = new Label();
+		private readonly Label _renderTimeLabel = new Label();
+		private readonly Label _updateTimeLabel = new Label();
+		private readonly Label _vsyncLabel = new Label(Cvars.Vsync.ToString().ToLower());
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
-
-		/// <summary>
-		///   The CPU render time in milliseconds that is displayed by the debug overlay.
-		/// </summary>
 		private AveragedDouble _cpuRenderTime = new AveragedDouble(AverageSampleCount);
-
-		/// <summary>
-		///   The CPU update time in milliseconds that is displayed by the debug overlay.
-		/// </summary>
 		private AveragedDouble _cpuUpdateTime = new AveragedDouble(AverageSampleCount);
-
-		/// <summary>
-		///   The approximate amount of garbage collections that have occurred since the application has been started.
-		/// </summary>
 		private int _garbageCollections;
-
-		/// <summary>
-		///   The GPU frame time in milliseconds that is displayed by the debug overlay.
-		/// </summary>
 		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
-
-		/// <summary>
-		///   The label that is used to draw platform info and frame stats.
-		/// </summary>
-		private Label _platformInfo;
-
-		/// <summary>
-		///   The static debug overlay output.
-		/// </summary>
-		private string _staticOutput;
-
-		/// <summary>
-		///   The timer that is used to periodically update the statistics.
-		/// </summary>
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
 
 		/// <summary>
@@ -124,38 +84,67 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Changes the size available to the view.
-		/// </summary>
-		/// <param name="size">The new size available to the view.</param>
-		public override void Resize(Size size)
-		{
-			_platformInfo.AlignBottom(new Rectangle(Vector2.Zero, size));
-		}
-
-		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
-			_platformInfo = new Label
+			const float margin = 3;
+			RootElement.Child = new Border
 			{
-				Font = Assets.DefaultFont,
-				LineSpacing = 2,
-				Padding = new Thickness(15),
 				Margin = new Thickness(5),
-				NormalStyle = { Background = new Color(0xAA000000) },
-				Area = new Rectangle(0, 0, 500, 500)
+				Background = new Color(0xAA000000),
+				Padding = new Thickness(10),
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Bottom,
+				Child = new StackPanel
+				{
+					Children =
+					{
+						CreateLine("Platform:    ", new Label($"{PlatformInfo.Platform} {IntPtr.Size * 8}bit"), margin),
+						CreateLine("Debug Mode:  ", new Label($"{PlatformInfo.IsDebug.ToString().ToLower()}"), margin),
+						CreateLine("VSync:       ", _vsyncLabel, margin),
+						CreateLine("# of GCs:    ", _gcLabel, 5 * margin),
+						CreateLine("GPU Time:    ", _gpuTimeLabel, "ms", margin),
+						CreateLine("CPU Time:    ", _cpuTimeLabel, "ms", margin),
+						CreateLine("Update Time: ", _updateTimeLabel, "ms", margin),
+						CreateLine("Render Time: ", _renderTimeLabel, "ms", 0)
+					}
+				}
 			};
-			_timer.Timeout += UpdateStatistics;
-
-			_builder.Append("Platform:    ").Append(PlatformInfo.Platform).Append(" ").Append(IntPtr.Size * 8).Append("bit\n");
-			_builder.Append("Debug Mode:  ").Append(PlatformInfo.IsDebug.ToString().ToLower()).Append("\n");
-			_staticOutput = _builder.ToString();
-			_builder.Clear();
 
 			Cvars.ShowDebugOverlayChanged += ChangeActivation;
+			Cvars.VsyncChanged += OnVsyncChanged;
+
 			ChangeActivation();
 			UpdateStatistics();
+
+			_timer.Timeout += UpdateStatistics;
+		}
+
+		/// <summary>
+		///   Creates a debug output line.
+		/// </summary>
+		private static UIElement CreateLine(string text, Label label, float marginBottom)
+		{
+			return new StackPanel
+			{
+				Orientation = Orientation.Horizontal,
+				Children = { new Label(text), label },
+				Margin = new Thickness(0, 0, 0, marginBottom)
+			};
+		}
+
+		/// <summary>
+		///   Creates a debug output line.
+		/// </summary>
+		private static UIElement CreateLine(string text, Label label, string suffix, float marginBottom)
+		{
+			return new StackPanel
+			{
+				Orientation = Orientation.Horizontal,
+				Children = { new Label(text), label, new Label(suffix) },
+				Margin = new Thickness(0, 0, 0, marginBottom)
+			};
 		}
 
 		/// <summary>
@@ -171,12 +160,15 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Update()
 		{
+			base.Update();
+
 			if (!IsActive)
 				return;
 
 			if (!_gcCheck.IsAlive)
 			{
 				++_garbageCollections;
+				_gcLabel.Text = _garbageCollections.ToString();
 				_gcCheck.Target = new object();
 			}
 
@@ -192,25 +184,18 @@ namespace PointWars.Views
 			if (!Cvars.ShowDebugOverlay)
 				return;
 
-			_builder.Append(_staticOutput);
-			_builder.Append("VSync:       ").Append(Cvars.Vsync.ToString().ToLower()).Append("\n");
-			_builder.Append("# of GCs:    ").Append(_garbageCollections).Append("\n\n");
-			_builder.Append("GPU Time:    ").Append(_gpuFrameTime.Average.ToString("F2")).Append("ms\n");
-			_builder.Append("CPU Time:    ").Append(_cpuFrameTime.Average.ToString("F2")).Append("ms\n");
-			_builder.Append("Update Time: ").Append(_cpuUpdateTime.Average.ToString("F2")).Append("ms\n");
-			_builder.Append("Render Time: ").Append(_cpuRenderTime.Average.ToString("F2")).Append("ms");
-
-			_platformInfo.Text = _builder.ToString();
-			_builder.Clear();
+			_gpuTimeLabel.Text = _gpuFrameTime.Average.ToString("F2");
+			_cpuTimeLabel.Text = _cpuFrameTime.Average.ToString("F2");
+			_updateTimeLabel.Text = _cpuUpdateTime.Average.ToString("F2");
+			_renderTimeLabel.Text = _cpuRenderTime.Average.ToString("F2");
 		}
 
 		/// <summary>
-		///   Draws the view's contents.
+		///   Shows the new vsync value.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public override void Draw(SpriteBatch spriteBatch)
+		private void OnVsyncChanged()
 		{
-			_platformInfo.Draw(spriteBatch);
+			_vsyncLabel.Text = Cvars.Vsync.ToString().ToLower();
 		}
 
 		/// <summary>
@@ -221,8 +206,7 @@ namespace PointWars.Views
 			base.OnDisposing();
 
 			Cvars.ShowDebugOverlayChanged -= ChangeActivation;
-
-			_platformInfo.SafeDispose();
+			Cvars.VsyncChanged -= OnVsyncChanged;
 			_timer.Timeout -= UpdateStatistics;
 		}
 
