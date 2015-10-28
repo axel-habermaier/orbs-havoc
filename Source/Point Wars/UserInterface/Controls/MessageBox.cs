@@ -64,7 +64,7 @@ namespace PointWars.UserInterface.Controls
 				Background = new Color(0xAA000000),
 				Child = new Border
 				{
-					Font = Assets.LiberationSans16,
+					Font = Assets.Roboto14,
 					MaxWidth = 600,
 					MinWidth = 200,
 					HorizontalAlignment = HorizontalAlignment.Center,
@@ -78,9 +78,15 @@ namespace PointWars.UserInterface.Controls
 							new Border
 							{
 								Background = new Color(0x33A1DDFF),
-								Child = new Label(title) { Margin = new Thickness(7) }
+								Child = new Label(title) { Margin = new Thickness(15, 7, 15, 7) }
 							},
-							new Label(message) { Margin = new Thickness(7), TextWrapping = TextWrapping.Wrap },
+							new Label(message)
+							{
+								TextAlignment = TextAlignment.Left,
+								HorizontalAlignment = HorizontalAlignment.Stretch,
+								Margin = new Thickness(15),
+								TextWrapping = TextWrapping.Wrap
+							},
 							new StackPanel
 							{
 								Margin = new Thickness(0, 0, 0, 5),
@@ -150,7 +156,7 @@ namespace PointWars.UserInterface.Controls
 			var button = new Button
 			{
 				Width = 70,
-				Margin = new Thickness(0, 20, 0, 3),
+				Margin = new Thickness(0, 0, 0, 3),
 				HorizontalAlignment = HorizontalAlignment.Center,
 				Child = new Border
 				{

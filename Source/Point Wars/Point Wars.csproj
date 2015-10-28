@@ -54,7 +54,6 @@
   <ItemGroup>
     <Compile Include="UserInterfaceOld\Button.cs" />
     <Compile Include="UserInterfaceOld\Frame.cs" />
-    <Compile Include="UserInterfaceOld\MessageBox.cs" />
     <Compile Include="UserInterfaceOld\Style.cs" />
     <Compile Include="UserInterfaceOld\UIContext.cs" />
     <Compile Include="UserInterfaceOld\Layout.cs" />
@@ -279,7 +278,7 @@
   <ItemGroup>
     <Font Include="Assets\Fonts\Moonhouse24.font" />
     <Font Include="Assets\Fonts\Moonhouse80.font" />
-    <Font Include="Assets\Fonts\LiberationSans16.font" />
+    <Font Include="Assets\Fonts\Roboto14.font" />
     <Compile Include="UserInterface\UIElement.Input.cs" />
   </ItemGroup>
   <ItemGroup>

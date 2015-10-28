@@ -75,9 +75,9 @@ namespace PointWars.UserInterface.Controls
 			// (due to animations, UI elements becoming visible/invisible, etc.).
 			UpdateHoveredElement(_inputDevice.Mouse.Position);
 
-			RootElement.Measure(availableSize);
-			RootElement.Arrange(new Rectangle(0, 0, availableSize));
-			RootElement.UpdateVisualOffsets(Vector2.Zero);
+			Measure(availableSize);
+			Arrange(new Rectangle(0, 0, availableSize));
+			UpdateVisualOffsets(Vector2.Zero);
 		}
 
 		/// <summary>

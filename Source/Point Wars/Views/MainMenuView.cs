@@ -26,7 +26,6 @@ namespace PointWars.Views
 	using Assets;
 	using Platform.Input;
 	using Rendering;
-	using Scripting;
 	using UserInterface;
 	using UserInterface.Controls;
 
@@ -35,8 +34,6 @@ namespace PointWars.Views
 	/// </summary>
 	internal sealed class MainMenuView : View
 	{
-		private bool _exitMessageBoxOpen;
-
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
@@ -64,13 +61,12 @@ namespace PointWars.Views
 				Margin = new Thickness(0, 0, 0, 30),
 			});
 
-            stackPanel.Add(CreateButton("Start Game", () => { }));
+			stackPanel.Add(CreateButton("Start Game", () => { }));
 			stackPanel.Add(CreateButton("Join Game", () => { }));
 			stackPanel.Add(CreateButton("Options", () => { }));
-			stackPanel.Add(CreateButton("Exit", OnExit));
+			stackPanel.Add(CreateButton("Exit", Views.Exit));
 
 			RootElement.Child = stackPanel;
-			Window.Closing += OnExit;
 		}
 
 		/// <summary>
@@ -97,20 +93,6 @@ namespace PointWars.Views
 
 			button.Click += onClick;
 			return button;
-		}
-
-		/// <summary>
-		///   Handles clicks on the Exit button.
-		/// </summary>
-		private void OnExit()
-		{
-			if (_exitMessageBoxOpen)
-				return;
-
-			_exitMessageBoxOpen = true;
-
-			Views.MessageBoxes.Show(MessageBox.ShowYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
-				Commands.Exit, () => _exitMessageBoxOpen = false));
 		}
 	}
 }

@@ -25,11 +25,12 @@ namespace PointWars.Views
 	using System;
 	using System.Numerics;
 	using Assets;
-	using Platform;
 	using Platform.Input;
 	using Platform.Memory;
 	using Rendering;
+	using Scripting;
 	using UserInterface;
+	using UserInterface.Controls;
 	using Utilities;
 	using Console = UserInterfaceOld.Console;
 
@@ -40,6 +41,7 @@ namespace PointWars.Views
 	{
 		private const int LayersPerView = 1000000;
 		private readonly View[] _views;
+		private bool _exitMessageBoxOpen;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -52,6 +54,8 @@ namespace PointWars.Views
 
 			Console = new ConsoleView(console);
 			Application = app;
+			Application.Window.Closing += Exit;
+
 			_views = new View[]
 			{
 				Console,
@@ -154,9 +158,9 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///     Draws the mouse cursor.
+		///   Draws the mouse cursor.
 		/// </summary>
-		void DrawCursor()
+		private void DrawCursor()
 		{
 			foreach (var view in _views)
 			{
@@ -185,7 +189,23 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			Application.Window.Closing -= Exit;
 			_views.SafeDisposeAll();
+		}
+
+		/// <summary>
+		///   Handles clicks on the Exit button.
+		/// </summary>
+		public void Exit()
+		{
+			Commands.ShowConsole(false);
+
+			if (_exitMessageBoxOpen)
+				return;
+
+			_exitMessageBoxOpen = true;
+			MessageBoxes.Show(MessageBox.ShowYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
+				Commands.Exit, () => _exitMessageBoxOpen = false));
 		}
 	}
 }

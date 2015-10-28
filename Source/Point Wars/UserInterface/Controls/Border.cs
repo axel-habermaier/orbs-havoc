@@ -76,10 +76,12 @@ namespace PointWars.UserInterface.Controls
 			var area = VisualArea;
 
 			// Make sure there is no overdraw at the corners
+			++spriteBatch.Layer;
 			spriteBatch.DrawLine(area.TopLeft, area.TopRight, BorderColor, BorderThickness.Top);
-			spriteBatch.DrawLine(area.BottomLeft + new Vector2(1, -1), area.TopLeft + new Vector2(1, 1), BorderColor, BorderThickness.Left);
-			spriteBatch.DrawLine(area.TopRight + new Vector2(0, 1), area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Right);
+			spriteBatch.DrawLine(area.BottomLeft + new Vector2(1, -2), area.TopLeft + new Vector2(1, 0), BorderColor, BorderThickness.Left);
+			spriteBatch.DrawLine(area.TopRight, area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Right);
 			spriteBatch.DrawLine(area.BottomLeft - new Vector2(0, 1), area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Bottom);
+			--spriteBatch.Layer;
 		}
 	}
 }
