@@ -22,6 +22,7 @@
 
 namespace AssetsCompiler
 {
+	using System;
 	using System.IO;
 	using System.Text;
 	using System.Text.RegularExpressions;
@@ -51,13 +52,42 @@ namespace AssetsCompiler
 			{
 				var shader = File.ReadAllText(InFile);
 				var match = Regex.Match(shader, @"Vertex(\s*){(?<vs>(.|\s)*?)}(\s*)Fragment(\s*){(?<fs>(.|\s)*?)}$", RegexOptions.Multiline);
-				var vertexShader = Encoding.UTF8.GetBytes(Preamble + match.Groups["vs"].Value.Trim());
-				var fragmentShader = Encoding.UTF8.GetBytes(Preamble + match.Groups["fs"].Value.Trim());
+				var vertexShader = Preamble + match.Groups["vs"].Value.Trim();
+				var fragmentShader = Preamble + match.Groups["fs"].Value.Trim();
 
-				writer.Write(vertexShader.Length);
-				writer.Write(vertexShader);
-				writer.Write(fragmentShader.Length);
-				writer.Write(fragmentShader);
+				// Only validate shaders on Windows, our primary development platform, to avoid a
+				// dependency on a >3 MBytes Linux version of the GLSL validator...
+				if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+				{
+					Validate(vertexShader, "vert");
+					Validate(fragmentShader, "frag");
+				}
+
+				var vertexShaderBytes = Encoding.UTF8.GetBytes(vertexShader);
+				var fragmentShaderBytes = Encoding.UTF8.GetBytes(fragmentShader);
+
+				writer.Write(vertexShaderBytes.Length);
+				writer.Write(vertexShaderBytes);
+				writer.Write(fragmentShaderBytes.Length);
+				writer.Write(fragmentShaderBytes);
+			}
+		}
+
+		void Validate(string shader, string extension)
+		{
+			var path = Path.ChangeExtension(InFile, extension);
+
+			try
+			{
+				File.WriteAllText(path, shader);
+
+                var process = new ExternalProcess("../../Dependencies/glslangValidator.exe", "\"{0}\"", path);
+				if (process.Run() != 0)
+					throw new InvalidOperationException("Invalid GLSL shader.");
+			}
+			finally
+			{
+				File.Delete(path);
 			}
 		}
 	}

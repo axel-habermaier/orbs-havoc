@@ -42,7 +42,9 @@ namespace AssetsCompiler
 
 			using (var stream = File.Create(OutFile))
 			using (var writer = new BinaryWriter(stream))
+			using (var bitmap = (Bitmap)Image.FromFile(InFile))
 			{
+				Compile(writer, bitmap);
 			}
 		}
 

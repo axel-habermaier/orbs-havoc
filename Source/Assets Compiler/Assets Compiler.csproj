@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="BundleCompiler.cs" />
     <Compile Include="CodeWriter.cs" />
+    <Compile Include="ExternalProcess.cs" />
     <Compile Include="GLGenerator.cs" />
     <Compile Include="RegistryGenerator.cs" />
     <Compile Include="CursorCompiler.cs" />
