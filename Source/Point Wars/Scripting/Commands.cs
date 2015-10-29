@@ -81,12 +81,6 @@ namespace PointWars.Scripting
 		void Process([NotEmpty, FileName] string fileName);
 
 		/// <summary>
-		///   Saves the persistent cvars into the given file.
-		/// </summary>
-		/// <param name="fileName">The name of the file in the application's user directory the cvars should be written to.</param>
-		void Persist([NotEmpty, FileName] string fileName);
-
-		/// <summary>
 		///   Prints information about the application.
 		/// </summary>
 		void PrintAppInfo();

@@ -66,6 +66,14 @@ namespace PointWars.UserInterface
 		private State _state;
 
 		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		protected UIElement()
+		{
+			IsHitTestVisible = true;
+		}
+
+		/// <summary>
 		///   Sets the corresponding UI element state to dirty.
 		/// </summary>
 		/// <param name="measure">Indicates whether the measure state should be set to dirty.</param>
@@ -592,45 +600,18 @@ namespace PointWars.UserInterface
 		[Flags]
 		private enum State
 		{
-			/// <summary>
-			///   Indicates that the UI element is connected to the visual tree's root element.
-			/// </summary>
 			AttachedToRoot = 1,
-
-			/// <summary>
-			///   Indicates that the UI element's cached measured layout is dirty and needs to be updated.
-			/// </summary>
 			MeasureDirty = 2,
-
-			/// <summary>
-			///   Indicates that the UI element's cached arranged layout is dirty and needs to be updated.
-			/// </summary>
 			ArrangeDirty = 4,
-
-			/// <summary>
-			///   Indicates that the UI element's cached visual offset is dirty and needs to be updated.
-			/// </summary>
 			VisualOffsetDirty = 8,
-
-			/// <summary>
-			///   Indicates whether the UI element inherits its font from its parent.
-			/// </summary>
 			InheritsFont = 16,
-
-			/// <summary>
-			///   Indicates whether the UI element inherits its foreground color from its parent.
-			/// </summary>
 			InheritsForeground = 32,
-
-			/// <summary>
-			///   Indicates whether the mouse is currently hovering the UI element or any of its children.
-			/// </summary>
 			IsMouseOver = 64,
-
-			/// <summary>
-			///   Indicates whether the mouse is currently pressed down on the UI element or any of its children.
-			/// </summary>
-			IsActive = 128
+			IsActive = 128,
+			IsVisible = 256,
+			IsFocusable = 512,
+			IsFocused = 1024,
+			IsHitTestVisible = 2048
 		}
 	}
 }

@@ -24,7 +24,6 @@ namespace PointWars.UserInterface
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
 	using System.Numerics;
 	using Controls;
 	using Input;
@@ -41,7 +40,6 @@ namespace PointWars.UserInterface
 		private float _height = Single.NaN;
 		private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Stretch;
 		private Action<UIElement> _hoveredStyle;
-		private bool _isFocused;
 		private float _left = Single.NaN;
 		private Thickness _margin;
 		private float _maxHeight = Single.PositiveInfinity;
@@ -167,7 +165,8 @@ namespace PointWars.UserInterface
 			get { return _width; }
 			set
 			{
-				ValidateWidthHeight(value);
+				// NaN is used to represent automatic width or height
+				Assert.That(Single.IsNaN(value) || (value >= 0.0 && !Single.IsPositiveInfinity(value)), "Invalid value");
 
 				if (MathUtils.Equals(_width, value))
 					return;
@@ -185,7 +184,8 @@ namespace PointWars.UserInterface
 			get { return _height; }
 			set
 			{
-				ValidateWidthHeight(value);
+				// NaN is used to represent automatic width or height
+				Assert.That(Single.IsNaN(value) || (value >= 0.0 && !Single.IsPositiveInfinity(value)), "Invalid value");
 
 				if (MathUtils.Equals(_height, value))
 					return;
@@ -203,7 +203,7 @@ namespace PointWars.UserInterface
 			get { return _minWidth; }
 			set
 			{
-				ValidateMinWidthHeight(value);
+				Assert.That(!Single.IsNaN(value) && value >= 0.0 && !Single.IsPositiveInfinity(value), "Invalid value");
 
 				if (MathUtils.Equals(_minWidth, value))
 					return;
@@ -221,7 +221,7 @@ namespace PointWars.UserInterface
 			get { return _minHeight; }
 			set
 			{
-				ValidateMinWidthHeight(value);
+				Assert.That(!Single.IsNaN(value) && value >= 0.0 && !Single.IsPositiveInfinity(value), "Invalid value");
 
 				if (MathUtils.Equals(_minHeight, value))
 					return;
@@ -239,7 +239,7 @@ namespace PointWars.UserInterface
 			get { return _maxWidth; }
 			set
 			{
-				ValidateMaxWidthHeight(value);
+				Assert.That(!Single.IsNaN(value) && value >= 0.0, "Invalid value");
 
 				if (MathUtils.Equals(_maxWidth, value))
 					return;
@@ -257,7 +257,7 @@ namespace PointWars.UserInterface
 			get { return _maxHeight; }
 			set
 			{
-				ValidateMaxWidthHeight(value);
+				Assert.That(!Single.IsNaN(value) && value >= 0.0, "Invalid value");
 
 				if (MathUtils.Equals(_maxHeight, value))
 					return;
@@ -351,25 +351,49 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets a value indicating whether the UI element is actually visible in the user interface.
 		/// </summary>
-		public bool IsVisible { get; protected set; }
+		public bool IsVisible
+		{
+			get { return (_state & State.IsVisible) == State.IsVisible; }
+			protected set
+			{
+				if (value)
+					_state |= State.IsVisible;
+				else
+					_state &= ~State.IsVisible;
+			}
+		}
 
 		/// <summary>
 		///   Gets or sets a value indicating whether the UI element can receive the keyboard focus.
 		/// </summary>
-		public bool IsFocusable { get; set; }
+		public bool IsFocusable
+		{
+			get { return (_state & State.IsFocusable) == State.IsFocusable; }
+			set
+			{
+				if (value)
+					_state |= State.IsFocusable;
+				else
+					_state &= ~State.IsFocusable;
+			}
+		}
 
 		/// <summary>
 		///   Gets a value indicating whether the UI element currently has the keyboard focus.
 		/// </summary>
 		public bool IsFocused
 		{
-			get { return _isFocused; }
+			get { return (_state & State.IsFocused) == State.IsFocused; }
 			set
 			{
-				if (_isFocused == value)
+				if (IsFocused == value)
 					return;
 
-				_isFocused = value;
+				if (value)
+					_state |= State.IsFocused;
+				else
+					_state &= ~State.IsFocused;
+
 				OnFocusChanged();
 			}
 		}
@@ -377,7 +401,17 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets or sets a value indicating whether the UI element participates in hit testing.
 		/// </summary>
-		public bool IsHitTestVisible { get; set; } = true;
+		public bool IsHitTestVisible
+		{
+			get { return (_state & State.IsHitTestVisible) == State.IsHitTestVisible; }
+			set
+			{
+				if (value)
+					_state |= State.IsHitTestVisible;
+				else
+					_state &= ~State.IsHitTestVisible;
+			}
+		}
 
 		/// <summary>
 		///   Gets the size of the UI element that has been computed by the last measure pass of the layout engine.
@@ -669,37 +703,6 @@ namespace PointWars.UserInterface
 
 				return new Rectangle(x, y, width, height);
 			}
-		}
-
-		/// <summary>
-		///   Checks whether the given value is a valid width or height value.
-		/// </summary>
-		/// <param name="value">The value that should be validated.</param>
-		[Conditional("DEBUG"), DebuggerHidden]
-		private static void ValidateWidthHeight(float value)
-		{
-			// NaN is used to represent automatic width or height
-			Assert.That(Single.IsNaN(value) || (value >= 0.0 && !Single.IsPositiveInfinity(value)), "Invalid value");
-		}
-
-		/// <summary>
-		///   Checks whether the given value is a valid minimum width or height value.
-		/// </summary>
-		/// <param name="value">The value that should be validated.</param>
-		[Conditional("DEBUG"), DebuggerHidden]
-		private static void ValidateMinWidthHeight(float value)
-		{
-			Assert.That(!Single.IsNaN(value) && value >= 0.0 && !Single.IsPositiveInfinity(value), "Invalid value");
-		}
-
-		/// <summary>
-		///   Checks whether the given value is a valid maximum width or height value.
-		/// </summary>
-		/// <param name="value">The value that should be validated.</param>
-		[Conditional("DEBUG"), DebuggerHidden]
-		private static void ValidateMaxWidthHeight(float value)
-		{
-			Assert.That(!Single.IsNaN(value) && value >= 0.0, "Invalid value");
 		}
 	}
 }
