@@ -35,7 +35,7 @@ namespace PointWars.UserInterface.Controls
 	/// <summary>
 	///   Represents a control that can be used to edit text.
 	/// </summary>
-	public class TextBox : Control, ITextInputControl
+	public class TextBox : Control
 	{
 		private readonly Label _label;
 		private Caret _caret;

@@ -23,14 +23,9 @@
 namespace PointWars.UserInterface.Controls
 {
 	/// <summary>
-	///   An interface for controls that allow text input. While such a control has keyboard focus, all input triggers and
-	///   command bindings are deactivated.
+	///   Specifies the visual appearance and structure of a control.
 	/// </summary>
-	public interface ITextInputControl
-	{
-		/// <summary>
-		///   Gets or sets the text of the input control.
-		/// </summary>
-		string Text { get; set; }
-	}
+	/// <param name="templateRoot">Returns the root element of the tree created by the template.</param>
+	/// <param name="contentPresenter">Returns the content presenter that presents the control's contents.</param>
+	public delegate void ControlTemplate(out UIElement templateRoot, out ContentPresenter contentPresenter);
 }

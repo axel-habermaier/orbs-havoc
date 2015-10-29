@@ -32,17 +32,17 @@ namespace PointWars.UserInterface.Controls
 	/// </summary>
 	public class Button : Control
 	{
-		private static readonly Func<Control, UIElement> DefaultTemplate = control =>
+		private static readonly ControlTemplate DefaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
 		{
-			var presenter = new ContentPresenter
+			contentPresenter = new ContentPresenter
 			{
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center
 			};
 
-			var border = new Border
+			templateRoot = new Border
 			{
-				Content = presenter,
+				Child = contentPresenter,
 				BorderThickness = new Thickness(1),
 				BorderColor = new Color(0xFF055674),
 				NormalStyle = element => ((Border)element).Background = new Color(0x5F00588B),
@@ -50,9 +50,6 @@ namespace PointWars.UserInterface.Controls
 				ActiveStyle = element => ((Border)element).Background = new Color(0x5F009CF7),
 				Padding = new Thickness(7, 6, 7, 7)
 			};
-
-			control.TemplateBinding = () => presenter.Content = control.Content;
-			return border;
 		};
 
 		/// <summary>

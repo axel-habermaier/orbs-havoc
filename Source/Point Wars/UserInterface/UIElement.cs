@@ -41,11 +41,6 @@ namespace PointWars.UserInterface
 		private List<InputBinding> _inputBindings;
 
 		/// <summary>
-		///   Caches the layouting information of the UI element during the measure and arrange phases for performance reasons.
-		/// </summary>
-		private LayoutInfo _layoutInfo;
-
-		/// <summary>
 		///   The available size allocated for the UI element during the last measure phase.
 		/// </summary>
 		private Size _previousAvailableSize;
@@ -100,7 +95,6 @@ namespace PointWars.UserInterface
 				}
 			}
 		}
-
 
 		/// <summary>
 		///   Updates the UI element's visible state.
@@ -162,8 +156,6 @@ namespace PointWars.UserInterface
 			if (rootElement != null && rootElement.FocusedElement == this)
 				rootElement.FocusedElement = null;
 		}
-
-
 
 		/// <summary>
 		///   Returns the child UI element of the current UI element that lies at the given position.
@@ -237,7 +229,6 @@ namespace PointWars.UserInterface
 			}
 
 			_previousAvailableSize = availableSize;
-			_layoutInfo = new LayoutInfo(this);
 			availableSize = RestrictSize(availableSize);
 
 			DesiredSize = MeasureCore(DecreaseByMargin(availableSize));
@@ -259,14 +250,14 @@ namespace PointWars.UserInterface
 		/// <param name="size">The size that should be restricted.</param>
 		private Size RestrictSize(Size size)
 		{
-			if (_layoutInfo.HasExplicitWidth)
-				size.Width = _layoutInfo.Width;
+			if (!Single.IsNaN(Width))
+				size.Width = Width;
 
-			if (_layoutInfo.HasExplicitHeight)
-				size.Height = _layoutInfo.Height;
+			if (!Single.IsNaN(Height))
+				size.Height = Height;
 
-			size.Width = MathUtils.Clamp(size.Width, _layoutInfo.MinWidth, _layoutInfo.MaxWidth);
-			size.Height = MathUtils.Clamp(size.Height, _layoutInfo.MinHeight, _layoutInfo.MaxHeight);
+			size.Width = MathUtils.Clamp(size.Width, MinWidth, MaxWidth);
+			size.Height = MathUtils.Clamp(size.Height, MinHeight, MaxHeight);
 
 			return size;
 		}
@@ -306,9 +297,8 @@ namespace PointWars.UserInterface
 
 				return;
 			}
-			_previousFinalRect = finalRect;
-			_layoutInfo = new LayoutInfo(this);
 
+			_previousFinalRect = finalRect;
 			var availableSize = DecreaseByMargin(finalRect.Size);
 			var desiredSize = DecreaseByMargin(DesiredSize);
 
@@ -407,24 +397,24 @@ namespace PointWars.UserInterface
 		private void AdaptSize(ref Size size, Size availableSize)
 		{
 			// When stretching horizontally, fill all available width
-			if (_layoutInfo.HorizontalAlignment == HorizontalAlignment.Stretch)
+			if (HorizontalAlignment == HorizontalAlignment.Stretch)
 				size.Width = availableSize.Width;
 
 			// When stretching vertically, fill all available height
-			if (_layoutInfo.VerticalAlignment == VerticalAlignment.Stretch)
+			if (VerticalAlignment == VerticalAlignment.Stretch)
 				size.Height = availableSize.Height;
 
 			// Use the requested width if one is set
-			if (!Single.IsNaN(_layoutInfo.Width))
-				size.Width = _layoutInfo.Width;
+			if (!Single.IsNaN(Width))
+				size.Width = Width;
 
 			// Use the requested height if one is set
-			if (!Single.IsNaN(_layoutInfo.Height))
-				size.Height = _layoutInfo.Height;
+			if (!Single.IsNaN(Height))
+				size.Height = Height;
 
 			// Clamp the width and the height to the minimum and maximum values
-			size.Width = MathUtils.Clamp(size.Width, _layoutInfo.MinWidth, _layoutInfo.MaxWidth);
-			size.Height = MathUtils.Clamp(size.Height, _layoutInfo.MinHeight, _layoutInfo.MaxHeight);
+			size.Width = MathUtils.Clamp(size.Width, MinWidth, MaxWidth);
+			size.Height = MathUtils.Clamp(size.Height, MinHeight, MaxHeight);
 		}
 
 		/// <summary>
@@ -450,13 +440,13 @@ namespace PointWars.UserInterface
 			{
 				case HorizontalAlignment.Stretch:
 				case HorizontalAlignment.Center:
-					offset.X = (availableSize.Width - RenderSize.Width + _layoutInfo.Margin.Left - _layoutInfo.Margin.Right) / 2;
+					offset.X = (availableSize.Width - RenderSize.Width + Margin.Left - Margin.Right) / 2;
 					break;
 				case HorizontalAlignment.Left:
-					offset.X = _layoutInfo.Margin.Left;
+					offset.X = Margin.Left;
 					break;
 				case HorizontalAlignment.Right:
-					offset.X = availableSize.Width - RenderSize.Width - _layoutInfo.Margin.Right;
+					offset.X = availableSize.Width - RenderSize.Width - Margin.Right;
 					break;
 				default:
 					throw new InvalidOperationException("Unexpected alignment.");
@@ -466,13 +456,13 @@ namespace PointWars.UserInterface
 			{
 				case VerticalAlignment.Stretch:
 				case VerticalAlignment.Center:
-					offset.Y = (availableSize.Height - RenderSize.Height + _layoutInfo.Margin.Top - _layoutInfo.Margin.Bottom) / 2;
+					offset.Y = (availableSize.Height - RenderSize.Height + Margin.Top - Margin.Bottom) / 2;
 					break;
 				case VerticalAlignment.Top:
-					offset.Y = _layoutInfo.Margin.Top;
+					offset.Y = Margin.Top;
 					break;
 				case VerticalAlignment.Bottom:
-					offset.Y = availableSize.Height - RenderSize.Height - _layoutInfo.Margin.Bottom;
+					offset.Y = availableSize.Height - RenderSize.Height - Margin.Bottom;
 					break;
 				default:
 					throw new InvalidOperationException("Unexpected alignment.");
@@ -490,8 +480,7 @@ namespace PointWars.UserInterface
 		/// <param name="size">The size the margin should be added to.</param>
 		private Size IncreaseByMargin(Size size)
 		{
-			return new Size(size.Width + _layoutInfo.Margin.Left + _layoutInfo.Margin.Right,
-				size.Height + _layoutInfo.Margin.Top + _layoutInfo.Margin.Bottom);
+			return new Size(size.Width + Margin.Left + Margin.Right, size.Height + Margin.Top + Margin.Bottom);
 		}
 
 		/// <summary>
@@ -501,8 +490,7 @@ namespace PointWars.UserInterface
 		/// <param name="size">The size the margin should be added to.</param>
 		private Size DecreaseByMargin(Size size)
 		{
-			return new Size(size.Width - _layoutInfo.Margin.Left - _layoutInfo.Margin.Right,
-				size.Height - _layoutInfo.Margin.Top - _layoutInfo.Margin.Bottom);
+			return new Size(size.Width - Margin.Left - Margin.Right, size.Height - Margin.Top - Margin.Bottom);
 		}
 
 		/// <summary>
@@ -535,16 +523,14 @@ namespace PointWars.UserInterface
 		protected abstract Enumerator<UIElement> GetChildren();
 
 		/// <summary>
-		///     Invoked when the UI element is now (transitively) attached to the root of a tree.
+		///   Invoked when the UI element is now (transitively) attached to the root of a tree.
 		/// </summary>
 		protected virtual void OnAttached()
 		{
 		}
 
-	
-
 		/// <summary>
-		///     Invoked when the UI element is no longer (transitively) attached to the root of a tree.
+		///   Invoked when the UI element is no longer (transitively) attached to the root of a tree.
 		/// </summary>
 		protected virtual void OnDetached()
 		{

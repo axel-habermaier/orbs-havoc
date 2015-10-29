@@ -22,7 +22,6 @@
 
 namespace PointWars.UserInterface.Controls
 {
-	using System;
 	using Utilities;
 
 	/// <summary>
@@ -30,54 +29,44 @@ namespace PointWars.UserInterface.Controls
 	/// </summary>
 	public class Control : UIElement
 	{
-		private static readonly Func<Control, UIElement> DefaultTemplate = control =>
-		{
-			var presenter = new ContentPresenter();
-			control.TemplateBinding = () => presenter.Content = control.Content;
-			return presenter;
-		};
+		private static readonly ControlTemplate DefaultTemplate =
+			(out UIElement templateRoot, out ContentPresenter contentPresenter) => templateRoot = contentPresenter = new ContentPresenter();
 
+		private object _content;
+		private ContentPresenter _contentPresenter;
 		private Thickness _padding;
-		private Func<Control, UIElement> _template;
-		private Action _templateBinding;
+		private ControlTemplate _template;
 		private UIElement _templateRoot;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="template">The template that should be used by the control.</param>
-		public Control(Func<Control, UIElement> template = null)
+		public Control(ControlTemplate template = null)
 		{
 			Template = template ?? DefaultTemplate;
 		}
 
 		/// <summary>
-		///   Gets or sets the template binding that copies property values from the control to its template root.
+		///   Gets or sets the padding inside the border.
 		/// </summary>
-		public Action TemplateBinding
+		public Thickness Padding
 		{
-			get { return _templateBinding; }
+			get { return _padding; }
 			set
 			{
-				if (_templateBinding == value)
+				if (_padding == value)
 					return;
 
-				_templateBinding = value;
-
-				if (!IsAttachedToRoot)
-					return;
-
-				if (_templateBinding != null)
-					RootElement.TemplateBindings.Add(_templateBinding);
-				else
-					RootElement.TemplateBindings.Remove(_templateBinding);
+				_padding = value;
+				SetDirtyState(measure: true, arrange: true);
 			}
 		}
 
 		/// <summary>
 		///   Gets or sets the template that defines the control's appearance.
 		/// </summary>
-		public Func<Control, UIElement> Template
+		public ControlTemplate Template
 		{
 			get
 			{
@@ -97,9 +86,16 @@ namespace PointWars.UserInterface.Controls
 				_templateRoot?.ChangeParent(null);
 
 				if (value == null)
+				{
 					_templateRoot = null;
+					_contentPresenter = null;
+				}
 				else
-					_templateRoot = value(this);
+				{
+					value(out _templateRoot, out _contentPresenter);
+					if (_contentPresenter != null)
+						_contentPresenter.Content = _content;
+				}
 
 				_templateRoot?.ChangeParent(this);
 			}
@@ -108,21 +104,18 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Gets or sets the UI element that is decorated.
 		/// </summary>
-		public object Content { get; set; }
-
-		/// <summary>
-		///   Gets or sets the padding inside the border.
-		/// </summary>
-		public Thickness Padding
+		public object Content
 		{
-			get { return _padding; }
+			get { return _content; }
 			set
 			{
-				if (_padding == value)
+				if (_content == value)
 					return;
 
-				_padding = value;
-				SetDirtyState(measure: true, arrange: true);
+				_content = value;
+
+				if (_contentPresenter != null)
+					_contentPresenter.Content = _content;
 			}
 		}
 
@@ -185,24 +178,6 @@ namespace PointWars.UserInterface.Controls
 			_templateRoot.Arrange(new Rectangle(0, 0, finalSize));
 
 			return new Size(_templateRoot.RenderSize.Width + Padding.Width, _templateRoot.RenderSize.Height + Padding.Height);
-		}
-
-		/// <summary>
-		///   Invoked when the UI element is now (transitively) attached to the root of a tree.
-		/// </summary>
-		protected override void OnAttached()
-		{
-			if (_templateBinding != null)
-				RootElement.TemplateBindings.Add(_templateBinding);
-		}
-
-		/// <summary>
-		///   Invoked when the UI element is no longer (transitively) attached to the root of a tree.
-		/// </summary>
-		protected override void OnDetached()
-		{
-			if (_templateBinding != null)
-				RootElement.TemplateBindings.Remove(_templateBinding);
 		}
 	}
 }

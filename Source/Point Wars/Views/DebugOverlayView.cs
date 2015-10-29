@@ -96,7 +96,7 @@ namespace PointWars.Views
 				Padding = new Thickness(10),
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Bottom,
-				Content = new StackPanel
+				Child = new StackPanel
 				{
 					Children =
 					{

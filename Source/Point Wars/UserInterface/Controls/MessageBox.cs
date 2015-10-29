@@ -62,7 +62,7 @@ namespace PointWars.UserInterface.Controls
 			Content = new Border
 			{
 				Background = new Color(0xAA000000),
-				Content = new Border
+				Child = new Border
 				{
 					Font = Assets.Roboto14,
 					MaxWidth = 600,
@@ -71,14 +71,14 @@ namespace PointWars.UserInterface.Controls
 					VerticalAlignment = VerticalAlignment.Center,
 					BorderColor = new Color(0xFF055674),
 					Background = new Color(0xFF002033),
-					Content = new StackPanel
+					Child = new StackPanel
 					{
 						Children =
 						{
 							new Border
 							{
 								Background = new Color(0x33A1DDFF),
-								Content = new Label(title) { Margin = new Thickness(15, 7, 15, 7) }
+								Child  = new Label(title) { Margin = new Thickness(15, 7, 15, 7) }
 							},
 							new Label(message)
 							{

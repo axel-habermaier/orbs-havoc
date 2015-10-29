@@ -38,9 +38,9 @@ namespace PointWars.UserInterface.Controls
 		private const int BlinkingFrequency = 2;
 
 		/// <summary>
-		///   The text control that uses the caret.
+		///   The text box that uses the caret.
 		/// </summary>
-		private readonly ITextInputControl _textControl;
+		private readonly TextBox _textBox;
 
 		/// <summary>
 		///   The clock that is used to determine whether the caret should be visible.
@@ -60,14 +60,14 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="textControl">The text control that uses the caret.</param>
-		public Caret(ITextInputControl textControl)
+		/// <param name="textBox">The text box that uses the caret.</param>
+		public Caret(TextBox textBox)
 			: this()
 		{
-			Assert.ArgumentNotNull(textControl, nameof(textControl));
+			Assert.ArgumentNotNull(textBox, nameof(textBox));
 
 			_clock = new Clock();
-			_textControl = textControl;
+			_textBox = textBox;
 		}
 
 		/// <summary>
@@ -99,16 +99,16 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private TextString GetText()
 		{
-			Assert.ArgumentNotNull(_textControl, nameof(_textControl));
-			Assert.ArgumentNotNull(_textControl.Text, nameof(_textControl.Text));
+			Assert.ArgumentNotNull(_textBox, nameof(_textBox));
+			Assert.ArgumentNotNull(_textBox.Text, nameof(_textBox.Text));
 
-			if (_text != _textControl.Text)
+			if (_text != _textBox.Text)
 			{
-				_text = _textControl.Text;
+				_text = _textBox.Text;
 				Position = 0;
 			}
 
-			return TextString.Create(_textControl.Text);
+			return TextString.Create(_textBox.Text);
 		}
 
 		/// <summary>
@@ -120,7 +120,7 @@ namespace PointWars.UserInterface.Controls
 			Assert.ArgumentNotNull(text, nameof(text));
 
 			_text = text;
-			_textControl.Text = text;
+			_textBox.Text = text;
 		}
 
 		/// <summary>
@@ -154,7 +154,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		public void MoveToEndIfTextChanged()
 		{
-			if (_text != _textControl.Text)
+			if (_text != _textBox.Text)
 				MoveToEnd();
 		}
 
