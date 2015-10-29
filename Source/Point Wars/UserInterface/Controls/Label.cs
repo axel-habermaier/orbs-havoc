@@ -38,24 +38,6 @@ namespace PointWars.UserInterface.Controls
 		private TextWrapping _wrapping = TextWrapping.NoWrap;
 
 		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public Label()
-			: this(String.Empty)
-		{
-		}
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="text">The text content of the text block.</param>
-		public Label(string text)
-		{
-			Assert.ArgumentNotNull(text, nameof(text));
-			Text = text;
-		}
-
-		/// <summary>
 		///   Gets or sets a value indicating whether the text should be wrapped when it reaches the edge of the text block.
 		/// </summary>
 		public TextWrapping TextWrapping

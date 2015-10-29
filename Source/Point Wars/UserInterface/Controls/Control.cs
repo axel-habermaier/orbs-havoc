@@ -48,6 +48,11 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
+		///   Gets the content presenter that shows the control's contents.
+		/// </summary>
+		protected ContentPresenter ContentPresenter => _contentPresenter;
+
+		/// <summary>
 		///   Gets or sets the padding inside the border.
 		/// </summary>
 		public Thickness Padding
@@ -93,8 +98,8 @@ namespace PointWars.UserInterface.Controls
 				else
 				{
 					value(out _templateRoot, out _contentPresenter);
-					if (_contentPresenter != null)
-						_contentPresenter.Content = _content;
+					if (ContentPresenter != null)
+						ContentPresenter.Content = _content;
 				}
 
 				_templateRoot?.ChangeParent(this);
@@ -114,8 +119,10 @@ namespace PointWars.UserInterface.Controls
 
 				_content = value;
 
-				if (_contentPresenter != null)
-					_contentPresenter.Content = _content;
+				if (ContentPresenter != null)
+					ContentPresenter.Content = _content;
+
+				OnContentChanged();
 			}
 		}
 
@@ -123,6 +130,13 @@ namespace PointWars.UserInterface.Controls
 		///   Gets the number of children for this visual.
 		/// </summary>
 		protected internal override int ChildrenCount => _templateRoot == null ? 0 : 1;
+
+		/// <summary>
+		///   Invoked when the control's content has been changed.
+		/// </summary>
+		protected virtual void OnContentChanged()
+		{
+		}
 
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all logical children of the UI element.

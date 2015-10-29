@@ -29,7 +29,7 @@ namespace PointWars.UserInterface.Controls
 	/// <summary>
 	///   A base class for all panel elements that position and arrange child UI elements.
 	/// </summary>
-	public abstract class Panel : UIElement, IScrollAware
+	public abstract class Panel : UIElement
 	{
 		/// <summary>
 		///   A lookup table in which the child elements are sorted by z index.
@@ -65,9 +65,9 @@ namespace PointWars.UserInterface.Controls
 		protected internal override sealed int ChildrenCount => Children?.Count ?? 0;
 
 		/// <summary>
-		///   Gets or sets the scroll handler that handles this scrolling aware UI element.
+		///   Gets or sets the scroll viewer the panel is contained in.
 		/// </summary>
-		public IScrollHandler ScrollHandler { get; set; }
+		public ScrollViewer ScollViewer { get; set; }
 
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all children of the panel.
@@ -171,13 +171,13 @@ namespace PointWars.UserInterface.Controls
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
 		protected override void DrawChildren(SpriteBatch spriteBatch)
 		{
-			if (ScrollHandler != null)
+			if (ScollViewer != null)
 			{
 				// We draw the children on a higher layer to avoid draw ordering issues.
 				++spriteBatch.Layer;
 
 				// Only draw the children that are actually visible
-				var area = ScrollHandler.ScrollArea;
+				var area = ScollViewer.ScrollArea;
 				foreach (var child in Children)
 				{
 					var topIsInside = child.VisualOffset.Y <= area.Bottom;

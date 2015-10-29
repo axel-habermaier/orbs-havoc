@@ -47,11 +47,11 @@ namespace PointWars.Views
 
 		private readonly Label _cpuTimeLabel = new Label();
 		private readonly WeakReference _gcCheck = new WeakReference(new object());
-		private readonly Label _gcLabel = new Label("0");
+		private readonly Label _gcLabel = new Label { Text = "0" };
 		private readonly Label _gpuTimeLabel = new Label();
 		private readonly Label _renderTimeLabel = new Label();
 		private readonly Label _updateTimeLabel = new Label();
-		private readonly Label _vsyncLabel = new Label(Cvars.Vsync.ToString().ToLower());
+		private readonly Label _vsyncLabel = new Label { Text = Cvars.Vsync.ToString().ToLower() };
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuRenderTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuUpdateTime = new AveragedDouble(AverageSampleCount);
@@ -100,8 +100,8 @@ namespace PointWars.Views
 				{
 					Children =
 					{
-						CreateLine("Platform:    ", new Label($"{PlatformInfo.Platform} {IntPtr.Size * 8}bit"), margin),
-						CreateLine("Debug Mode:  ", new Label($"{PlatformInfo.IsDebug.ToString().ToLower()}"), margin),
+						CreateLine("Platform:    ", new Label { Text = $"{PlatformInfo.Platform} {IntPtr.Size * 8}bit" }, margin),
+						CreateLine("Debug Mode:  ", new Label { Text = $"{PlatformInfo.IsDebug.ToString().ToLower()}" }, margin),
 						CreateLine("VSync:       ", _vsyncLabel, margin),
 						CreateLine("# of GCs:    ", _gcLabel, 5 * margin),
 						CreateLine("GPU Time:    ", _gpuTimeLabel, "ms", margin),
@@ -129,7 +129,7 @@ namespace PointWars.Views
 			return new StackPanel
 			{
 				Orientation = Orientation.Horizontal,
-				Children = { new Label(text), label },
+				Children = { new Label { Text = text }, label },
 				Margin = new Thickness(0, 0, 0, marginBottom)
 			};
 		}
@@ -142,7 +142,7 @@ namespace PointWars.Views
 			return new StackPanel
 			{
 				Orientation = Orientation.Horizontal,
-				Children = { new Label(text), label, new Label(suffix) },
+				Children = { new Label { Text = text }, label, new Label { Text = suffix } },
 				Margin = new Thickness(0, 0, 0, marginBottom)
 			};
 		}

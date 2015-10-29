@@ -92,6 +92,7 @@ namespace PointWars.UserInterface.Controls
 			_inputDevice.InputLayerChanged -= InputLayerChanged;
 			_inputDevice.Mouse.Pressed -= MousePressed;
 			_inputDevice.Mouse.Released -= MouseReleased;
+			_inputDevice.Mouse.Wheel -= MouseWheel;
 			_inputDevice.Keyboard.KeyPressed -= KeyPressed;
 			_inputDevice.Keyboard.KeyReleased -= KeyReleased;
 			_inputDevice.Keyboard.TextEntered -= TextEntered;
@@ -134,6 +135,7 @@ namespace PointWars.UserInterface.Controls
 			_inputDevice.InputLayerChanged += InputLayerChanged;
 			_inputDevice.Mouse.Pressed += MousePressed;
 			_inputDevice.Mouse.Released += MouseReleased;
+			_inputDevice.Mouse.Wheel += MouseWheel;
 			_inputDevice.Keyboard.KeyPressed += KeyPressed;
 			_inputDevice.Keyboard.KeyReleased += KeyReleased;
 			_inputDevice.Keyboard.TextEntered += TextEntered;
@@ -170,6 +172,18 @@ namespace PointWars.UserInterface.Controls
 
 			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, false, _inputDevice.Keyboard.GetModifiers());
 			OnMouseReleased(_hoveredElement, args);
+		}
+
+		/// <summary>
+		///   Handles a mouse wheel event.
+		/// </summary>
+		private void MouseWheel(MouseWheelDirection direction)
+		{
+			if (!_isActive || _hoveredElement == null)
+				return;
+
+			var args = MouseWheelEventArgs.Create(_inputDevice.Mouse, direction, _inputDevice.Keyboard.GetModifiers());
+			OnMouseWheel(_hoveredElement, args);
 		}
 
 		/// <summary>
@@ -214,9 +228,9 @@ namespace PointWars.UserInterface.Controls
 		/// <param name="position">The position of the mouse.</param>
 		private void UpdateHoveredElement(Vector2 position)
 		{
-			UIElement hoveredElement = null;
+			UIElement hoveredElement = this;
 			if (_isActive && _inputDevice.Mouse.InsideWindow)
-				hoveredElement = HitTest(new Vector2(position.X, position.Y), boundsTestOnly: false);
+				hoveredElement = HitTest(new Vector2(position.X, position.Y), boundsTestOnly: false) ?? this;
 
 			if (hoveredElement == _hoveredElement)
 				return;

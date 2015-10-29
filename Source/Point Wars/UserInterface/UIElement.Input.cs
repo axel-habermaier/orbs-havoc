@@ -103,6 +103,20 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Handles a mouse wheel event.
+		/// </summary>
+		protected static void OnMouseWheel(UIElement element, MouseWheelEventArgs e)
+		{
+			while (element != null && !e.Handled)
+			{
+				element.HandleInputEvent(e);
+				element.OnMouseWheel(e);
+
+				element = element.Parent;
+			}
+		}
+
+		/// <summary>
 		///   Handles a key pressed event.
 		/// </summary>
 		protected static void OnKeyPressed(UIElement element, KeyEventArgs e)

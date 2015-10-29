@@ -41,6 +41,11 @@ namespace PointWars.Platform.Logging
 		private const int BatchSize = 200;
 
 		/// <summary>
+		///   A cached string builder used to write the log file.
+		/// </summary>
+		private static readonly StringBuilder Builder = new StringBuilder();
+
+		/// <summary>
 		///   The name of the generated log file.
 		/// </summary>
 		private readonly string _fileName = $"{Application.Name}.log";
@@ -143,20 +148,21 @@ namespace PointWars.Platform.Logging
 		/// <param name="logEntries">The log entries that should be converted to a string.</param>
 		private static string ToString(LogEntry[] logEntries)
 		{
-			var builder = new StringBuilder();
+			Builder.Clear();
+
 			foreach (var entry in logEntries)
 			{
-				builder.Append("[");
-				builder.Append(entry.LogTypeString);
-				builder.Append("]   ");
-				builder.Append(entry.Time.ToString("F4").PadLeft(9));
+				Builder.Append("[");
+				Builder.Append(entry.LogTypeString);
+				Builder.Append("]   ");
+				Builder.Append(entry.Time.ToString("F4").PadLeft(9));
 
-				builder.Append("s   ");
-				builder.Append(entry.Message);
-				builder.Append("\n");
+				Builder.Append("s   ");
+				Builder.Append(entry.Message);
+				Builder.Append("\n");
 			}
 
-			return builder.ToString();
+			return Builder.ToString();
 		}
 
 		/// <summary>

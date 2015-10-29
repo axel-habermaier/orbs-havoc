@@ -55,6 +55,13 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Invoked when the mouse wheel has been moved.
+		/// </summary>
+		protected virtual void OnMouseWheel(MouseWheelEventArgs e)
+		{
+		}
+
+		/// <summary>
 		///   Invoked when a key has been pressed while the UI element is focused.
 		/// </summary>
 		protected virtual void OnKeyPressed(KeyEventArgs e)

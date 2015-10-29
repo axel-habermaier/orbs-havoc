@@ -314,6 +314,7 @@ namespace PointWars.UserInterface
 			ActualWidth = size.Width;
 			ActualHeight = size.Height;
 
+			OnActualSizeChanged();
 			RenderSize = size;
 
 			_relativeVisualOffset = finalRect.Position + ComputeAlignmentOffset(finalRect.Size);
@@ -321,6 +322,13 @@ namespace PointWars.UserInterface
 
 			IsArrangeDataDirty = false;
 			IsVisualOffsetDirty = true;
+		}
+
+		/// <summary>
+		///   Invoked when the actual size of the UI element has changed after a layouting pass.
+		/// </summary>
+		protected virtual void OnActualSizeChanged()
+		{
 		}
 
 		/// <summary>

@@ -32,7 +32,6 @@ namespace PointWars.Views
 	using UserInterface;
 	using UserInterface.Controls;
 	using Utilities;
-	using Console = UserInterfaceOld.Console;
 
 	/// <summary>
 	///   Represents a collection of application views.
@@ -47,12 +46,8 @@ namespace PointWars.Views
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="app">The application the view collection belongs to.</param>
-		/// <param name="console">The console that should be used by the console view.</param>
-		public ViewCollection(Application app, Console console)
+		public ViewCollection(Application app)
 		{
-			Assert.ArgumentNotNull(console, nameof(console));
-
-			Console = new ConsoleView(console);
 			Application = app;
 			Application.Window.Closing += Exit;
 
@@ -84,7 +79,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets the console view.
 		/// </summary>
-		public ConsoleView Console { get; }
+		public ConsoleView Console { get; } = new ConsoleView();
 
 		/// <summary>
 		///   Gets the debug overlay view.

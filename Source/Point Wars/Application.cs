@@ -30,7 +30,6 @@ namespace PointWars
 	using Platform.Logging;
 	using Rendering;
 	using Scripting;
-	using UserInterfaceOld;
 	using Utilities;
 	using Views;
 
@@ -88,8 +87,7 @@ namespace PointWars
 		/// <summary>
 		///   Runs the application.
 		/// </summary>
-		/// <param name="console">The console that should be used by the application.</param>
-		public unsafe void Run(Console console)
+		public unsafe void Run()
 		{
 			_running = true;
 
@@ -99,7 +97,7 @@ namespace PointWars
 			using (var bindings = new BindingCollection(InputDevice))
 			using (new Assets.Assets())
 			using (_spriteBatch = new SpriteBatch())
-			using (_views = new ViewCollection(this, console))
+			using (_views = new ViewCollection(this))
 			{
 				Initialize();
 				Commands.Help();

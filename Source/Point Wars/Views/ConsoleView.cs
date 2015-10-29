@@ -22,10 +22,17 @@
 
 namespace PointWars.Views
 {
-	using Assets;
+	using System;
+	using System.Linq;
+	using System.Text;
+	using Platform;
 	using Platform.Input;
+	using Platform.Logging;
 	using Rendering;
-	using UserInterfaceOld;
+	using Scripting;
+	using UserInterface;
+	using UserInterface.Controls;
+	using UserInterface.Input;
 	using Utilities;
 
 	/// <summary>
@@ -34,28 +41,80 @@ namespace PointWars.Views
 	internal sealed class ConsoleView : View
 	{
 		/// <summary>
+		///   The maximum length of all console input or output.
+		/// </summary>
+		private const int MaxLength = 2048;
+
+		/// <summary>
+		///   The maximum number of labels that the console can display. If all labels are used and another label is
+		///   added, the oldest labels is removed.
+		/// </summary>
+		private const int MaxLabels = 2048;
+
+		/// <summary>
+		///   The maximum history size.
+		/// </summary>
+		private const int MaxHistory = 64;
+
+		/// <summary>
+		///   The prompt token.
+		/// </summary>
+		private const string PromptToken = "]";
+
+		/// <summary>
+		///   The name of the console history file.
+		/// </summary>
+		private const string HistoryFileName = "console.txt";
+
+		private static readonly Color ErrorColor = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+		private static readonly Color WarningColor = new Color(1.0f, 1.0f, 0.0f, 1.0f);
+		private static readonly Color InfoColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		private static readonly Color DebugInfoColor = new Color(1.0f, 0.0f, 1.0f, 1.0f);
+		private readonly StackPanel _contentPanel = new StackPanel { VerticalAlignment = VerticalAlignment.Bottom, MinWidth = 200 };
+		private readonly string[] _history = new string[MaxHistory];
+		private readonly TextBox _input = new TextBox { MaxLength = MaxLength, Dock = Dock.Bottom };
+		private int _autoCompletionIndex;
+		private string[] _autoCompletionList;
+		private int _historyIndex;
+		private UIElement _layoutRoot;
+		private int _numHistory;
+		private ScrollViewer _scrollViewer;
+		private bool _settingAutoCompletedInput;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="console">The console that should be used by the console view.</param>
-		public ConsoleView(Console console)
+		public ConsoleView()
 			: base(InputLayer.Console)
 		{
-			Assert.ArgumentNotNull(console, nameof(console));
-			Console = console;
 		}
 
 		/// <summary>
-		///   Gets the console that is shown.
+		///   Invoked when the view should be activated.
 		/// </summary>
-		public Console Console { get; }
+		protected override void Activate()
+		{
+			_input.Focus();
+		}
 
 		/// <summary>
-		///   Changes the size available to the view.
+		///   Invoked when the view should be deactivated.
+		/// </summary>
+		protected override void Deactivate()
+		{
+			_input.Text = String.Empty;
+
+			_historyIndex = _numHistory;
+			_autoCompletionList = null;
+		}
+
+		/// <summary>
+		///   Sets the height of the console's layout root to half of the height of the console itself.
 		/// </summary>
 		/// <param name="size">The new size available to the view.</param>
 		public override void Resize(Size size)
 		{
-			Console.ChangeSize(size);
+			_layoutRoot.Height = MathUtils.Round(size.Height / 2);
 		}
 
 		/// <summary>
@@ -63,25 +122,361 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Initialize()
 		{
-			Console.Initialize(Window.Size, InputDevice, Assets.DefaultFont);
+			_input.TextChanged += TextChanged;
+			_input.InputBindings.AddRange(new[]
+			{
+				new KeyBinding(ClearInput, Key.Escape),
+				new KeyBinding(ShowNewerHistoryEntry, Key.Down, triggerMode: TriggerMode.Repeatedly),
+				new KeyBinding(ShowOlderHistoryEntry, Key.Up, triggerMode: TriggerMode.Repeatedly),
+				new KeyBinding(AutoCompleteNext, Key.Tab, triggerMode: TriggerMode.Repeatedly),
+				new KeyBinding(AutoCompletePrevious, Key.Tab, KeyModifiers.Shift, TriggerMode.Repeatedly),
+			});
+
+			_scrollViewer = new ScrollViewer
+			{
+				Margin = new Thickness(0, 0, 0, 3),
+				Dock = Dock.Bottom,
+				VerticalScrollStep = 100,
+				Content = _contentPanel
+			};
+
+			_layoutRoot = new Border
+			{
+				Height = 0, // Reduces flickering when the console is opened for the first time
+				Background = new Color(0xEE222222),
+				VerticalAlignment = VerticalAlignment.Top,
+				Child = new DockPanel
+				{
+					Margin = new Thickness(5),
+					Children =
+					{
+						new DockPanel
+						{
+							Dock = Dock.Bottom,
+							Children = { new Label { Text = PromptToken, Dock = Dock.Left }, _input }
+						},
+						_scrollViewer
+					}
+				}
+			};
+
+			RootElement.Content = _layoutRoot;
+			RootElement.InputBindings.AddRange(new InputBinding[]
+			{
+				new KeyBinding(Submit, Key.Enter),
+				new KeyBinding(Submit, Key.NumpadEnter),
+				new KeyBinding(Clear, Key.L, KeyModifiers.Control),
+				new KeyBinding(_scrollViewer.ScrollUp, Key.PageUp, triggerMode: TriggerMode.Repeatedly),
+				new KeyBinding(_scrollViewer.ScrollDown, Key.PageDown, triggerMode: TriggerMode.Repeatedly),
+				new KeyBinding(_scrollViewer.ScrollToTop, Key.PageUp, KeyModifiers.Control, TriggerMode.Repeatedly),
+				new KeyBinding(_scrollViewer.ScrollToBottom, Key.PageDown, KeyModifiers.Control, TriggerMode.Repeatedly),
+				new MouseWheelBinding(_scrollViewer.ScrollUp, MouseWheelDirection.Up),
+				new MouseWheelBinding(_scrollViewer.ScrollDown, MouseWheelDirection.Down)
+			});
+
+			foreach (var logEntry in LogEntryCache.LogEntries)
+				AddLogEntry(logEntry);
+
+			LogEntryCache.DisableCaching();
+			InputDevice.Keyboard.KeyPressed += OnKeyPressed;
+			Commands.OnShowConsole += ShowConsole;
+			Log.OnLog += AddLogEntry;
+
+			try
+			{
+				var content = FileSystem.ReadAllText(HistoryFileName);
+				var history = content.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+				history = history.Where(h => h.Length <= MaxLength).ToArray();
+
+				var count = history.Length;
+				var offset = 0;
+
+				if (count > _history.Length)
+				{
+					offset = count - _history.Length;
+					count = _history.Length;
+				}
+
+				Array.Copy(history, offset, _history, 0, count);
+				_numHistory = count;
+				_historyIndex = _numHistory;
+			}
+			catch (FileSystemException e)
+			{
+				Log.Error("Failed to load console history: {0}", e.Message);
+			}
 		}
 
 		/// <summary>
-		///   Updates the view's state.
+		///   Submits the console input.
 		/// </summary>
-		public override void Update()
+		private void Submit()
 		{
-			Console.Update();
-			IsActive = Console.IsOpened;
+			AddInputToHistory();
+
+			if (!String.IsNullOrWhiteSpace(_input.Text))
+			{
+				Log.Info("{0}{1}", PromptToken, _input.Text);
+				Commands.Execute(_input.Text);
+
+				// Show the result of the user's input
+				_scrollViewer.ScrollToBottom();
+			}
+
+			ClearInput();
 		}
 
 		/// <summary>
-		///   Draws the view's contents.
+		///   Clears the prompt, removing all current input.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public override void Draw(SpriteBatch spriteBatch)
+		private void ClearInput()
 		{
-			Console.Draw(spriteBatch);
+			_input.Text = String.Empty;
+			_historyIndex = _numHistory;
+			_autoCompletionList = null;
+		}
+
+		/// <summary>
+		///   Handles changes to the input text.
+		/// </summary>
+		private void TextChanged(string text)
+		{
+			// Reset the auto completion list if an input was made other than setting the current completion value
+			if (_settingAutoCompletedInput)
+				return;
+
+			_autoCompletionList = null;
+		}
+
+		/// <summary>
+		///   Submits the current user input to the input history.
+		/// </summary>
+		private void AddInputToHistory()
+		{
+			if (String.IsNullOrWhiteSpace(_input.Text))
+				return;
+
+			// Store the input in the input history, if it differs from the last entry
+			if (_numHistory != 0 && _history[_numHistory - 1] == _input.Text)
+				return;
+
+			// If the history is full, remove the oldest entry; this could be implemented more efficiently
+			if (_numHistory == MaxHistory)
+			{
+				Array.Copy(_history, 1, _history, 0, MaxHistory - 1);
+				--_numHistory;
+			}
+
+			_history[_numHistory++] = _input.Text;
+			_historyIndex = _numHistory;
+		}
+
+		/// <summary>
+		///   Disposes the object, releasing all managed and unmanaged resources.
+		/// </summary>
+		protected override void OnDisposing()
+		{
+			base.OnDisposing();
+
+			InputDevice.Keyboard.KeyPressed -= OnKeyPressed;
+			Commands.OnShowConsole -= ShowConsole;
+			Log.OnLog -= AddLogEntry;
+
+			var builder = new StringBuilder();
+			for (var i = 0; i < _numHistory; ++i)
+				builder.Append(_history[i]).Append("\n");
+
+			try
+			{
+				FileSystem.WriteAllText(HistoryFileName, builder.ToString());
+				Log.Info("Console history has been persisted.");
+			}
+			catch (FileSystemException e)
+			{
+				Log.Error("Failed to persist console history: {0}", e.Message);
+			}
+		}
+
+		/// <summary>
+		///   Shows or hides the console.
+		/// </summary>
+		private void ShowConsole(bool show)
+		{
+			IsActive = show;
+		}
+
+		/// <summary>
+		///   Handles for console key presses.
+		/// </summary>
+		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
+		{
+			if (scanCode == ScanCode.Grave && InputDevice.Keyboard.WentDown(ScanCode.Grave))
+				IsActive = !IsActive;
+		}
+
+		/// <summary>
+		///   Adds a the given log entry to the console's content.
+		/// </summary>
+		private void AddLogEntry(LogEntry logEntry)
+		{
+			var color = InfoColor;
+			switch (logEntry.LogType)
+			{
+				case LogType.Error:
+					color = ErrorColor;
+					break;
+				case LogType.Warning:
+					color = WarningColor;
+					break;
+				case LogType.Debug:
+					color = DebugInfoColor;
+					break;
+			}
+
+			if (_contentPanel.Children.Count < MaxLabels)
+			{
+				_contentPanel.Children.Add(new Label
+				{
+					Text = logEntry.Message,
+					Foreground = color,
+					TextWrapping = TextWrapping.Wrap,
+					Margin = new Thickness(0, 2, 0, 0)
+				});
+			}
+			else
+			{
+				// If all labels are used, remove the oldest one by shifting the entire array up one
+				// index and add the oldest label to the end of the array (in order to re-use the label instance for 
+				// the new message); this is not terribly efficient, however, it's good enough for now because it 
+				// only copies MaxLabels * ReferenceSize bytes instead of relayouting all lines.
+
+				var label = (Label)_contentPanel.Children[0];
+				_contentPanel.Children.RemoveAt(0);
+
+				label.Text = logEntry.Message;
+				label.Foreground = color;
+				_contentPanel.Children.Add(label);
+			}
+		}
+
+		/// <summary>
+		///   Shows the next newer history entry, if any.
+		/// </summary>
+		private void ShowNewerHistoryEntry()
+		{
+			ShowHistory(_historyIndex + 1);
+		}
+
+		/// <summary>
+		///   Shows the next older history entry, if any.
+		/// </summary>
+		private void ShowOlderHistoryEntry()
+		{
+			ShowHistory(_historyIndex - 1);
+		}
+
+		/// <summary>
+		///   Shows the next auto-completed value if completion is possible.
+		/// </summary>
+		private void AutoCompleteNext()
+		{
+			AutoComplete(true);
+		}
+
+		/// <summary>
+		///   Shows the previous auto-completed value if completion is possible.
+		/// </summary>
+		private void AutoCompletePrevious()
+		{
+			AutoComplete(false);
+		}
+
+		/// <summary>
+		///   Shows the next or previous auto-completed value if completion is possible.
+		/// </summary>
+		/// <param name="next">If true, the next auto-completed entry is shown; otherwise, the previous one is shown.</param>
+		private void AutoComplete(bool next)
+		{
+			if (_autoCompletionList == null)
+			{
+				_autoCompletionList = GetAutoCompletionList();
+
+				// If auto-completion returned no results, we're done here
+				if (_autoCompletionList == null)
+					return;
+
+				_autoCompletionIndex = next ? 0 : _autoCompletionList.Length - 1;
+			}
+			else
+			{
+				_autoCompletionIndex = (_autoCompletionIndex + (next ? 1 : -1)) % _autoCompletionList.Length;
+				if (_autoCompletionIndex < 0)
+					_autoCompletionIndex += _autoCompletionList.Length;
+			}
+
+			_settingAutoCompletedInput = true;
+			_input.Text = _autoCompletionList[_autoCompletionIndex] + " ";
+			_settingAutoCompletedInput = false;
+		}
+
+		/// <summary>
+		///   Gets the auto completion list for the current input.
+		/// </summary>
+		private string[] GetAutoCompletionList()
+		{
+			if (String.IsNullOrWhiteSpace(_input.Text))
+				return null;
+
+			var commands = Commands
+				.All
+				.Where(command => command.Name.ToLower().StartsWith(_input.Text.ToLower()))
+				.Select(command => command.Name);
+
+			var cvars = Cvars
+				.All
+				.Where(cvar => cvar.Name.ToLower().StartsWith(_input.Text.ToLower()))
+				.Select(cvar => cvar.Name);
+
+			var list = cvars.Union(commands).OrderBy(item => item).ToArray();
+			if (list.Length == 0)
+				return null;
+
+			return list;
+		}
+
+		/// <summary>
+		///   Shows the history entry at the given index.
+		/// </summary>
+		/// <param name="index">The index of the entry that should be shown.</param>
+		private void ShowHistory(int index)
+		{
+			if (_numHistory == 0)
+				return;
+
+			// Ensure the index is inside the bounds
+			if (index < 0)
+				index = 0;
+
+			// Empty the input box when going past the newest entry
+			if (index >= _numHistory)
+			{
+				_input.Text = String.Empty;
+				index = _numHistory;
+			}
+			else
+				_input.Text = _history[index];
+
+			_historyIndex = index;
+			_autoCompletionList = null;
+		}
+
+		/// <summary>
+		///   Removes all log entries shown by the console.
+		/// </summary>
+		private void Clear()
+		{
+			_contentPanel.Children.Clear();
+			_scrollViewer.ScrollToBottom();
 		}
 	}
 }

@@ -34,7 +34,6 @@ namespace PointWars
 	using Platform.Memory;
 	using Scripting;
 	using Utilities;
-	using Console = UserInterfaceOld.Console;
 
 	/// <summary>
 	///   Represents the application.
@@ -61,8 +60,8 @@ namespace PointWars
 
 				using (var platform = new PlatformLibrary())
 				using (var logFile = new LogFile())
-				using (var console = new Console())
 				{
+					LogEntryCache.EnableCaching();
 					Log.OnLog += WriteToConsole;
 					Log.Info("Starting {0}...", Application.Name);
 
@@ -83,7 +82,7 @@ namespace PointWars
 
 							Initialized = true;
 							var app = new Application();
-							app.Run(console);
+							app.Run();
 
 							ConfigurationFile.WriteAutoExec();
 							Log.Info("{0} has shut down.", Application.Name);

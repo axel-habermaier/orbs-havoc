@@ -74,8 +74,7 @@ namespace PointWars.UserInterface.Input
 				case TriggerMode.OnActivation:
 					return keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.WentDown;
 				case TriggerMode.Repeatedly:
-					return keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers &&
-						   !keyEventArgs.KeyState.WentDown && keyEventArgs.KeyState.IsRepeated;
+					return keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.IsRepeated;
 				case TriggerMode.OnDeactivation:
 					return keyEventArgs.KeyState.WentUp && keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers;
 				default:

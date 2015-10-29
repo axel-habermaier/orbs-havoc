@@ -54,15 +54,16 @@ namespace PointWars.Views
 				VerticalAlignment = VerticalAlignment.Center,
 				Children =
 				{
-					new Label(Application.Name)
+					new Label
 					{
+						Text = Application.Name,
 						Font = Assets.Moonhouse80,
 						Margin = new Thickness(0, 0, 0, 30),
 					},
 					CreateButton("Start Game", () => { }),
 					CreateButton("Join Game", () => { }),
 					CreateButton("Options", () => { }),
-					CreateButton("Exit", Views.Exit)
+					CreateButton("Exit", Views.Exit),
 				}
 			};
 		}

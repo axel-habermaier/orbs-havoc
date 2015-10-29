@@ -55,7 +55,7 @@ namespace PointWars.UserInterface.Controls
 				else if (value == null)
 					_presentedElement = null;
 				else if (_label == null)
-					_presentedElement = _label = new Label(value.ToString());
+					_presentedElement = _label = new Label { Text = value.ToString() };
 				else
 				{
 					// Reuse the previous label instance

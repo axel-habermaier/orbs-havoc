@@ -52,13 +52,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UserInterfaceOld\Button.cs" />
-    <Compile Include="UserInterfaceOld\Frame.cs" />
-    <Compile Include="UserInterfaceOld\Style.cs" />
-    <Compile Include="UserInterfaceOld\UIContext.cs" />
-    <Compile Include="UserInterfaceOld\Layout.cs" />
-    <Compile Include="UserInterfaceOld\Thickness.cs" />
-    <Compile Include="UserInterfaceOld\UIElement.cs" />
+    <Compile Include="Platform\Logging\LogEntryCache.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
     <Compile Include="UserInterface\Controls\Button.cs" />
@@ -91,9 +85,6 @@
     <Compile Include="UserInterface\Input\ScanCodeBinding.cs" />
     <Compile Include="UserInterface\Input\TextInputEventArgs.cs" />
     <Compile Include="UserInterface\Input\TriggerMode.cs" />
-    <Compile Include="UserInterface\IScrollAware.cs" />
-    <Compile Include="UserInterface\IScrollController.cs" />
-    <Compile Include="UserInterface\IScrollHandler.cs" />
     <Compile Include="UserInterface\TextAlignment.cs" />
     <Compile Include="UserInterface\TextLayout.cs" />
     <Compile Include="UserInterface\TextLine.cs" />
@@ -244,21 +235,6 @@
     <Compile Include="Scripting\Validators\ValidatorAttribute.cs" />
     <Compile Include="Scripting\Validators\WindowPositionValidator.cs" />
     <Compile Include="Scripting\Validators\WindowSizeAttribute.cs" />
-    <Compile Include="UserInterfaceOld\Caret.cs" />
-    <Compile Include="UserInterfaceOld\Console.cs" />
-    <Compile Include="UserInterfaceOld\ConsoleContent.cs" />
-    <Compile Include="UserInterfaceOld\ConsoleInput.cs" />
-    <Compile Include="UserInterfaceOld\ConsolePrompt.cs" />
-    <Compile Include="UserInterfaceOld\Label.cs" />
-    <Compile Include="UserInterfaceOld\TextAlignment.cs" />
-    <Compile Include="UserInterfaceOld\TextAlignmentExtensions.cs" />
-    <Compile Include="UserInterfaceOld\TextBox.cs" />
-    <Compile Include="UserInterfaceOld\TextLayout.cs" />
-    <Compile Include="UserInterfaceOld\TextLine.cs" />
-    <Compile Include="UserInterfaceOld\TextSequence.cs" />
-    <Compile Include="UserInterfaceOld\TextToken.cs" />
-    <Compile Include="UserInterfaceOld\TextTokenStream.cs" />
-    <Compile Include="UserInterfaceOld\TextTokenType.cs" />
     <Compile Include="Utilities\Assert.cs" />
     <Compile Include="Utilities\Clock.cs" />
     <Compile Include="Utilities\FatalErrorException.cs" />

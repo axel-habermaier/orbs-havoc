@@ -44,19 +44,8 @@ namespace PointWars.UserInterface.Controls
 		///   Initializes a new instance.
 		/// </summary>
 		public TextBox()
-			: this(String.Empty)
 		{
-		}
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="text">The text content of the text box.</param>
-		public TextBox(string text)
-		{
-			Assert.ArgumentNotNull(text, nameof(text));
-
-			_label = new Label(text);
+			_label = new Label { TextWrapping = TextWrapping.Wrap };
 			_caret = new Caret(this);
 
 			Cursor = Assets.TextCursor;
@@ -86,14 +75,14 @@ namespace PointWars.UserInterface.Controls
 				_caret.MoveToEndIfTextChanged();
 
 				SetDirtyState(measure: true, arrange: true);
-				TextChangedEvent?.Invoke(_label.Text);
+				TextChanged?.Invoke(_label.Text);
 			}
 		}
 
 		/// <summary>
 		///   Raised when the text contained in the text box has been changed.
 		/// </summary>
-		public event Action<string> TextChangedEvent;
+		public event Action<string> TextChanged;
 
 		/// <summary>
 		///   Invoked when a mouse button has been pressed while hovering the UI element.
@@ -121,14 +110,23 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		protected override void OnTextEntered(TextInputEventArgs e)
 		{
-			// Check if we've exceeded the maximum length
-			if (MaxLength > 0 && Text.Length >= MaxLength)
-				return;
-
-			foreach (var character in e.Text)
-				_caret.InsertCharacter(character);
-
+			Insert(e.Text);
 			e.Handled = true;
+		}
+
+		/// <summary>
+		///   Inserts the given text at the current caret location, as long as the maximum allowed length is not exceeded.
+		/// </summary>
+		private void Insert(string text)
+		{
+			foreach (var character in text)
+			{
+				// Check if we've exceeded the maximum length
+				if (MaxLength > 0 && Text.Length >= MaxLength)
+					return;
+
+				_caret.InsertCharacter(character);
+			}
 		}
 
 		/// <summary>
@@ -170,8 +168,7 @@ namespace PointWars.UserInterface.Controls
 						if (text == null)
 							Log.Error("Failed to retrieve clipboard text from OS: {0}", SDL_GetError());
 
-						foreach (var c in new string(text))
-							_caret.InsertCharacter(c);
+						Insert(new string(text));
 					}
 					break;
 				default:

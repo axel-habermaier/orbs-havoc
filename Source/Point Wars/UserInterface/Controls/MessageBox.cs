@@ -78,10 +78,11 @@ namespace PointWars.UserInterface.Controls
 							new Border
 							{
 								Background = new Color(0x33A1DDFF),
-								Child  = new Label(title) { Margin = new Thickness(15, 7, 15, 7) }
+								Child = new Label { Text = title, Margin = new Thickness(15, 7, 15, 7) }
 							},
-							new Label(message)
+							new Label
 							{
+								Text = message,
 								TextAlignment = TextAlignment.Left,
 								HorizontalAlignment = HorizontalAlignment.Stretch,
 								Margin = new Thickness(15),

@@ -548,13 +548,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets the list of input bindings associated with this UI element.
 		/// </summary>
-		public List<InputBinding> InputBindings
-			=> _inputBindings ?? (_inputBindings = new List<InputBinding>());
-
-		/// <summary>
-		///   Gets the root element the UI element is contained in or null if it isn't contained in any root element.
-		/// </summary>
-		internal RootUIElement RootElement => GetRootElement(this);
+		public List<InputBinding> InputBindings => _inputBindings ?? (_inputBindings = new List<InputBinding>());
 
 		/// <summary>
 		///   A value indicating whether the UI element's cached measured layout is dirty and needs to be updated.

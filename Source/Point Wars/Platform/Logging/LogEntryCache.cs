@@ -20,33 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.UserInterfaceOld
+namespace PointWars.Platform.Logging
 {
-	using Rendering;
+	using System.Collections.Generic;
 
 	/// <summary>
-	///   Provides styling values for UI elements.
+	///   Caches log entries.
 	/// </summary>
-	public struct Style
+	public static class LogEntryCache
 	{
 		/// <summary>
-		///   The UI element's background color.
+		///   The list of cached log entries.
 		/// </summary>
-		public Color Background;
+		public static List<LogEntry> LogEntries { get; private set; }
 
 		/// <summary>
-		///   The UI element's foreground color.
+		///   Enables log entry caching.
 		/// </summary>
-		public Color Foreground;
+		public static void EnableCaching()
+		{
+			LogEntries = new List<LogEntry>();
+			Log.OnLog += Add;
+		}
 
 		/// <summary>
-		///   The UI element's border color.
+		///   Disables log entry caching.
 		/// </summary>
-		public Color BorderColor;
+		public static void DisableCaching()
+		{
+			LogEntries = null;
+			Log.OnLog -= Add;
+		}
 
 		/// <summary>
-		///   The UI element's border thickness.
+		///   Adds the log entry to the cache.
 		/// </summary>
-		public float BorderThickness;
+		private static void Add(LogEntry entry)
+		{
+			LogEntries.Add(entry);
+		}
 	}
 }

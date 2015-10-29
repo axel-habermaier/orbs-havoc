@@ -70,7 +70,7 @@ namespace PointWars.UserInterface.Input
 							   keyEventArgs.KeyState.WentDown;
 					case TriggerMode.Repeatedly:
 						return keyEventArgs.Key == _cvar.Value.Key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
-							   !keyEventArgs.KeyState.WentDown && keyEventArgs.KeyState.IsRepeated;
+							   keyEventArgs.KeyState.IsRepeated;
 					case TriggerMode.OnDeactivation:
 						return keyEventArgs.KeyState.WentUp && keyEventArgs.Key == _cvar.Value.Key &&
 							   keyEventArgs.Modifiers == _cvar.Value.Modifiers;
