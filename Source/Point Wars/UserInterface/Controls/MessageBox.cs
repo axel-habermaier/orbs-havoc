@@ -51,7 +51,7 @@ namespace PointWars.UserInterface.Controls
 			Assert.ArgumentNotNull(button1, nameof(button1));
 			Assert.ArgumentNotNull(button2, nameof(button2));
 
-			Focusable = true;
+			IsFocusable = true;
 
 			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Enter, triggerMode: TriggerMode.OnDeactivation));
 			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Space, triggerMode: TriggerMode.OnDeactivation));

@@ -165,10 +165,10 @@ namespace PointWars.UserInterface
 		{
 			if (!CanBeFocused)
 				return;
-//
-//			var rootElement = GetRootElement(this);
-//			if (rootElement != null)
-//				rootElement.FocusedElement = this;
+
+			var rootElement = GetRootElement(this);
+			if (rootElement != null)
+				rootElement.FocusedElement = this;
 		}
 
 		/// <summary>
@@ -179,10 +179,12 @@ namespace PointWars.UserInterface
 			if (!IsFocused)
 				return;
 
-//			var rootElement = GetRootElement(this);
-//			if (rootElement != null && rootElement.FocusedElement == this)
-//				rootElement.FocusedElement = null;
+			var rootElement = GetRootElement(this);
+			if (rootElement != null && rootElement.FocusedElement == this)
+				rootElement.FocusedElement = null;
 		}
+
+
 
 		/// <summary>
 		///   Returns the child UI element of the current UI element that lies at the given position.
@@ -521,6 +523,13 @@ namespace PointWars.UserInterface
 		///   Invoked when the children of the UI element have changed.
 		/// </summary>
 		protected internal virtual void OnChildrenChanged()
+		{
+		}
+
+		/// <summary>
+		///   Invoked when the IsFocus property of the UI element has changed.
+		/// </summary>
+		protected internal virtual void OnFocusChanged()
 		{
 		}
 

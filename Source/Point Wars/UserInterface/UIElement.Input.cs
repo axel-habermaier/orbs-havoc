@@ -37,7 +37,11 @@ namespace PointWars.UserInterface
 			while (hoveredElement != null)
 			{
 				if (!hoveredElement.IsMouseOver)
+				{
+					hoveredElement.IsMouseOver = true;
+					hoveredElement.HoveredStyle?.Invoke(hoveredElement);
 					hoveredElement.OnMouseEntered(e);
+				}
 
 				hoveredElement = hoveredElement.Parent;
 			}
@@ -51,7 +55,12 @@ namespace PointWars.UserInterface
 			while (unhoveredElement != null)
 			{
 				if (unhoveredElement.IsMouseOver)
+				{
+					unhoveredElement.IsMouseOver = false;
+					unhoveredElement.IsActive = false;
+					unhoveredElement.NormalStyle?.Invoke(unhoveredElement);
 					unhoveredElement.OnMouseLeft(e);
+				}
 
 				unhoveredElement = unhoveredElement.Parent;
 			}
@@ -64,7 +73,16 @@ namespace PointWars.UserInterface
 		{
 			while (element != null && !e.Handled)
 			{
+				if (element.CanBeFocused)
+				{
+					element.Focus();
+					e.Handled = true;
+				}
+
+				element.HandleInputEvent(e);
+				element.ActiveStyle?.Invoke(element);
 				element.OnMousePressed(e);
+
 				element = element.Parent;
 			}
 		}
@@ -76,7 +94,10 @@ namespace PointWars.UserInterface
 		{
 			while (element != null && !e.Handled)
 			{
+				element.HandleInputEvent(e);
+				element.HoveredStyle?.Invoke(element);
 				element.OnMouseReleased(e);
+
 				element = element.Parent;
 			}
 		}
@@ -88,7 +109,9 @@ namespace PointWars.UserInterface
 		{
 			while (element != null && !e.Handled)
 			{
+				element.HandleInputEvent(e);
 				element.OnKeyPressed(e);
+
 				element = element.Parent;
 			}
 		}
@@ -100,7 +123,9 @@ namespace PointWars.UserInterface
 		{
 			while (element != null && !e.Handled)
 			{
+				element.HandleInputEvent(e);
 				element.OnKeyReleased(e);
+
 				element = element.Parent;
 			}
 		}

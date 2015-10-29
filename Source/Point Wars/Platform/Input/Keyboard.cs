@@ -143,6 +143,21 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
+		///   Changes the text input area.
+		/// </summary>
+		/// <param name="area">The new text input area.</param>
+		internal static void ChangeTextInputArea(Rectangle area)
+		{
+			SDL_Rect rect;
+			rect.x = MathUtils.RoundIntegral(area.Left);
+			rect.y = MathUtils.RoundIntegral(area.Top);
+			rect.w = MathUtils.RoundIntegral(area.Width);
+			rect.h = MathUtils.RoundIntegral(area.Height);
+
+			SDL_SetTextInputRect(ref rect);
+		}
+
+		/// <summary>
 		///   Updates the keyboard state.
 		/// </summary>
 		internal void Update()

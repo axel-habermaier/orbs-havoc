@@ -28,6 +28,11 @@ namespace PointWars.Views
 	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
+	using Button = UserInterface.Controls.Button;
+	using Label = UserInterface.Controls.Label;
+	using TextAlignment = UserInterface.TextAlignment;
+	using Thickness = UserInterface.Thickness;
+	using UIElement = UserInterface.UIElement;
 
 	/// <summary>
 	///   Represents the application's main menu when no game session is active.
@@ -49,24 +54,25 @@ namespace PointWars.Views
 		{
 			IsActive = true;
 
-			var stackPanel = new StackPanel
+			RootElement.Child = new StackPanel
 			{
 				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center
+				VerticalAlignment = VerticalAlignment.Center,
+				Children =
+				{
+					new Label(Application.Name)
+					{
+						Font = Assets.Moonhouse80,
+						Margin = new Thickness(0, 0, 0, 30),
+					},
+					CreateButton("Start Game", () => { }),
+					CreateButton("Join Game", () => { }),
+					CreateButton("Options", () => { }),
+					CreateButton("Exit", Views.Exit),
+					new TextBox() {Background = Colors.CornflowerBlue},
+                    new TextBox() {Background = Colors.DarkRed}
+				}
 			};
-
-			stackPanel.Add(new Label(Application.Name)
-			{
-				Font = Assets.Moonhouse80,
-				Margin = new Thickness(0, 0, 0, 30),
-			});
-
-			stackPanel.Add(CreateButton("Start Game", () => { }));
-			stackPanel.Add(CreateButton("Join Game", () => { }));
-			stackPanel.Add(CreateButton("Options", () => { }));
-			stackPanel.Add(CreateButton("Exit", Views.Exit));
-
-			RootElement.Child = stackPanel;
 		}
 
 		/// <summary>

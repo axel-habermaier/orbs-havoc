@@ -36,27 +36,11 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		public event Action Click;
 
-//		/// <summary>
-//		///     Raises the Click event, setting the mouse event to handled. Additionally, sets the keyboard focus to the button.
-//		/// </summary>
-//		private static void OnMouseUp(object sender, MouseButtonEventArgs e)
-//		{
-//			var button = sender as Button;
-//			if (button == null || e.Button != MouseButton.Left)
-//				return;
-//
-//			e.Handled = true;
-//			button.RaiseEvent(ClickEvent, RoutedEventArgs.Default);
-//			button.Focus();
-//		}
-
 		/// <summary>
 		///   Invoked when a mouse button has been released while hovering the UI element.
 		/// </summary>
 		protected override void OnMouseReleased(MouseButtonEventArgs e)
 		{
-			base.OnMouseReleased(e);
-
 			if (e.Button != MouseButton.Left || e.Handled)
 				return;
 

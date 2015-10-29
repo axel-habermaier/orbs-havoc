@@ -41,6 +41,7 @@ namespace PointWars.UserInterface
 		private float _height = Single.NaN;
 		private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Stretch;
 		private Action<UIElement> _hoveredStyle;
+		private bool _isFocused;
 		private float _left = Single.NaN;
 		private Thickness _margin;
 		private float _maxHeight = Single.PositiveInfinity;
@@ -145,7 +146,7 @@ namespace PointWars.UserInterface
 				if (_foreground == value)
 					return;
 
-				HasInheritedFont = value == Colors.Transparent;
+				HasInheritedForeground = value == Colors.Transparent;
 				_foreground = value;
 
 				SetDirtyState(measure: true, arrange: true);
@@ -355,12 +356,23 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets or sets a value indicating whether the UI element can receive the keyboard focus.
 		/// </summary>
-		public bool Focusable { get; set; }
+		public bool IsFocusable { get; set; }
 
 		/// <summary>
 		///   Gets a value indicating whether the UI element currently has the keyboard focus.
 		/// </summary>
-		public bool IsFocused { get; private set; }
+		public bool IsFocused
+		{
+			get { return _isFocused; }
+			set
+			{
+				if (_isFocused == value)
+					return;
+
+				_isFocused = value;
+				OnFocusChanged();
+			}
+		}
 
 		/// <summary>
 		///   Gets or sets a value indicating whether the UI element participates in hit testing.
@@ -524,7 +536,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets a value indicating whether the UI element can receive the keyboard focus.
 		/// </summary>
-		internal bool CanBeFocused => IsAttachedToRoot && Focusable && IsVisible;
+		internal bool CanBeFocused => IsAttachedToRoot && IsFocusable && IsVisible;
 
 		/// <summary>
 		///   Gets the list of input bindings associated with this UI element.

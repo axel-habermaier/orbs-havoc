@@ -76,7 +76,7 @@
     <Compile Include="UserInterface\Controls\Label.cs" />
     <Compile Include="UserInterface\Controls\TextBox.cs" />
     <Compile Include="UserInterface\HorizontalAlignment.cs" />
-    <Compile Include="UserInterface\Input\Caret.cs" />
+    <Compile Include="UserInterface\Controls\Caret.cs" />
     <Compile Include="UserInterface\Input\ConfigurableBinding.cs" />
     <Compile Include="UserInterface\Cursor.cs" />
     <Compile Include="UserInterface\Input\InputBinding.cs" />

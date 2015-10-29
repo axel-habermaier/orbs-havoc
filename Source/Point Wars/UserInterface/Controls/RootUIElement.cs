@@ -36,6 +36,7 @@ namespace PointWars.UserInterface.Controls
 	/// </summary>
 	internal sealed class RootUIElement : Control, IDisposable
 	{
+		private UIElement _focusedElement;
 		private UIElement _hoveredElement;
 		private LogicalInputDevice _inputDevice;
 		private InputLayer _inputLayer;
@@ -48,8 +49,39 @@ namespace PointWars.UserInterface.Controls
 		{
 			IsAttachedToRoot = true;
 			IsVisible = true;
+			IsFocusable = true;
 			Font = Assets.DefaultFont;
 			Foreground = Colors.White;
+			FocusedElement = this;
+		}
+
+		/// <summary>
+		///   Gets the UI element that currently has the keyboard focus. Unless the focus has been shifted to another UI
+		///   element, it is the window itself.
+		/// </summary>
+		public UIElement FocusedElement
+		{
+			get
+			{
+				Assert.NotNull(_focusedElement);
+				return _focusedElement;
+			}
+			internal set
+			{
+				if (_focusedElement == value)
+					return;
+
+				if (value == null)
+					value = this;
+
+				if (_focusedElement != null)
+					_focusedElement.IsFocused = false;
+
+				_focusedElement = value;
+				_focusedElement.IsFocused = _isActive;
+
+				Log.DebugIf(false, "Focused element: {0}", _focusedElement.GetType().Name);
+			}
 		}
 
 		/// <summary>
@@ -74,6 +106,11 @@ namespace PointWars.UserInterface.Controls
 			// We have to check every frame for a new hovered element, as the UI might change at any time
 			// (due to animations, UI elements becoming visible/invisible, etc.).
 			UpdateHoveredElement(_inputDevice.Mouse.Position);
+
+			// We have to check every frame whether the focused element must be reset; it could have been removed
+			// or hidden since the last frame, among other things.
+			if (FocusedElement != this && !FocusedElement.CanBeFocused)
+				FocusedElement = null;
 
 			Measure(availableSize);
 			Arrange(new Rectangle(0, 0, availableSize));
@@ -107,18 +144,7 @@ namespace PointWars.UserInterface.Controls
 		private void InputLayerChanged(InputLayer inputLayer)
 		{
 			_isActive = (inputLayer & _inputLayer) == _inputLayer;
-		}
-
-		/// <summary>
-		///   Handles a text entered event.
-		/// </summary>
-		private void TextEntered(string text)
-		{
-			if (!_isActive || _hoveredElement == null)
-				return;
-
-			var args = TextInputEventArgs.Create(text);
-			OnTextEntered(_hoveredElement, args);
+			_focusedElement.IsFocused = _isActive;
 		}
 
 		/// <summary>
@@ -150,11 +176,11 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			if (!_isActive || _hoveredElement == null)
+			if (!_isActive || FocusedElement == this)
 				return;
 
 			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
-			OnKeyPressed(_hoveredElement, args);
+			OnKeyPressed(FocusedElement, args);
 		}
 
 		/// <summary>
@@ -162,11 +188,23 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			if (!_isActive || _hoveredElement == null)
+			if (!_isActive || FocusedElement == this)
 				return;
 
 			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
-			OnKeyReleased(_hoveredElement, args);
+			OnKeyReleased(FocusedElement, args);
+		}
+
+		/// <summary>
+		///   Handles a text entered event.
+		/// </summary>
+		private void TextEntered(string text)
+		{
+			if (!_isActive || FocusedElement == this)
+				return;
+
+			var args = TextInputEventArgs.Create(text);
+			OnTextEntered(FocusedElement, args);
 		}
 
 		/// <summary>

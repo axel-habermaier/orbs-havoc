@@ -26,107 +26,52 @@ namespace PointWars.UserInterface
 
 	public partial class UIElement
 	{
-		//		/// <summary>
-		//		///   Raised when a key is pressed while the UI element is focused.
-		//		/// </summary>
-		//		public event Action<KeyEventArgs> KeyDown;
-		//
-		//		/// <summary>
-		//		///   Raised when a key is released while the UI element is focused.
-		//		/// </summary>
-		//		public event Action<KeyEventArgs> KeyUp;
-		//
-		//		/// <summary>
-		//		///   Raised when the UI element gets text input.
-		//		/// </summary>
-		//		public event Action<TextInputEventArgs> TextInput;
-		//
-		//		/// <summary>
-		//		///   Raised when a mouse button is pressed while the mouse is over the UI element.
-		//		/// </summary>
-		//		public event Action<MouseButtonEventArgs> MouseDown;
-		//
-		//		/// <summary>
-		//		///   Raised when a mouse button is released while the mouse is over the UI element.
-		//		/// </summary>
-		//		public event Action<MouseButtonEventArgs> MouseUp;
-		//
-		//		/// <summary>
-		//		///   Raised when the mouse wheel has changed while the mouse is over the UI element.
-		//		/// </summary>
-		//		public event Action<MouseWheelEventArgs> MouseWheel;
-		//
-		//		/// <summary>
-		//		///   Raised when the mouse has moved while the mouse is over the UI element.
-		//		/// </summary>
-		//		public event Action<MouseEventArgs> MouseMove;
-		//
-		//		/// <summary>
-		//		///   Raised when the mouse has entered the bounds of the UI element.
-		//		/// </summary>
-		//		public event Action<MouseEventArgs> MouseEnter;
-		//
-		//		/// <summary>
-		//		///   Raised when the mouse has left the bounds of the UI element.
-		//		/// </summary>
-		//		public event Action<MouseEventArgs> MouseLeave;
 		/// <summary>
 		///   Invoked when the mouse has entered the UI element.
 		/// </summary>
-		protected virtual void OnMouseEntered(MouseEventArgs args)
+		protected virtual void OnMouseEntered(MouseEventArgs e)
 		{
-			IsMouseOver = true;
-			HoveredStyle?.Invoke(this);
 		}
 
 		/// <summary>
 		///   Invoked when the mouse has left the UI element.
 		/// </summary>
-		protected virtual void OnMouseLeft(MouseEventArgs args)
+		protected virtual void OnMouseLeft(MouseEventArgs e)
 		{
-			IsMouseOver = false;
-			IsActive = false;
-			NormalStyle?.Invoke(this);
 		}
 
 		/// <summary>
 		///   Invoked when a mouse button has been pressed while hovering the UI element.
 		/// </summary>
-		protected virtual void OnMousePressed(MouseButtonEventArgs args)
+		protected virtual void OnMousePressed(MouseButtonEventArgs e)
 		{
-			HandleInputEvent(args);
-			ActiveStyle?.Invoke(this);
 		}
 
 		/// <summary>
 		///   Invoked when a mouse button has been released while hovering the UI element.
 		/// </summary>
-		protected virtual void OnMouseReleased(MouseButtonEventArgs args)
+		protected virtual void OnMouseReleased(MouseButtonEventArgs e)
 		{
-			HandleInputEvent(args);
-			HoveredStyle?.Invoke(this);
 		}
 
 		/// <summary>
 		///   Invoked when a key has been pressed while the UI element is focused.
 		/// </summary>
-		protected virtual void OnKeyPressed(KeyEventArgs args)
+		protected virtual void OnKeyPressed(KeyEventArgs e)
 		{
-			HandleInputEvent(args);
 		}
 
 		/// <summary>
 		///   Invoked when a key has been released while the UI element is focused.
 		/// </summary>
-		protected virtual void OnKeyReleased(KeyEventArgs args)
+		protected virtual void OnKeyReleased(KeyEventArgs e)
 		{
-			HandleInputEvent(args);
 		}
 
 		/// <summary>
 		///   Invoked when a text has been entered while the UI element is focused.
 		/// </summary>
-		protected virtual void OnTextEntered(TextInputEventArgs args)
+		protected virtual void OnTextEntered(TextInputEventArgs e)
 		{
 		}
 
