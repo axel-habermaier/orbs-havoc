@@ -59,10 +59,10 @@ namespace PointWars.UserInterface.Controls
 			InputBindings.Add(new KeyBinding(Button2Clicked, Key.Escape, triggerMode: TriggerMode.OnDeactivation));
 
 			button1.Padding = new Thickness(0, 0, 3, 0);
-			Child = new Border
+			Content = new Border
 			{
 				Background = new Color(0xAA000000),
-				Child = new Border
+				Content = new Border
 				{
 					Font = Assets.Roboto14,
 					MaxWidth = 600,
@@ -71,14 +71,14 @@ namespace PointWars.UserInterface.Controls
 					VerticalAlignment = VerticalAlignment.Center,
 					BorderColor = new Color(0xFF055674),
 					Background = new Color(0xFF002033),
-					Child = new StackPanel
+					Content = new StackPanel
 					{
 						Children =
 						{
 							new Border
 							{
 								Background = new Color(0x33A1DDFF),
-								Child = new Label(title) { Margin = new Thickness(15, 7, 15, 7) }
+								Content = new Label(title) { Margin = new Thickness(15, 7, 15, 7) }
 							},
 							new Label(message)
 							{
@@ -158,16 +158,7 @@ namespace PointWars.UserInterface.Controls
 				Width = 70,
 				Margin = new Thickness(0, 0, 0, 3),
 				HorizontalAlignment = HorizontalAlignment.Center,
-				Child = new Border
-				{
-					Child = new Label(label) { TextAlignment = TextAlignment.Center },
-					BorderThickness = new Thickness(1),
-					BorderColor = new Color(0xFF055674),
-					NormalStyle = element => ((Border)element).Background = new Color(0x5F00588B),
-					HoveredStyle = element => ((Border)element).Background = new Color(0x5F0082CE),
-					ActiveStyle = element => ((Border)element).Background = new Color(0x5F009CF7),
-					Padding = new Thickness(7, 6, 7, 7)
-				}
+				Content = label
 			};
 
 			button.Click += clickHandler;

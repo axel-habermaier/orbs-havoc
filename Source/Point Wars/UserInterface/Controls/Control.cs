@@ -22,37 +22,93 @@
 
 namespace PointWars.UserInterface.Controls
 {
+	using System;
 	using Utilities;
 
 	/// <summary>
-	///   Represents a base class for templated UI elements.
+	///   Represents a base class for templated UI elements with a single logical child of any type as its content.
 	/// </summary>
 	public class Control : UIElement
 	{
-		private UIElement _child;
+		private static readonly Func<Control, UIElement> DefaultTemplate = control =>
+		{
+			var presenter = new ContentPresenter();
+			control.TemplateBinding = () => presenter.Content = control.Content;
+			return presenter;
+		};
 
 		private Thickness _padding;
+		private Func<Control, UIElement> _template;
+		private Action _templateBinding;
+		private UIElement _templateRoot;
 
 		/// <summary>
-		///   Gets or sets the UI element that is decorated.
+		///   Initializes a new instance.
 		/// </summary>
-		public UIElement Child
+		/// <param name="template">The template that should be used by the control.</param>
+		public Control(Func<Control, UIElement> template = null)
 		{
-			get { return _child; }
+			Template = template ?? DefaultTemplate;
+		}
+
+		/// <summary>
+		///   Gets or sets the template binding that copies property values from the control to its template root.
+		/// </summary>
+		public Action TemplateBinding
+		{
+			get { return _templateBinding; }
+			set
+			{
+				if (_templateBinding == value)
+					return;
+
+				_templateBinding = value;
+
+				if (!IsAttachedToRoot)
+					return;
+
+				if (_templateBinding != null)
+					RootElement.TemplateBindings.Add(_templateBinding);
+				else
+					RootElement.TemplateBindings.Remove(_templateBinding);
+			}
+		}
+
+		/// <summary>
+		///   Gets or sets the template that defines the control's appearance.
+		/// </summary>
+		public Func<Control, UIElement> Template
+		{
+			get
+			{
+				Assert.NotNull(_template, "No template has been set for the control.");
+				return _template;
+			}
 			set
 			{
 				Assert.ArgumentNotNull(value, nameof(value));
 
-				if (_child == value)
+				if (_template == value)
 					return;
 
-				_child?.ChangeParent(null);
-				_child = value;
-				_child?.ChangeParent(this);
-
+				_template = value;
 				SetDirtyState(measure: true, arrange: true);
+
+				_templateRoot?.ChangeParent(null);
+
+				if (value == null)
+					_templateRoot = null;
+				else
+					_templateRoot = value(this);
+
+				_templateRoot?.ChangeParent(this);
 			}
 		}
+
+		/// <summary>
+		///   Gets or sets the UI element that is decorated.
+		/// </summary>
+		public object Content { get; set; }
 
 		/// <summary>
 		///   Gets or sets the padding inside the border.
@@ -73,12 +129,12 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Gets the number of children for this visual.
 		/// </summary>
-		protected internal override int ChildrenCount => _child == null ? 0 : 1;
+		protected internal override int ChildrenCount => _templateRoot == null ? 0 : 1;
 
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all logical children of the UI element.
 		/// </summary>
-		protected override sealed Enumerator<UIElement> GetChildren() => Enumerator<UIElement>.FromItemOrEmpty(_child);
+		protected override sealed Enumerator<UIElement> GetChildren() => Enumerator<UIElement>.FromItemOrEmpty(_templateRoot);
 
 		/// <summary>
 		///   Gets the child at the specified index.
@@ -86,10 +142,10 @@ namespace PointWars.UserInterface.Controls
 		/// <param name="index">The zero-based index of the child that should be returned.</param>
 		protected internal override sealed UIElement GetChild(int index)
 		{
-			Assert.NotNull(_child);
+			Assert.NotNull(_templateRoot);
 			Assert.ArgumentSatisfies(index == 0, nameof(index), "The UI element has only one child.");
 
-			return _child;
+			return _templateRoot;
 		}
 
 		/// <summary>
@@ -102,13 +158,13 @@ namespace PointWars.UserInterface.Controls
 		/// </param>
 		protected override Size MeasureCore(Size availableSize)
 		{
-			if (_child == null)
+			if (_templateRoot == null)
 				return new Size();
 
 			availableSize = new Size(availableSize.Width - Padding.Width, availableSize.Height - Padding.Height);
-			_child.Measure(availableSize);
+			_templateRoot.Measure(availableSize);
 
-			return new Size(Child.DesiredSize.Width + Padding.Width, Child.DesiredSize.Height + Padding.Height);
+			return new Size(_templateRoot.DesiredSize.Width + Padding.Width, _templateRoot.DesiredSize.Height + Padding.Height);
 		}
 
 		/// <summary>
@@ -122,13 +178,31 @@ namespace PointWars.UserInterface.Controls
 		/// </param>
 		protected override Size ArrangeCore(Size finalSize)
 		{
-			if (_child == null)
+			if (_templateRoot == null)
 				return new Size();
 
 			finalSize = new Size(finalSize.Width - Padding.Width, finalSize.Height - Padding.Height);
-			_child.Arrange(new Rectangle(0, 0, finalSize));
+			_templateRoot.Arrange(new Rectangle(0, 0, finalSize));
 
-			return new Size(_child.RenderSize.Width + Padding.Width, _child.RenderSize.Height + Padding.Height);
+			return new Size(_templateRoot.RenderSize.Width + Padding.Width, _templateRoot.RenderSize.Height + Padding.Height);
+		}
+
+		/// <summary>
+		///   Invoked when the UI element is now (transitively) attached to the root of a tree.
+		/// </summary>
+		protected override void OnAttached()
+		{
+			if (_templateBinding != null)
+				RootElement.TemplateBindings.Add(_templateBinding);
+		}
+
+		/// <summary>
+		///   Invoked when the UI element is no longer (transitively) attached to the root of a tree.
+		/// </summary>
+		protected override void OnDetached()
+		{
+			if (_templateBinding != null)
+				RootElement.TemplateBindings.Remove(_templateBinding);
 		}
 	}
 }

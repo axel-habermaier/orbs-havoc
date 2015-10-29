@@ -101,27 +101,6 @@ namespace PointWars.UserInterface
 			}
 		}
 
-//		/// <summary>
-//		///   Sets the keyboard focus to this UI element if the element is focusable.
-//		/// </summary>
-//		private static void OnMouseDown(object sender, MouseButtonEventArgs e)
-//		{
-//			var element = sender as UIElement;
-//			if (element == null || !element.CanBeFocused)
-//				return;
-//
-//			element.Focus();
-//			e.Handled = true;
-//		}
-//
-//		/// <summary>
-//		///   Invokes any triggered input bindings of the UI element that raised the input event.
-//		/// </summary>
-//		private static void OnInputEvent(object sender, RoutedEventArgs e)
-//		{
-//			var element = sender as UIElement;
-//			element?._inputBindings?.HandleEvent(e);
-//		}
 
 		/// <summary>
 		///   Updates the UI element's visible state.
@@ -129,7 +108,7 @@ namespace PointWars.UserInterface
 		private void UpdateVisibleState()
 		{
 			var isVisible = Visibility == Visibility.Visible && IsAttachedToRoot &&
-							Parent != null && Parent.IsVisible;
+							((Parent != null && Parent.IsVisible) || this is RootUIElement);
 
 			if (IsVisible == isVisible)
 				return;
@@ -368,12 +347,19 @@ namespace PointWars.UserInterface
 
 			// The old parent's layout must be invalidated
 			Parent?.SetDirtyState(true, true);
-			Parent = parent;
 
 			if (parent != null)
+			{
+				// Add parent first, then attach
+				Parent = parent;
 				IsAttachedToRoot = parent.IsAttachedToRoot;
+			}
 			else
+			{
+				// Detach first, then remove parent
 				IsAttachedToRoot = false;
+				Parent = null;
+			}
 
 			// The new parent's layout must be invalidated and the visibility state must be recomputed
 			Parent?.SetDirtyState(true, true);
@@ -547,6 +533,22 @@ namespace PointWars.UserInterface
 		///   Gets an enumerator that can be used to enumerate all children of the UI element.
 		/// </summary>
 		protected abstract Enumerator<UIElement> GetChildren();
+
+		/// <summary>
+		///     Invoked when the UI element is now (transitively) attached to the root of a tree.
+		/// </summary>
+		protected virtual void OnAttached()
+		{
+		}
+
+	
+
+		/// <summary>
+		///     Invoked when the UI element is no longer (transitively) attached to the root of a tree.
+		/// </summary>
+		protected virtual void OnDetached()
+		{
+		}
 
 		/// <summary>
 		///   Draws the UI element using the given sprite batch.

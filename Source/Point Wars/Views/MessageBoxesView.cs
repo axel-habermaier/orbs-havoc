@@ -47,7 +47,7 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Initialize()
 		{
-			RootElement.Child = _areaPanel;
+			RootElement.Content = _areaPanel;
 		}
 
 		/// <summary>

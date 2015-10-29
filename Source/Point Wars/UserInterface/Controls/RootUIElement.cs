@@ -23,6 +23,7 @@
 namespace PointWars.UserInterface.Controls
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Numerics;
 	using Assets;
 	using Input;
@@ -47,13 +48,18 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		public RootUIElement()
 		{
-			IsAttachedToRoot = true;
 			IsVisible = true;
 			IsFocusable = true;
+			IsAttachedToRoot = true;
 			Font = Assets.DefaultFont;
 			Foreground = Colors.White;
 			FocusedElement = this;
 		}
+
+		/// <summary>
+		///   Gets the template bindings that are currently active within the tree.
+		/// </summary>
+		public List<Action> TemplateBindings { get; } = new List<Action>();
 
 		/// <summary>
 		///   Gets the UI element that currently has the keyboard focus. Unless the focus has been shifted to another UI
@@ -112,6 +118,12 @@ namespace PointWars.UserInterface.Controls
 			if (FocusedElement != this && !FocusedElement.CanBeFocused)
 				FocusedElement = null;
 
+			// Update all template bindings; uses a for loop as the collection might be modified during the iteration
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (var i = 0; i < TemplateBindings.Count; ++i)
+				TemplateBindings[i]();
+
+			// Update the layout of the tree
 			Measure(availableSize);
 			Arrange(new Rectangle(0, 0, availableSize));
 			UpdateVisualOffsets(Vector2.Zero);

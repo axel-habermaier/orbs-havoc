@@ -89,14 +89,14 @@ namespace PointWars.Views
 		public override void Initialize()
 		{
 			const float margin = 3;
-			RootElement.Child = new Border
+			RootElement.Content = new Border
 			{
 				Margin = new Thickness(5),
 				Background = new Color(0xAA000000),
 				Padding = new Thickness(10),
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Bottom,
-				Child = new StackPanel
+				Content = new StackPanel
 				{
 					Children =
 					{

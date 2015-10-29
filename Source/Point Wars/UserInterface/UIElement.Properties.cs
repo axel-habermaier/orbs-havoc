@@ -420,8 +420,15 @@ namespace PointWars.UserInterface
 				else
 					_state &= ~State.AttachedToRoot;
 
+				UpdateVisibleState();
+
 				foreach (var child in GetChildren())
 					child.IsAttachedToRoot = value;
+
+				if (value)
+					OnAttached();
+				else
+					OnDetached();
 			}
 		}
 

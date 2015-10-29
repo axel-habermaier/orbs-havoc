@@ -63,6 +63,7 @@
     <Compile Include="UserInterface\Controls\Border.cs" />
     <Compile Include="UserInterface\Controls\Button.cs" />
     <Compile Include="UserInterface\Controls\Canvas.cs" />
+    <Compile Include="UserInterface\Controls\ContentPresenter.cs" />
     <Compile Include="UserInterface\Controls\Control.cs" />
     <Compile Include="UserInterface\Controls\Dock.cs" />
     <Compile Include="UserInterface\Controls\DockPanel.cs" />

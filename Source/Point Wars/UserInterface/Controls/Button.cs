@@ -25,12 +25,44 @@ namespace PointWars.UserInterface.Controls
 	using System;
 	using Input;
 	using Platform.Input;
+	using Rendering;
 
 	/// <summary>
 	///   Represents a button control.
 	/// </summary>
 	public class Button : Control
 	{
+		private static readonly Func<Control, UIElement> DefaultTemplate = control =>
+		{
+			var presenter = new ContentPresenter
+			{
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center
+			};
+
+			var border = new Border
+			{
+				Content = presenter,
+				BorderThickness = new Thickness(1),
+				BorderColor = new Color(0xFF055674),
+				NormalStyle = element => ((Border)element).Background = new Color(0x5F00588B),
+				HoveredStyle = element => ((Border)element).Background = new Color(0x5F0082CE),
+				ActiveStyle = element => ((Border)element).Background = new Color(0x5F009CF7),
+				Padding = new Thickness(7, 6, 7, 7)
+			};
+
+			control.TemplateBinding = () => presenter.Content = control.Content;
+			return border;
+		};
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		public Button()
+			: base(DefaultTemplate)
+		{
+		}
+
 		/// <summary>
 		///   Raised when the button has been clicked.
 		/// </summary>

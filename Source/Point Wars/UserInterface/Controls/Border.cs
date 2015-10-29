@@ -26,7 +26,7 @@ namespace PointWars.UserInterface.Controls
 	using Rendering;
 
 	/// <summary>
-	///   Draws a border, a background, or both around another element.
+	///   Draws a border around another UI element.
 	/// </summary>
 	public class Border : Control
 	{

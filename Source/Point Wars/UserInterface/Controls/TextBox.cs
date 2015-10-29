@@ -61,7 +61,7 @@ namespace PointWars.UserInterface.Controls
 
 			Cursor = Assets.TextCursor;
 			IsFocusable = true;
-			Child = _label;
+			Content = _label;
 		}
 
 		/// <summary>

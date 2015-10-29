@@ -25,14 +25,8 @@ namespace PointWars.Views
 	using System;
 	using Assets;
 	using Platform.Input;
-	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
-	using Button = UserInterface.Controls.Button;
-	using Label = UserInterface.Controls.Label;
-	using TextAlignment = UserInterface.TextAlignment;
-	using Thickness = UserInterface.Thickness;
-	using UIElement = UserInterface.UIElement;
 
 	/// <summary>
 	///   Represents the application's main menu when no game session is active.
@@ -54,7 +48,7 @@ namespace PointWars.Views
 		{
 			IsActive = true;
 
-			RootElement.Child = new StackPanel
+			RootElement.Content = new StackPanel
 			{
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center,
@@ -68,9 +62,7 @@ namespace PointWars.Views
 					CreateButton("Start Game", () => { }),
 					CreateButton("Join Game", () => { }),
 					CreateButton("Options", () => { }),
-					CreateButton("Exit", Views.Exit),
-					new TextBox() {Background = Colors.CornflowerBlue},
-                    new TextBox() {Background = Colors.DarkRed}
+					CreateButton("Exit", Views.Exit)
 				}
 			};
 		}
@@ -84,16 +76,7 @@ namespace PointWars.Views
 			{
 				Font = Assets.Moonhouse24,
 				Width = 200,
-				Child = new Border
-				{
-					Child = new Label(label) { TextAlignment = TextAlignment.Center },
-					BorderThickness = new Thickness(1),
-					BorderColor = new Color(0xFF055674),
-					NormalStyle = element => ((Border)element).Background = new Color(0x5F00588B),
-					HoveredStyle = element => ((Border)element).Background = new Color(0x5F0082CE),
-					ActiveStyle = element => ((Border)element).Background = new Color(0x5F009CF7),
-					Padding = new Thickness(7, 6, 7, 7)
-				},
+				Content = label,
 				Margin = new Thickness(4),
 			};
 
