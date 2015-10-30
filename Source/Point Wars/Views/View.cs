@@ -83,6 +83,7 @@ namespace PointWars.Views
 					return;
 
 				_isActive = value;
+				RootElement.IsActive = value;
 
 				if (_isActive)
 				{

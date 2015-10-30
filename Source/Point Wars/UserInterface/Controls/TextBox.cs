@@ -82,7 +82,7 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Raised when the text contained in the text box has been changed.
 		/// </summary>
-		public event Action<string> TextChanged;
+		public Action<string> TextChanged;
 
 		/// <summary>
 		///   Invoked when a mouse button has been pressed while hovering the UI element.

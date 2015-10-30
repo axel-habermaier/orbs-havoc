@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -22,68 +22,19 @@
 
 namespace PointWars.Views
 {
-	using System;
-	using Assets;
 	using Platform.Input;
-	using Rendering;
-	using UserInterface;
-	using UserInterface.Controls;
 
 	/// <summary>
-	///   Represents the application's main menu when no game session is active.
+	///   Represents the application view of playing a game session.
 	/// </summary>
-	internal sealed class MainMenuView : View
+	internal sealed class GameSession : View
 	{
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		public MainMenuView()
-			: base(InputLayer.Menu)
+		public GameSession()
+			: base(InputLayer.Game)
 		{
-		}
-
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
-		{
-			IsActive = true;
-
-			RootElement.Content = new StackPanel
-			{
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				Children =
-				{
-					new Label
-					{
-						Text = Application.Name,
-						Font = Assets.Moonhouse80,
-						Margin = new Thickness(0, 0, 0, 30),
-					},
-					CreateButton("Start Game", () => { }),
-					CreateButton("Join Game", () => { }),
-					CreateButton("Options", () => { }),
-					CreateButton("Exit", Views.Exit)
-				}
-			};
-		}
-
-		/// <summary>
-		///   Creates a menu button.
-		/// </summary>
-		private static UIElement CreateButton(string label, Action onClick)
-		{
-			var button = new Button
-			{
-				Font = Assets.Moonhouse24,
-				Width = 200,
-				Content = label,
-				Margin = new Thickness(4),
-			};
-
-			button.Click += onClick;
-			return button;
 		}
 	}
 }

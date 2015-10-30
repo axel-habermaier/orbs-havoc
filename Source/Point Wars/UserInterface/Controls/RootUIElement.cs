@@ -56,6 +56,15 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
+		///   Gets or sets a value indicating whether the root element is currently active.
+		/// </summary>
+		public bool IsActive
+		{
+			get { return _isActive && (_inputDevice.InputLayer & _inputLayer) != 0; }
+			set { _isActive = value; }
+		}
+
+		/// <summary>
 		///   Gets the UI element that currently has the keyboard focus. Unless the focus has been shifted to another UI
 		///   element, it is the window itself.
 		/// </summary>
@@ -78,7 +87,7 @@ namespace PointWars.UserInterface.Controls
 					_focusedElement.IsFocused = false;
 
 				_focusedElement = value;
-				_focusedElement.IsFocused = _isActive;
+				_focusedElement.IsFocused = IsActive;
 
 				Log.DebugIf(false, "Focused element: {0}", _focusedElement.GetType().Name);
 			}
@@ -146,8 +155,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void InputLayerChanged(InputLayer inputLayer)
 		{
-			_isActive = (inputLayer & _inputLayer) == _inputLayer;
-			_focusedElement.IsFocused = _isActive;
+			_focusedElement.IsFocused = IsActive;
 		}
 
 		/// <summary>
@@ -155,7 +163,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MousePressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
-			if (!_isActive || _hoveredElement == null)
+			if (!IsActive)
 				return;
 
 			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, doubleClicked, _inputDevice.Keyboard.GetModifiers());
@@ -167,7 +175,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MouseReleased(MouseButton button, Vector2 position)
 		{
-			if (!_isActive || _hoveredElement == null)
+			if (!IsActive)
 				return;
 
 			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, false, _inputDevice.Keyboard.GetModifiers());
@@ -179,7 +187,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MouseWheel(MouseWheelDirection direction)
 		{
-			if (!_isActive || _hoveredElement == null)
+			if (!IsActive)
 				return;
 
 			var args = MouseWheelEventArgs.Create(_inputDevice.Mouse, direction, _inputDevice.Keyboard.GetModifiers());
@@ -191,7 +199,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			if (!_isActive || FocusedElement == this)
+			if (!IsActive)
 				return;
 
 			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
@@ -203,7 +211,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			if (!_isActive || FocusedElement == this)
+			if (!IsActive)
 				return;
 
 			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
@@ -215,7 +223,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void TextEntered(string text)
 		{
-			if (!_isActive || FocusedElement == this)
+			if (!IsActive || FocusedElement == this)
 				return;
 
 			var args = TextInputEventArgs.Create(text);
@@ -229,7 +237,7 @@ namespace PointWars.UserInterface.Controls
 		private void UpdateHoveredElement(Vector2 position)
 		{
 			UIElement hoveredElement = this;
-			if (_isActive && _inputDevice.Mouse.InsideWindow)
+			if (IsActive && _inputDevice.Mouse.InsideWindow)
 				hoveredElement = HitTest(new Vector2(position.X, position.Y), boundsTestOnly: false) ?? this;
 
 			if (hoveredElement == _hoveredElement)
@@ -239,7 +247,7 @@ namespace PointWars.UserInterface.Controls
 			OnMouseLeft(_hoveredElement, args);
 
 			_hoveredElement = hoveredElement;
-			Log.DebugIf(false, "Hovered element: {0}", _hoveredElement?.GetType().Name ?? "None");
+			Log.DebugIf(false, "Hovered element: {0}", _hoveredElement?.GetType().Name);
 
 			if (_hoveredElement == null)
 				return;

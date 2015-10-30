@@ -132,7 +132,8 @@ namespace PointWars.Scripting
 		/// </summary>
 		/// <param name="serverName">The name of the server that is displayed in the Join screen.</param>
 		/// <param name="port">The port the server should use to communicate with the clients.</param>
-		void StartServer([NotEmpty] string serverName = "Server", ushort port = NetworkProtocol.DefaultServerPort);
+		void StartServer([NotEmpty, MaximumLength(NetworkProtocol.ServerNameLength, checkUtf8Length: true)] string serverName = "Server",
+						 ushort port = NetworkProtocol.DefaultServerPort);
 
 		/// <summary>
 		///   Shuts down the currently running server.

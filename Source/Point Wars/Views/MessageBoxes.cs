@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -23,18 +23,56 @@
 namespace PointWars.Views
 {
 	using Platform.Input;
+	using Scripting;
+	using UserInterface.Controls;
+	using Utilities;
 
 	/// <summary>
-	///   Represents the application view of playing a game session.
+	///   Shows open message boxes.
 	/// </summary>
-	internal sealed class GameSessionView : View
+	internal sealed class MessageBoxes : View
 	{
+		private readonly AreaPanel _areaPanel = new AreaPanel();
+		private int _lastZIndex;
+
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		public GameSessionView()
-			: base(InputLayer.Game)
+		public MessageBoxes()
+			: base(InputLayer.MessageBox)
 		{
+		}
+
+		/// <summary>
+		///   Initializes the view.
+		/// </summary>
+		public override void Initialize()
+		{
+			RootElement.Content = _areaPanel;
+		}
+
+		/// <summary>
+		///   Shows the given message box.
+		/// </summary>
+		/// <param name="messageBox">The message box that should be shown.</param>
+		public void Show(MessageBox messageBox)
+		{
+			Assert.ArgumentNotNull(messageBox, nameof(messageBox));
+
+			messageBox.ZIndex = _lastZIndex++;
+			_areaPanel.Add(messageBox);
+
+			messageBox.Focus();
+			Commands.ShowConsole(false);
+		}
+
+		/// <summary>
+		///   Updates the view's state.
+		/// </summary>
+		public override void Update()
+		{
+			base.Update();
+			IsActive = _areaPanel.ChildrenCount != 0;
 		}
 	}
 }

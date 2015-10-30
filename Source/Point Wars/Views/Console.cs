@@ -38,7 +38,7 @@ namespace PointWars.Views
 	/// <summary>
 	///   Represents the console.
 	/// </summary>
-	internal sealed class ConsoleView : View
+	internal sealed class Console : View
 	{
 		/// <summary>
 		///   The maximum length of all console input or output.
@@ -84,7 +84,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		public ConsoleView()
+		public Console()
 			: base(InputLayer.Console)
 		{
 		}

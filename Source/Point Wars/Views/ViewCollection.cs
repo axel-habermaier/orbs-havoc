@@ -23,9 +23,13 @@
 namespace PointWars.Views
 {
 	using System;
+	using System.Net.Sockets;
 	using System.Numerics;
 	using Assets;
+	using Gameplay.Server;
+	using Network;
 	using Platform.Input;
+	using Platform.Logging;
 	using Platform.Memory;
 	using Rendering;
 	using Scripting;
@@ -57,9 +61,23 @@ namespace PointWars.Views
 				DebugOverlay,
 				MessageBoxes,
 				MainMenu,
+				JoinGameMenu,
 				GameSession
 			};
+
+			Commands.OnStartServer += StartServer;
+			Commands.OnStopServer += Server.Stop;
 		}
+
+		/// <summary>
+		///   Gets the server that hosts game sessions.
+		/// </summary>
+		public ServerGameSession Server { get; } = new ServerGameSession();
+
+		/// <summary>
+		/// Gets the menu that lets the user join a game.
+		/// </summary>
+		public JoinGameMenu JoinGameMenu { get; } = new JoinGameMenu();
 
 		/// <summary>
 		///   Gets the application the view collection belongs to.
@@ -69,27 +87,27 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets the main menu view.
 		/// </summary>
-		public MainMenuView MainMenu { get; } = new MainMenuView();
+		public MainMenu MainMenu { get; } = new MainMenu();
 
 		/// <summary>
 		///   Gets the view containing the messages boxes.
 		/// </summary>
-		public MessageBoxesView MessageBoxes { get; } = new MessageBoxesView();
+		public MessageBoxes MessageBoxes { get; } = new MessageBoxes();
 
 		/// <summary>
 		///   Gets the console view.
 		/// </summary>
-		public ConsoleView Console { get; } = new ConsoleView();
+		public Console Console { get; } = new Console();
 
 		/// <summary>
 		///   Gets the debug overlay view.
 		/// </summary>
-		public DebugOverlayView DebugOverlay { get; } = new DebugOverlayView();
+		public DebugOverlay DebugOverlay { get; } = new DebugOverlay();
 
 		/// <summary>
 		///   Gets the game session view.
 		/// </summary>
-		public GameSessionView GameSession { get; } = new GameSessionView();
+		public GameSession GameSession { get; } = new GameSession();
 
 		/// <summary>
 		///   Changes the size available to the views.
@@ -123,6 +141,8 @@ namespace PointWars.Views
 			// the view can decide to update its own active state, for instance
 			foreach (var view in _views)
 				view.Update();
+
+			Server.CheckForErrors();
 		}
 
 		/// <summary>
@@ -184,23 +204,42 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			Commands.OnStartServer -= StartServer;
+			Commands.OnStopServer -= Server.Stop;
+
+			Server.SafeDispose();
 			Application.Window.Closing -= Exit;
 			_views.SafeDisposeAll();
 		}
 
 		/// <summary>
-		///   Handles clicks on the Exit button.
+		///   Handles a request to exit the application.
 		/// </summary>
 		public void Exit()
 		{
-			Commands.ShowConsole(false);
-
 			if (_exitMessageBoxOpen)
 				return;
 
 			_exitMessageBoxOpen = true;
-			MessageBoxes.Show(MessageBox.ShowYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
+			MessageBoxes.Show(MessageBox.CreateYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
 				Commands.Exit, () => _exitMessageBoxOpen = false));
+		}
+
+		/// <summary>
+		///   Starts a new server game session.
+		/// </summary>
+		private void StartServer(string serverName, ushort serverPort)
+		{
+			try
+			{
+				Server.Start(serverName, serverPort);
+			}
+			catch (SocketException e)
+			{
+				var message = $"Unable to start the server: {e.GetMessage()}";
+				Log.Error("{0}", message);
+				MessageBoxes.Show(MessageBox.CreateError("Server Failure", message));
+			}
 		}
 	}
 }

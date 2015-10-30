@@ -58,6 +58,11 @@ namespace PointWars.Network
 		public const byte PlayerNameLength = 64;
 
 		/// <summary>
+		///   The maximum allowed byte length of an UTF8-encoded server name.
+		/// </summary>
+		public const byte ServerNameLength = 64;
+
+		/// <summary>
 		///   The maximum allowed byte length of an UTF8-encoded chat message.
 		/// </summary>
 		public const byte ChatMessageLength = 255;
@@ -96,11 +101,6 @@ namespace PointWars.Network
 		///   The frequency in Hz that determines how often a server sends a discovery message.
 		/// </summary>
 		public const float DiscoveryFrequency = 1;
-
-		/// <summary>
-		///   The multicast time to live that is used for automatic server discovery.
-		/// </summary>
-		public const int MulticastTimeToLive = 1;
 
 		/// <summary>
 		///   The multicast group that is used for automatic server discovery.

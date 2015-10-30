@@ -20,62 +20,73 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.UserInterface.Controls
+namespace PointWars.Views
 {
 	using System;
-	using Input;
+	using Assets;
 	using Platform.Input;
-	using Rendering;
+	using UserInterface;
+	using UserInterface.Controls;
 
 	/// <summary>
-	///   Represents a button control.
+	///   Represents the application's main menu when no game session is active.
 	/// </summary>
-	public class Button : Control
+	internal sealed class MainMenu : View
 	{
-		private static readonly ControlTemplate DefaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
-		{
-			contentPresenter = new ContentPresenter
-			{
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center
-			};
-
-			templateRoot = new Border
-			{
-				Child = contentPresenter,
-				BorderThickness = new Thickness(1),
-				BorderColor = new Color(0xFF055674),
-				NormalStyle = element => ((Border)element).Background = new Color(0x5F00588B),
-				HoveredStyle = element => ((Border)element).Background = new Color(0x5F0082CE),
-				ActiveStyle = element => ((Border)element).Background = new Color(0x5F009CF7),
-				Padding = new Thickness(7, 6, 7, 7)
-			};
-		};
-
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		public Button()
-			: base(DefaultTemplate)
+		public MainMenu()
+			: base(InputLayer.Menu)
 		{
 		}
 
 		/// <summary>
-		///   Raised when the button has been clicked.
+		///   Initializes the view.
 		/// </summary>
-		public Action Click;
+		public override void Initialize()
+		{
+			IsActive = true;
+
+			RootElement.Content = new StackPanel
+			{
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				Children =
+				{
+					new Label
+					{
+						Text = Application.Name,
+						Font = Assets.Moonhouse80,
+						Margin = new Thickness(0, 0, 0, 30),
+					},
+					CreateButton("Start Game", () => { }),
+					CreateButton("Join Game", () =>
+					{
+						Views.JoinGameMenu.IsActive = true;
+						IsActive = false;
+					}),
+					CreateButton("Options", () => { }),
+					CreateButton("Exit", Views.Exit)
+				}
+			};
+		}
 
 		/// <summary>
-		///   Invoked when a mouse button has been released while hovering the UI element.
+		///   Creates a menu button.
 		/// </summary>
-		protected override void OnMouseReleased(MouseButtonEventArgs e)
+		private static UIElement CreateButton(string label, Action onClick)
 		{
-			if (e.Button != MouseButton.Left || e.Handled)
-				return;
+			var button = new Button
+			{
+				Font = Assets.Moonhouse24,
+				Width = 200,
+				Content = label,
+				Margin = new Thickness(4),
+			};
 
-			e.Handled = true;
-			Click?.Invoke();
-			Focus();
+			button.Click += onClick;
+			return button;
 		}
 	}
 }

@@ -33,7 +33,7 @@ namespace PointWars.Views
 	/// <summary>
 	///   Shows statistics about the performance of the application and other information useful for debugging.
 	/// </summary>
-	internal sealed class DebugOverlayView : View
+	internal sealed class DebugOverlay : View
 	{
 		/// <summary>
 		///   The update frequency of the statistics in Hz.

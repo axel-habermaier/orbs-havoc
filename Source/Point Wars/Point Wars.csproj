@@ -52,6 +52,9 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gameplay\Server\ServerDiscovery.cs" />
+    <Compile Include="Gameplay\Server\ServerGameSession.cs" />
+    <Compile Include="Network\NetworkExtensions.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
@@ -102,11 +105,12 @@
     <Compile Include="UserInterface\Visibility.cs" />
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
-    <Compile Include="Views\ConsoleView.cs" />
-    <Compile Include="Views\DebugOverlayView.cs" />
-    <Compile Include="Views\GameSessionView.cs" />
-    <Compile Include="Views\MainMenuView.cs" />
-    <Compile Include="Views\MessageBoxesView.cs" />
+    <Compile Include="Views\Console.cs" />
+    <Compile Include="Views\DebugOverlay.cs" />
+    <Compile Include="Views\GameSession.cs" />
+    <Compile Include="Views\JoinGameMenu.cs" />
+    <Compile Include="Views\MainMenu.cs" />
+    <Compile Include="Views\MessageBoxes.cs" />
     <Compile Include="Views\View.cs" />
     <Compile Include="Network\NetworkProtocol.cs" />
     <Compile Include="Platform\Graphics\BlendState.cs" />

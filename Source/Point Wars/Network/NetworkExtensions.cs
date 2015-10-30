@@ -20,57 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Views
+namespace PointWars.Network
 {
-	using Platform.Input;
-	using UserInterface.Controls;
+	using System.Net;
+	using System.Net.Sockets;
 	using Utilities;
 
 	/// <summary>
-	///   Shows open message boxes.
+	///   Provides extension methods for network related .NET framework classes.
 	/// </summary>
-	internal sealed class MessageBoxesView : View
+	public static class NetworkExtensions
 	{
-		private readonly AreaPanel _areaPanel = new AreaPanel();
-		private int _lastZIndex;
-
 		/// <summary>
-		///   Initializes a new instance.
+		///   Gets the cleaned-up message of the given exception.
 		/// </summary>
-		public MessageBoxesView()
-			: base(InputLayer.MessageBox)
+		public static string GetMessage(this SocketException e)
 		{
+			Assert.ArgumentNotNull(e, nameof(e));
+
+			var message = e.Message.Trim();
+			if (!message.EndsWith("."))
+				message += ".";
+
+			return message;
 		}
 
 		/// <summary>
-		///   Initializes the view.
+		///   Initializes the socket to support multicasting.
 		/// </summary>
-		public override void Initialize()
+		public static void InitializeMulticasting(this Socket socket)
 		{
-			RootElement.Content = _areaPanel;
-		}
+			Assert.ArgumentNotNull(socket, nameof(socket));
 
-		/// <summary>
-		///   Shows the given message box.
-		/// </summary>
-		/// <param name="messageBox">The message box that should be shown.</param>
-		public void Show(MessageBox messageBox)
-		{
-			Assert.ArgumentNotNull(messageBox, nameof(messageBox));
-
-			messageBox.ZIndex = _lastZIndex++;
-			_areaPanel.Add(messageBox);
-
-			messageBox.Focus();
-		}
-
-		/// <summary>
-		///   Updates the view's state.
-		/// </summary>
-		public override void Update()
-		{
-			base.Update();
-			IsActive = _areaPanel.ChildrenCount != 0;
+			socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.AddMembership,
+				new IPv6MulticastOption(NetworkProtocol.MulticastGroup.Address));
+			socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.MulticastTimeToLive, 255);
+			socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+			socket.Bind(new IPEndPoint(IPAddress.IPv6Any, NetworkProtocol.MulticastGroup.Port));
 		}
 	}
 }

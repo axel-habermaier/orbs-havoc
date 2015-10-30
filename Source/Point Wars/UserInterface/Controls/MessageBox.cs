@@ -53,10 +53,10 @@ namespace PointWars.UserInterface.Controls
 
 			IsFocusable = true;
 
-			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Enter, triggerMode: TriggerMode.OnDeactivation));
-			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Space, triggerMode: TriggerMode.OnDeactivation));
-			InputBindings.Add(new KeyBinding(Button1Clicked, Key.NumpadEnter, triggerMode: TriggerMode.OnDeactivation));
-			InputBindings.Add(new KeyBinding(Button2Clicked, Key.Escape, triggerMode: TriggerMode.OnDeactivation));
+			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Enter));
+			InputBindings.Add(new KeyBinding(Button1Clicked, Key.Space));
+			InputBindings.Add(new KeyBinding(Button1Clicked, Key.NumpadEnter));
+			InputBindings.Add(new KeyBinding(Button2Clicked, Key.Escape));
 
 			button1.Padding = new Thickness(0, 0, 3, 0);
 			Content = new Border
@@ -107,7 +107,7 @@ namespace PointWars.UserInterface.Controls
 		/// <param name="title">The title of the message box.</param>
 		/// <param name="message">The message of the message box.</param>
 		/// <param name="onConfirmed">The continuation that should be executed when the user confirmed.</param>
-		public static MessageBox ShowOkCancel(string title, string message, Action onConfirmed)
+		public static MessageBox CreateOkCancel(string title, string message, Action onConfirmed)
 		{
 			var messageBox = new MessageBox { _continuation1 = onConfirmed };
 			var okButton = CreateButton("OK", messageBox.Button1Clicked);
@@ -124,7 +124,7 @@ namespace PointWars.UserInterface.Controls
 		/// <param name="message">The message of the message box.</param>
 		/// <param name="yesContinuation">The continuation that should be executed when the user pressed the Yes button.</param>
 		/// <param name="noContinuation">The continuation that should be executed when the user pressed the No button.</param>
-		public static MessageBox ShowYesNo(string title, string message, Action yesContinuation, Action noContinuation = null)
+		public static MessageBox CreateYesNo(string title, string message, Action yesContinuation, Action noContinuation = null)
 		{
 			var messageBox = new MessageBox { _continuation1 = yesContinuation, _continuation2 = noContinuation };
 			var yesButton = CreateButton("Yes", messageBox.Button1Clicked);
@@ -139,7 +139,7 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		/// <param name="title">The title of the message box.</param>
 		/// <param name="message">The message of the message box.</param>
-		public static MessageBox ShowError(string title, string message)
+		public static MessageBox CreateError(string title, string message)
 		{
 			var messageBox = new MessageBox();
 			var okButton = CreateButton("OK", messageBox.Button1Clicked);
@@ -193,6 +193,10 @@ namespace PointWars.UserInterface.Controls
 			Assert.NotNull(panel, "Expected to message box's parent to be a panel.");
 
 			panel.Remove(this);
+
+			// Ensure that the previous message box now has the focus, if there is any
+			if (panel.Children.Count > 0)
+				panel.Children[panel.Children.Count - 1].Focus();
 		}
 	}
 }
