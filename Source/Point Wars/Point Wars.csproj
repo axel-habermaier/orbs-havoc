@@ -98,7 +98,6 @@
     <Compile Include="UserInterface\TextWrapping.cs" />
     <Compile Include="UserInterface\Thickness.cs" />
     <Compile Include="UserInterface\UIElement.cs" />
-    <Compile Include="UserInterface\UIElement.Events.cs" />
     <Compile Include="UserInterface\UIElement.Properties.cs" />
     <Compile Include="UserInterface\UIElementCollection.cs" />
     <Compile Include="UserInterface\VerticalAlignment.cs" />
@@ -189,7 +188,6 @@
     <Compile Include="UserInterface\Font.cs" />
     <Compile Include="Rendering\Quad.cs" />
     <Compile Include="Rendering\SpriteBatch.cs" />
-    <Compile Include="Rendering\TextRenderer.cs" />
     <Compile Include="Scripting\Binding.cs" />
     <Compile Include="Scripting\BindingCollection.cs" />
     <Compile Include="Scripting\CommandLine.cs" />

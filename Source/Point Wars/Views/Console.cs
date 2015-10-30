@@ -72,7 +72,7 @@ namespace PointWars.Views
 		private static readonly Color DebugInfoColor = new Color(1.0f, 0.0f, 1.0f, 1.0f);
 		private readonly StackPanel _contentPanel = new StackPanel { VerticalAlignment = VerticalAlignment.Bottom, MinWidth = 200 };
 		private readonly string[] _history = new string[MaxHistory];
-		private readonly TextBox _input = new TextBox { MaxLength = MaxLength, Dock = Dock.Bottom, AutoFocus = true};
+		private readonly TextBox _input = new TextBox { MaxLength = MaxLength, Dock = Dock.Bottom, AutoFocus = true };
 		private int _autoCompletionIndex;
 		private string[] _autoCompletionList;
 		private int _historyIndex;
@@ -121,8 +121,7 @@ namespace PointWars.Views
 		public override void Update()
 		{
 			// Make sure the text box never loses focus while the console is active
-			if (IsActive)
-				_input.Focus();
+			_input.Focus();
 		}
 
 		/// <summary>
@@ -203,7 +202,6 @@ namespace PointWars.Views
 
 			_layoutRoot = new Border
 			{
-				Height = 0, // Reduces flickering when the console is opened for the first time
 				Background = new Color(0xEE222222),
 				VerticalAlignment = VerticalAlignment.Top,
 				Child = new DockPanel

@@ -147,10 +147,11 @@ namespace PointWars.Views
 		/// </summary>
 		public void Update()
 		{
-			// We always update all views, regardless of whether they're currently active; this way,
-			// the view can decide to update its own active state, for instance
 			foreach (var view in _views)
-				view.Update();
+			{
+				if (view.IsActive)
+					view.Update();
+			}
 
 			RootElement.Update(Application.Window.Size);
 			Server.CheckForErrors();

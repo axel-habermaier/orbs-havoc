@@ -113,10 +113,9 @@ namespace PointWars.Views
 				}
 			};
 
-			Cvars.ShowDebugOverlayChanged += ChangeActivation;
 			Cvars.VsyncChanged += OnVsyncChanged;
 
-			ChangeActivation();
+			IsActive = true;
 			UpdateStatistics();
 
 			_timer.Timeout += UpdateStatistics;
@@ -149,21 +148,10 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Changes the view's activation state.
-		/// </summary>
-		private void ChangeActivation()
-		{
-			IsActive = Cvars.ShowDebugOverlay;
-		}
-
-		/// <summary>
 		///   Updates the view's state.
 		/// </summary>
 		public override void Update()
 		{
-			if (!IsActive)
-				return;
-
 			if (!_gcCheck.IsAlive)
 			{
 				++_garbageCollections;
@@ -173,6 +161,8 @@ namespace PointWars.Views
 
 			_cpuFrameTime.AddMeasurement(_cpuUpdateTime.LastValue + _cpuRenderTime.LastValue);
 			_timer.Update();
+
+			RootElement.Visibility = Cvars.ShowDebugOverlay ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		/// <summary>
@@ -202,7 +192,6 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Cvars.ShowDebugOverlayChanged -= ChangeActivation;
 			Cvars.VsyncChanged -= OnVsyncChanged;
 			_timer.Timeout -= UpdateStatistics;
 		}

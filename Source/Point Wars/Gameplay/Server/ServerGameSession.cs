@@ -24,7 +24,6 @@ namespace PointWars.Gameplay.Server
 {
 	using System;
 	using System.Linq;
-	using System.Net.Sockets;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using Platform.Logging;
@@ -139,11 +138,11 @@ namespace PointWars.Gameplay.Server
 		{
 			try
 			{
-				if (_task != null)
-				{
-					_cancellation.Cancel();
-					_task.Wait();
-				}
+				if (!IsRunning)
+					return;
+
+				_cancellation.Cancel();
+				_task.Wait();
 			}
 			catch (AggregateException e)
 			{
@@ -168,7 +167,7 @@ namespace PointWars.Gameplay.Server
 			}
 			finally
 			{
-				if (_task != null)
+				if (IsRunning)
 					Log.Info("Server stopped.");
 
 				//			_clients.SafeDispose();

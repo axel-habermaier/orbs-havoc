@@ -24,7 +24,6 @@ namespace PointWars.Views
 {
 	using System;
 	using Assets;
-	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
 

@@ -31,7 +31,6 @@ namespace PointWars.Views
 	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
-	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
 	using UserInterface.Input;
@@ -150,9 +149,6 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Update()
 		{
-			if (!IsActive)
-				return;
-
 			// Remove all servers that have timed out
 			for (var i = 0; i < _discoveredServers.Count; ++i)
 			{
