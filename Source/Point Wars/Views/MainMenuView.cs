@@ -25,6 +25,7 @@ namespace PointWars.Views
 	using System;
 	using Assets;
 	using Platform.Input;
+	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
 
@@ -63,7 +64,7 @@ namespace PointWars.Views
 					CreateButton("Start Game", () => { }),
 					CreateButton("Join Game", () => { }),
 					CreateButton("Options", () => { }),
-					CreateButton("Exit", Views.Exit),
+					CreateButton("Exit", Views.Exit)
 				}
 			};
 		}

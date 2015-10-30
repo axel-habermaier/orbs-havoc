@@ -47,7 +47,7 @@ namespace PointWars.Views
 
 		/// <summary>
 		///   The maximum number of labels that the console can display. If all labels are used and another label is
-		///   added, the oldest labels is removed.
+		///   added, the oldest label is removed.
 		/// </summary>
 		private const int MaxLabels = 2048;
 
@@ -90,22 +90,14 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Invoked when the view should be activated.
-		/// </summary>
-		protected override void Activate()
-		{
-			_input.Focus();
-		}
-
-		/// <summary>
 		///   Invoked when the view should be deactivated.
 		/// </summary>
 		protected override void Deactivate()
 		{
-			_input.Text = String.Empty;
-
-			_historyIndex = _numHistory;
-			_autoCompletionList = null;
+			// Clear the input and remove the keyboard focus; otherwise, characters might be entered when 
+			// the console key is pressed
+			ClearInput();
+			RootElement.Focus();
 		}
 
 		/// <summary>
@@ -122,7 +114,93 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Initialize()
 		{
-			_input.TextChanged += TextChanged;
+			foreach (var logEntry in LogEntryCache.LogEntries)
+				AddLogEntry(logEntry);
+
+			LogEntryCache.DisableCaching();
+
+			InputDevice.Keyboard.KeyPressed += OnKeyPressed;
+			Commands.OnShowConsole += ShowConsole;
+			Log.OnLog += AddLogEntry;
+
+			LoadHistory();
+			InitializeUI();
+		}
+
+		/// <summary>
+		///   Updates the view's state.
+		/// </summary>
+		public override void Update()
+		{
+			base.Update();
+
+			// Make sure the text box never loses focus while the console is active
+			if (IsActive)
+				_input.Focus();
+		}
+
+		/// <summary>
+		///   Disposes the object, releasing all managed and unmanaged resources.
+		/// </summary>
+		protected override void OnDisposing()
+		{
+			base.OnDisposing();
+
+			InputDevice.Keyboard.KeyPressed -= OnKeyPressed;
+			Commands.OnShowConsole -= ShowConsole;
+			Log.OnLog -= AddLogEntry;
+
+			var builder = new StringBuilder();
+			for (var i = 0; i < _numHistory; ++i)
+				builder.Append(_history[i]).Append("\n");
+
+			try
+			{
+				FileSystem.WriteAllText(HistoryFileName, builder.ToString());
+				Log.Info("Console history has been persisted.");
+			}
+			catch (FileSystemException e)
+			{
+				Log.Error("Failed to persist console history: {0}", e.Message);
+			}
+		}
+
+		/// <summary>
+		///   Tries to load the console history.
+		/// </summary>
+		private void LoadHistory()
+		{
+			try
+			{
+				var content = FileSystem.ReadAllText(HistoryFileName);
+				var history = content.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+				history = history.Where(h => h.Length <= MaxLength).ToArray();
+
+				var count = history.Length;
+				var offset = 0;
+
+				if (count > _history.Length)
+				{
+					offset = count - _history.Length;
+					count = _history.Length;
+				}
+
+				Array.Copy(history, offset, _history, 0, count);
+				_numHistory = count;
+				_historyIndex = _numHistory;
+			}
+			catch (FileSystemException e)
+			{
+				Log.Error("Failed to load console history: {0}", e.Message);
+			}
+		}
+
+		/// <summary>
+		///   Initializes the console's UI elements.
+		/// </summary>
+		private void InitializeUI()
+		{
+			_input.TextChanged += OnTextChanged;
 			_input.InputBindings.AddRange(new[]
 			{
 				new KeyBinding(ClearInput, Key.Escape),
@@ -153,7 +231,11 @@ namespace PointWars.Views
 						new DockPanel
 						{
 							Dock = Dock.Bottom,
-							Children = { new Label { Text = PromptToken, Dock = Dock.Left }, _input }
+							Children =
+							{
+								new Label { Text = PromptToken, Dock = Dock.Left },
+								_input
+							}
 						},
 						_scrollViewer
 					}
@@ -173,38 +255,6 @@ namespace PointWars.Views
 				new MouseWheelBinding(_scrollViewer.ScrollUp, MouseWheelDirection.Up),
 				new MouseWheelBinding(_scrollViewer.ScrollDown, MouseWheelDirection.Down)
 			});
-
-			foreach (var logEntry in LogEntryCache.LogEntries)
-				AddLogEntry(logEntry);
-
-			LogEntryCache.DisableCaching();
-			InputDevice.Keyboard.KeyPressed += OnKeyPressed;
-			Commands.OnShowConsole += ShowConsole;
-			Log.OnLog += AddLogEntry;
-
-			try
-			{
-				var content = FileSystem.ReadAllText(HistoryFileName);
-				var history = content.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-				history = history.Where(h => h.Length <= MaxLength).ToArray();
-
-				var count = history.Length;
-				var offset = 0;
-
-				if (count > _history.Length)
-				{
-					offset = count - _history.Length;
-					count = _history.Length;
-				}
-
-				Array.Copy(history, offset, _history, 0, count);
-				_numHistory = count;
-				_historyIndex = _numHistory;
-			}
-			catch (FileSystemException e)
-			{
-				Log.Error("Failed to load console history: {0}", e.Message);
-			}
 		}
 
 		/// <summary>
@@ -239,7 +289,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Handles changes to the input text.
 		/// </summary>
-		private void TextChanged(string text)
+		private void OnTextChanged(string text)
 		{
 			// Reset the auto completion list if an input was made other than setting the current completion value
 			if (_settingAutoCompletedInput)
@@ -260,7 +310,7 @@ namespace PointWars.Views
 			if (_numHistory != 0 && _history[_numHistory - 1] == _input.Text)
 				return;
 
-			// If the history is full, remove the oldest entry; this could be implemented more efficiently
+			// If the history is full, remove the oldest entry
 			if (_numHistory == MaxHistory)
 			{
 				Array.Copy(_history, 1, _history, 0, MaxHistory - 1);
@@ -272,32 +322,6 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		protected override void OnDisposing()
-		{
-			base.OnDisposing();
-
-			InputDevice.Keyboard.KeyPressed -= OnKeyPressed;
-			Commands.OnShowConsole -= ShowConsole;
-			Log.OnLog -= AddLogEntry;
-
-			var builder = new StringBuilder();
-			for (var i = 0; i < _numHistory; ++i)
-				builder.Append(_history[i]).Append("\n");
-
-			try
-			{
-				FileSystem.WriteAllText(HistoryFileName, builder.ToString());
-				Log.Info("Console history has been persisted.");
-			}
-			catch (FileSystemException e)
-			{
-				Log.Error("Failed to persist console history: {0}", e.Message);
-			}
-		}
-
-		/// <summary>
 		///   Shows or hides the console.
 		/// </summary>
 		private void ShowConsole(bool show)
@@ -306,7 +330,7 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Handles for console key presses.
+		///   Handles console key presses.
 		/// </summary>
 		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
@@ -345,10 +369,9 @@ namespace PointWars.Views
 			}
 			else
 			{
-				// If all labels are used, remove the oldest one by shifting the entire array up one
-				// index and add the oldest label to the end of the array (in order to re-use the label instance for 
-				// the new message); this is not terribly efficient, however, it's good enough for now because it 
-				// only copies MaxLabels * ReferenceSize bytes instead of relayouting all lines.
+				// If all labels are used, remove the oldest one by shifting the entire children collection up one
+				// index and add the oldest label to the end of the collection (in order to re-use the label instance for 
+				// the new message); this way, we only copy MaxLabels * ReferenceSize bytes and avoid relayouting all lines.
 
 				var label = (Label)_contentPanel.Children[0];
 				_contentPanel.Children.RemoveAt(0);

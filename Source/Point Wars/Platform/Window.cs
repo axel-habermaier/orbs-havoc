@@ -369,7 +369,7 @@ namespace PointWars.Platform
 						var count = 0;
 						while (e.text.text[count] != 0)
 							++count;
-
+						
 						TextEntered?.Invoke(new string((sbyte*)e.text.text, 0, count, Encoding.UTF8));
 						break;
 					case SDL_MOUSEBUTTONDOWN:

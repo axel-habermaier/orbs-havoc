@@ -54,6 +54,11 @@ namespace PointWars.Platform.Input
 		private readonly Window _window;
 
 		/// <summary>
+		///   The current input layer used by the input device.
+		/// </summary>
+		private InputLayer _inputLayer;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window that should be associated with this logical device.</param>
@@ -69,7 +74,20 @@ namespace PointWars.Platform.Input
 		/// <summary>
 		///   Gets the current input layer used by the input device.
 		/// </summary>
-		public InputLayer InputLayer { get; private set; }
+		public InputLayer InputLayer
+		{
+			get { return _inputLayer; }
+			private set
+			{
+				if (_inputLayer == value)
+					return;
+
+				_inputLayer = value;
+
+				Log.Debug("Input layer has been switched to '{0}'.", value);
+				InputLayerChanged?.Invoke(value);
+			}
+		}
 
 		/// <summary>
 		///   Gets the keyboard that is associated with this logical device.
@@ -148,6 +166,9 @@ namespace PointWars.Platform.Input
 			{
 				if ((int)layer == 1 << i)
 				{
+					if (layer == InputLayer.Console)
+						InputLayer = layer;
+
 					_layerStates[i].Activate();
 					return;
 				}
@@ -195,14 +216,7 @@ namespace PointWars.Platform.Input
 			{
 				if (_layerStates[i - 1].Count > 0)
 				{
-					var layer = (InputLayer)(1 << (i - 1));
-					if (InputLayer != layer)
-					{
-						Log.Debug("Input layer has been switched to '{0}'.", layer);
-						InputLayerChanged?.Invoke(layer);
-					}
-
-					InputLayer = layer;
+					InputLayer = (InputLayer)(1 << (i - 1));
 					break;
 				}
 			}
