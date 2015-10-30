@@ -65,7 +65,6 @@
     <Compile Include="UserInterface\Controls\ControlTemplate.cs" />
     <Compile Include="UserInterface\Controls\Dock.cs" />
     <Compile Include="UserInterface\Controls\DockPanel.cs" />
-    <Compile Include="UserInterface\Controls\MessageBox.cs" />
     <Compile Include="UserInterface\Controls\Orientation.cs" />
     <Compile Include="UserInterface\Controls\Panel.cs" />
     <Compile Include="UserInterface\Controls\RootUIElement.cs" />
@@ -79,6 +78,7 @@
     <Compile Include="UserInterface\Cursor.cs" />
     <Compile Include="UserInterface\Input\InputBinding.cs" />
     <Compile Include="UserInterface\Input\InputEventArgs.cs" />
+    <Compile Include="UserInterface\Input\InputEventKind.cs" />
     <Compile Include="UserInterface\Input\KeyBinding.cs" />
     <Compile Include="UserInterface\Input\KeyEventArgs.cs" />
     <Compile Include="UserInterface\Input\MouseButtonEventArgs.cs" />
@@ -125,13 +125,11 @@
     <Compile Include="Platform\Graphics\Texture.cs" />
     <Compile Include="Platform\Graphics\Vertex.cs" />
     <Compile Include="Platform\Graphics\VertexLayout.cs" />
-    <Compile Include="Platform\Input\ActivationState.cs" />
     <Compile Include="Platform\Input\BinaryInputTrigger.cs" />
     <Compile Include="Platform\Input\BinaryInputTriggerType.cs" />
     <Compile Include="Platform\Input\ConfigurableInput.cs" />
     <Compile Include="Platform\Input\ConfigurableTrigger.cs" />
     <Compile Include="Platform\Input\InputExtensions.cs" />
-    <Compile Include="Platform\Input\InputLayer.cs" />
     <Compile Include="Platform\Input\InputState.cs" />
     <Compile Include="Platform\Input\InputTrigger.cs" />
     <Compile Include="Platform\Input\Keyboard.cs" />

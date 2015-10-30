@@ -69,21 +69,29 @@ namespace PointWars.UserInterface.Input
 		public KeyModifiers Modifiers { get; private set; }
 
 		/// <summary>
+		///   Indicates whether the event was raised because of a key being released or pressed.
+		/// </summary>
+		public InputEventKind Kind { get; private set; }
+
+		/// <summary>
 		///   Initializes a cached instance.
 		/// </summary>
 		/// <param name="keyboard">The keyboard device that raised the event.</param>
 		/// <param name="key">The key that was pressed or released.</param>
 		/// <param name="scanCode">The key's scan code.</param>
-		internal static KeyEventArgs Create(Keyboard keyboard, Key key, ScanCode scanCode)
+		/// <param name="kind">Indicates whether the event was raised because of a key being released or pressed.</param>
+		internal static KeyEventArgs Create(Keyboard keyboard, Key key, ScanCode scanCode, InputEventKind kind)
 		{
 			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
 			Assert.ArgumentInRange(scanCode, nameof(scanCode));
+			Assert.ArgumentInRange(kind, nameof(kind));
 
 			CachedInstance.Handled = false;
 			CachedInstance.Keyboard = keyboard;
 			CachedInstance.Key = key;
 			CachedInstance.ScanCode = scanCode;
 			CachedInstance.Modifiers = keyboard.GetModifiers();
+			CachedInstance.Kind = kind;
 
 			return CachedInstance;
 		}

@@ -128,7 +128,7 @@ namespace PointWars.Gameplay.Server
 					Thread.Sleep(1);
 				}
 			}, token);
-			
+
 			Log.Info("Server started.");
 		}
 

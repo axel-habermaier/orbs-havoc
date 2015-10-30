@@ -23,6 +23,7 @@
 namespace PointWars.UserInterface.Controls
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Numerics;
 	using Assets;
 	using Input;
@@ -34,34 +35,35 @@ namespace PointWars.UserInterface.Controls
 	/// <summary>
 	///   Represents the root element of all visual trees within an application.
 	/// </summary>
-	internal sealed class RootUIElement : Control, IDisposable
+	internal sealed class RootUIElement : AreaPanel, IDisposable
 	{
+		private readonly List<UIElement> _focusedElements = new List<UIElement>();
+		private readonly LogicalInputDevice _inputDevice;
 		private UIElement _focusedElement;
 		private UIElement _hoveredElement;
-		private LogicalInputDevice _inputDevice;
-		private InputLayer _inputLayer;
-		private bool _isActive;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		public RootUIElement()
+		/// <param name="inputDevice">The input device that should be used for input handling.</param>
+		public RootUIElement(LogicalInputDevice inputDevice)
 		{
+			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
+
 			IsVisible = true;
 			IsFocusable = true;
 			IsAttachedToRoot = true;
 			Font = Assets.DefaultFont;
 			Foreground = Colors.White;
 			FocusedElement = this;
-		}
 
-		/// <summary>
-		///   Gets or sets a value indicating whether the root element is currently active.
-		/// </summary>
-		public bool IsActive
-		{
-			get { return _isActive && (_inputDevice.InputLayer & _inputLayer) != 0; }
-			set { _isActive = value; }
+			_inputDevice = inputDevice;
+			_inputDevice.Mouse.Pressed += MousePressed;
+			_inputDevice.Mouse.Released += MouseReleased;
+			_inputDevice.Mouse.Wheel += MouseWheel;
+			_inputDevice.Keyboard.KeyPressed += KeyPressed;
+			_inputDevice.Keyboard.KeyReleased += KeyReleased;
+			_inputDevice.Keyboard.TextEntered += TextEntered;
 		}
 
 		/// <summary>
@@ -87,9 +89,16 @@ namespace PointWars.UserInterface.Controls
 					_focusedElement.IsFocused = false;
 
 				_focusedElement = value;
-				_focusedElement.IsFocused = IsActive;
+				_focusedElement.IsFocused = true;
+
+				if (_focusedElement != this)
+				{
+					_focusedElements.Add(value);
+					CleanFocusedElements();
+				}
 
 				Log.DebugIf(false, "Focused element: {0}", _focusedElement.GetType().Name);
+				Log.DebugIf(_focusedElements.Count > 32, "Unusually large focused elements history stack.");
 			}
 		}
 
@@ -98,7 +107,6 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		public void Dispose()
 		{
-			_inputDevice.InputLayerChanged -= InputLayerChanged;
 			_inputDevice.Mouse.Pressed -= MousePressed;
 			_inputDevice.Mouse.Released -= MouseReleased;
 			_inputDevice.Mouse.Wheel -= MouseWheel;
@@ -120,7 +128,7 @@ namespace PointWars.UserInterface.Controls
 			// We have to check every frame whether the focused element must be reset; it could have been removed
 			// or hidden since the last frame, among other things.
 			if (FocusedElement != this && !FocusedElement.CanBeFocused)
-				FocusedElement = null;
+				ResetFocusedElement();
 
 			// Update the layout of the tree
 			Measure(availableSize);
@@ -129,45 +137,14 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Initializes the UI context.
-		/// </summary>
-		/// <param name="inputDevice">The input device that should be used for input handling.</param>
-		/// <param name="inputLayer">The input layer that must be active for the UI to receive any input.</param>
-		public void Initialize(LogicalInputDevice inputDevice, InputLayer inputLayer)
-		{
-			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
-			Assert.ArgumentInRange(inputLayer, nameof(inputLayer));
-
-			_inputLayer = inputLayer;
-			_inputDevice = inputDevice;
-
-			_inputDevice.InputLayerChanged += InputLayerChanged;
-			_inputDevice.Mouse.Pressed += MousePressed;
-			_inputDevice.Mouse.Released += MouseReleased;
-			_inputDevice.Mouse.Wheel += MouseWheel;
-			_inputDevice.Keyboard.KeyPressed += KeyPressed;
-			_inputDevice.Keyboard.KeyReleased += KeyReleased;
-			_inputDevice.Keyboard.TextEntered += TextEntered;
-		}
-
-		/// <summary>
-		///   Handles changes to the input layer.
-		/// </summary>
-		private void InputLayerChanged(InputLayer inputLayer)
-		{
-			_focusedElement.IsFocused = IsActive;
-		}
-
-		/// <summary>
 		///   Handles a mouse pressed event.
 		/// </summary>
 		private void MousePressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
-			if (!IsActive)
-				return;
+			var modifiers = _inputDevice.Keyboard.GetModifiers();
+			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, doubleClicked, modifiers, InputEventKind.Down);
 
-			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, doubleClicked, _inputDevice.Keyboard.GetModifiers());
-			OnMousePressed(_hoveredElement, args);
+			OnMouseDown(_hoveredElement, args);
 		}
 
 		/// <summary>
@@ -175,11 +152,10 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MouseReleased(MouseButton button, Vector2 position)
 		{
-			if (!IsActive)
-				return;
+			var modifiers = _inputDevice.Keyboard.GetModifiers();
+			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, false, modifiers, InputEventKind.Up);
 
-			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, false, _inputDevice.Keyboard.GetModifiers());
-			OnMouseReleased(_hoveredElement, args);
+			OnMouseUp(_hoveredElement, args);
 		}
 
 		/// <summary>
@@ -187,9 +163,6 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MouseWheel(MouseWheelDirection direction)
 		{
-			if (!IsActive)
-				return;
-
 			var args = MouseWheelEventArgs.Create(_inputDevice.Mouse, direction, _inputDevice.Keyboard.GetModifiers());
 			OnMouseWheel(_hoveredElement, args);
 		}
@@ -199,11 +172,8 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			if (!IsActive)
-				return;
-
-			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
-			OnKeyPressed(FocusedElement, args);
+			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode, InputEventKind.Down);
+			OnKeyDown(FocusedElement, args);
 		}
 
 		/// <summary>
@@ -211,11 +181,8 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
-			if (!IsActive)
-				return;
-
-			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode);
-			OnKeyReleased(FocusedElement, args);
+			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode, InputEventKind.Up);
+			OnKeyUp(FocusedElement, args);
 		}
 
 		/// <summary>
@@ -223,9 +190,6 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void TextEntered(string text)
 		{
-			if (!IsActive || FocusedElement == this)
-				return;
-
 			var args = TextInputEventArgs.Create(text);
 			OnTextEntered(FocusedElement, args);
 		}
@@ -237,14 +201,14 @@ namespace PointWars.UserInterface.Controls
 		private void UpdateHoveredElement(Vector2 position)
 		{
 			UIElement hoveredElement = this;
-			if (IsActive && _inputDevice.Mouse.InsideWindow)
+			if (_inputDevice.Mouse.InsideWindow)
 				hoveredElement = HitTest(new Vector2(position.X, position.Y), boundsTestOnly: false) ?? this;
 
 			if (hoveredElement == _hoveredElement)
 				return;
 
 			var args = MouseEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard.GetModifiers());
-			OnMouseLeft(_hoveredElement, args);
+			OnMouseLeave(_hoveredElement, args);
 
 			_hoveredElement = hoveredElement;
 			Log.DebugIf(false, "Hovered element: {0}", _hoveredElement?.GetType().Name);
@@ -252,7 +216,43 @@ namespace PointWars.UserInterface.Controls
 			if (_hoveredElement == null)
 				return;
 
-			OnMouseEntered(_hoveredElement, args);
+			OnMouseEnter(_hoveredElement, args);
+		}
+
+		/// <summary>
+		///   Resets the focused element to the first focusable previously focused element. If none exists, the
+		///   closest focusable element in the tree is focused. Otherwise, the focus is set to the window.
+		/// </summary>
+		private void ResetFocusedElement()
+		{
+			// Focus the first previously focused element, if one exists
+			while (_focusedElements.Count > 0)
+			{
+				var last = _focusedElements.Count - 1;
+				var focusedElement = _focusedElements[last];
+				_focusedElements.RemoveAt(last);
+
+				if (!focusedElement.CanBeFocused)
+					continue;
+
+				FocusedElement = focusedElement;
+				return;
+			}
+
+			// Otherwise, just focus to root element
+			FocusedElement = this;
+		}
+
+		/// <summary>
+		///   Removes all previously focused elements that are no longer part of the visual tree.
+		/// </summary>
+		private void CleanFocusedElements()
+		{
+			for (var i = _focusedElements.Count; i > 0; --i)
+			{
+				if (!_focusedElements[i - 1].IsAttachedToRoot)
+					_focusedElements.RemoveAt(i - 1);
+			}
 		}
 	}
 }

@@ -43,9 +43,8 @@ namespace PointWars.UserInterface.Input
 		/// </summary>
 		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
 		/// <param name="cvar">The configurable input cvar that should trigger the binding.</param>
-		/// <param name="triggerMode">Determines when the input binding should be triggered.</param>
-		public ConfigurableBinding(Action callback, Cvar<ConfigurableInput> cvar, TriggerMode triggerMode = TriggerMode.OnActivation)
-			: base(callback, triggerMode)
+		public ConfigurableBinding(Action callback, Cvar<ConfigurableInput> cvar)
+			: base(callback)
 		{
 			Assert.ArgumentNotNull(cvar, nameof(cvar));
 			_cvar = cvar;
@@ -67,12 +66,12 @@ namespace PointWars.UserInterface.Input
 				{
 					case TriggerMode.OnActivation:
 						return keyEventArgs.Key == _cvar.Value.Key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
-							   keyEventArgs.KeyState.WentDown;
+							   keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.KeyState.WentDown;
 					case TriggerMode.Repeatedly:
 						return keyEventArgs.Key == _cvar.Value.Key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
-							   keyEventArgs.KeyState.IsRepeated;
+							   keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.KeyState.IsRepeated;
 					case TriggerMode.OnDeactivation:
-						return keyEventArgs.KeyState.WentUp && keyEventArgs.Key == _cvar.Value.Key &&
+						return keyEventArgs.Kind == InputEventKind.Up && keyEventArgs.Key == _cvar.Value.Key &&
 							   keyEventArgs.Modifiers == _cvar.Value.Modifiers;
 					default:
 						Log.Die("Unknown trigger mode.");
@@ -90,10 +89,10 @@ namespace PointWars.UserInterface.Input
 				{
 					case TriggerMode.OnActivation:
 					case TriggerMode.Repeatedly:
-						return mouseEventArgs.ButtonState.WentDown &&
+						return mouseEventArgs.Kind == InputEventKind.Down &&
 							   (mouseEventArgs.Button == _cvar.Value.MouseButton && mouseEventArgs.Modifiers == _cvar.Value.Modifiers);
 					case TriggerMode.OnDeactivation:
-						return mouseEventArgs.ButtonState.WentUp &&
+						return mouseEventArgs.Kind == InputEventKind.Up &&
 							   (mouseEventArgs.Button == _cvar.Value.MouseButton || mouseEventArgs.Modifiers != _cvar.Value.Modifiers);
 					default:
 						Log.Die("Unknown trigger mode.");

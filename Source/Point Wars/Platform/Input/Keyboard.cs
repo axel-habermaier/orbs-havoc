@@ -33,11 +33,6 @@ namespace PointWars.Platform.Input
 	public class Keyboard : DisposableObject
 	{
 		/// <summary>
-		///   A value indicating whether the keyboard provides text input.
-		/// </summary>
-		private static ActivationState _textInput = new ActivationState();
-
-		/// <summary>
 		///   The key states.
 		/// </summary>
 		private readonly InputState[] _states = new InputState[SDL_NUM_SCANCODES];
@@ -78,13 +73,13 @@ namespace PointWars.Platform.Input
 		/// </summary>
 		internal static bool TextInputEnabled
 		{
-			get { return _textInput.Count != 0; }
+			get { return SDL_IsTextInputActive() != 0; }
 			set
 			{
-				if (value)
-					_textInput.Activate();
-				else
-					_textInput.Deactivate();
+				if (value && !TextInputEnabled)
+					SDL_StartTextInput();
+				else if (!value && TextInputEnabled)
+					SDL_StopTextInput();
 			}
 		}
 
@@ -164,13 +159,6 @@ namespace PointWars.Platform.Input
 		{
 			for (var i = 0; i < _states.Length; ++i)
 				_states[i].Update();
-
-			_textInput.Update();
-
-			if (TextInputEnabled && SDL_IsTextInputActive() == 0)
-				SDL_StartTextInput();
-			else if (!TextInputEnabled && SDL_IsTextInputActive() != 0)
-				SDL_StopTextInput();
 		}
 
 		/// <summary>

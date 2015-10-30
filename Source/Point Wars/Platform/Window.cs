@@ -289,11 +289,8 @@ namespace PointWars.Platform
 		/// <summary>
 		///   Toggles between fullscreen and windowed mode when ALT+Enter is pressed.
 		/// </summary>
-		private void ToggleFullscreen(SDL_Keysym key)
+		public void ToggleFullscreen()
 		{
-			if ((key.sym != Key.Enter && key.sym != Key.NumpadEnter) || (key.mod & KeyModifiers.LeftAlt) != KeyModifiers.LeftAlt)
-				return;
-
 			if (Mode == WindowMode.Fullscreen)
 			{
 				if (SDL_SetWindowFullscreen(_window, 0) != 0)
@@ -360,7 +357,6 @@ namespace PointWars.Platform
 					}
 					case SDL_KEYDOWN:
 						KeyPressed?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);
-						ToggleFullscreen(e.key.keysym);
 						break;
 					case SDL_KEYUP:
 						KeyReleased?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);

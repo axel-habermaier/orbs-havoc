@@ -41,9 +41,8 @@ namespace PointWars.UserInterface.Input
 		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
 		/// <param name="key">The key that should activate the binding.</param>
 		/// <param name="modifiers">The key modifiers that must be pressed for the binding to trigger.</param>
-		/// <param name="triggerMode">Determines when the input binding should be triggered.</param>
-		public KeyBinding(Action callback, Key key, KeyModifiers modifiers = KeyModifiers.None, TriggerMode triggerMode = TriggerMode.OnActivation)
-			: base(callback, triggerMode)
+		public KeyBinding(Action callback, Key key, KeyModifiers modifiers = KeyModifiers.None)
+			: base(callback)
 		{
 			Assert.ArgumentInRange(key, nameof(key));
 
@@ -64,11 +63,13 @@ namespace PointWars.UserInterface.Input
 			switch (TriggerMode)
 			{
 				case TriggerMode.OnActivation:
-					return keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.WentDown;
+					return keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.KeyState.WentDown &&
+						   keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers;
 				case TriggerMode.Repeatedly:
-					return keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.IsRepeated;
+					return keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.KeyState.IsRepeated &&
+						   keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers;
 				case TriggerMode.OnDeactivation:
-					return keyEventArgs.KeyState.WentUp && keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers;
+					return keyEventArgs.Kind == InputEventKind.Up && keyEventArgs.Key == _key && keyEventArgs.Modifiers == _modifiers;
 				default:
 					Log.Die("Unknown trigger mode.");
 					return false;

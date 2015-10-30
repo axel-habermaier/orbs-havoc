@@ -48,10 +48,8 @@ namespace PointWars.UserInterface.Input
 		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
 		/// <param name="scanCode">The scan code of the key that should activate the binding.</param>
 		/// <param name="modifiers">The key modifiers that must be pressed for the binding to trigger.</param>
-		/// <param name="triggerMode">Determines when the input binding should be triggered.</param>
-		public ScanCodeBinding(Action callback, ScanCode scanCode, KeyModifiers modifiers = KeyModifiers.None,
-							   TriggerMode triggerMode = TriggerMode.OnActivation)
-			: base(callback, triggerMode)
+		public ScanCodeBinding(Action callback, ScanCode scanCode, KeyModifiers modifiers = KeyModifiers.None)
+			: base(callback)
 		{
 			Assert.ArgumentInRange(scanCode, nameof(scanCode));
 
@@ -72,11 +70,13 @@ namespace PointWars.UserInterface.Input
 			switch (TriggerMode)
 			{
 				case TriggerMode.OnActivation:
-					return keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.WentDown;
+					return keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.ScanCode == _scanCode &&
+						   keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.WentDown;
 				case TriggerMode.Repeatedly:
-					return keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.IsRepeated;
+					return keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.ScanCode == _scanCode &&
+						   keyEventArgs.Modifiers == _modifiers && keyEventArgs.KeyState.IsRepeated;
 				case TriggerMode.OnDeactivation:
-					return keyEventArgs.KeyState.WentUp && keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers;
+					return keyEventArgs.Kind == InputEventKind.Up && keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers;
 				default:
 					Log.Die("Unknown trigger mode.");
 					return false;

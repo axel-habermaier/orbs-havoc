@@ -38,21 +38,13 @@ namespace PointWars.Platform.Input
 	public class LogicalInput
 	{
 		/// <summary>
-		///   The input layer(s) that must be active for the input to be triggered.
-		/// </summary>
-		private readonly InputLayer _layers;
-
-		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="trigger">The trigger that triggers the logical input.</param>
-		/// <param name="layers">The input layer(s) that must be active for the input to be triggered.</param>
-		public LogicalInput(InputTrigger trigger, InputLayer layers)
+		public LogicalInput(InputTrigger trigger)
 		{
 			Assert.ArgumentNotNull(trigger, nameof(trigger));
-
 			Trigger = trigger;
-			_layers = layers;
 		}
 
 		/// <summary>
@@ -61,16 +53,13 @@ namespace PointWars.Platform.Input
 		/// <param name="configurableInput">The configurable input that triggers the logical input.</param>
 		/// <param name="keyTriggerType">Determines the type of a key input trigger.</param>
 		/// <param name="mouseTriggerType">Determines the type of a mouse input trigger.</param>
-		/// <param name="layers">The input layer(s) that must be active for the input to be triggered.</param>
-		public LogicalInput(Cvar<ConfigurableInput> configurableInput, KeyTriggerType keyTriggerType, MouseTriggerType mouseTriggerType,
-							InputLayer layers)
+		public LogicalInput(Cvar<ConfigurableInput> configurableInput, KeyTriggerType keyTriggerType, MouseTriggerType mouseTriggerType)
 		{
 			Assert.ArgumentNotNull(configurableInput, nameof(configurableInput));
 			Assert.ArgumentInRange(keyTriggerType, nameof(keyTriggerType));
 			Assert.ArgumentInRange(mouseTriggerType, nameof(mouseTriggerType));
 
 			Trigger = new ConfigurableTrigger(configurableInput, keyTriggerType, mouseTriggerType);
-			_layers = layers;
 		}
 
 		/// <summary>
@@ -107,9 +96,10 @@ namespace PointWars.Platform.Input
 		///   Evaluates the input's trigger and stores the result in the IsTriggered property.
 		/// </summary>
 		/// <param name="device">The logical input device that should be used to evaluate trigger.</param>
-		internal void Update(LogicalInputDevice device)
+		/// <param name="textInputEnabled">Indicates whether text input is currently enabled.</param>
+		internal void Update(LogicalInputDevice device, bool textInputEnabled)
 		{
-			IsTriggered = (_layers & device.InputLayer) != 0 && Trigger.Evaluate(device);
+			IsTriggered = !textInputEnabled && Trigger.Evaluate(device);
 		}
 	}
 }

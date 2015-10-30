@@ -29,7 +29,7 @@ namespace PointWars.UserInterface.Controls
 	/// <summary>
 	///   Allows each child to take up the entire area of the panel.
 	/// </summary>
-	public sealed class AreaPanel : Panel
+	public class AreaPanel : Panel
 	{
 		/// <summary>
 		///   Computes and returns the desired size of the element given the available space allocated by the parent UI element.

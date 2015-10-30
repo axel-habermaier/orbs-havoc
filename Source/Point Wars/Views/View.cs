@@ -25,8 +25,7 @@ namespace PointWars.Views
 	using Platform;
 	using Platform.Input;
 	using Platform.Memory;
-	using Rendering;
-	using UserInterface.Controls;
+	using UserInterface;
 	using Utilities;
 
 	/// <summary>
@@ -35,21 +34,7 @@ namespace PointWars.Views
 	internal abstract class View : DisposableObject
 	{
 		private bool _isActive;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="inputLayer">The input layer that should be activated and deactivated with the view.</param>
-		protected View(InputLayer inputLayer = InputLayer.None)
-		{
-			Assert.ArgumentInRange(inputLayer, nameof(inputLayer));
-			InputLayer = inputLayer;
-		}
-
-		/// <summary>
-		///   Gets the input layer used by the view.
-		/// </summary>
-		public InputLayer InputLayer { get; }
+		private UIElement _rootElement;
 
 		/// <summary>
 		///   Gets or sets the view collection the view belongs to.
@@ -57,9 +42,24 @@ namespace PointWars.Views
 		public ViewCollection Views { get; set; }
 
 		/// <summary>
-		///   Gets the context for the view's UI elements.
+		///   Gets or sets the root UI element of the view.
 		/// </summary>
-		public RootUIElement RootElement { get; } = new RootUIElement();
+		public UIElement RootElement
+		{
+			get { return _rootElement; }
+			set
+			{
+				_rootElement = value;
+
+				if (_rootElement != null)
+				{
+					Views.RootElement.Add(_rootElement);
+					_rootElement.Visibility = IsActive ? Visibility.Visible : Visibility.Collapsed;
+				}
+				else
+					Views.RootElement.Remove(_rootElement);
+			}
+		}
 
 		/// <summary>
 		///   Gets the window the view is drawn in.
@@ -83,18 +83,14 @@ namespace PointWars.Views
 					return;
 
 				_isActive = value;
-				RootElement.IsActive = value;
+
+				if (RootElement != null)
+					RootElement.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
 
 				if (_isActive)
-				{
 					Activate();
-					InputDevice.ActivateLayer(InputLayer);
-				}
 				else
-				{
 					Deactivate();
-					InputDevice.DeactivateLayer(InputLayer);
-				}
 			}
 		}
 
@@ -132,17 +128,6 @@ namespace PointWars.Views
 		/// </summary>
 		public virtual void Update()
 		{
-			if (IsActive)
-				RootElement.Update(Window.Size);
-		}
-
-		/// <summary>
-		///   Draws the view's contents.
-		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public virtual void Draw(SpriteBatch spriteBatch)
-		{
-			RootElement.Draw(spriteBatch);
 		}
 
 		/// <summary>
@@ -150,7 +135,6 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			RootElement.SafeDispose();
 		}
 	}
 }

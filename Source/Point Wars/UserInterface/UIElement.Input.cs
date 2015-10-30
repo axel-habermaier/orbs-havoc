@@ -32,7 +32,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse entered event.
 		/// </summary>
-		protected static void OnMouseEntered(UIElement hoveredElement, MouseEventArgs e)
+		protected static void OnMouseEnter(UIElement hoveredElement, MouseEventArgs e)
 		{
 			while (hoveredElement != null)
 			{
@@ -40,7 +40,7 @@ namespace PointWars.UserInterface
 				{
 					hoveredElement.IsMouseOver = true;
 					hoveredElement.HoveredStyle?.Invoke(hoveredElement);
-					hoveredElement.OnMouseEntered(e);
+					hoveredElement.OnMouseEnter(e);
 				}
 
 				hoveredElement = hoveredElement.Parent;
@@ -50,7 +50,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse left event.
 		/// </summary>
-		protected static void OnMouseLeft(UIElement unhoveredElement, MouseEventArgs e)
+		protected static void OnMouseLeave(UIElement unhoveredElement, MouseEventArgs e)
 		{
 			while (unhoveredElement != null)
 			{
@@ -59,7 +59,7 @@ namespace PointWars.UserInterface
 					unhoveredElement.IsMouseOver = false;
 					unhoveredElement.IsActive = false;
 					unhoveredElement.NormalStyle?.Invoke(unhoveredElement);
-					unhoveredElement.OnMouseLeft(e);
+					unhoveredElement.OnMouseLeave(e);
 				}
 
 				unhoveredElement = unhoveredElement.Parent;
@@ -69,8 +69,25 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse pressed event.
 		/// </summary>
-		protected static void OnMousePressed(UIElement element, MouseButtonEventArgs e)
+		protected static void OnPreviewMouseDown(UIElement element, MouseButtonEventArgs e)
 		{
+			if (element.Parent != null)
+				OnPreviewMouseDown(element.Parent, e);
+
+			if (e.Handled)
+				return;
+
+			element.OnPreviewMouseDown(e);
+			element.HandleInputEvent(e, isPreview: true);
+		}
+
+		/// <summary>
+		///   Handles a mouse pressed event.
+		/// </summary>
+		protected static void OnMouseDown(UIElement element, MouseButtonEventArgs e)
+		{
+			OnPreviewMouseDown(element, e);
+
 			while (element != null && !e.Handled)
 			{
 				if (element.CanBeFocused)
@@ -79,9 +96,9 @@ namespace PointWars.UserInterface
 					e.Handled = true;
 				}
 
-				element.HandleInputEvent(e);
+				element.HandleInputEvent(e, isPreview: false);
 				element.ActiveStyle?.Invoke(element);
-				element.OnMousePressed(e);
+				element.OnMouseDown(e);
 
 				element = element.Parent;
 			}
@@ -90,16 +107,48 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse released event.
 		/// </summary>
-		protected static void OnMouseReleased(UIElement element, MouseButtonEventArgs e)
+		protected static void OnPreviewMouseUp(UIElement element, MouseButtonEventArgs e)
 		{
+			if (element.Parent != null)
+				OnPreviewMouseUp(element.Parent, e);
+
+			if (e.Handled)
+				return;
+
+			element.OnPreviewMouseUp(e);
+			element.HandleInputEvent(e, isPreview: true);
+		}
+
+		/// <summary>
+		///   Handles a mouse released event.
+		/// </summary>
+		protected static void OnMouseUp(UIElement element, MouseButtonEventArgs e)
+		{
+			OnPreviewMouseUp(element, e);
+
 			while (element != null && !e.Handled)
 			{
-				element.HandleInputEvent(e);
+				element.HandleInputEvent(e, isPreview: false);
 				element.HoveredStyle?.Invoke(element);
-				element.OnMouseReleased(e);
+				element.OnMouseUp(e);
 
 				element = element.Parent;
 			}
+		}
+
+		/// <summary>
+		///   Handles a mouse released event.
+		/// </summary>
+		protected static void OnPreviewMouseWheel(UIElement element, MouseWheelEventArgs e)
+		{
+			if (element.Parent != null)
+				OnPreviewMouseWheel(element.Parent, e);
+
+			if (e.Handled)
+				return;
+
+			element.OnPreviewMouseWheel(e);
+			element.HandleInputEvent(e, isPreview: true);
 		}
 
 		/// <summary>
@@ -107,9 +156,11 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnMouseWheel(UIElement element, MouseWheelEventArgs e)
 		{
+			OnPreviewMouseWheel(element, e);
+
 			while (element != null && !e.Handled)
 			{
-				element.HandleInputEvent(e);
+				element.HandleInputEvent(e, isPreview: false);
 				element.OnMouseWheel(e);
 
 				element = element.Parent;
@@ -117,31 +168,77 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Handles a mouse released event.
+		/// </summary>
+		protected static void OnPreviewKeyDown(UIElement element, KeyEventArgs e)
+		{
+			if (element.Parent != null)
+				OnPreviewKeyDown(element.Parent, e);
+
+			if (e.Handled)
+				return;
+
+			element.OnPreviewKeyDown(e);
+			element.HandleInputEvent(e, isPreview: true);
+		}
+
+		/// <summary>
 		///   Handles a key pressed event.
 		/// </summary>
-		protected static void OnKeyPressed(UIElement element, KeyEventArgs e)
+		protected static void OnKeyDown(UIElement element, KeyEventArgs e)
 		{
+			OnPreviewKeyDown(element, e);
+
 			while (element != null && !e.Handled)
 			{
-				element.HandleInputEvent(e);
-				element.OnKeyPressed(e);
+				element.HandleInputEvent(e, isPreview: false);
+				element.OnKeyDown(e);
 
 				element = element.Parent;
 			}
 		}
 
 		/// <summary>
+		///   Handles a mouse released event.
+		/// </summary>
+		protected static void OnPreviewKeyUp(UIElement element, KeyEventArgs e)
+		{
+			if (element.Parent != null)
+				OnPreviewKeyUp(element.Parent, e);
+
+			if (e.Handled)
+				return;
+
+			element.OnPreviewKeyUp(e);
+			element.HandleInputEvent(e, isPreview: true);
+		}
+
+		/// <summary>
 		///   Handles a key released event.
 		/// </summary>
-		protected static void OnKeyReleased(UIElement element, KeyEventArgs e)
+		protected static void OnKeyUp(UIElement element, KeyEventArgs e)
 		{
+			OnPreviewKeyUp(element, e);
+
 			while (element != null && !e.Handled)
 			{
-				element.HandleInputEvent(e);
-				element.OnKeyReleased(e);
+				element.HandleInputEvent(e, isPreview: false);
+				element.OnKeyUp(e);
 
 				element = element.Parent;
 			}
+		}
+
+		/// <summary>
+		///   Handles a mouse released event.
+		/// </summary>
+		protected static void OnPreviewTextEntered(UIElement element, TextInputEventArgs e)
+		{
+			if (element.Parent != null)
+				OnPreviewTextEntered(element.Parent, e);
+
+			if (!e.Handled)
+				element.OnPreviewTextEntered(e);
 		}
 
 		/// <summary>
@@ -149,6 +246,8 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnTextEntered(UIElement element, TextInputEventArgs e)
 		{
+			OnPreviewTextEntered(element, e);
+
 			while (element != null && !e.Handled)
 			{
 				element.OnTextEntered(e);

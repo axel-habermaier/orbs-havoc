@@ -51,7 +51,7 @@ namespace PointWars.UserInterface.Input
 		/// </param>
 		/// <param name="modifiers">The key modifiers that must be pressed for the binding to trigger.</param>
 		public MouseWheelBinding(Action callback, MouseWheelDirection? direction, KeyModifiers modifiers = KeyModifiers.None)
-			: base(callback, TriggerMode.OnActivation)
+			: base(callback)
 		{
 			_direction = direction;
 			_modifiers = modifiers;

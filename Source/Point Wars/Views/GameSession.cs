@@ -22,7 +22,7 @@
 
 namespace PointWars.Views
 {
-	using Platform.Input;
+	using Rendering;
 
 	/// <summary>
 	///   Represents the application view of playing a game session.
@@ -30,10 +30,10 @@ namespace PointWars.Views
 	internal sealed class GameSession : View
 	{
 		/// <summary>
-		///   Initializes a new instance.
+		///   Draws the game session.
 		/// </summary>
-		public GameSession()
-			: base(InputLayer.Game)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
+		public void Draw(SpriteBatch spriteBatch)
 		{
 		}
 	}

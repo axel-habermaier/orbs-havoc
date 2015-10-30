@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,55 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Input
+namespace PointWars.UserInterface.Input
 {
-	using System;
-	using Utilities;
-
 	/// <summary>
-	///   Represents an input activation state with deferred updates. The state is considered active for as long as Count != 0.
+	///   Describes the kind of an input event.
 	/// </summary>
-	internal struct ActivationState
+	public enum InputEventKind
 	{
 		/// <summary>
-		///   The current activation count.
+		///   Indicates that the event was raised because a key or mouse button was released.
 		/// </summary>
-		public ushort Count;
+		Up,
 
 		/// <summary>
-		///   The pending activation and deactivation requests.
+		///   Indicates that the event was raised because a key or mouse button was pressed.
 		/// </summary>
-		public short Pending;
-
-		/// <summary>
-		///   Executes all deferred updates to the state.
-		/// </summary>
-		public void Update()
-		{
-			Count = (ushort)(Count + Pending);
-			Pending = 0;
-		}
-
-		/// <summary>
-		///   Handles a deferred activation request.
-		/// </summary>
-		public void Activate()
-		{
-			Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
-			Assert.That(Count + Pending + 1 < UInt16.MaxValue, "Too many activations.");
-
-			++Pending;
-		}
-
-		/// <summary>
-		///   Handles a deferred deactivation request.
-		/// </summary>
-		public void Deactivate()
-		{
-			Assert.InRange(Pending, Int16.MinValue, Int16.MaxValue);
-			Assert.That(Count + Pending > 0, "Imbalanced call to deactivate.");
-
-			--Pending;
-		}
+		Down
 	}
 }

@@ -44,19 +44,9 @@ namespace PointWars.Platform.Input
 		private readonly List<LogicalInput> _inputs = new List<LogicalInput>(256);
 
 		/// <summary>
-		///   Stores the activation states of the currently active input layers.
-		/// </summary>
-		private readonly ActivationState[] _layerStates = new ActivationState[Enum.GetValues(typeof(InputLayer)).Length];
-
-		/// <summary>
 		///   The window the input device belongs to.
 		/// </summary>
 		private readonly Window _window;
-
-		/// <summary>
-		///   The current input layer used by the input device.
-		/// </summary>
-		private InputLayer _inputLayer;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -69,24 +59,6 @@ namespace PointWars.Platform.Input
 			_window = window;
 			Keyboard = new Keyboard(window);
 			Mouse = new Mouse(window);
-		}
-
-		/// <summary>
-		///   Gets the current input layer used by the input device.
-		/// </summary>
-		public InputLayer InputLayer
-		{
-			get { return _inputLayer; }
-			private set
-			{
-				if (_inputLayer == value)
-					return;
-
-				_inputLayer = value;
-
-				Log.Debug("Input layer has been switched to '{0}'.", value);
-				InputLayerChanged?.Invoke(value);
-			}
 		}
 
 		/// <summary>
@@ -118,11 +90,6 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
-		///   Raised when the input layer has been changed.
-		/// </summary>
-		public event Action<InputLayer> InputLayerChanged;
-
-		/// <summary>
 		///   Registers a logical input on the logical input device. Subsequently, the logical input's IsTriggered
 		///   property can be used to determine whether the logical input is currently triggered.
 		/// </summary>
@@ -152,78 +119,14 @@ namespace PointWars.Platform.Input
 		}
 
 		/// <summary>
-		///   Activates the given input layer on the device, disabling all lower input layers starting with the next frame.
-		/// </summary>
-		/// <param name="layer">The layer that should be activated.</param>
-		public void ActivateLayer(InputLayer layer)
-		{
-			Assert.ArgumentInRange(layer, nameof(layer));
-
-			if (layer == InputLayer.None)
-				return;
-
-			for (var i = 0; i < 32; ++i)
-			{
-				if ((int)layer == 1 << i)
-				{
-					if (layer == InputLayer.Console)
-						InputLayer = layer;
-
-					_layerStates[i].Activate();
-					return;
-				}
-			}
-
-			Assert.NotReached("Unknown input layer.");
-		}
-
-		/// <summary>
-		///   Deactivates the given input layer on the device, only enabling the next lower active input layer if the number of
-		///   deactivation requests for the given layer matches the number of activation requests. The actual deactivation is
-		///   deferred until the next frame.
-		/// </summary>
-		/// <param name="layer">The layer that should be activated.</param>
-		public void DeactivateLayer(InputLayer layer)
-		{
-			Assert.ArgumentInRange(layer, nameof(layer));
-
-			if (layer == InputLayer.None)
-				return;
-
-			for (var i = 1; i < 32; ++i)
-			{
-				if ((int)layer != 1 << i)
-					continue;
-
-				_layerStates[i].Deactivate();
-				return;
-			}
-
-			Assert.NotReached("Unknown input layer.");
-		}
-
-		/// <summary>
 		///   Updates the device state.
 		/// </summary>
 		internal void Update()
 		{
-			// Perform all deferred layer activations and deactivations
-			for (var i = 0; i < _layerStates.Length; ++i)
-				_layerStates[i].Update();
-
-			// Determine the currently active input layout with the highest priority
-			for (var i = _layerStates.Length; i > 0; --i)
-			{
-				if (_layerStates[i - 1].Count > 0)
-				{
-					InputLayer = (InputLayer)(1 << (i - 1));
-					break;
-				}
-			}
-
 			// Update all inputs
+			var textInputEnabled = Keyboard.TextInputEnabled;
 			foreach (var input in _inputs)
-				input.Update(this);
+				input.Update(this, textInputEnabled);
 
 			Keyboard.Update();
 			Mouse.Update();

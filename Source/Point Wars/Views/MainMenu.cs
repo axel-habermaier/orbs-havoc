@@ -24,7 +24,7 @@ namespace PointWars.Views
 {
 	using System;
 	using Assets;
-	using Platform.Input;
+	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
 
@@ -34,21 +34,13 @@ namespace PointWars.Views
 	internal sealed class MainMenu : View
 	{
 		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public MainMenu()
-			: base(InputLayer.Menu)
-		{
-		}
-
-		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
 			IsActive = true;
 
-			RootElement.Content = new StackPanel
+			RootElement = new StackPanel
 			{
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center,

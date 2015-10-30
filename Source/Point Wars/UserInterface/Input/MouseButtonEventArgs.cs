@@ -58,22 +58,30 @@ namespace PointWars.UserInterface.Input
 		public InputState ButtonState => Mouse[Button];
 
 		/// <summary>
+		///   Indicates whether the event was raised because of a mouse button being released or pressed.
+		/// </summary>
+		public InputEventKind Kind { get; private set; }
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="mouse">The mouse device that raised the event.</param>
 		/// <param name="button">The mouse button that was pressed or released.</param>
 		/// <param name="doubleClick">Indicates whether the mouse press was a double click.</param>
 		/// <param name="modifiers">The key modifiers that were pressed when the event was raised.</param>
-		internal static MouseButtonEventArgs Create(Mouse mouse, MouseButton button, bool doubleClick, KeyModifiers modifiers)
+		/// <param name="kind">Indicates whether the event was raised because of a mouse button being released or pressed.</param>
+		internal static MouseButtonEventArgs Create(Mouse mouse, MouseButton button, bool doubleClick, KeyModifiers modifiers, InputEventKind kind)
 		{
 			Assert.ArgumentNotNull(mouse, nameof(mouse));
 			Assert.ArgumentInRange(button, nameof(button));
+			Assert.ArgumentInRange(kind, nameof(kind));
 
 			CachedInstance.Handled = false;
 			CachedInstance.Mouse = mouse;
 			CachedInstance.Button = button;
 			CachedInstance.DoubleClick = doubleClick;
 			CachedInstance.Modifiers = modifiers;
+			CachedInstance.Kind = kind;
 
 			return CachedInstance;
 		}

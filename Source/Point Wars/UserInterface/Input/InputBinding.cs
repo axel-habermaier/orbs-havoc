@@ -23,6 +23,8 @@
 namespace PointWars.UserInterface.Input
 {
 	using System;
+	using System.Diagnostics;
+	using Platform.Logging;
 	using Utilities;
 
 	/// <summary>
@@ -39,30 +41,32 @@ namespace PointWars.UserInterface.Input
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
-		/// <param name="triggerMode">Determines when the input binding should be triggered.</param>
-		protected InputBinding(Action callback, TriggerMode triggerMode)
+		protected InputBinding(Action callback)
 		{
 			Assert.ArgumentNotNull(callback, nameof(callback));
-			Assert.ArgumentInRange(triggerMode, nameof(triggerMode));
-
 			_callback = callback;
-			TriggerMode = triggerMode;
 		}
 
 		/// <summary>
-		///   Gets the trigger mode of the input binding.
+		///   Gets or sets a value indicating whether the preview version of the corresponding input event should be used.
 		/// </summary>
-		protected TriggerMode TriggerMode { get; }
+		public bool Preview { get; set; }
+
+		/// <summary>
+		///   Gets or sets the trigger mode of the input binding.
+		/// </summary>
+		public TriggerMode TriggerMode { get; set; } = TriggerMode.OnActivation;
 
 		/// <summary>
 		///   Handles the given event, invoking the target method if the input binding is triggered.
 		/// </summary>
 		/// <param name="args">The arguments of the event that should be handled.</param>
-		internal void HandleEvent(InputEventArgs args)
+		/// <param name="isPreview">Indicates whether the event is a preview event.</param>
+		internal void HandleEvent(InputEventArgs args, bool isPreview)
 		{
 			Assert.ArgumentNotNull(args, nameof(args));
 
-			if (!IsTriggered(args))
+			if (Preview != isPreview || !IsTriggered(args))
 				return;
 
 			_callback();

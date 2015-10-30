@@ -31,6 +31,7 @@ namespace PointWars.Views
 	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
+	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
 	using UserInterface.Input;
@@ -62,54 +63,54 @@ namespace PointWars.Views
 		private Socket _socket;
 
 		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public JoinGameMenu()
-			: base(InputLayer.Menu)
-		{
-		}
-
-		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
-			RootElement.Content = new StackPanel
+			RootElement = new Border
 			{
+				CapturesInput = true,
+				IsFocusable = true,
 				Font = Assets.Roboto14,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				Children =
+				AutoFocus = true,
+				InputBindings =
 				{
-					new Label
+					new KeyBinding(() =>
 					{
-						Text = "Join Game",
-						Font = Assets.Moonhouse80,
-						Margin = new Thickness(0, 0, 0, 30),
-					},
-					new Label
+						IsActive = false;
+						Views.MainMenu.IsActive = true;
+					}, Key.Escape)
+				},
+				Child = new StackPanel
+				{
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
+					Children =
 					{
-						Text = "Click on one of the following servers to join a game:"
-					},
-					new Button
-					{
-						Content = "Return",
-						HorizontalAlignment = HorizontalAlignment.Center,
-						Margin = new Thickness(0, 10, 0, 0),
-						Click = () =>
+						new Label
 						{
-							IsActive = false;
-							Views.MainMenu.IsActive = true;
+							Text = "Join Game",
+							Font = Assets.Moonhouse80,
+							Margin = new Thickness(0, 0, 0, 30),
+						},
+						new Label
+						{
+							Text = "Click on one of the following servers to join a game:"
+						},
+						new Button
+						{
+							Content = "Return",
+							HorizontalAlignment = HorizontalAlignment.Center,
+							Margin = new Thickness(0, 10, 0, 0),
+							Click = () =>
+							{
+								IsActive = false;
+								Views.MainMenu.IsActive = true;
+							}
 						}
 					}
 				}
 			};
-
-			RootElement.InputBindings.Add(new KeyBinding(() =>
-			{
-				IsActive = false;
-				Views.MainMenu.IsActive = true;
-			}, Key.Escape));
 		}
 
 		/// <summary>
@@ -123,7 +124,7 @@ namespace PointWars.Views
 				_socket.InitializeMulticasting();
 				_socket.Blocking = false;
 
-				Log.Info("Server discovery initialized.");
+				Log.Info("Server discovery started.");
 			}
 			catch (SocketException e)
 			{
@@ -140,6 +141,8 @@ namespace PointWars.Views
 			_socket.SafeDispose();
 			_socket = null;
 			_discoveredServers.Clear();
+
+			Log.Info("Server discovery stopped.");
 		}
 
 		/// <summary>
@@ -147,8 +150,6 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Update()
 		{
-			base.Update();
-
 			if (!IsActive)
 				return;
 

@@ -72,7 +72,7 @@ namespace PointWars.Views
 		private static readonly Color DebugInfoColor = new Color(1.0f, 0.0f, 1.0f, 1.0f);
 		private readonly StackPanel _contentPanel = new StackPanel { VerticalAlignment = VerticalAlignment.Bottom, MinWidth = 200 };
 		private readonly string[] _history = new string[MaxHistory];
-		private readonly TextBox _input = new TextBox { MaxLength = MaxLength, Dock = Dock.Bottom };
+		private readonly TextBox _input = new TextBox { MaxLength = MaxLength, Dock = Dock.Bottom, AutoFocus = true};
 		private int _autoCompletionIndex;
 		private string[] _autoCompletionList;
 		private int _historyIndex;
@@ -82,22 +82,11 @@ namespace PointWars.Views
 		private bool _settingAutoCompletedInput;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///   Invoked when the view should be activated.
 		/// </summary>
-		public Console()
-			: base(InputLayer.Console)
+		protected override void Activate()
 		{
-		}
-
-		/// <summary>
-		///   Invoked when the view should be deactivated.
-		/// </summary>
-		protected override void Deactivate()
-		{
-			// Clear the input and remove the keyboard focus; otherwise, characters might be entered when 
-			// the console key is pressed
 			ClearInput();
-			RootElement.Focus();
 		}
 
 		/// <summary>
@@ -119,7 +108,6 @@ namespace PointWars.Views
 
 			LogEntryCache.DisableCaching();
 
-			InputDevice.Keyboard.KeyPressed += OnKeyPressed;
 			Commands.OnShowConsole += ShowConsole;
 			Log.OnLog += AddLogEntry;
 
@@ -132,8 +120,6 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Update()
 		{
-			base.Update();
-
 			// Make sure the text box never loses focus while the console is active
 			if (IsActive)
 				_input.Focus();
@@ -144,9 +130,6 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			base.OnDisposing();
-
-			InputDevice.Keyboard.KeyPressed -= OnKeyPressed;
 			Commands.OnShowConsole -= ShowConsole;
 			Log.OnLog -= AddLogEntry;
 
@@ -204,10 +187,10 @@ namespace PointWars.Views
 			_input.InputBindings.AddRange(new[]
 			{
 				new KeyBinding(ClearInput, Key.Escape),
-				new KeyBinding(ShowNewerHistoryEntry, Key.Down, triggerMode: TriggerMode.Repeatedly),
-				new KeyBinding(ShowOlderHistoryEntry, Key.Up, triggerMode: TriggerMode.Repeatedly),
-				new KeyBinding(AutoCompleteNext, Key.Tab, triggerMode: TriggerMode.Repeatedly),
-				new KeyBinding(AutoCompletePrevious, Key.Tab, KeyModifiers.Shift, TriggerMode.Repeatedly),
+				new KeyBinding(ShowNewerHistoryEntry, Key.Down) { TriggerMode = TriggerMode.Repeatedly },
+				new KeyBinding(ShowOlderHistoryEntry, Key.Up) { TriggerMode = TriggerMode.Repeatedly },
+				new KeyBinding(AutoCompleteNext, Key.Tab) { TriggerMode = TriggerMode.Repeatedly },
+				new KeyBinding(AutoCompletePrevious, Key.Tab, KeyModifiers.Shift) { TriggerMode = TriggerMode.Repeatedly },
 			});
 
 			_scrollViewer = new ScrollViewer
@@ -242,19 +225,24 @@ namespace PointWars.Views
 				}
 			};
 
-			RootElement.Content = _layoutRoot;
-			RootElement.InputBindings.AddRange(new InputBinding[]
+			RootElement = new Border
 			{
-				new KeyBinding(Submit, Key.Enter),
-				new KeyBinding(Submit, Key.NumpadEnter),
-				new KeyBinding(Clear, Key.L, KeyModifiers.Control),
-				new KeyBinding(_scrollViewer.ScrollUp, Key.PageUp, triggerMode: TriggerMode.Repeatedly),
-				new KeyBinding(_scrollViewer.ScrollDown, Key.PageDown, triggerMode: TriggerMode.Repeatedly),
-				new KeyBinding(_scrollViewer.ScrollToTop, Key.PageUp, KeyModifiers.Control, TriggerMode.Repeatedly),
-				new KeyBinding(_scrollViewer.ScrollToBottom, Key.PageDown, KeyModifiers.Control, TriggerMode.Repeatedly),
-				new MouseWheelBinding(_scrollViewer.ScrollUp, MouseWheelDirection.Up),
-				new MouseWheelBinding(_scrollViewer.ScrollDown, MouseWheelDirection.Down)
-			});
+				Child = _layoutRoot,
+				ZIndex = Int32.MaxValue,
+				CapturesInput = true,
+				InputBindings =
+				{
+					new KeyBinding(Submit, Key.Enter),
+					new KeyBinding(Submit, Key.NumpadEnter),
+					new KeyBinding(Clear, Key.L, KeyModifiers.Control),
+					new KeyBinding(_scrollViewer.ScrollUp, Key.PageUp) { TriggerMode = TriggerMode.Repeatedly },
+					new KeyBinding(_scrollViewer.ScrollDown, Key.PageDown) { TriggerMode = TriggerMode.Repeatedly },
+					new KeyBinding(_scrollViewer.ScrollToTop, Key.PageUp, KeyModifiers.Control),
+					new KeyBinding(_scrollViewer.ScrollToBottom, Key.PageDown, KeyModifiers.Control),
+					new MouseWheelBinding(_scrollViewer.ScrollUp, MouseWheelDirection.Up),
+					new MouseWheelBinding(_scrollViewer.ScrollDown, MouseWheelDirection.Down)
+				}
+			};
 		}
 
 		/// <summary>
@@ -327,15 +315,6 @@ namespace PointWars.Views
 		private void ShowConsole(bool show)
 		{
 			IsActive = show;
-		}
-
-		/// <summary>
-		///   Handles console key presses.
-		/// </summary>
-		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
-		{
-			if (scanCode == ScanCode.Grave && InputDevice.Keyboard.WentDown(ScanCode.Grave))
-				IsActive = !IsActive;
 		}
 
 		/// <summary>

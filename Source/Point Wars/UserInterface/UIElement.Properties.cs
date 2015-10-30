@@ -360,6 +360,9 @@ namespace PointWars.UserInterface
 					_state |= State.IsVisible;
 				else
 					_state &= ~State.IsVisible;
+
+				if (value && AutoFocus)
+					Focus();
 			}
 		}
 
@@ -686,6 +689,36 @@ namespace PointWars.UserInterface
 					_state |= State.IsActive;
 				else
 					_state &= ~State.IsActive;
+			}
+		}
+
+		/// <summary>
+		///   Gets or sets a value indicating whether the UI element captures all keyboard and mouse input.
+		/// </summary>
+		public bool CapturesInput
+		{
+			get { return (_state & State.CapturesInput) == State.CapturesInput; }
+			set
+			{
+				if (value)
+					_state |= State.CapturesInput;
+				else
+					_state &= ~State.CapturesInput;
+			}
+		}
+
+		/// <summary>
+		///   Gets or sets a value indicating whether the UI element automatically receives the keyboard focus when it becomes visible.
+		/// </summary>
+		public bool AutoFocus
+		{
+			get { return (_state & State.AutoFocus) == State.AutoFocus; }
+			set
+			{
+				if (value)
+					_state |= State.AutoFocus;
+				else
+					_state &= ~State.AutoFocus;
 			}
 		}
 

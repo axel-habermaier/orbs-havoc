@@ -87,7 +87,7 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Invoked when a mouse button has been pressed while hovering the UI element.
 		/// </summary>
-		protected override void OnMousePressed(MouseButtonEventArgs e)
+		protected override void OnMouseDown(MouseButtonEventArgs e)
 		{
 			if (e.Button != MouseButton.Left)
 				return;
@@ -132,7 +132,7 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Invoked when a key has been pressed while the UI element is focused.
 		/// </summary>
-		protected override unsafe void OnKeyPressed(KeyEventArgs e)
+		protected override unsafe void OnKeyDown(KeyEventArgs e)
 		{
 			switch (e.Key)
 			{

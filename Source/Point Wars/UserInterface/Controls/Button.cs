@@ -68,7 +68,7 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Invoked when a mouse button has been released while hovering the UI element.
 		/// </summary>
-		protected override void OnMouseReleased(MouseButtonEventArgs e)
+		protected override void OnMouseUp(MouseButtonEventArgs e)
 		{
 			if (e.Button != MouseButton.Left || e.Handled)
 				return;

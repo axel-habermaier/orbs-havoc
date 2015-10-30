@@ -22,7 +22,6 @@
 
 namespace PointWars.Views
 {
-	using System;
 	using System.Net.Sockets;
 	using System.Numerics;
 	using Assets;
@@ -35,6 +34,7 @@ namespace PointWars.Views
 	using Scripting;
 	using UserInterface;
 	using UserInterface.Controls;
+	using UserInterface.Input;
 	using Utilities;
 
 	/// <summary>
@@ -42,7 +42,6 @@ namespace PointWars.Views
 	/// </summary>
 	internal class ViewCollection : DisposableObject
 	{
-		private const int LayersPerView = 1000000;
 		private readonly View[] _views;
 		private bool _exitMessageBoxOpen;
 
@@ -52,6 +51,13 @@ namespace PointWars.Views
 		/// <param name="app">The application the view collection belongs to.</param>
 		public ViewCollection(Application app)
 		{
+			Assert.ArgumentNotNull(app, nameof(app));
+
+			RootElement = new RootUIElement(app.InputDevice);
+			RootElement.InputBindings.Add(new ScanCodeBinding(ToggleConsole, ScanCode.Grave) { Preview = true });
+			RootElement.InputBindings.Add(new KeyBinding(app.Window.ToggleFullscreen, Key.Enter, KeyModifiers.Alt) { Preview = true });
+			RootElement.InputBindings.Add(new KeyBinding(app.Window.ToggleFullscreen, Key.NumpadEnter, KeyModifiers.Alt) { Preview = true });
+
 			Application = app;
 			Application.Window.Closing += Exit;
 
@@ -70,12 +76,17 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
+		///   Gets the root UI element of all views within the collection.
+		/// </summary>
+		public RootUIElement RootElement { get; }
+
+		/// <summary>
 		///   Gets the server that hosts game sessions.
 		/// </summary>
 		public ServerGameSession Server { get; } = new ServerGameSession();
 
 		/// <summary>
-		/// Gets the menu that lets the user join a game.
+		///   Gets the menu that lets the user join a game.
 		/// </summary>
 		public JoinGameMenu JoinGameMenu { get; } = new JoinGameMenu();
 
@@ -124,11 +135,10 @@ namespace PointWars.Views
 		/// </summary>
 		public void Initialize()
 		{
-			foreach (var view in _views)
+			for (var i = _views.Length - 1; i >= 0; --i)
 			{
-				view.Views = this;
-				view.RootElement.Initialize(view.InputDevice, view.InputLayer);
-				view.Initialize();
+				_views[i].Views = this;
+				_views[i].Initialize();
 			}
 		}
 
@@ -142,6 +152,7 @@ namespace PointWars.Views
 			foreach (var view in _views)
 				view.Update();
 
+			RootElement.Update(Application.Window.Size);
 			Server.CheckForErrors();
 		}
 
@@ -153,22 +164,11 @@ namespace PointWars.Views
 		{
 			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
-			var i = Byte.MaxValue;
-			foreach (var view in _views)
-			{
-				if (!view.IsActive)
-					continue;
+			spriteBatch.Layer = 0;
+			spriteBatch.PositionOffset = Vector2.Zero;
+			GameSession.Draw(spriteBatch);
 
-				spriteBatch.Layer = i * LayersPerView;
-				spriteBatch.PositionOffset = Vector2.Zero;
-				spriteBatch.ScissorArea = null;
-
-				view.Draw(spriteBatch);
-				Assert.That(spriteBatch.Layer < i * LayersPerView + LayersPerView, "The view used too many layers.");
-
-				--i;
-			}
-
+			RootElement.Draw(spriteBatch);
 			DrawCursor();
 		}
 
@@ -177,26 +177,18 @@ namespace PointWars.Views
 		/// </summary>
 		private void DrawCursor()
 		{
-			foreach (var view in _views)
+			// Check if the hovered element or any of its parents override the default cursor
+			Cursor cursor = null;
+			var element = RootElement.HitTest(Application.InputDevice.Mouse.Position, boundsTestOnly: true);
+
+			while (element != null && cursor == null)
 			{
-				if (!view.IsActive || view.InputLayer == InputLayer.None)
-					continue;
-
-				// Check if the hovered element or any of its parents override the default cursor
-				Cursor cursor = null;
-				var element = view.RootElement.HitTest(Application.InputDevice.Mouse.Position, boundsTestOnly: true);
-
-				while (element != null && cursor == null)
-				{
-					cursor = element.Cursor;
-					element = element.Parent;
-				}
-
-				cursor = cursor ?? Assets.PointerCursor;
-				cursor.Draw();
-
-				break;
+				cursor = element.Cursor;
+				element = element.Parent;
 			}
+
+			cursor = cursor ?? Assets.PointerCursor;
+			cursor.Draw();
 		}
 
 		/// <summary>
@@ -221,8 +213,16 @@ namespace PointWars.Views
 				return;
 
 			_exitMessageBoxOpen = true;
-			MessageBoxes.Show(MessageBox.CreateYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
-				Commands.Exit, () => _exitMessageBoxOpen = false));
+			MessageBoxes.ShowYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
+				Commands.Exit, () => _exitMessageBoxOpen = false);
+		}
+
+		/// <summary>
+		///   Shows or hides the console.
+		/// </summary>
+		private void ToggleConsole()
+		{
+			Console.IsActive = !Console.IsActive;
 		}
 
 		/// <summary>
@@ -238,7 +238,7 @@ namespace PointWars.Views
 			{
 				var message = $"Unable to start the server: {e.GetMessage()}";
 				Log.Error("{0}", message);
-				MessageBoxes.Show(MessageBox.CreateError("Server Failure", message));
+				MessageBoxes.ShowError("Server Failure", message);
 			}
 		}
 	}

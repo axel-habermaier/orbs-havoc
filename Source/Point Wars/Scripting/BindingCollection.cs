@@ -68,9 +68,6 @@ namespace PointWars.Scripting
 		/// </summary>
 		public void Update()
 		{
-			if (Keyboard.TextInputEnabled)
-				return;
-
 			foreach (var binding in _bindings)
 				binding.ExecuteIfTriggered();
 		}
@@ -158,7 +155,7 @@ namespace PointWars.Scripting
 		/// <param name="command">The instruction that should be bound.</param>
 		private void OnBind(ConfigurableInput trigger, string command)
 		{
-			var input = new LogicalInput(trigger.ToInputTrigger(KeyTriggerType.WentDown, MouseTriggerType.WentDown), InputLayer.All);
+			var input = new LogicalInput(trigger.ToInputTrigger(KeyTriggerType.WentDown, MouseTriggerType.WentDown));
 			_device.Add(input);
 
 			try

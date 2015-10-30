@@ -196,6 +196,10 @@ namespace PointWars.UserInterface
 					return hitTestResult;
 			}
 
+			// If the UI element captures all input, return it, even though there might not have been a hit otherwise
+			if (CapturesInput)
+				return this;
+
 			// Otherwise, check if we should return this UI element instead.
 			if (boundsTestOnly || HitTestCore(position))
 				return this;
@@ -611,7 +615,9 @@ namespace PointWars.UserInterface
 			IsVisible = 256,
 			IsFocusable = 512,
 			IsFocused = 1024,
-			IsHitTestVisible = 2048
+			IsHitTestVisible = 2048,
+			CapturesInput = 4096,
+			AutoFocus = 8192
 		}
 	}
 }

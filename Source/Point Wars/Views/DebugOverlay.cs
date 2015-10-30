@@ -89,8 +89,9 @@ namespace PointWars.Views
 		public override void Initialize()
 		{
 			const float margin = 3;
-			RootElement.Content = new Border
+			RootElement = new Border
 			{
+				ZIndex = Int32.MaxValue - 1,
 				Margin = new Thickness(5),
 				Background = new Color(0xAA000000),
 				Padding = new Thickness(10),
@@ -160,8 +161,6 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Update()
 		{
-			base.Update();
-
 			if (!IsActive)
 				return;
 
@@ -203,8 +202,6 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			base.OnDisposing();
-
 			Cvars.ShowDebugOverlayChanged -= ChangeActivation;
 			Cvars.VsyncChanged -= OnVsyncChanged;
 			_timer.Timeout -= UpdateStatistics;

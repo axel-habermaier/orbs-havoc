@@ -29,28 +29,28 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Invoked when the mouse has entered the UI element.
 		/// </summary>
-		protected virtual void OnMouseEntered(MouseEventArgs e)
+		protected virtual void OnMouseEnter(MouseEventArgs e)
 		{
 		}
 
 		/// <summary>
 		///   Invoked when the mouse has left the UI element.
 		/// </summary>
-		protected virtual void OnMouseLeft(MouseEventArgs e)
+		protected virtual void OnMouseLeave(MouseEventArgs e)
 		{
 		}
 
 		/// <summary>
 		///   Invoked when a mouse button has been pressed while hovering the UI element.
 		/// </summary>
-		protected virtual void OnMousePressed(MouseButtonEventArgs e)
+		protected virtual void OnMouseDown(MouseButtonEventArgs e)
 		{
 		}
 
 		/// <summary>
 		///   Invoked when a mouse button has been released while hovering the UI element.
 		/// </summary>
-		protected virtual void OnMouseReleased(MouseButtonEventArgs e)
+		protected virtual void OnMouseUp(MouseButtonEventArgs e)
 		{
 		}
 
@@ -64,14 +64,14 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Invoked when a key has been pressed while the UI element is focused.
 		/// </summary>
-		protected virtual void OnKeyPressed(KeyEventArgs e)
+		protected virtual void OnKeyDown(KeyEventArgs e)
 		{
 		}
 
 		/// <summary>
 		///   Invoked when a key has been released while the UI element is focused.
 		/// </summary>
-		protected virtual void OnKeyReleased(KeyEventArgs e)
+		protected virtual void OnKeyUp(KeyEventArgs e)
 		{
 		}
 
@@ -83,15 +83,57 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Handles an input event.
+		///   Invoked when a mouse button has been pressed while hovering the UI element.
 		/// </summary>
-		private void HandleInputEvent(InputEventArgs e)
+		protected virtual void OnPreviewMouseDown(MouseButtonEventArgs e)
+		{
+		}
+
+		/// <summary>
+		///   Invoked when a mouse button has been released while hovering the UI element.
+		/// </summary>
+		protected virtual void OnPreviewMouseUp(MouseButtonEventArgs e)
+		{
+		}
+
+		/// <summary>
+		///   Invoked when the mouse wheel has been moved.
+		/// </summary>
+		protected virtual void OnPreviewMouseWheel(MouseWheelEventArgs e)
+		{
+		}
+
+		/// <summary>
+		///   Invoked when a key has been pressed while the UI element is focused.
+		/// </summary>
+		protected virtual void OnPreviewKeyDown(KeyEventArgs e)
+		{
+		}
+
+		/// <summary>
+		///   Invoked when a key has been released while the UI element is focused.
+		/// </summary>
+		protected virtual void OnPreviewKeyUp(KeyEventArgs e)
+		{
+		}
+
+		/// <summary>
+		///   Invoked when a text has been entered while the UI element is focused.
+		/// </summary>
+		protected virtual void OnPreviewTextEntered(TextInputEventArgs e)
+		{
+		}
+
+		/// <summary>
+		///   Handles a non-preview input event.
+		/// </summary>
+		private void HandleInputEvent(InputEventArgs e, bool isPreview)
 		{
 			if (_inputBindings == null || !IsAttachedToRoot)
 				return;
 
 			foreach (var binding in _inputBindings)
-				binding.HandleEvent(e);
+				binding.HandleEvent(e, isPreview);
 		}
 	}
 }
