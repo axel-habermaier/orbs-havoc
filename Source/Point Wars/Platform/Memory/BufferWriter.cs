@@ -30,7 +30,7 @@ namespace PointWars.Platform.Memory
 	/// <summary>
 	///   Wraps a byte buffer, providing methods for writing fundamental data types to the buffer.
 	/// </summary>
-	public struct BufferWriter : IDisposable
+	public struct BufferWriter
 	{
 		/// <summary>
 		///   Represents a serialization function.
@@ -120,14 +120,6 @@ namespace PointWars.Platform.Memory
 		///   Gets the number of bytes that have been written to the buffer.
 		/// </summary>
 		public int Count => _maxWritePosition - _buffer.Offset;
-
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			_buffer = new ArraySegment<byte>();
-		}
 
 		/// <summary>
 		///   Resets the write position so that all content can be overwritten.

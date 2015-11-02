@@ -22,6 +22,7 @@
 
 namespace PointWars.Network
 {
+	using System;
 	using System.Net;
 
 	/// <summary>
@@ -36,7 +37,7 @@ namespace PointWars.Network
 		public const uint AppIdentifier = 0xf61137c5;
 
 		/// <summary>
-		///     The factor that angles sent over the network are scaled with.
+		///   The factor that angles sent over the network are scaled with.
 		/// </summary>
 		public const float AngleFactor = 100.0f;
 
@@ -106,5 +107,15 @@ namespace PointWars.Network
 		///   The multicast group that is used for automatic server discovery.
 		/// </summary>
 		public static readonly IPEndPoint MulticastGroup = new IPEndPoint(IPAddress.Parse("FF05::3"), 32456);
+
+		/// <summary>
+		///   The identity of the player that represents the server.
+		/// </summary>
+		public static readonly NetworkIdentity ServerPlayerIdentity = new NetworkIdentity(0, 0);
+
+		/// <summary>
+		///   The reserved entity identity.
+		/// </summary>
+		public static readonly NetworkIdentity ReservedEntityIdentity = new NetworkIdentity(UInt16.MaxValue, 0);
 	}
 }

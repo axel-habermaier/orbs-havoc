@@ -23,7 +23,6 @@
 namespace PointWars.Gameplay.Server
 {
 	using System;
-	using System.Net;
 	using System.Net.Sockets;
 	using Network;
 	using Platform.Logging;
@@ -85,13 +84,11 @@ namespace PointWars.Gameplay.Server
 
 			_serverPort = serverPort;
 
-			using (var writer = new BufferWriter(_buffer, Endianess.Big))
-			{
-				writer.WriteUInt32(NetworkProtocol.AppIdentifier);
-				writer.WriteByte(NetworkProtocol.Revision);
-				writer.WriteUInt16(_serverPort);
-				writer.WriteString(_serverName, NetworkProtocol.ServerNameLength);
-			}
+			var writer = new BufferWriter(_buffer, Endianess.Big);
+			writer.WriteUInt32(NetworkProtocol.AppIdentifier);
+			writer.WriteByte(NetworkProtocol.Revision);
+			writer.WriteUInt16(_serverPort);
+			writer.WriteString(_serverName, NetworkProtocol.ServerNameLength);
 		}
 
 		/// <summary>

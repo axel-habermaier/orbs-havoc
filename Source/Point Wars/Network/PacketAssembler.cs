@@ -24,6 +24,7 @@ namespace PointWars.Network
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Net.Sockets;
 	using Messages;
 	using Platform.Logging;
 	using Platform.Memory;
@@ -46,19 +47,14 @@ namespace PointWars.Network
 		private readonly uint _acknowledgement;
 
 		/// <summary>
-		///   The allocator that is used to allocate packets.
+		///   The socket that should be used to send the messages.
 		/// </summary>
-		private readonly PoolAllocator _allocator;
+		private readonly Socket _socket;
 
 		/// <summary>
-		///   The UDP channel that should be used to send the messages.
+		///   The buffer that the current packet is written into.
 		/// </summary>
-		private readonly UdpChannel _channel;
-
-		/// <summary>
-		///   The packet that is currently being assembled.
-		/// </summary>
-		private OutgoingUdpPacket _packet;
+		private readonly byte[] _buffer;
 
 		/// <summary>
 		///   The writer that is currently being used to assemble the packet.
@@ -68,17 +64,17 @@ namespace PointWars.Network
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="allocator">The allocator that should be used to allocate packets.</param>
-		/// <param name="channel">The UDP channel that should be used to send the assembled packets.</param>
+		/// <param name="socket">The UDP channel that should be used to send the assembled packets.</param>
+		/// <param name="buffer">The buffer the packet should be assembled to.</param>
 		/// <param name="acknowledgement">The acknowledgement that should be set in the headers of the assembled packets.</param>
-		public PacketAssembler(PoolAllocator allocator, UdpChannel channel, uint acknowledgement)
+		public PacketAssembler(Socket socket, byte[] buffer, uint acknowledgement)
 			: this()
 		{
-			Assert.ArgumentNotNull(allocator, nameof(allocator));
-			Assert.ArgumentNotNull(channel, nameof(channel));
+			Assert.ArgumentNotNull(socket, nameof(socket));
+			Assert.ArgumentNotNull(buffer, nameof(buffer));
 
-			_allocator = allocator;
-			_channel = channel;
+			_socket = socket;
+			_buffer = buffer;
 			_acknowledgement = acknowledgement;
 
 			AllocatePacket();
@@ -261,12 +257,11 @@ namespace PointWars.Network
 		/// </summary>
 		private void AllocatePacket()
 		{
-			Assert.IsNull(_packet, "A packet is already allocated.");
+			Assert.IsNull(_buffer, "A packet is already allocated.");
 
-			_packet = OutgoingUdpPacket.Allocate(_allocator, NetworkProtocol.MaxPacketSize);
-			_writer = _packet.Writer;
+			_writer = new BufferWriter(_buffer, Endianess.Big);
 
-			Log.DebugIf(EnableTracing, "Packet #{2} to {0}, ack: {1}", _channel.RemoteEndPoint, _acknowledgement, PacketCount + 1);
+			Log.DebugIf(EnableTracing, "Packet #{2} to {0}, ack: {1}", _socket.RemoteEndPoint, _acknowledgement, PacketCount + 1);
 			PacketHeader.Write(ref _writer, _acknowledgement);
 		}
 
@@ -275,16 +270,12 @@ namespace PointWars.Network
 		/// </summary>
 		public void SendPacket()
 		{
-			Assert.NotNull(_packet, "No packet has been allocated.");
+			Assert.NotNull(_buffer, "No packet has been allocated.");
 
 			Log.DebugIf(EnableTracing, "Packet length: {0} bytes", _writer.Count);
 
-			_channel.Send(_packet, _writer.Count);
+			_socket.Send(_buffer, _writer.Count, SocketFlags.None);
 			++PacketCount;
-
-			_writer.Dispose();
-			_packet.SafeDispose();
-			_packet = null;
 		}
 
 		/// <summary>

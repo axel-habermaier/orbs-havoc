@@ -22,17 +22,26 @@
 
 namespace PointWars.Network
 {
+	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Net;
 	using System.Net.Sockets;
+	using Messages;
+	using Platform.Logging;
 	using Platform.Memory;
 	using Utilities;
 
 	/// <summary>
-	///   Represents a UDP-based connection to a remote peer.
+	///   Represents a connection to a remote peer, using the Lwar network protocol specification.
 	/// </summary>
-	public sealed class Connection : DisposableObject
+	internal class Connection : PooledObject
 	{
+		/// <summary>
+		///   A cached buffer that is used to receive or send data.
+		/// </summary>
+		private readonly byte[] _buffer = new byte[NetworkProtocol.MaxPacketSize];
+
 		/// <summary>
 		///   The delivery manager responsible for the delivery guarantees of all incoming and outgoing messages.
 		/// </summary>
@@ -49,41 +58,193 @@ namespace PointWars.Network
 		/// </summary>
 		private readonly Queue<SequencedMessage> _receivedMessages = new Queue<SequencedMessage>();
 
-		private readonly Socket _socket;
-
 		/// <summary>
 		///   The allocator that is used to allocate message objects.
 		/// </summary>
 		private PoolAllocator _allocator;
 
-		private IPEndPoint _remoteEndPoint;
+		/// <summary>
+		///   Provides the time that is used to check whether a connection is lagging or dropped.
+		/// </summary>
+		private Clock _clock = new Clock();
+
+		/// <summary>
+		///   The deserializer that is used to deserialize incoming messages.
+		/// </summary>
+		private MessageDeserializer _deserializer;
+
+		/// <summary>
+		///   The socket that is used for the communication with the remote peer.
+		/// </summary>
+		private Socket _socket;
+
+		/// <summary>
+		///   The time in milliseconds since the last packet has been received.
+		/// </summary>
+		private double _timeSinceLastPacket;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		public Connection()
 		{
-			_socket = new Socket(SocketType.Dgram, ProtocolType.IPv6) { DualMode = true, Blocking = false };
+			_deliveryManager = new DeliveryManager();
+			_outgoingMessages = new MessageQueue(_deliveryManager);
 		}
 
 		/// <summary>
-		///   Gets or sets the remote end point of the connection.
+		///   Gets a value indicating whether the connection to the remote peer has been dropped.
 		/// </summary>
-		private IPEndPoint RemoteEndPoint
-		{
-			get
-			{
-				Assert.NotDisposed(this);
-				return _remoteEndPoint;
-			}
-			set
-			{
-				Assert.NotDisposed(this);
-				Assert.ArgumentNotNull(value, nameof(value));
+		public bool IsDropped { get; private set; }
 
-				_remoteEndPoint = value;
-				_socket.Connect(RemoteEndPoint);
+		/// <summary>
+		///   Gets the endpoint of the remote peer.
+		/// </summary>
+		public IPEndPoint RemoteEndPoint => (IPEndPoint)_socket.RemoteEndPoint;
+
+		/// <summary>
+		///   Gets the remaining time in milliseconds before the connection will be dropped.
+		/// </summary>
+		public double TimeToDrop => NetworkProtocol.DroppedTimeout - _timeSinceLastPacket;
+
+		/// <summary>
+		///   Gets a value indicating whether the connection to the remote peer is lagging.
+		/// </summary>
+		public bool IsLagging => _timeSinceLastPacket > NetworkProtocol.LaggingTimeout;
+
+		/// <summary>
+		///   Dispatches all received messages using the given message dispatcher.
+		/// </summary>
+		/// <param name="handler">The dispatcher that should be used to dispatch the messages.</param>
+		public void DispatchReceivedMessages(IMessageHandler handler)
+		{
+			Assert.ArgumentNotNull(handler, nameof(handler));
+			CheckAccess();
+
+			var elapsedTime = _clock.Milliseconds;
+			_clock.Reset();
+
+			// Cap the time so that we don't disconnect when the debugger is suspending the process
+			_timeSinceLastPacket += Math.Min(elapsedTime, 500);
+
+			try
+			{
+				while (_socket.Available > 0)
+				{
+					var size = _socket.Receive(_buffer);
+					HandlePacket(size);
+				}
 			}
+			catch (SocketException e)
+			{
+				IsDropped = true;
+				throw new NetworkException("{0}", e.GetMessage());
+			}
+
+			foreach (var sequencedMessage in _receivedMessages)
+				sequencedMessage.Message.Dispatch(handler, sequencedMessage.SequenceNumber);
+
+			ClearReceivedMessages();
+		}
+
+		/// <summary>
+		///   Enqueues the given message for later sending to the remote peer.
+		/// </summary>
+		/// <param name="message">The message that should be sent.</param>
+		public void EnqueueMessage(Message message)
+		{
+			CheckAccess();
+
+			using (message)
+				_outgoingMessages.Enqueue(message);
+		}
+
+		/// <summary>
+		///   Sends all queued messages.
+		/// </summary>
+		public void SendQueuedMessages()
+		{
+			CheckAccess();
+
+			try
+			{
+				// Send all queued messages to the remote peer
+				_outgoingMessages.SendMessages(new PacketAssembler(_socket, _buffer, _deliveryManager.LastReceivedReliableSequenceNumber));
+			}
+			catch (SocketException e)
+			{
+				IsDropped = true;
+				throw new NetworkException("{0}", e.GetMessage());
+			}
+		}
+
+		/// <summary>
+		///   Closes the connection to the remote peer.
+		/// </summary>
+		public void Disconnect()
+		{
+			if (IsDropped)
+				return;
+
+			try
+			{
+				EnqueueMessage(DisconnectMessage.Create(_allocator));
+				SendQueuedMessages();
+			}
+			catch (SocketException e)
+			{
+				Log.Debug("Failed to send disconnect message: {0}", e.GetMessage());
+			}
+
+			IsDropped = true;
+		}
+
+		/// <summary>
+		///   Dispatches the messages contained in the given packet.
+		/// </summary>
+		/// <param name="size">The size of the packet.</param>
+		private void HandlePacket(int size)
+		{
+			var buffer = new BufferReader(_buffer, 0, size, Endianess.Big);
+
+			uint acknowledgement;
+			if (!PacketHeader.TryRead(ref buffer, out acknowledgement))
+				return;
+
+			_deliveryManager.UpdateLastAckedSequenceNumber(acknowledgement);
+
+			var readBytes = -1;
+			while (!buffer.EndOfBuffer && readBytes != buffer.Count)
+			{
+				readBytes = buffer.Count;
+
+				SequencedMessage message;
+				while (_deserializer.TryDeserialize(ref buffer, out message))
+					_receivedMessages.Enqueue(message);
+			}
+
+			Assert.That(buffer.EndOfBuffer, "Received an invalid packet from the remote peer.");
+
+			if (!buffer.EndOfBuffer)
+				return;
+
+			_timeSinceLastPacket = 0;
+		}
+
+		/// <summary>
+		///   Invoked when the pooled instance is returned to the pool.
+		/// </summary>
+		protected override void OnReturning()
+		{
+			ClearReceivedMessages();
+
+			_socket.SafeDispose();
+			_socket = null;
+			_outgoingMessages.Clear();
+			_deserializer.SafeDispose();
+			_timeSinceLastPacket = 0;
+
+			IsDropped = false;
 		}
 
 		/// <summary>
@@ -91,7 +252,73 @@ namespace PointWars.Network
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			_socket.SafeDispose();
+			_outgoingMessages.SafeDispose();
+		}
+
+		/// <summary>
+		///   Clears the queue of received messages.
+		/// </summary>
+		private void ClearReceivedMessages()
+		{
+			foreach (var sequencedMessage in _receivedMessages)
+				sequencedMessage.Message.SafeDispose();
+
+			_receivedMessages.Clear();
+		}
+
+		/// <summary>
+		///   In debug builds, checks whether the connection is faulted or has already been disposed.
+		/// </summary>
+		[DebuggerHidden]
+		private void CheckAccess()
+		{
+			Assert.NotPooled(this);
+			Assert.That(!IsDropped, "The connection has been dropped and can no longer be used.");
+
+			if (TimeToDrop > 0 || IsDropped)
+				return;
+
+			IsDropped = true;
+			throw new NetworkException("The connection to the server has been lost.");
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="allocator">The allocator that should be used to allocate message objects.</param>
+		/// <param name="socket">The socket that should be used to receive and send data.</param>
+		public static Connection Create(PoolAllocator allocator, Socket socket)
+		{
+			Assert.ArgumentNotNull(socket, nameof(socket));
+			Assert.ArgumentNotNull(allocator, nameof(allocator));
+
+			var connection = allocator.Allocate<Connection>();
+			connection._allocator = allocator;
+			connection._deserializer = MessageDeserializer.Create(allocator, connection._deliveryManager);
+			connection._socket = socket;
+			connection._clock.Reset();
+			connection._deliveryManager.Reset();
+			return connection;
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="allocator">The allocator that should be used to allocate message objects.</param>
+		/// <param name="socket">The socket that should be used to receive and send data.</param>
+		/// <param name="buffer">The buffer containing the packet that should be handled.</param>
+		/// <param name="size">The size of the packet that should be handled.</param>
+		public static Connection Create(PoolAllocator allocator, Socket socket, byte[] buffer, int size)
+		{
+			Assert.ArgumentNotNull(buffer, nameof(buffer));
+			Assert.That(buffer.Length == NetworkProtocol.MaxPacketSize, "Invalid buffer size.");
+			Assert.InRange(size, buffer);
+
+			var connection = Create(allocator, socket);
+			Array.Copy(buffer, connection._buffer, buffer.Length);
+			connection.HandlePacket(size);
+
+			return connection;
 		}
 	}
 }

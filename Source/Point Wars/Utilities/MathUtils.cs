@@ -329,5 +329,17 @@ namespace PointWars.Utilities
 		{
 			return (float)Math.Sqrt(value);
 		}
+
+		/// <summary>
+		///     Rotates the given vector by the given angle.
+		/// </summary>
+		/// <param name="vector">The vector that should be rotated.</param>
+		/// <param name="angle">The rotation angle in radians.</param>
+		public static Vector2 Rotate(Vector2 vector, float angle)
+		{
+			var cos = Cos(angle);
+			var sin = -Sin(angle);
+			return new Vector2(vector.X * cos - vector.Y * sin, vector.X * sin + vector.Y * cos);
+		}
 	}
 }

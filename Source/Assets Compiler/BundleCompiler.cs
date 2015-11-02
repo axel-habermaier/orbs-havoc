@@ -117,7 +117,7 @@ namespace AssetsCompiler
 						writer.AppendLine($"public static {asset.Type} {asset.Name} {{ get; private set; }}");
 
 					writer.NewLine();
-					writer.AppendLine("private static void LoadAssets(ref BufferReader reader)");
+					writer.AppendLine("private static void LoadAssets(BufferReader reader)");
 					writer.AppendBlockStatement(() =>
 					{
 						foreach (var asset in assets)
@@ -125,7 +125,7 @@ namespace AssetsCompiler
 					});
 
 					writer.NewLine();
-					writer.AppendLine("private static void ReloadAssets(ref BufferReader reader)");
+					writer.AppendLine("private static void ReloadAssets(BufferReader reader)");
 					writer.AppendBlockStatement(() =>
 					{
 						foreach (var asset in assets)

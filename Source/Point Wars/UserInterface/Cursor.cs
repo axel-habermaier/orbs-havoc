@@ -58,20 +58,23 @@ namespace PointWars.UserInterface
 			var width = buffer.ReadInt32();
 			var height = buffer.ReadInt32();
 			var length = buffer.ReadInt32();
-			var data = buffer.Pointer;
-			buffer.Skip(length);
 
-			var sdlSurface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * 4,
-				0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+			using (var data = buffer.Pointer)
+			{
+				buffer.Skip(length);
 
-			if (sdlSurface == null)
-				Log.Die("Failed to create surface for hardware cursor: {0}.", SDL_GetError());
+				var sdlSurface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * 4,
+					0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 
-			_cursor = SDL_CreateColorCursor(sdlSurface, x, y);
-			if (_cursor == null)
-				Log.Die("Failed to create hardware cursor: {0}", SDL_GetError());
+				if (sdlSurface == null)
+					Log.Die("Failed to create surface for hardware cursor: {0}.", SDL_GetError());
 
-			SDL_FreeSurface(sdlSurface);
+				_cursor = SDL_CreateColorCursor(sdlSurface, x, y);
+				if (_cursor == null)
+					Log.Die("Failed to create hardware cursor: {0}", SDL_GetError());
+
+				SDL_FreeSurface(sdlSurface);
+			}
 		}
 
 		/// <summary>

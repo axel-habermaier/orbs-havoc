@@ -31,7 +31,7 @@ namespace PointWars.Platform.Memory
 	/// <summary>
 	///   Wraps a byte buffer, providing methods for reading fundamental data types from the buffer.
 	/// </summary>
-	public struct BufferReader : IDisposable
+	public struct BufferReader
 	{
 		/// <summary>
 		///   Represents a deserialization function.
@@ -49,11 +49,6 @@ namespace PointWars.Platform.Memory
 		///   The buffer from which the data is read.
 		/// </summary>
 		private ArraySegment<byte> _buffer;
-
-		/// <summary>
-		///   A pointer to the first byte of the buffer.
-		/// </summary>
-		private BufferPointer _pointer;
 
 		/// <summary>
 		///   The current read position.
@@ -124,26 +119,7 @@ namespace PointWars.Platform.Memory
 		/// <summary>
 		///   Gets a pointer to the next byte of the buffer that should be read.
 		/// </summary>
-		public unsafe byte* Pointer
-		{
-			get
-			{
-				if (!_pointer.IsInitialized)
-					_pointer = new BufferPointer(_buffer.Array, _buffer.Offset, _buffer.Count);
-
-				return _pointer.Pointer + _readPosition;
-			}
-		}
-
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			_pointer.Dispose();
-			_pointer = new BufferPointer();
-			_buffer = new ArraySegment<byte>();
-		}
+		public BufferPointer Pointer => new BufferPointer(_buffer.Array, _buffer.Offset + _readPosition, _buffer.Count);
 
 		/// <summary>
 		///   Resets the read position so that all content can be read again.

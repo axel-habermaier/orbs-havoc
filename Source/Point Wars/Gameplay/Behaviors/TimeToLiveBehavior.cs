@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,38 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Network
+namespace PointWars.Gameplay.Behaviors
 {
-	using Messages;
+	using Platform.Memory;
+	using Scene;
 	using Utilities;
 
 	/// <summary>
-	///   Associates a message with a sequence number.
+	///   Removes scene nodes after a specific amount of time.
 	/// </summary>
-	internal struct SequencedMessage
+	public class TimeToLiveBehavior : Behavior<SceneNode>
 	{
 		/// <summary>
-		///   Initializes a new instance.
+		///   The remaining number of seconds before the scene node is removed.
 		/// </summary>
-		/// <param name="message">The network message.</param>
-		/// <param name="sequenceNumber">The sequence number of the message.</param>
-		public SequencedMessage(Message message, uint sequenceNumber)
-			: this()
-		{
-			Assert.ArgumentNotNull(message, nameof(message));
+		private float _remainingTime;
 
-			Message = message;
-			SequenceNumber = sequenceNumber;
+		/// <summary>
+		///   Invoked when the behavior should execute a step.
+		/// </summary>
+		/// <param name="elapsedSeconds">The elapsed time in seconds since the last execution of the behavior.</param>
+		public override void Execute(float elapsedSeconds)
+		{
+			_remainingTime -= elapsedSeconds;
+
+			if (_remainingTime < 0)
+				SceneNode.Remove();
 		}
 
 		/// <summary>
-		///   Gets the network message.
+		///   Initializes a new instance.
 		/// </summary>
-		public Message Message { get; }
+		/// <param name="allocator">The allocator that should be used to allocate pooled objects.</param>
+		/// <param name="seconds">The amount of time to wait in seconds before the scene node is removed.</param>
+		public static TimeToLiveBehavior Create(PoolAllocator allocator, float seconds)
+		{
+			Assert.ArgumentNotNull(allocator, nameof(allocator));
 
-		/// <summary>
-		///   Gets the sequence number of the message.
-		/// </summary>
-		public uint SequenceNumber { get; }
+			var behavior = allocator.Allocate<TimeToLiveBehavior>();
+			behavior._remainingTime = seconds;
+			return behavior;
+		}
 	}
 }

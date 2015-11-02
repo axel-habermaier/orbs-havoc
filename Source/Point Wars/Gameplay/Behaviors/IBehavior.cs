@@ -20,38 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Network
+namespace PointWars.Gameplay.Behaviors
 {
-	using Messages;
-	using Utilities;
+	using Platform.Memory;
+	using Scene;
 
 	/// <summary>
-	///   Associates a message with a sequence number.
+	///   Represents a behavior that can be attached to a scene node.
 	/// </summary>
-	internal struct SequencedMessage
+	public interface IBehavior : IPooledObject
 	{
 		/// <summary>
-		///   Initializes a new instance.
+		///   Gets or sets the next behavior in an intrusive list.
 		/// </summary>
-		/// <param name="message">The network message.</param>
-		/// <param name="sequenceNumber">The sequence number of the message.</param>
-		public SequencedMessage(Message message, uint sequenceNumber)
-			: this()
-		{
-			Assert.ArgumentNotNull(message, nameof(message));
-
-			Message = message;
-			SequenceNumber = sequenceNumber;
-		}
+		IBehavior Next { get; set; }
 
 		/// <summary>
-		///   Gets the network message.
+		///   Gets or sets the previous behavior in an intrusive list.
 		/// </summary>
-		public Message Message { get; }
+		IBehavior Previous { get; set; }
 
 		/// <summary>
-		///   Gets the sequence number of the message.
+		///   Gets the scene node the behavior is attached to.
 		/// </summary>
-		public uint SequenceNumber { get; }
+		SceneNode SceneNode { get; }
+
+		/// <summary>
+		///   Attaches the behavior to the given scene node.
+		/// </summary>
+		/// <param name="sceneNode">The scene node the behavior should be attached to.</param>
+		void Attach(SceneNode sceneNode);
+
+		/// <summary>
+		///   Detaches the behavior from the scene node it is attached to.
+		/// </summary>
+		void Detach();
+
+		/// <summary>
+		///   Invoked when the behavior should execute a step.
+		/// </summary>
+		/// <param name="elapsedSeconds">The elapsed time in seconds since the last execution of the behavior.</param>
+		void Execute(float elapsedSeconds);
 	}
 }

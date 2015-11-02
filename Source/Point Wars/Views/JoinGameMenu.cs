@@ -171,8 +171,9 @@ namespace PointWars.Views
 				while (_socket.Available != 0)
 				{
 					var size = _socket.ReceiveFrom(_buffer, ref endPoint);
-					using (var reader = new BufferReader(_buffer, 0, size, Endianess.Big))
-						HandleDiscoveryMessage(reader, endPoint);
+					var reader = new BufferReader(_buffer, 0, size, Endianess.Big);
+
+					HandleDiscoveryMessage(reader, endPoint);
 				}
 			}
 			catch (SocketException e)

@@ -49,14 +49,14 @@ namespace PointWars.Platform.Memory
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="buffer">The buffer the pointer should point to.</param>
-		/// <param name="offset">The offset of the first byte the pointer should point to.</param>
+		/// <param name="offset">The offset to the first byte the pointer should point to.</param>
 		/// <param name="size">The size in bytes of the buffer.</param>
 		public BufferPointer(byte[] buffer, int offset, int size)
 			: this()
 		{
 			Assert.ArgumentNotNull(buffer, nameof(buffer));
 			Assert.ArgumentInRange(offset, 0, buffer.Length - 1, nameof(offset));
-			Assert.ArgumentInRange(size, 1, buffer.Length - offset, nameof(size));
+			Assert.ArgumentSatisfies(size <= buffer.Length, nameof(size), "Invalid length.");
 
 			_handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
 			Pointer = (byte*)_handle.AddrOfPinnedObject() + offset;

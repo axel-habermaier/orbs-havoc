@@ -24,6 +24,8 @@ namespace PointWars.Gameplay.Server
 {
 	using System;
 	using System.Linq;
+	using System.Net;
+	using System.Net.Sockets;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using Platform.Logging;
@@ -43,7 +45,7 @@ namespace PointWars.Gameplay.Server
 		/// <summary>
 		///   Allows the cancellation of the server task.
 		/// </summary>
-		private readonly CancellationTokenSource _cancellation;
+		private CancellationTokenSource _cancellation;
 
 		/// <summary>
 		///   The step timer that is used to update the server at a fixed rate.
@@ -51,34 +53,34 @@ namespace PointWars.Gameplay.Server
 		private readonly StepTimer _timer = new StepTimer { UseFixedTimeStep = true };
 
 		/// <summary>
+		///   The clients connected to the server.
+		/// </summary>
+		private ClientCollection _clients;
+
+		/// <summary>
+		///   The game session that manages the state of the entities.
+		/// </summary>
+		private GameSession _gameSession;
+
+		/// <summary>
+		///   Listens for incoming UDP connections.
+		/// </summary>
+		private Socket _listener;
+
+		/// <summary>
 		///   Periodically sends server discovery messages.
 		/// </summary>
 		private ServerDiscovery _serverDiscovery;
 
 		/// <summary>
+		///   The server logic that handles the communication between the server and the clients.
+		/// </summary>
+		private ServerLogic _serverLogic;
+
+		/// <summary>
 		///   The task that executes the server.
 		/// </summary>
 		private Task _task;
-
-		//		/// <summary>
-		//		///     The clients connected to the server.
-		//		/// </summary>
-		//		private readonly ClientCollection _clients;
-		//
-		//		/// <summary>
-		//		///     The game session that manages the state of the entities.
-		//		/// </summary>
-		//		private readonly GameSession _gameSession;
-		//
-		//		/// <summary>
-		//		///     Listens for incoming UDP connections.
-		//		/// </summary>
-		//		private readonly UdpListener _listener;
-		//
-		//		/// <summary>
-		//		///     The server logic that handles the communication between the server and the clients.
-		//		/// </summary>
-		//		private readonly ServerLogic _serverLogic;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -88,8 +90,6 @@ namespace PointWars.Gameplay.Server
 		{
 			_timer.TargetElapsedSeconds = updateRate;
 			_timer.UpdateRequired += () => Update(_timer.ElapsedSeconds);
-
-			_cancellation = new CancellationTokenSource();
 			_allocator = new PoolAllocator();
 		}
 
@@ -109,16 +109,18 @@ namespace PointWars.Gameplay.Server
 
 			_serverDiscovery = new ServerDiscovery(serverName, port);
 
-			//				_gameSession = new GameSession(_allocator);
-			//				_serverLogic = new ServerLogic(_allocator, _gameSession);
-			//
-			//				_listener = new UdpListener(_allocator, port, NetworkProtocol.MaxPacketSize);
-			//				_listener.Start();
-			//
-			//				_clients = new ClientCollection(_allocator, _serverLogic, _listener);
-			//				_gameSession.InitializeServer(_serverLogic);
+			_gameSession = new GameSession(_allocator);
+			_serverLogic = new ServerLogic(_allocator, _gameSession);
 
+			_listener = new Socket(SocketType.Dgram, ProtocolType.Udp);
+			_listener.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
+
+			_clients = new ClientCollection(_allocator, _serverLogic, _listener);
+			_gameSession.InitializeServer(_serverLogic);
+
+			_cancellation = new CancellationTokenSource();
 			var token = _cancellation.Token;
+
 			_task = Task.Run(() =>
 			{
 				while (!token.IsCancellationRequested)
@@ -170,9 +172,10 @@ namespace PointWars.Gameplay.Server
 				if (IsRunning)
 					Log.Info("Server stopped.");
 
-				//			_clients.SafeDispose();
-				//			_gameSession.SafeDispose();
-				//			_listener.SafeDispose();
+				_cancellation.SafeDispose();
+				_clients.SafeDispose();
+				_gameSession.SafeDispose();
+				_listener.SafeDispose();
 				_serverDiscovery.SafeDispose();
 				_task = null;
 			}
@@ -186,10 +189,11 @@ namespace PointWars.Gameplay.Server
 		{
 			_serverDiscovery.SendDiscoveryMessage(elapsedSeconds);
 
-			//			_clients.DispatchClientMessages();
-			//			_gameSession.Update((float)elapsedSeconds);
-			//			_serverLogic.BroadcastEntityUpdates();
-			//			_clients.SendQueuedMessages();
+			_clients.UpdateClientConnections();
+			_clients.DispatchClientMessages();
+			_gameSession.Update((float)elapsedSeconds);
+			_serverLogic.BroadcastEntityUpdates();
+			_clients.SendQueuedMessages();
 		}
 
 		/// <summary>

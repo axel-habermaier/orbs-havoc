@@ -56,14 +56,12 @@ namespace PointWars.Assets
 		/// <summary>
 		///   Loads the assets from disk.
 		/// </summary>
-		private static void Load(Loader loader)
+		private static void Load(Action<BufferReader> loader)
 		{
 			var start = Clock.GetTime();
 			var assets = Decompress(FileSystem.ReadAllBytes("Assets.pak"));
-			var reader = new BufferReader(assets, Endianess.Little);
 
-			loader(ref reader);
-			reader.Dispose();
+			loader(new BufferReader(assets, Endianess.Little));
 
 			Log.Info("Asset bundle loaded ({0:F2}ms).", (Clock.GetTime() - start) * 1000);
 		}
@@ -73,22 +71,21 @@ namespace PointWars.Assets
 		/// </summary>
 		private static byte[] Decompress(byte[] compressedContent)
 		{
-			using (var buffer = new BufferReader(compressedContent, Endianess.Little))
-			{
-				// Validate the header
-				if (!buffer.CanRead(16))
-					Log.Die("Asset bundle is corrupted: Header information missing.");
+			var buffer = new BufferReader(compressedContent, Endianess.Little);
 
-				if (Guid != new Guid(buffer.ReadByteArray(16)))
-					Log.Die("Asset bundle is corrupted: The header contains an invalid hash.");
+			// Validate the header
+			if (!buffer.CanRead(16))
+				Log.Die("Asset bundle is corrupted: Header information missing.");
 
-				// Decompress the bundle's content
-				var content = new byte[buffer.ReadInt32()];
-				using (var stream = new GZipStream(new MemoryStream(buffer.ReadByteArray()), CompressionMode.Decompress))
-					stream.Read(content, 0, content.Length);
+			if (Guid != new Guid(buffer.ReadByteArray(16)))
+				Log.Die("Asset bundle is corrupted: The header contains an invalid hash.");
 
-				return content;
-			}
+			// Decompress the bundle's content
+			var content = new byte[buffer.ReadInt32()];
+			using (var stream = new GZipStream(new MemoryStream(buffer.ReadByteArray()), CompressionMode.Decompress))
+				stream.Read(content, 0, content.Length);
+
+			return content;
 		}
 
 		/// <summary>
@@ -99,7 +96,5 @@ namespace PointWars.Assets
 			DisposeAssets();
 			Commands.OnReloadAssets -= Reload;
 		}
-
-		private delegate void Loader(ref BufferReader reader);
 	}
 }

@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,38 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Network
+namespace PointWars.Gameplay.Scene
 {
-	using Messages;
+	using Platform.Memory;
 	using Utilities;
 
 	/// <summary>
-	///   Associates a message with a sequence number.
+	///   Represents the root of a scene graph.
 	/// </summary>
-	internal struct SequencedMessage
+	internal class RootNode : SceneNode
 	{
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="message">The network message.</param>
-		/// <param name="sequenceNumber">The sequence number of the message.</param>
-		public SequencedMessage(Message message, uint sequenceNumber)
-			: this()
+		/// <param name="allocator">The game session the planet should belong to.</param>
+		internal static RootNode Create(PoolAllocator allocator)
 		{
-			Assert.ArgumentNotNull(message, nameof(message));
-
-			Message = message;
-			SequenceNumber = sequenceNumber;
+			Assert.ArgumentNotNull(allocator, nameof(allocator));
+			return allocator.Allocate<RootNode>();
 		}
 
 		/// <summary>
-		///   Gets the network message.
+		///   Returns a string that represents the current object.
 		/// </summary>
-		public Message Message { get; }
-
-		/// <summary>
-		///   Gets the sequence number of the message.
-		/// </summary>
-		public uint SequenceNumber { get; }
+		public override string ToString()
+		{
+			return "Root";
+		}
 	}
 }

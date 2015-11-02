@@ -80,10 +80,12 @@ namespace PointWars.Platform.Graphics
 		{
 			var size = new Size(buffer.ReadUInt32(), buffer.ReadUInt32());
 			var sizeInBytes = buffer.ReadInt32();
-			var data = buffer.Pointer;
-			buffer.Skip(sizeInBytes);
 
-			Initialize(size, GL_RGBA, data);
+			using (var data = buffer.Pointer)
+			{
+				buffer.Skip(sizeInBytes);
+				Initialize(size, GL_RGBA, data);
+			}
 		}
 
 		/// <summary>

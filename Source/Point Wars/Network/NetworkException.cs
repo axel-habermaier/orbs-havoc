@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -22,36 +22,23 @@
 
 namespace PointWars.Network
 {
-	using Messages;
-	using Utilities;
+	using System;
+	using JetBrains.Annotations;
 
 	/// <summary>
-	///   Associates a message with a sequence number.
+	///   Raised when a network error occurred.
 	/// </summary>
-	internal struct SequencedMessage
+	public class NetworkException : Exception
 	{
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="message">The network message.</param>
-		/// <param name="sequenceNumber">The sequence number of the message.</param>
-		public SequencedMessage(Message message, uint sequenceNumber)
-			: this()
+		/// <param name="message">A message explaining the exception.</param>
+		/// <param name="args">The format arguments for the exception message.</param>
+		[StringFormatMethod("message")]
+		public NetworkException(string message, params object[] args)
+			: base(String.Format(message, args))
 		{
-			Assert.ArgumentNotNull(message, nameof(message));
-
-			Message = message;
-			SequenceNumber = sequenceNumber;
 		}
-
-		/// <summary>
-		///   Gets the network message.
-		/// </summary>
-		public Message Message { get; }
-
-		/// <summary>
-		///   Gets the sequence number of the message.
-		/// </summary>
-		public uint SequenceNumber { get; }
 	}
 }
