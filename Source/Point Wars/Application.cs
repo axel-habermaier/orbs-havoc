@@ -24,6 +24,7 @@ namespace PointWars
 {
 	using System.Numerics;
 	using System.Threading;
+	using Assets;
 	using Platform;
 	using Platform.Graphics;
 	using Platform.Input;
@@ -95,7 +96,7 @@ namespace PointWars
 			using (Window = new Window(GraphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
 			using (InputDevice = new LogicalInputDevice(Window))
 			using (var bindings = new BindingCollection(InputDevice))
-			using (new Assets.Assets())
+			using (new AssetBundle())
 			using (_spriteBatch = new SpriteBatch())
 			using (_views = new ViewCollection(this))
 			{

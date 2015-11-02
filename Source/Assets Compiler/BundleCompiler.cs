@@ -106,7 +106,7 @@ namespace AssetsCompiler
 				writer.AppendLine("using UserInterface;");
 				writer.NewLine();
 
-				writer.AppendLine("partial class Assets");
+				writer.AppendLine("partial class AssetBundle");
 				writer.AppendBlockStatement(() =>
 				{
 					var hashBytes = String.Join(", ", hash.Select(b => b.ToString()));

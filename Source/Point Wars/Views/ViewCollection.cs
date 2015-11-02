@@ -188,7 +188,7 @@ namespace PointWars.Views
 				element = element.Parent;
 			}
 
-			cursor = cursor ?? Assets.PointerCursor;
+			cursor = cursor ?? AssetBundle.PointerCursor;
 			cursor.Draw();
 		}
 

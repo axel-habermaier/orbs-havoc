@@ -53,7 +53,7 @@ namespace PointWars.UserInterface.Controls
 			IsVisible = true;
 			IsFocusable = true;
 			IsAttachedToRoot = true;
-			Font = Assets.DefaultFont;
+			Font = AssetBundle.DefaultFont;
 			Foreground = Colors.White;
 			FocusedElement = this;
 

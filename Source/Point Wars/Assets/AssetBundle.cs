@@ -34,12 +34,12 @@ namespace PointWars.Assets
 	/// <summary>
 	///   Provides access to assets used throughout the application.
 	/// </summary>
-	public sealed partial class Assets : DisposableObject
+	public sealed partial class AssetBundle : DisposableObject
 	{
 		/// <summary>
 		///   Initializes the assets.
 		/// </summary>
-		public Assets()
+		public AssetBundle()
 		{
 			Load(LoadAssets);
 			Commands.OnReloadAssets += Reload;

@@ -40,7 +40,7 @@
 	</Target>
 	
 	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);@(CompiledFonts);@(CompiledTextures);@(CompiledCursors);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
-		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;@(CompiledTextures->'%(FullPath)')&quot; --cursors &quot;@(CompiledCursors->'%(FullPath)')&quot; --output &quot;$(AssetBundle)&quot; --code &quot;../../Source/Point Wars/Assets/Assets.g.cs&quot;" WorkingDirectory="$(OutDir)" />
+		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;@(CompiledTextures->'%(FullPath)')&quot; --cursors &quot;@(CompiledCursors->'%(FullPath)')&quot; --output &quot;$(AssetBundle)&quot; --code &quot;../../Source/Point Wars/Assets/AssetBundle.g.cs&quot;" WorkingDirectory="$(OutDir)" />
 		<Message Importance="High" Text="Compiled asset bundle." />
 	</Target>
 	

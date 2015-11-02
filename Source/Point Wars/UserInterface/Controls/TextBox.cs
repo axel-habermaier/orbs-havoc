@@ -48,7 +48,7 @@ namespace PointWars.UserInterface.Controls
 			_label = new Label { TextWrapping = TextWrapping.Wrap };
 			_caret = new Caret(this);
 
-			Cursor = Assets.TextCursor;
+			Cursor = AssetBundle.TextCursor;
 			IsFocusable = true;
 			Content = _label;
 		}

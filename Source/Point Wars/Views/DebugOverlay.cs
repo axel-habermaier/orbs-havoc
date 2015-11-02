@@ -199,7 +199,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Represents a measurement that is averaged over a certain number of samples.
 		/// </summary>
-		internal struct AveragedDouble
+		private struct AveragedDouble
 		{
 			/// <summary>
 			///   The last couple of values for a more stable average.

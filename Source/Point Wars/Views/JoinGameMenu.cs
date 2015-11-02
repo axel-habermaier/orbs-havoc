@@ -70,7 +70,7 @@ namespace PointWars.Views
 			{
 				CapturesInput = true,
 				IsFocusable = true,
-				Font = Assets.Roboto14,
+				Font = AssetBundle.Roboto14,
 				AutoFocus = true,
 				InputBindings =
 				{
@@ -89,7 +89,7 @@ namespace PointWars.Views
 						new Label
 						{
 							Text = "Join Game",
-							Font = Assets.Moonhouse80,
+							Font = AssetBundle.Moonhouse80,
 							Margin = new Thickness(0, 0, 0, 30),
 						},
 						new Label

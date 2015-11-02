@@ -165,7 +165,7 @@ namespace PointWars.Views
 				button1.Padding = new Thickness(0, 0, 3, 0);
 				Child = new Border
 				{
-					Font = Assets.Roboto14,
+					Font = AssetBundle.Roboto14,
 					MaxWidth = 600,
 					MinWidth = 200,
 					HorizontalAlignment = HorizontalAlignment.Center,

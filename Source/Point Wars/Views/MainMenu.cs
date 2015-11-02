@@ -48,7 +48,7 @@ namespace PointWars.Views
 					new Label
 					{
 						Text = Application.Name,
-						Font = Assets.Moonhouse80,
+						Font = AssetBundle.Moonhouse80,
 						Margin = new Thickness(0, 0, 0, 30),
 					},
 					CreateButton("Start Game", () => { }),
@@ -70,7 +70,7 @@ namespace PointWars.Views
 		{
 			var button = new Button
 			{
-				Font = Assets.Moonhouse24,
+				Font = AssetBundle.Moonhouse24,
 				Width = 200,
 				Content = label,
 				Margin = new Thickness(4),

@@ -463,7 +463,7 @@ namespace PointWars.Rendering
 			UpdateBuffers();
 
 			// Set the shared GPU state
-			Assets.SpriteBatchShader.Bind();
+			AssetBundle.SpriteBatchShader.Bind();
 			_vertexLayout.Bind();
 			_projectionMatrixBuffer.Bind(0);
 
