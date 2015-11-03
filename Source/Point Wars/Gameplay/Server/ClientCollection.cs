@@ -144,6 +144,10 @@ namespace PointWars.Gameplay.Server
 				{
 					client.SendQueuedMessages();
 				}
+				catch (ConnectionDroppedException)
+				{
+					// Ignore the exception here, we'll deal with the dropped client during the next update
+				}
 				catch (NetworkException)
 				{
 					// Ignore the exception here, we'll deal with the dropped client during the next update

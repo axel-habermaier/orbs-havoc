@@ -68,7 +68,7 @@ namespace PointWars.Gameplay.Entities
 		/// <remarks>
 		///   The method is intentionally hidden from deriving types; deriving entities should use the OnAdded method instead.
 		/// </remarks>
-		protected override sealed void OnAttached()
+		protected sealed override void OnAttached()
 		{
 		}
 
@@ -79,7 +79,7 @@ namespace PointWars.Gameplay.Entities
 		/// <remarks>
 		///   The method is intentionally hidden from deriving types; deriving entities should use the OnRemoved method instead.
 		/// </remarks>
-		protected override sealed void OnDetached()
+		protected sealed override void OnDetached()
 		{
 			Velocity = Vector2.Zero;
 			Player = null;

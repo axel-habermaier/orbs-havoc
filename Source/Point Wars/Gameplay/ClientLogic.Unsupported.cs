@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,21 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Views
+namespace PointWars.Gameplay
 {
-	using Rendering;
+	using Network;
+	using Network.Messages;
+	using Utilities;
 
 	/// <summary>
-	///   Represents the application view of playing a game session.
+	///   Implements the client logic for handling incoming and outgoing client messages.
 	/// </summary>
-	internal sealed class GameSession : View
+	internal partial class ClientLogic : IMessageHandler
 	{
 		/// <summary>
-		///   Draws the game session.
+		///   Handles the given message.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnConnect(ClientConnectMessage message)
 		{
+			HandleUnsupportedMessage(message);
+		}
+
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnPlayerInput(PlayerInputMessage message)
+		{
+			HandleUnsupportedMessage(message);
+		}
+
+		/// <summary>
+		///   Handles an unsupported message.
+		/// </summary>
+		/// <param name="message">The unsupported message that should be handled.</param>
+		private static void HandleUnsupportedMessage(Message message)
+		{
+			Assert.That(false, "The client cannot handle a message of type '{0}'.", message.MessageType);
 		}
 	}
 }

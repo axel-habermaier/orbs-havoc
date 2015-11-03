@@ -24,6 +24,7 @@ namespace PointWars.Network
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Net;
 	using System.Net.Sockets;
 	using Messages;
 	using Platform.Logging;
@@ -55,6 +56,10 @@ namespace PointWars.Network
 		///   The buffer that the current packet is written into.
 		/// </summary>
 		private readonly byte[] _buffer;
+		/// <summary>
+		/// Indicates whether the socket is connected.
+		/// </summary>
+		private readonly bool _isConnected;
 
 		/// <summary>
 		///   The writer that is currently being used to assemble the packet.
@@ -62,19 +67,29 @@ namespace PointWars.Network
 		private BufferWriter _writer;
 
 		/// <summary>
+		///   The remote end point the packets are sent to.
+		/// </summary>
+		private readonly IPEndPoint _remoteEndPoint;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="socket">The UDP channel that should be used to send the assembled packets.</param>
+		/// <param name="remoteEndPoint">The remote end point the packets should be sent to.</param>
 		/// <param name="buffer">The buffer the packet should be assembled to.</param>
+		/// <param name="isConnected">Indicates whether the socket is connected.</param>
 		/// <param name="acknowledgement">The acknowledgement that should be set in the headers of the assembled packets.</param>
-		public PacketAssembler(Socket socket, byte[] buffer, uint acknowledgement)
+		public PacketAssembler(Socket socket, IPEndPoint remoteEndPoint, byte[] buffer, bool isConnected, uint acknowledgement)
 			: this()
 		{
 			Assert.ArgumentNotNull(socket, nameof(socket));
+			Assert.ArgumentNotNull(remoteEndPoint, nameof(remoteEndPoint));
 			Assert.ArgumentNotNull(buffer, nameof(buffer));
 
 			_socket = socket;
+			_remoteEndPoint = remoteEndPoint;
 			_buffer = buffer;
+			_isConnected = isConnected;
 			_acknowledgement = acknowledgement;
 
 			AllocatePacket();
@@ -257,11 +272,9 @@ namespace PointWars.Network
 		/// </summary>
 		private void AllocatePacket()
 		{
-			Assert.IsNull(_buffer, "A packet is already allocated.");
-
 			_writer = new BufferWriter(_buffer, Endianess.Big);
 
-			Log.DebugIf(EnableTracing, "Packet #{2} to {0}, ack: {1}", _socket.RemoteEndPoint, _acknowledgement, PacketCount + 1);
+			Log.DebugIf(EnableTracing, "Packet #{2} to {0}, ack: {1}", _remoteEndPoint, _acknowledgement, PacketCount + 1);
 			PacketHeader.Write(ref _writer, _acknowledgement);
 		}
 
@@ -272,9 +285,12 @@ namespace PointWars.Network
 		{
 			Assert.NotNull(_buffer, "No packet has been allocated.");
 
-			Log.DebugIf(EnableTracing, "Packet length: {0} bytes", _writer.Count);
+			if (!_isConnected)
+				_socket.SendTo(_buffer, _writer.Count, SocketFlags.None, _remoteEndPoint);
+			else
+				_socket.Send(_buffer, _writer.Count, SocketFlags.None);
 
-			_socket.Send(_buffer, _writer.Count, SocketFlags.None);
+			Log.DebugIf(EnableTracing, "Packet length: {0} bytes", _writer.Count);
 			++PacketCount;
 		}
 

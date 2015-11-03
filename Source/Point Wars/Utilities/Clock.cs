@@ -54,7 +54,7 @@ namespace PointWars.Utilities
 		/// <summary>
 		///   The application start time.
 		/// </summary>
-		private static readonly double _startTime = GetTime();
+		private static readonly double StartTime = GetTime();
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -92,7 +92,7 @@ namespace PointWars.Utilities
 		/// </summary>
 		public static double GetTime()
 		{
-			return SDL_GetPerformanceCounter() / (double)SDL_GetPerformanceFrequency() - _startTime;
+			return SDL_GetPerformanceCounter() / (double)SDL_GetPerformanceFrequency() - StartTime;
 		}
 
 		/// <summary>

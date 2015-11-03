@@ -22,7 +22,7 @@
 
 namespace PointWars.Gameplay
 {
-	using Entities.Server;
+	using Entities;
 	using Network;
 	using Platform.Memory;
 	using Utilities;

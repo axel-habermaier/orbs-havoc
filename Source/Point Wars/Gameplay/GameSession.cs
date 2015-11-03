@@ -35,6 +35,11 @@ namespace PointWars.Gameplay
 	internal class GameSession : DisposableObject
 	{
 		/// <summary>
+		/// Gets a value indicating whether the game session is run in server mode.
+		/// </summary>
+		public bool ServerMode { get; private set; }
+
+		/// <summary>
 		///   Initializes a new client-side instance.
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate game objects.</param>
@@ -111,17 +116,19 @@ namespace PointWars.Gameplay
 		/// </summary>
 		public void InitializeClient()
 		{
+			ServerMode = false;
 			Players = new PlayerCollection(Allocator, serverMode: false);
 		}
 
 		/// <summary>
-		///   Initializes a server-side game session.
+		///   Initializes a host game session.
 		/// </summary>
 		/// <param name="serverLogic">The server logic that handles the communication between the server and the clients.</param>
 		public void InitializeServer(ServerLogic serverLogic)
 		{
 			Assert.ArgumentNotNull(serverLogic, nameof(serverLogic));
 
+			ServerMode = true;
 			Players = new PlayerCollection(Allocator, serverMode: true);
 		}
 

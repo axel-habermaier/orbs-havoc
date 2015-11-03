@@ -35,7 +35,7 @@ namespace PointWars.Gameplay.Server
 	/// <summary>
 	///   Represents a server hosting a game session.
 	/// </summary>
-	public sealed class ServerGameSession : DisposableObject
+	public sealed class GameSessionHost : DisposableObject
 	{
 		/// <summary>
 		///   The allocator that is used to allocate server objects.
@@ -86,7 +86,7 @@ namespace PointWars.Gameplay.Server
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="updateRate">The server update rate in frames per second.</param>
-		public ServerGameSession(float updateRate = 1 / 60.0f)
+		public GameSessionHost(float updateRate = 1 / 60.0f)
 		{
 			_timer.TargetElapsedSeconds = updateRate;
 			_timer.UpdateRequired += () => Update(_timer.ElapsedSeconds);

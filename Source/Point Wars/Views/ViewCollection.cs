@@ -68,11 +68,12 @@ namespace PointWars.Views
 				MessageBoxes,
 				MainMenu,
 				JoinGameMenu,
-				GameSession
+				LoadingView,
+				GameSessionView
 			};
 
-			Commands.OnStartServer += StartServer;
-			Commands.OnStopServer += Server.Stop;
+			Commands.OnStartServer += StartHost;
+			Commands.OnStopServer += Host.Stop;
 		}
 
 		/// <summary>
@@ -81,9 +82,9 @@ namespace PointWars.Views
 		public RootUIElement RootElement { get; }
 
 		/// <summary>
-		///   Gets the server that hosts game sessions.
+		///   Gets the local game session host.
 		/// </summary>
-		public ServerGameSession Server { get; } = new ServerGameSession();
+		public GameSessionHost Host { get; } = new GameSessionHost();
 
 		/// <summary>
 		///   Gets the menu that lets the user join a game.
@@ -94,6 +95,11 @@ namespace PointWars.Views
 		///   Gets the application the view collection belongs to.
 		/// </summary>
 		public Application Application { get; }
+
+		/// <summary>
+		///   Gets the loading view.
+		/// </summary>
+		public LoadingView LoadingView { get; } = new LoadingView();
 
 		/// <summary>
 		///   Gets the main menu view.
@@ -118,7 +124,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets the game session view.
 		/// </summary>
-		public GameSession GameSession { get; } = new GameSession();
+		public GameSessionView GameSessionView { get; } = new GameSessionView();
 
 		/// <summary>
 		///   Changes the size available to the views.
@@ -154,7 +160,7 @@ namespace PointWars.Views
 			}
 
 			RootElement.Update(Application.Window.Size);
-			Server.CheckForErrors();
+			Host.CheckForErrors();
 		}
 
 		/// <summary>
@@ -167,7 +173,7 @@ namespace PointWars.Views
 
 			spriteBatch.Layer = 0;
 			spriteBatch.PositionOffset = Vector2.Zero;
-			GameSession.Draw(spriteBatch);
+			GameSessionView.Draw(spriteBatch);
 
 			RootElement.Draw(spriteBatch);
 			DrawCursor();
@@ -197,10 +203,10 @@ namespace PointWars.Views
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Commands.OnStartServer -= StartServer;
-			Commands.OnStopServer -= Server.Stop;
+			Commands.OnStartServer -= StartHost;
+			Commands.OnStopServer -= Host.Stop;
 
-			Server.SafeDispose();
+			Host.SafeDispose();
 			Application.Window.Closing -= Exit;
 			_views.SafeDisposeAll();
 		}
@@ -227,13 +233,13 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Starts a new server game session.
+		///   Starts a new locally-hosted game session.
 		/// </summary>
-		private void StartServer(string serverName, ushort serverPort)
+		private void StartHost(string serverName, ushort serverPort)
 		{
 			try
 			{
-				Server.Start(serverName, serverPort);
+				Host.Start(serverName, serverPort);
 			}
 			catch (SocketException e)
 			{

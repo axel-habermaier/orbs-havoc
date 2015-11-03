@@ -49,6 +49,14 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
+		///   Closes all shown message boxes without running their continuations.
+		/// </summary>
+		public void CloseAll()
+		{
+			_areaPanel.Children.Clear();
+		}
+
+		/// <summary>
 		///   Shows the given message box.
 		/// </summary>
 		/// <param name="messageBox">The message box that should be shown.</param>

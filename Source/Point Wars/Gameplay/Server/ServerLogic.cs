@@ -210,16 +210,23 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(player, nameof(player));
 			Assert.ArgumentNotNull(inputMessage, nameof(inputMessage));
 
+			// Respawn the player if necessary
 			if (player.Entity == null || player.Entity.IsRemoved)
-				return;
+			{
+				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
 
-			player.Entity.HandlePlayerInput(
+				player.Entity.SafeDispose();
+				player.Entity = Avatar.Create(_gameSession, player, position: new Vector2(0, 30000));
+				player.Entity.AcquireOwnership();
+				player.Entity.AttachTo(_gameSession.SceneGraph.Root);
+			}
+
+			player.Entity.PlayerInput.Handle(
 				inputMessage.Target,
 				(inputMask & inputMessage.Forward) != 0,
 				(inputMask & inputMessage.Backward) != 0,
 				(inputMask & inputMessage.StrafeLeft) != 0,
-				(inputMask & inputMessage.StrafeRight) != 0,
-				(inputMask & inputMessage.AfterBurner) != 0);
+				(inputMask & inputMessage.StrafeRight) != 0);
 		}
 
 		/// <summary>

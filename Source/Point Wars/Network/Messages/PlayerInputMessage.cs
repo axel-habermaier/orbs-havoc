@@ -23,7 +23,6 @@
 namespace PointWars.Network.Messages
 {
 	using System.Numerics;
-	using Network;
 	using Platform.Memory;
 	using Utilities;
 
@@ -33,13 +32,6 @@ namespace PointWars.Network.Messages
 	[UnreliableTransmission(MessageType.PlayerInput)]
 	internal sealed class PlayerInputMessage : Message
 	{
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public PlayerInputMessage()
-		{
-		}
-
 		/// <summary>
 		///   Gets the boolean state value for the backwards input, including the seven previous states.
 		/// </summary>
@@ -54,11 +46,6 @@ namespace PointWars.Network.Messages
 		///   Gets the monotonically increasing frame number, starting at 1.
 		/// </summary>
 		public uint FrameNumber { get; private set; }
-
-		/// <summary>
-		///   Gets the boolean state value for the after burner input, including the seven previous states.
-		/// </summary>
-		public byte AfterBurner { get; private set; }
 
 		/// <summary>
 		///   Gets the player that generated the input.
@@ -104,7 +91,6 @@ namespace PointWars.Network.Messages
 			writer.WriteByte(TurnRight);
 			writer.WriteByte(StrafeLeft);
 			writer.WriteByte(StrafeRight);
-			writer.WriteByte(AfterBurner);
 			WriteVector2(ref writer, Target);
 		}
 
@@ -122,7 +108,6 @@ namespace PointWars.Network.Messages
 			TurnRight = reader.ReadByte();
 			StrafeLeft = reader.ReadByte();
 			StrafeRight = reader.ReadByte();
-			AfterBurner = reader.ReadByte();
 			Target = ReadVector2(ref reader);
 		}
 
@@ -149,17 +134,12 @@ namespace PointWars.Network.Messages
 		/// <param name="strafeRight">The boolean state value for the strafe right input, including the seven previous states.</param>
 		/// <param name="turnLeft">The boolean state value for the turn left input, including the seven previous states.</param>
 		/// <param name="turnRight">The boolean state value for the turn right input, including the seven previous states.</param>
-		/// <param name="afterBurner">The boolean state value for the after burner input, including the seven previous states.</param>
-		/// <param name="fireWeapons">The boolean state values for the shooting inputs, including the seven previous states.</param>
 		public static PlayerInputMessage Create(PoolAllocator poolAllocator, NetworkIdentity player, uint frameNumber, Vector2 target,
 												byte forward, byte backward,
 												byte strafeLeft, byte strafeRight,
-												byte turnLeft, byte turnRight,
-												byte afterBurner,
-												byte[] fireWeapons)
+												byte turnLeft, byte turnRight)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
-			Assert.ArgumentNotNull(fireWeapons, nameof(fireWeapons));
 
 			var message = poolAllocator.Allocate<PlayerInputMessage>();
 			message.Player = player;
@@ -171,7 +151,6 @@ namespace PointWars.Network.Messages
 			message.StrafeRight = strafeRight;
 			message.TurnLeft = turnLeft;
 			message.TurnRight = turnRight;
-			message.AfterBurner = afterBurner;
 
 			return message;
 		}
@@ -182,8 +161,7 @@ namespace PointWars.Network.Messages
 		public override string ToString()
 		{
 			return $"{MessageType}, Player={Player}, FrameNumber={FrameNumber}, Target={{{Target}}}, Forward={Forward}, Backward={Backward}, " +
-				   $"StrafeLeft={StrafeLeft}, StrafeRight={StrafeRight}, TurnLeft={TurnLeft}, TurnRight={TurnRight}," +
-				   $" AfterBurner={AfterBurner}";
+				   $"StrafeLeft={StrafeLeft}, StrafeRight={StrafeRight}, TurnLeft={TurnLeft}, TurnRight={TurnRight}";
 		}
 	}
 }

@@ -116,6 +116,13 @@ namespace PointWars.Gameplay
 		public int Count => _players.Count;
 
 		/// <summary>
+		///   Gets the player that corresponds to the given identity. Returns null if no player with the given identity could
+		///   be found, or if the generation did not match.
+		/// </summary>
+		/// <param name="identity">The identity of the player that should be returned.</param>
+		public Player this[NetworkIdentity identity] => _identityMap[identity];
+
+		/// <summary>
 		///   Gets an enumerator that can be used enumerate all active players.
 		/// </summary>
 		public List<Player>.Enumerator GetEnumerator()

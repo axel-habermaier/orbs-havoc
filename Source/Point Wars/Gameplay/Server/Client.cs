@@ -194,8 +194,19 @@ namespace PointWars.Gameplay.Server
 		{
 			Assert.NotPooled(this);
 
-			if (!IsDisconnected)
-				_connection.DispatchReceivedMessages(this);
+			try
+			{
+				if (!IsDisconnected)
+					_connection.DispatchReceivedMessages(this);
+			}
+			catch (ConnectionDroppedException)
+			{
+				// Ignore the exception here, we'll deal with the dropped client during the next update
+			}
+			catch (NetworkException)
+			{
+				// Ignore the exception here, we'll deal with the dropped client during the next update
+			}
 		}
 
 		/// <summary>

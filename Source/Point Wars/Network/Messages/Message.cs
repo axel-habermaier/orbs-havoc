@@ -29,7 +29,6 @@ namespace PointWars.Network.Messages
 	using System.Reflection;
 	using System.Runtime.CompilerServices;
 	using JetBrains.Annotations;
-	using Network;
 	using Platform.Memory;
 	using Utilities;
 
@@ -131,7 +130,7 @@ namespace PointWars.Network.Messages
 		/// <summary>
 		///   Gets a value indicating whether the message is reliable.
 		/// </summary>
-		public bool IsReliable { get; private set; }
+		public bool IsReliable { get; }
 
 		/// <summary>
 		///   Gets a value indicating whether the message is unreliable.

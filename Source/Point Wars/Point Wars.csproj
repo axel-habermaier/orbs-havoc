@@ -57,8 +57,12 @@
     </Compile>
     <Compile Include="Gameplay\Behaviors\Behavior.cs" />
     <Compile Include="Gameplay\Behaviors\IBehavior.cs" />
+    <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
+    <Compile Include="Gameplay\ClientLogic.Unsupported.cs">
+      <DependentUpon>ClientLogic.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gameplay\Entities\Entity.cs" />
-    <Compile Include="Gameplay\Entities\Server\Avatar.cs" />
+    <Compile Include="Gameplay\Entities\Avatar.cs" />
     <Compile Include="Gameplay\GameSession.cs" />
     <Compile Include="Gameplay\Player.cs" />
     <Compile Include="Gameplay\PlayerCollection.cs" />
@@ -70,16 +74,18 @@
     <Compile Include="Gameplay\Behaviors\TimeToLiveBehavior.cs" />
     <Compile Include="Gameplay\Scene\TypedPostOrderEnumerator.cs" />
     <Compile Include="Gameplay\Scene\TypedPreOrderEnumerator.cs" />
+    <Compile Include="Gameplay\ClientLogic.cs" />
     <Compile Include="Gameplay\Server\Client.cs" />
     <Compile Include="Gameplay\Server\Client.Unsupported.cs">
       <DependentUpon>Client.cs</DependentUpon>
     </Compile>
     <Compile Include="Gameplay\Server\ClientCollection.cs" />
     <Compile Include="Gameplay\Server\ServerDiscovery.cs" />
-    <Compile Include="Gameplay\Server\ServerGameSession.cs" />
+    <Compile Include="Gameplay\Server\GameSessionHost.cs" />
     <Compile Include="Gameplay\Server\ServerLogic.cs" />
     <Compile Include="Network\BatchedMessage.cs" />
     <Compile Include="Network\Connection.cs" />
+    <Compile Include="Network\ConnectionDroppedException.cs" />
     <Compile Include="Network\DeliveryManager.cs" />
     <Compile Include="Network\EntityType.cs" />
     <Compile Include="Network\IMessageHandler.cs" />
@@ -113,9 +119,12 @@
     <Compile Include="Network\NetworkIdentityMap.cs" />
     <Compile Include="Network\PacketAssembler.cs" />
     <Compile Include="Network\PacketHeader.cs" />
+    <Compile Include="Network\ProtocolMismatchException.cs" />
     <Compile Include="Network\RejectReason.cs" />
     <Compile Include="Network\ReliableTransmissionAttribute.cs" />
     <Compile Include="Network\SequencedMessage.cs" />
+    <Compile Include="Network\ServerFullException.cs" />
+    <Compile Include="Network\ServerQuitException.cs" />
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
@@ -168,7 +177,8 @@
     <Compile Include="Utilities\Enumerator.cs" />
     <Compile Include="Views\Console.cs" />
     <Compile Include="Views\DebugOverlay.cs" />
-    <Compile Include="Views\GameSession.cs" />
+    <Compile Include="Views\LoadingView.cs" />
+    <Compile Include="Views\GameSessionView.cs" />
     <Compile Include="Views\JoinGameMenu.cs" />
     <Compile Include="Views\MainMenu.cs" />
     <Compile Include="Views\MessageBoxes.cs" />

@@ -24,7 +24,6 @@ namespace PointWars.Network
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
 	using System.Net;
 	using System.Net.Sockets;
 	using Messages;
@@ -74,6 +73,11 @@ namespace PointWars.Network
 		private MessageDeserializer _deserializer;
 
 		/// <summary>
+		///   Indicates whether the socket is connected.
+		/// </summary>
+		private bool _isConnected;
+
+		/// <summary>
 		///   The socket that is used for the communication with the remote peer.
 		/// </summary>
 		private Socket _socket;
@@ -100,7 +104,7 @@ namespace PointWars.Network
 		/// <summary>
 		///   Gets the endpoint of the remote peer.
 		/// </summary>
-		public IPEndPoint RemoteEndPoint => (IPEndPoint)_socket.RemoteEndPoint;
+		public IPEndPoint RemoteEndPoint { get; private set; }
 
 		/// <summary>
 		///   Gets the remaining time in milliseconds before the connection will be dropped.
@@ -127,11 +131,33 @@ namespace PointWars.Network
 			// Cap the time so that we don't disconnect when the debugger is suspending the process
 			_timeSinceLastPacket += Math.Min(elapsedTime, 500);
 
+			HandlePackets();
+			HandleMessages(handler);
+		}
+
+		/// <summary>
+		///   Handles the packets received over the socket.
+		/// </summary>
+		private void HandlePackets()
+		{
 			try
 			{
-				while (_socket.Available > 0)
+				if (_isConnected)
 				{
-					var size = _socket.Receive(_buffer);
+					while (_socket.Available > 0)
+					{
+						var size = _socket.Receive(_buffer);
+						HandlePacket(size);
+					}
+				}
+				else if (_socket.Available > 0)
+				{
+					EndPoint serverEndPoint = new IPEndPoint(IPAddress.IPv6Any, 0);
+					var size = _socket.ReceiveFrom(_buffer, ref serverEndPoint);
+
+					_socket.Connect(serverEndPoint);
+					_isConnected = true;
+
 					HandlePacket(size);
 				}
 			}
@@ -140,11 +166,6 @@ namespace PointWars.Network
 				IsDropped = true;
 				throw new NetworkException("{0}", e.GetMessage());
 			}
-
-			foreach (var sequencedMessage in _receivedMessages)
-				sequencedMessage.Message.Dispatch(handler, sequencedMessage.SequenceNumber);
-
-			ClearReceivedMessages();
 		}
 
 		/// <summary>
@@ -168,8 +189,9 @@ namespace PointWars.Network
 
 			try
 			{
-				// Send all queued messages to the remote peer
-				_outgoingMessages.SendMessages(new PacketAssembler(_socket, _buffer, _deliveryManager.LastReceivedReliableSequenceNumber));
+				var sequenceNumber = _deliveryManager.LastReceivedReliableSequenceNumber;
+				var remoteEndPoint = _isConnected ? (IPEndPoint)_socket.RemoteEndPoint : RemoteEndPoint;
+				_outgoingMessages.SendMessages(new PacketAssembler(_socket, remoteEndPoint, _buffer, _isConnected, sequenceNumber));
 			}
 			catch (SocketException e)
 			{
@@ -232,6 +254,17 @@ namespace PointWars.Network
 		}
 
 		/// <summary>
+		///   Handles the received messages.
+		/// </summary>
+		private void HandleMessages(IMessageHandler handler)
+		{
+			foreach (var sequencedMessage in _receivedMessages)
+				sequencedMessage.Message.Dispatch(handler, sequencedMessage.SequenceNumber);
+
+			ClearReceivedMessages();
+		}
+
+		/// <summary>
 		///   Invoked when the pooled instance is returned to the pool.
 		/// </summary>
 		protected override void OnReturning()
@@ -269,7 +302,6 @@ namespace PointWars.Network
 		/// <summary>
 		///   In debug builds, checks whether the connection is faulted or has already been disposed.
 		/// </summary>
-		[DebuggerHidden]
 		private void CheckAccess()
 		{
 			Assert.NotPooled(this);
@@ -279,25 +311,40 @@ namespace PointWars.Network
 				return;
 
 			IsDropped = true;
-			throw new NetworkException("The connection to the server has been lost.");
+			throw new ConnectionDroppedException();
 		}
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate message objects.</param>
-		/// <param name="socket">The socket that should be used to receive and send data.</param>
-		public static Connection Create(PoolAllocator allocator, Socket socket)
+		private static Connection Create(PoolAllocator allocator)
 		{
-			Assert.ArgumentNotNull(socket, nameof(socket));
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 
 			var connection = allocator.Allocate<Connection>();
 			connection._allocator = allocator;
 			connection._deserializer = MessageDeserializer.Create(allocator, connection._deliveryManager);
-			connection._socket = socket;
 			connection._clock.Reset();
 			connection._deliveryManager.Reset();
+			return connection;
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="allocator">The allocator that should be used to allocate message objects.</param>
+		/// <param name="serverEndPoint">The end point of the server the connection should be established with.</param>
+		public static Connection Create(PoolAllocator allocator, IPEndPoint serverEndPoint)
+		{
+			Assert.ArgumentNotNull(serverEndPoint, nameof(serverEndPoint));
+			Assert.ArgumentNotNull(allocator, nameof(allocator));
+
+			var connection = Create(allocator);
+			connection._socket = new Socket(SocketType.Dgram, ProtocolType.Udp);
+			connection.RemoteEndPoint = serverEndPoint;
+			connection._isConnected = false;
+
 			return connection;
 		}
 
@@ -314,7 +361,11 @@ namespace PointWars.Network
 			Assert.That(buffer.Length == NetworkProtocol.MaxPacketSize, "Invalid buffer size.");
 			Assert.InRange(size, buffer);
 
-			var connection = Create(allocator, socket);
+			var connection = Create(allocator);
+			connection._socket = socket;
+			connection._isConnected = true;
+			connection.RemoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
+
 			Array.Copy(buffer, connection._buffer, buffer.Length);
 			connection.HandlePacket(size);
 

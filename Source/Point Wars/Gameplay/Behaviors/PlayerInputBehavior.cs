@@ -20,11 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Entities.Server
+namespace PointWars.Gameplay.Behaviors
 {
 	using System.Numerics;
+	using Entities;
+	using Platform.Memory;
+	using Utilities;
 
-	internal class Avatar : Entity
+	/// <summary>
+	///   Allows a player to control an entity.
+	/// </summary>
+	internal class PlayerInputBehavior : Behavior<Entity>
 	{
 		/// <summary>
 		///   Handles the given player input.
@@ -34,26 +40,35 @@ namespace PointWars.Gameplay.Entities.Server
 		/// <param name="backward">Indicates whether the ship should move backward.</param>
 		/// <param name="strafeLeft">Indicates whether the ship should strafe to the left.</param>
 		/// <param name="strafeRight">Indicates whether the ship should strafe to the right.</param>
-		/// <param name="warp">Indicates whether the ship should enable its warp drive.</param>
-		public void HandlePlayerInput(Vector2 target, bool forward, bool backward, bool strafeLeft, bool strafeRight, bool warp)
+		public void Handle(Vector2 target, bool forward, bool backward, bool strafeLeft, bool strafeRight)
 		{
 			if (forward)
-				Velocity += new Vector2(1, 0);
+				SceneNode.Velocity += new Vector2(1, 0);
 			if (backward)
-				Velocity += new Vector2(-1, 0);
+				SceneNode.Velocity += new Vector2(-1, 0);
 			if (strafeLeft)
-				Velocity += new Vector2(0, -1);
+				SceneNode.Velocity += new Vector2(0, -1);
 			if (strafeRight)
-				Velocity += new Vector2(0, 1);
+				SceneNode.Velocity += new Vector2(0, 1);
 		}
 
 		/// <summary>
-		///   Updates the entity when the entity is used by a server.
+		///   Invoked when the behavior should execute a step.
 		/// </summary>
-		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
-		public override void Update(float elapsedSeconds)
+		/// <param name="elapsedSeconds">The elapsed time in seconds since the last execution of the behavior.</param>
+		public override void Execute(float elapsedSeconds)
 		{
-			Position += Velocity * elapsedSeconds;
+			SceneNode.Position += SceneNode.Velocity * elapsedSeconds;
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="allocator">The allocator that should be used to allocate pooled objects.</param>
+		public static PlayerInputBehavior Create(PoolAllocator allocator)
+		{
+			Assert.ArgumentNotNull(allocator, nameof(allocator));
+			return allocator.Allocate<PlayerInputBehavior>();
 		}
 	}
 }
