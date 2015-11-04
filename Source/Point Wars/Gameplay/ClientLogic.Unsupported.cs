@@ -29,7 +29,7 @@ namespace PointWars.Gameplay
 	/// <summary>
 	///   Implements the client logic for handling incoming and outgoing client messages.
 	/// </summary>
-	internal partial class ClientLogic : IMessageHandler
+	internal partial class ClientLogic
 	{
 		/// <summary>
 		///   Handles the given message.

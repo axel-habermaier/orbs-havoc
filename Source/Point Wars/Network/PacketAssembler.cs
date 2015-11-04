@@ -178,11 +178,11 @@ namespace PointWars.Network
 					++count;
 				} while (batchedMessage.Messages.Count > 0);
 
-				// Check whether we've written too many messages. This can't happen at the moment because
-				// each message is greater than 2 bytes and we have at most 512 bytes per packet available,
+				// Check whether we've written too many messages. This shouldn't happen at the moment because
+				// each message is greater than 5 bytes and we have at most 1400 bytes per packet available,
 				// so the message count will always be less than Byte.MaxValue. This will become a problem
 				// if we ever increase the packet size.
-				Assert.That(NetworkProtocol.MaxPacketSize == 512, "Batched message might have to be split even further.");
+				Assert.That(NetworkProtocol.MaxPacketSize <= 1400, "Batched message might have to be split even further.");
 				Assert.That(count <= Byte.MaxValue, "Too many messages have been written.");
 
 				// We now have to write the message count, so we go back to the reserved place for the count in the packet,

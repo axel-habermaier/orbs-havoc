@@ -34,9 +34,9 @@ namespace PointWars.Views
 	using Utilities;
 
 	/// <summary>
-	///   Represents the application view of loading a game session.
+	///   Represents loading overlay at the start of a game session.
 	/// </summary>
-	internal sealed class LoadingView : View
+	internal sealed class LoadingOverlay : View
 	{
 		private readonly Label _infoLabel = new Label { HorizontalAlignment = HorizontalAlignment.Center };
 		private Clock _clock = new Clock();

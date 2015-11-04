@@ -30,15 +30,16 @@ namespace PointWars.Views
 	using Platform.Memory;
 	using Rendering;
 	using Scripting;
+	using UserInterface.Controls;
+	using UserInterface.Input;
 	using Utilities;
 
 	/// <summary>
 	///   Represents the application view of playing a game session.
 	/// </summary>
-	internal sealed class GameSessionView : View
+	internal sealed class GameView : View
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
-
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
 		private Connection _connection;
@@ -58,6 +59,16 @@ namespace PointWars.Views
 			Commands.OnDisconnect += Disconnect;
 			Commands.OnSay += OnSay;
 			Cvars.PlayerNameChanged += OnPlayerNameChanged;
+
+			RootElement = new Border
+			{
+				CapturesInput = true,
+				AutoFocus = true,
+				InputBindings =
+				{
+					new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar)
+				}
+			};
 		}
 
 		/// <summary>
@@ -76,12 +87,15 @@ namespace PointWars.Views
 						return;
 
 					Log.Info("Loading completed and game state synced. Now connected to game session hosted by {0}.", ServerEndPoint);
-					Views.LoadingView.IsActive = false;
+					Views.LoadingOverlay.IsActive = false;
 
 					// Resend player name, as it might have been changed during the connection attempt
 					OnPlayerNameChanged();
 
 					_clock.Reset();
+
+					// Remove all event messages that have been added, e.g., for player joins
+					Views.EventMessages.Clear();
 				}
 				else
 				{
@@ -157,14 +171,14 @@ namespace PointWars.Views
 			ServerEndPoint = new IPEndPoint(serverAddress, serverPort);
 
 			_gameSession = new GameSession(_allocator);
-			_clientLogic = new ClientLogic(_allocator, _gameSession);
+			_clientLogic = new ClientLogic(_allocator, _gameSession, Views.EventMessages);
 			_connection = Connection.Create(_allocator, ServerEndPoint);
 
 			_gameSession.InitializeClient();
 			_connection.EnqueueMessage(ClientConnectMessage.Create(_allocator, Cvars.PlayerName));
 
 			IsActive = true;
-			Views.LoadingView.Load(ServerEndPoint);
+			Views.LoadingOverlay.Load(ServerEndPoint);
 		}
 
 		/// <summary>
@@ -192,8 +206,10 @@ namespace PointWars.Views
 		/// </summary>
 		private void Disconnect()
 		{
-			Views.LoadingView.IsActive = false;
+			Views.LoadingOverlay.IsActive = false;
 			Views.MainMenu.IsActive = true;
+			Views.Chat.IsActive = false;
+			Views.EventMessages.Clear();
 			IsActive = false;
 
 			_gameSession.SafeDispose();

@@ -28,34 +28,32 @@ namespace PointWars.Gameplay
 	using Network.Messages;
 	using Platform.Memory;
 	using Utilities;
+	using Views;
 
 	/// <summary>
 	///   Implements the client logic for handling incoming and outgoing client messages.
 	/// </summary>
 	internal partial class ClientLogic : IMessageHandler
 	{
-		/// <summary>
-		///   The allocator that is used to allocate pooled objects.
-		/// </summary>
 		private readonly PoolAllocator _allocator;
-
-		/// <summary>
-		///   The game session that is being played.
-		/// </summary>
 		private readonly GameSession _gameSession;
+		private readonly EventMessages _eventMessages;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate pooled objects.</param>
 		/// <param name="gameSession">The game session that is being played.</param>
-		public ClientLogic(PoolAllocator allocator, GameSession gameSession)
+		/// <param name="eventMessages">The event messages view that displays event messages for the client.</param>
+		public ClientLogic(PoolAllocator allocator, GameSession gameSession, EventMessages eventMessages)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
+			Assert.ArgumentNotNull(eventMessages, nameof(eventMessages));
 
 			_allocator = allocator;
 			_gameSession = gameSession;
+			_eventMessages = eventMessages;
 		}
 
 		/// <summary>
@@ -70,8 +68,9 @@ namespace PointWars.Gameplay
 		void IMessageHandler.OnEntityAdded(EntityAddMessage message)
 		{
 			var player = _gameSession.Players[message.Player];
-			Assert.NotNull(player, "Expected a valid player.");
+			Assert.NotNull(player, "Entity add message references unknown player.");
 
+			// TODO
 			var avatar = Avatar.Create(_gameSession, player);
 			_gameSession.SceneGraph.Add(avatar, _gameSession.SceneGraph.Root);
 		}
@@ -82,7 +81,10 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnPlayerChatMessage(PlayerChatMessage message)
 		{
-			throw new NotImplementedException();
+			var player = _gameSession.Players[message.Player];
+			Assert.NotNull(player, "Chat message references unknown player.");
+
+			_eventMessages.AddChatMessage(player, message.Message);
 		}
 
 		/// <summary>
@@ -91,7 +93,7 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnEntityCollision(EntityCollisionMessage message)
 		{
-			throw new NotImplementedException();
+			// TODO
 		}
 
 		/// <summary>
@@ -109,7 +111,9 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnPlayerJoin(PlayerJoinMessage message)
 		{
-			_gameSession.Players.Add(Player.Create(_allocator, message.PlayerName, message.Player));
+			var player = Player.Create(_allocator, message.PlayerName, message.Player);
+			_gameSession.Players.Add(player);
+			_eventMessages.AddJoinMessage(player);
 		}
 
 		/// <summary>
@@ -118,7 +122,13 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnPlayerKill(PlayerKillMessage message)
 		{
-			throw new NotImplementedException();
+			var killer = _gameSession.Players[message.Killer];
+			var victim = _gameSession.Players[message.Victim];
+
+			Assert.NotNull(killer, "Kill message references unknown killer.");
+			Assert.NotNull(victim, "Kill message references unknown victim.");
+
+			_eventMessages.AddKillMessage(killer, victim);
 		}
 
 		/// <summary>
@@ -128,8 +138,27 @@ namespace PointWars.Gameplay
 		void IMessageHandler.OnPlayerLeave(PlayerLeaveMessage message)
 		{
 			var player = _gameSession.Players[message.Player];
-			Assert.NotNull(player, "Expected a valid player.");
+			Assert.NotNull(player, "Leave message references unknown player.");
 
+			// Add the event message first, otherwise the player will already have been removed
+			switch (message.Reason)
+			{
+				case LeaveReason.ConnectionDropped:
+					_eventMessages.AddTimeoutMessage(player);
+					break;
+				case LeaveReason.Misbehaved:
+					_eventMessages.AddKickedMessage(player, "Network protocol violation.");
+					break;
+				case LeaveReason.Disconnect:
+				case LeaveReason.Unknown:
+					_eventMessages.AddLeaveMessage(player);
+					break;
+				default:
+					Assert.InRange(message.Reason);
+					break;
+			}
+
+			// Now we can remove the player
 			_gameSession.Players.Remove(player);
 		}
 
@@ -139,7 +168,17 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnPlayerName(PlayerNameMessage message)
 		{
-			throw new NotImplementedException();
+			// Ignore the server player
+			if (message.Player == NetworkProtocol.ServerPlayerIdentity)
+				return;
+
+			var player = _gameSession.Players[message.Player];
+			Assert.NotNull(player, "Player name message references unknown player.");
+
+			var previousName = player.Name;
+			player.Name = message.PlayerName;
+
+			_eventMessages.AddNameChangeMessage(player, previousName);
 		}
 
 		/// <summary>
@@ -165,7 +204,7 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnEntityRemove(EntityRemoveMessage message)
 		{
-			throw new NotImplementedException();
+			// TODO
 		}
 
 		/// <summary>
@@ -175,7 +214,12 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnPlayerStats(PlayerStatsMessage message, uint sequenceNumber)
 		{
-			throw new NotImplementedException();
+			var player = _gameSession.Players[message.Player];
+			Assert.NotNull(player, "Player stats message references unknown player.");
+
+			player.Kills = message.Kills;
+			player.Deaths = message.Deaths;
+			player.Ping = message.Ping;
 		}
 
 		/// <summary>
@@ -200,7 +244,7 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdateCircle(UpdateCircleMessage message, uint sequenceNumber)
 		{
-			throw new NotImplementedException();
+			// TODO
 		}
 
 		/// <summary>
@@ -210,7 +254,7 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdateTransform(UpdateTransformMessage message, uint sequenceNumber)
 		{
-			throw new NotImplementedException();
+			// TODO
 		}
 
 		/// <summary>
@@ -220,7 +264,7 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdatePosition(UpdatePositionMessage message, uint sequenceNumber)
 		{
-			throw new NotImplementedException();
+			// TODO
 		}
 
 		/// <summary>
@@ -230,7 +274,7 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdateRay(UpdateRayMessage message, uint sequenceNumber)
 		{
-			throw new NotImplementedException();
+			// TODO
 		}
 	}
 }

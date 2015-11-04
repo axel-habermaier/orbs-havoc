@@ -37,13 +37,31 @@ namespace PointWars.UserInterface.Controls
 	/// </summary>
 	public class TextBox : Control
 	{
+		private static readonly ControlTemplate DefaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
+		{
+			contentPresenter = new ContentPresenter();
+			templateRoot = new Border
+			{
+				Background = new Color(0x5FA1DDFF),
+				BorderColor = new Color(0xFF055674),
+				Padding = new Thickness(4),
+				Child = contentPresenter
+			};
+		};
+
 		private readonly Label _label;
 		private Caret _caret;
+
+		/// <summary>
+		///   Raised when the text contained in the text box has been changed.
+		/// </summary>
+		public Action<string> TextChanged;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		public TextBox()
+			: base(DefaultTemplate)
 		{
 			_label = new Label { TextWrapping = TextWrapping.Wrap };
 			_caret = new Caret(this);
@@ -78,11 +96,6 @@ namespace PointWars.UserInterface.Controls
 				TextChanged?.Invoke(_label.Text);
 			}
 		}
-
-		/// <summary>
-		///   Raised when the text contained in the text box has been changed.
-		/// </summary>
-		public Action<string> TextChanged;
 
 		/// <summary>
 		///   Invoked when a mouse button has been pressed while hovering the UI element.

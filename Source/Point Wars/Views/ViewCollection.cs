@@ -68,8 +68,10 @@ namespace PointWars.Views
 				MessageBoxes,
 				MainMenu,
 				JoinGameMenu,
-				LoadingView,
-				GameSessionView
+				LoadingOverlay,
+				EventMessages,
+				Chat,
+				Game
 			};
 
 			Commands.OnStartServer += StartHost;
@@ -77,9 +79,19 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
+		///   Gets the event messages.
+		/// </summary>
+		public EventMessages EventMessages { get; } = new EventMessages();
+
+		/// <summary>
 		///   Gets the root UI element of all views within the collection.
 		/// </summary>
 		public RootUIElement RootElement { get; }
+
+		/// <summary>
+		///   The in-game chat view.
+		/// </summary>
+		public Chat Chat { get; } = new Chat();
 
 		/// <summary>
 		///   Gets the local game session host.
@@ -99,7 +111,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets the loading view.
 		/// </summary>
-		public LoadingView LoadingView { get; } = new LoadingView();
+		public LoadingOverlay LoadingOverlay { get; } = new LoadingOverlay();
 
 		/// <summary>
 		///   Gets the main menu view.
@@ -124,7 +136,7 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets the game session view.
 		/// </summary>
-		public GameSessionView GameSessionView { get; } = new GameSessionView();
+		public GameView Game { get; } = new GameView();
 
 		/// <summary>
 		///   Changes the size available to the views.
@@ -173,7 +185,7 @@ namespace PointWars.Views
 
 			spriteBatch.Layer = 0;
 			spriteBatch.PositionOffset = Vector2.Zero;
-			GameSessionView.Draw(spriteBatch);
+			Game.Draw(spriteBatch);
 
 			RootElement.Draw(spriteBatch);
 			DrawCursor();

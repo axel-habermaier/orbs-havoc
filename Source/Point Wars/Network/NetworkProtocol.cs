@@ -71,7 +71,7 @@ namespace PointWars.Network
 		/// <summary>
 		///   The maximum allowed packet size in bytes.
 		/// </summary>
-		public const int MaxPacketSize = 512;
+		public const int MaxPacketSize = 1400;
 
 		/// <summary>
 		///   The size of the packet header in bytes.

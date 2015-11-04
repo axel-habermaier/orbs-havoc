@@ -89,6 +89,8 @@ namespace PointWars.UserInterface.Controls
 				SetDirtyState(measure: true, arrange: true);
 
 				_templateRoot?.ChangeParent(null);
+				var uiContent = _content as UIElement;
+				uiContent?.ChangeParent(null);
 
 				if (value == null)
 				{
@@ -98,8 +100,8 @@ namespace PointWars.UserInterface.Controls
 				else
 				{
 					value(out _templateRoot, out _contentPresenter);
-					if (ContentPresenter != null)
-						ContentPresenter.Content = _content;
+					if (_contentPresenter != null)
+						_contentPresenter.Content = _content;
 				}
 
 				_templateRoot?.ChangeParent(this);

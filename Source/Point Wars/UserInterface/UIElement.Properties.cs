@@ -34,6 +34,7 @@ namespace PointWars.UserInterface
 	{
 		private Action<UIElement> _activeStyle;
 		private float _bottom = Single.NaN;
+		private int _column;
 		private Dock _dock = Dock.Left;
 		private Font _font;
 		private Color _foreground = Colors.Transparent;
@@ -48,6 +49,7 @@ namespace PointWars.UserInterface
 		private float _minWidth;
 		private Action<UIElement> _normalStyle;
 		private float _right = Single.NaN;
+		private int _row;
 		private float _top = Single.NaN;
 		private VerticalAlignment _verticalAlignment = VerticalAlignment.Stretch;
 		private Visibility _visibility = Visibility.Visible;
@@ -578,6 +580,43 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
+		///   Gets a value indicating which column of a grid layout, identified by its zero-based index, the UI element should appear
+		///   in.
+		/// </summary>
+		public int Column
+		{
+			get { return _column; }
+			set
+			{
+				if (_column == value)
+					return;
+
+				_column = value;
+
+				var panel = Parent as Panel;
+				panel?.SetDirtyState(measure: true, arrange: true);
+			}
+		}
+
+		/// <summary>
+		///   Gets a value indicating which row of a grid layout, identified by its zero-based index, the UI element should appear in.
+		/// </summary>
+		public int Row
+		{
+			get { return _row; }
+			set
+			{
+				if (_row == value)
+					return;
+
+				_row = value;
+
+				var panel = Parent as Panel;
+				panel?.SetDirtyState(measure: true, arrange: true);
+			}
+		}
+
+		/// <summary>
 		///   Gets a value indicating whether the UI element can receive the keyboard focus.
 		/// </summary>
 		internal bool CanBeFocused => IsAttachedToRoot && IsFocusable && IsVisible;
@@ -715,6 +754,9 @@ namespace PointWars.UserInterface
 			get { return (_state & State.AutoFocus) == State.AutoFocus; }
 			set
 			{
+				if (value)
+					IsFocusable = true;
+
 				if (value)
 					_state |= State.AutoFocus;
 				else

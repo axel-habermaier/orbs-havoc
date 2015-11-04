@@ -234,6 +234,8 @@ namespace PointWars.Views
 		private void InitializeUI()
 		{
 			_input.TextChanged += OnTextChanged;
+			_input.Template = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
+				templateRoot = contentPresenter = new ContentPresenter();
 			_input.InputBindings.AddRange(new[]
 			{
 				new KeyBinding(ClearInput, Key.Escape),

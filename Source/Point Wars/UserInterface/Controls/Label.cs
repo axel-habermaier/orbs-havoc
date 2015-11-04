@@ -112,8 +112,7 @@ namespace PointWars.UserInterface.Controls
 			var width = Single.IsInfinity(availableSize.Width) ? Int32.MaxValue : (int)Math.Round(availableSize.Width);
 			var height = Single.IsInfinity(availableSize.Height) ? Int32.MaxValue : (int)Math.Round(availableSize.Height);
 
-			var size = _textLayout.Measure(Font, Text, new Size(width, height), 0, TextAlignment, TextWrapping);
-			return new Size(size.Width, size.Height);
+			return _textLayout.Measure(Font, Text, new Size(width, height), 0, TextAlignment, TextWrapping);
 		}
 
 		/// <summary>
@@ -130,8 +129,7 @@ namespace PointWars.UserInterface.Controls
 			var width = Single.IsInfinity(finalSize.Width) ? Int32.MaxValue : (int)Math.Round(finalSize.Width);
 			var height = Single.IsInfinity(finalSize.Height) ? Int32.MaxValue : (int)Math.Round(finalSize.Height);
 
-			var size = _textLayout.Arrange(Font, Text, new Size(width, height), 0, TextAlignment, TextWrapping);
-			return new Size(size.Width, size.Height);
+			return _textLayout.Arrange(Font, Text, new Size(width, height), 0, TextAlignment, TextWrapping);
 		}
 
 		/// <summary>
