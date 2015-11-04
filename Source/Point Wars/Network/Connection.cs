@@ -68,6 +68,11 @@ namespace PointWars.Network
 		private Clock _clock = new Clock();
 
 		/// <summary>
+		/// The packet assembler that the connection uses to assemble packets.
+		/// </summary>
+		PacketAssembler _packetAssembler = new PacketAssembler();
+
+		/// <summary>
 		///   The deserializer that is used to deserialize incoming messages.
 		/// </summary>
 		private MessageDeserializer _deserializer;
@@ -94,6 +99,7 @@ namespace PointWars.Network
 		{
 			_deliveryManager = new DeliveryManager();
 			_outgoingMessages = new MessageQueue(_deliveryManager);
+			_packetAssembler.PacketAssembled += SendPacket;
 		}
 
 		/// <summary>
@@ -189,15 +195,30 @@ namespace PointWars.Network
 
 			try
 			{
-				var sequenceNumber = _deliveryManager.LastReceivedReliableSequenceNumber;
-				var remoteEndPoint = _isConnected ? (IPEndPoint)_socket.RemoteEndPoint : RemoteEndPoint;
-				_outgoingMessages.SendMessages(new PacketAssembler(_socket, remoteEndPoint, _buffer, _isConnected, sequenceNumber));
+				_packetAssembler.PrepareSending(_deliveryManager.LastReceivedReliableSequenceNumber);
+				_outgoingMessages.SendMessages(_packetAssembler);
 			}
 			catch (SocketException e)
 			{
 				IsDropped = true;
 				throw new NetworkException("{0}", e.GetMessage());
 			}
+		}
+
+		/// <summary>
+		/// Sends the given packet of the given size.
+		/// </summary>
+		/// <param name="packet">The packet that should be sent.</param>
+		/// <param name="sizeInBytes">The size of the packet that should be sent.</param>
+		private void SendPacket(byte[] packet, int sizeInBytes)
+		{
+			Assert.ArgumentNotNull(packet, nameof(packet));
+			Assert.ArgumentInRange(sizeInBytes, 0, NetworkProtocol.MaxPacketSize, nameof(sizeInBytes));
+
+			if (!_isConnected)
+				_socket.SendTo(packet, sizeInBytes, SocketFlags.None, RemoteEndPoint);
+			else
+				_socket.Send(packet, sizeInBytes, SocketFlags.None);
 		}
 
 		/// <summary>
@@ -353,8 +374,8 @@ namespace PointWars.Network
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate message objects.</param>
 		/// <param name="socket">The socket that should be used to receive and send data.</param>
-		/// <param name="buffer">The buffer containing the packet that should be handled.</param>
-		/// <param name="size">The size of the packet that should be handled.</param>
+		/// <param name="buffer">The buffer containing the initial packet received by the connection.</param>
+		/// <param name="size">The size of the initial packet received by the connection.</param>
 		public static Connection Create(PoolAllocator allocator, Socket socket, byte[] buffer, int size)
 		{
 			Assert.ArgumentNotNull(buffer, nameof(buffer));

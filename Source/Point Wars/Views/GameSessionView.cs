@@ -201,8 +201,6 @@ namespace PointWars.Views
 
 			if (_clientLogic != null && _clientLogic.IsSynced)
 				Log.Info("The game session has ended.");
-			else if (_gameSession != null)
-				Log.Info("Connection attempt failed or was aborted.");
 
 			_gameSession = null;
 			_clientLogic = null;

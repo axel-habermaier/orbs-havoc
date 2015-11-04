@@ -23,6 +23,7 @@
 namespace PointWars.Views
 {
 	using System;
+	using System.Collections.Concurrent;
 	using System.Linq;
 	using System.Text;
 	using Platform;
@@ -73,6 +74,13 @@ namespace PointWars.Views
 		private readonly StackPanel _contentPanel = new StackPanel { VerticalAlignment = VerticalAlignment.Bottom, MinWidth = 200 };
 		private readonly string[] _history = new string[MaxHistory];
 		private readonly TextBox _input = new TextBox { MaxLength = MaxLength, Dock = Dock.Bottom, AutoFocus = true };
+
+		/// <summary>
+		///   The queued log entries that have not yet been added to the console. Log entries can be generated on any thread, but only
+		///   the main thread is allowed to actually change the console's labels.
+		/// </summary>
+		private readonly ConcurrentQueue<LogEntry> _queuedLogEntries = new ConcurrentQueue<LogEntry>();
+
 		private int _autoCompletionIndex;
 		private string[] _autoCompletionList;
 		private int _historyIndex;
@@ -122,6 +130,49 @@ namespace PointWars.Views
 		{
 			// Make sure the text box never loses focus while the console is active
 			_input.Focus();
+
+			// Add all queued log entries to the console now that we're on the main thread
+			LogEntry logEntry;
+			while (_queuedLogEntries.TryDequeue(out logEntry))
+			{
+				var color = InfoColor;
+				switch (logEntry.LogType)
+				{
+					case LogType.Error:
+						color = ErrorColor;
+						break;
+					case LogType.Warning:
+						color = WarningColor;
+						break;
+					case LogType.Debug:
+						color = DebugInfoColor;
+						break;
+				}
+
+				if (_contentPanel.Children.Count < MaxLabels)
+				{
+					_contentPanel.Children.Add(new Label
+					{
+						Text = logEntry.Message,
+						Foreground = color,
+						TextWrapping = TextWrapping.Wrap,
+						Margin = new Thickness(0, 2, 0, 0)
+					});
+				}
+				else
+				{
+					// If all labels are used, remove the oldest one by shifting the entire children collection up one
+					// index and add the oldest label to the end of the collection (in order to re-use the label instance for 
+					// the new message); this way, we only copy MaxLabels * ReferenceSize bytes and avoid relayouting all lines.
+
+					var label = (Label)_contentPanel.Children[0];
+					_contentPanel.Children.RemoveAt(0);
+
+					label.Text = logEntry.Message;
+					label.Foreground = color;
+					_contentPanel.Children.Add(label);
+				}
+			}
 		}
 
 		/// <summary>
@@ -320,43 +371,7 @@ namespace PointWars.Views
 		/// </summary>
 		private void AddLogEntry(LogEntry logEntry)
 		{
-			var color = InfoColor;
-			switch (logEntry.LogType)
-			{
-				case LogType.Error:
-					color = ErrorColor;
-					break;
-				case LogType.Warning:
-					color = WarningColor;
-					break;
-				case LogType.Debug:
-					color = DebugInfoColor;
-					break;
-			}
-
-			if (_contentPanel.Children.Count < MaxLabels)
-			{
-				_contentPanel.Children.Add(new Label
-				{
-					Text = logEntry.Message,
-					Foreground = color,
-					TextWrapping = TextWrapping.Wrap,
-					Margin = new Thickness(0, 2, 0, 0)
-				});
-			}
-			else
-			{
-				// If all labels are used, remove the oldest one by shifting the entire children collection up one
-				// index and add the oldest label to the end of the collection (in order to re-use the label instance for 
-				// the new message); this way, we only copy MaxLabels * ReferenceSize bytes and avoid relayouting all lines.
-
-				var label = (Label)_contentPanel.Children[0];
-				_contentPanel.Children.RemoveAt(0);
-
-				label.Text = logEntry.Message;
-				label.Foreground = color;
-				_contentPanel.Children.Add(label);
-			}
+			_queuedLogEntries.Enqueue(logEntry);
 		}
 
 		/// <summary>

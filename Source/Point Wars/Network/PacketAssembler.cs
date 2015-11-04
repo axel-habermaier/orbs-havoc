@@ -24,8 +24,6 @@ namespace PointWars.Network
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Net;
-	using System.Net.Sockets;
 	using Messages;
 	using Platform.Logging;
 	using Platform.Memory;
@@ -35,7 +33,7 @@ namespace PointWars.Network
 	///   Assembles messages into packets and sends the packets over a UDP channel. If the given messages don't fit into a single
 	///   packet, multiple packets are sent.
 	/// </summary>
-	internal struct PacketAssembler
+	internal class PacketAssembler
 	{
 		/// <summary>
 		///   If tracing is enabled, the contents of all sent packets are shown in the debug output.
@@ -43,23 +41,29 @@ namespace PointWars.Network
 		private const bool EnableTracing = false;
 
 		/// <summary>
-		///   The acknowledgement that is set in the headers of the assembled packets
+		///   A cached delegate of the sequenced message serialization function.
 		/// </summary>
-		private readonly uint _acknowledgement;
+		private static readonly BufferWriter.Serializer<SequencedMessage> SequencedMessageSerializer = SerializeSequencedMessage;
 
 		/// <summary>
-		///   The socket that should be used to send the messages.
+		///   A cached delegate of the batched message serialization function.
 		/// </summary>
-		private readonly Socket _socket;
+		private static readonly BufferWriter.Serializer<Message> BatchedMessageSerializer = SerializeBatchedMessage;
 
 		/// <summary>
-		///   The buffer that the current packet is written into.
+		///   The packet that is currently being assembled.
 		/// </summary>
-		private readonly byte[] _buffer;
+		private readonly byte[] _buffer = new byte[NetworkProtocol.MaxPacketSize];
+
 		/// <summary>
-		/// Indicates whether the socket is connected.
+		///   The acknowledgement that is set in the headers of the assembled packets.
 		/// </summary>
-		private readonly bool _isConnected;
+		private uint _acknowledgement;
+
+		/// <summary>
+		///   The number of packets sent to the remote peer.
+		/// </summary>
+		private int _packetCount;
 
 		/// <summary>
 		///   The writer that is currently being used to assemble the packet.
@@ -67,38 +71,16 @@ namespace PointWars.Network
 		private BufferWriter _writer;
 
 		/// <summary>
-		///   The remote end point the packets are sent to.
+		///   Prepares the assembler for assembling a new set of messages into packets.
 		/// </summary>
-		private readonly IPEndPoint _remoteEndPoint;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="socket">The UDP channel that should be used to send the assembled packets.</param>
-		/// <param name="remoteEndPoint">The remote end point the packets should be sent to.</param>
-		/// <param name="buffer">The buffer the packet should be assembled to.</param>
-		/// <param name="isConnected">Indicates whether the socket is connected.</param>
 		/// <param name="acknowledgement">The acknowledgement that should be set in the headers of the assembled packets.</param>
-		public PacketAssembler(Socket socket, IPEndPoint remoteEndPoint, byte[] buffer, bool isConnected, uint acknowledgement)
-			: this()
+		public void PrepareSending(uint acknowledgement)
 		{
-			Assert.ArgumentNotNull(socket, nameof(socket));
-			Assert.ArgumentNotNull(remoteEndPoint, nameof(remoteEndPoint));
-			Assert.ArgumentNotNull(buffer, nameof(buffer));
-
-			_socket = socket;
-			_remoteEndPoint = remoteEndPoint;
-			_buffer = buffer;
-			_isConnected = isConnected;
 			_acknowledgement = acknowledgement;
+			_packetCount = 0;
 
 			AllocatePacket();
 		}
-
-		/// <summary>
-		///   The number of packets sent to the remote peer.
-		/// </summary>
-		public int PacketCount { get; private set; }
 
 		/// <summary>
 		///   Sends the given reliable messages in the order they are contained in the queue.
@@ -274,7 +256,7 @@ namespace PointWars.Network
 		{
 			_writer = new BufferWriter(_buffer, Endianess.Big);
 
-			Log.DebugIf(EnableTracing, "Packet #{2} to {0}, ack: {1}", _remoteEndPoint, _acknowledgement, PacketCount + 1);
+			Log.DebugIf(EnableTracing, "Packet #{1},  ack: {0}", _acknowledgement, _packetCount + 1);
 			PacketHeader.Write(ref _writer, _acknowledgement);
 		}
 
@@ -284,24 +266,17 @@ namespace PointWars.Network
 		public void SendPacket()
 		{
 			Assert.NotNull(_buffer, "No packet has been allocated.");
+			Assert.NotNull(PacketAssembled, "Assembled packet is ignored.");
 
-			if (!_isConnected)
-				_socket.SendTo(_buffer, _writer.Count, SocketFlags.None, _remoteEndPoint);
-			else
-				_socket.Send(_buffer, _writer.Count, SocketFlags.None);
+			PacketAssembled(_buffer, _writer.Count);
 
 			Log.DebugIf(EnableTracing, "Packet length: {0} bytes", _writer.Count);
-			++PacketCount;
+			++_packetCount;
 		}
 
 		/// <summary>
-		///   A cached delegate of the sequenced message serialization function.
+		///   Invoked when a packet has been assembled and is ready for sending.
 		/// </summary>
-		private static readonly BufferWriter.Serializer<SequencedMessage> SequencedMessageSerializer = SerializeSequencedMessage;
-
-		/// <summary>
-		///   A cached delegate of the batched message serialization function.
-		/// </summary>
-		private static readonly BufferWriter.Serializer<Message> BatchedMessageSerializer = SerializeBatchedMessage;
+		public event Action<byte[], int> PacketAssembled;
 	}
 }

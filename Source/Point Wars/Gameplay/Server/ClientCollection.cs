@@ -105,7 +105,7 @@ namespace PointWars.Gameplay.Server
 		/// <summary>
 		///   Adds a new client, if the connecting end point isn't known already.
 		/// </summary>
-		/// <param name="packetSize">The size of the packet sent by the client.</param>
+		/// <param name="packetSize">The size of the connection packet sent by the client.</param>
 		private void AddClient(int packetSize)
 		{
 			// Check if we already know the client

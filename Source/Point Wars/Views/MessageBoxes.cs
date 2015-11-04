@@ -25,6 +25,7 @@ namespace PointWars.Views
 	using System;
 	using Assets;
 	using Platform.Input;
+	using Platform.Logging;
 	using Rendering;
 	using Scripting;
 	using UserInterface;
@@ -112,6 +113,8 @@ namespace PointWars.Views
 
 			messageBox.Initialize(title, message, okButton, hiddenButton);
 			Show(messageBox);
+
+			Log.Error("{0}: {1}", title, message);
 		}
 
 		/// <summary>

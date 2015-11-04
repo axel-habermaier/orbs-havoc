@@ -188,7 +188,7 @@ namespace PointWars.Gameplay.Server
 		private void Update(double elapsedSeconds)
 		{
 			_serverDiscovery.SendDiscoveryMessage(elapsedSeconds);
-
+	
 			_clients.UpdateClientConnections();
 			_clients.DispatchClientMessages();
 			_gameSession.Update((float)elapsedSeconds);
