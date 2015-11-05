@@ -279,7 +279,6 @@ namespace PointWars.Views
 			RootElement = new Border
 			{
 				Child = _layoutRoot,
-				ZIndex = Int32.MaxValue,
 				CapturesInput = true,
 				InputBindings =
 				{

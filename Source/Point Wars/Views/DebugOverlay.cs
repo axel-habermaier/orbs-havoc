@@ -92,7 +92,6 @@ namespace PointWars.Views
 			RootElement = new Border
 			{
 				IsHitTestVisible = false,
-				ZIndex = Int32.MaxValue - 1,
 				Margin = new Thickness(5),
 				Background = new Color(0xAA000000),
 				Padding = new Thickness(10),

@@ -71,7 +71,7 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Gets the number of children for this visual.
 		/// </summary>
-		protected internal override int ChildrenCount => _presentedElement == null ? 0 : 1;
+		protected override int ChildrenCount => _presentedElement == null ? 0 : 1;
 
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all children of the UI element.
@@ -82,7 +82,7 @@ namespace PointWars.UserInterface.Controls
 		///   Gets the child at the specified index.
 		/// </summary>
 		/// <param name="index">The zero-based index of the child that should be returned.</param>
-		protected internal override UIElement GetChild(int index)
+		protected override UIElement GetChild(int index)
 		{
 			Assert.NotNull(_presentedElement);
 			Assert.ArgumentSatisfies(index == 0, nameof(index), "The UI element has only one child.");

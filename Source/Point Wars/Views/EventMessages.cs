@@ -36,13 +36,8 @@ namespace PointWars.Views
 	/// </summary>
 	internal class EventMessages : View
 	{
-		/// <summary>
-		///   The maximum number of event messages that can be displayed simultaneously.
-		/// </summary>
 		private const int MaxMessageCount = 16;
-
 		private readonly StackPanel _layoutRoot = new StackPanel { Font = AssetBundle.Roboto14, IsHitTestVisible = false };
-
 		private readonly double[] _removalTimes = new double[MaxMessageCount];
 		private Clock _clock = new Clock();
 		private int _messageCount;
@@ -147,7 +142,7 @@ namespace PointWars.Views
 			Assert.ArgumentNotNull(player, nameof(player));
 			Assert.ArgumentNotNullOrWhitespace(previousName, nameof(previousName));
 
-			Add($"'{previousName}'\\default was renamed to '{player.Name}'\\default.");
+			Add($"{previousName}\\default was renamed to {player.Name}\\default.");
 		}
 
 		/// <summary>

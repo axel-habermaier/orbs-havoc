@@ -523,7 +523,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Invoked when the IsFocus property of the UI element has changed.
 		/// </summary>
-		protected internal virtual void OnFocusChanged()
+		protected virtual void OnFocusChanged()
 		{
 		}
 
@@ -531,7 +531,7 @@ namespace PointWars.UserInterface
 		///   Gets the child at the specified index.
 		/// </summary>
 		/// <param name="index">The zero-based index of the child that should be returned.</param>
-		protected internal virtual UIElement GetChild(int index)
+		protected virtual UIElement GetChild(int index)
 		{
 			Assert.That(false, "This visual does not have any children.");
 			return null;

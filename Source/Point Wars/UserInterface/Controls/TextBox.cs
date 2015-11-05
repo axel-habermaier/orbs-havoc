@@ -112,7 +112,7 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Invoked when the IsFocus property of the UI element has changed.
 		/// </summary>
-		protected internal override void OnFocusChanged()
+		protected override void OnFocusChanged()
 		{
 			_caret.Show();
 			Keyboard.TextInputEnabled = IsFocused;

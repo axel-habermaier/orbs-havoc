@@ -54,7 +54,6 @@ namespace PointWars.UserInterface
 		private VerticalAlignment _verticalAlignment = VerticalAlignment.Stretch;
 		private Visibility _visibility = Visibility.Visible;
 		private float _width = Single.NaN;
-		private int _zIndex;
 
 		/// <summary>
 		///   Gets or sets the UI element's normal style when it is neither hovered nor active.
@@ -441,7 +440,7 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Gets the number of children for this UI element.
 		/// </summary>
-		protected internal virtual int ChildrenCount => 0;
+		protected virtual int ChildrenCount => 0;
 
 		/// <summary>
 		///   Gets or sets a value indicating whether the UI element is attached to the visual tree's root element.
@@ -558,24 +557,6 @@ namespace PointWars.UserInterface
 
 				_dock = value;
 				SetDirtyState(measure: true, arrange: true);
-			}
-		}
-
-		/// <summary>
-		///   Gets or sets the z-index of the UI element.
-		/// </summary>
-		public int ZIndex
-		{
-			get { return _zIndex; }
-			set
-			{
-				if (_zIndex == value)
-					return;
-
-				_zIndex = value;
-
-				var panel = Parent as Panel;
-				panel?.ZIndicesChanged();
 			}
 		}
 

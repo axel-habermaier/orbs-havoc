@@ -114,7 +114,7 @@ namespace PointWars.Views
 			messageBox.Initialize(title, message, okButton, hiddenButton);
 			Show(messageBox);
 
-			Log.Error("{0}: {1}", title, message);
+			Log.Error("{0}", message);
 		}
 
 		/// <summary>
