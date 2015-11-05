@@ -85,13 +85,13 @@ namespace PointWars.Views
 			_serverEndPoint = serverEndPoint;
 			_clock.Reset();
 
-			IsActive = true;
+			Show();
 			Log.Info("Connecting to {0}...", serverEndPoint);
 
-			Views.Console.IsActive = false;
+			Views.Console.Hide();
 			Views.MessageBoxes.CloseAll();
-			Views.JoinGameMenu.IsActive = false;
-			Views.MainMenu.IsActive = false;
+			Views.JoinGameMenu.Hide();
+			Views.MainMenu.Hide();
 		}
 
 		/// <summary>

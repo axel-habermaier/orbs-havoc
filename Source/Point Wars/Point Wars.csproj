@@ -178,6 +178,7 @@
     <Compile Include="UserInterface\Visibility.cs" />
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
+    <Compile Include="Views\Scoreboard.cs" />
     <Compile Include="Views\Chat.cs" />
     <Compile Include="Views\Console.cs" />
     <Compile Include="Views\DebugOverlay.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="Views\LoadingOverlay.cs" />
     <Compile Include="Views\GameView.cs" />
     <Compile Include="Views\JoinGameMenu.cs" />
+    <Compile Include="Views\InGameMenu.cs" />
     <Compile Include="Views\MainMenu.cs" />
     <Compile Include="Views\MessageBoxes.cs" />
     <Compile Include="Views\View.cs" />

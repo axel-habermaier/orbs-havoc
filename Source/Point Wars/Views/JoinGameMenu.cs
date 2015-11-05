@@ -76,8 +76,8 @@ namespace PointWars.Views
 				{
 					new KeyBinding(() =>
 					{
-						IsActive = false;
-						Views.MainMenu.IsActive = true;
+						Hide();
+						Views.MainMenu.Show();
 					}, Key.Escape)
 				},
 				Child = new StackPanel
@@ -103,8 +103,8 @@ namespace PointWars.Views
 							Margin = new Thickness(0, 10, 0, 0),
 							Click = () =>
 							{
-								IsActive = false;
-								Views.MainMenu.IsActive = true;
+								Hide();
+								Views.MainMenu.Show();
 							}
 						}
 					}

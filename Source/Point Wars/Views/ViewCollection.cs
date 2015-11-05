@@ -67,9 +67,11 @@ namespace PointWars.Views
 				DebugOverlay,
 				MessageBoxes,
 				MainMenu,
+				InGameMenu,
 				JoinGameMenu,
 				LoadingOverlay,
 				EventMessages,
+				Scoreboard,
 				Chat,
 				Game
 			};
@@ -92,6 +94,11 @@ namespace PointWars.Views
 		///   The in-game chat view.
 		/// </summary>
 		public Chat Chat { get; } = new Chat();
+
+		/// <summary>
+		///   The in-game scoreboard.
+		/// </summary>
+		public Scoreboard Scoreboard { get; } = new Scoreboard();
 
 		/// <summary>
 		///   Gets the local game session host.
@@ -117,6 +124,11 @@ namespace PointWars.Views
 		///   Gets the main menu view.
 		/// </summary>
 		public MainMenu MainMenu { get; } = new MainMenu();
+
+		/// <summary>
+		///   Gets the in-game menu view.
+		/// </summary>
+		public InGameMenu InGameMenu { get; } = new InGameMenu();
 
 		/// <summary>
 		///   Gets the view containing the messages boxes.
@@ -167,7 +179,7 @@ namespace PointWars.Views
 		{
 			foreach (var view in _views)
 			{
-				if (view.IsActive)
+				if (view.IsShown)
 					view.Update();
 			}
 
@@ -232,7 +244,7 @@ namespace PointWars.Views
 				return;
 
 			_exitMessageBoxOpen = true;
-			MessageBoxes.ShowYesNo("Are you sure?", $"Do you really want to quit {Application.Name}?",
+			MessageBoxes.ShowYesNo($"Exit {Application.Name}", $"Do you really want to exit {Application.Name}?",
 				Commands.Exit, () => _exitMessageBoxOpen = false);
 		}
 
@@ -241,7 +253,10 @@ namespace PointWars.Views
 		/// </summary>
 		private void ToggleConsole()
 		{
-			Console.IsActive = !Console.IsActive;
+			if (Console.IsShown)
+				Console.Hide();
+			else
+				Console.Show();
 		}
 
 		/// <summary>

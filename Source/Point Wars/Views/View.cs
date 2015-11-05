@@ -33,7 +33,6 @@ namespace PointWars.Views
 	/// </summary>
 	internal abstract class View : DisposableObject
 	{
-		private bool _isActive;
 		private UIElement _rootElement;
 
 		/// <summary>
@@ -54,7 +53,7 @@ namespace PointWars.Views
 				if (_rootElement != null)
 				{
 					Views.RootElement.Add(_rootElement);
-					_rootElement.Visibility = IsActive ? Visibility.Visible : Visibility.Collapsed;
+					_rootElement.Visibility = IsShown ? Visibility.Visible : Visibility.Collapsed;
 				}
 				else
 					Views.RootElement.Remove(_rootElement);
@@ -72,26 +71,40 @@ namespace PointWars.Views
 		public LogicalInputDevice InputDevice => Views.Application.InputDevice;
 
 		/// <summary>
-		///   Gets or sets a value indicating whether the view is currently active.
+		///   Gets or sets a value indicating whether the view is currently shown.
 		/// </summary>
-		public bool IsActive
+		public bool IsShown { get; private set; }
+
+		/// <summary>
+		///   Shows the view by making it active.
+		/// </summary>
+		public void Show()
 		{
-			get { return _isActive; }
-			set
-			{
-				if (_isActive == value)
-					return;
+			if (IsShown)
+				return;
 
-				_isActive = value;
+			IsShown = true;
 
-				if (RootElement != null)
-					RootElement.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+			if (RootElement != null)
+				RootElement.Visibility = Visibility.Visible;
 
-				if (_isActive)
-					Activate();
-				else
-					Deactivate();
-			}
+			Activate();
+		}
+
+		/// <summary>
+		///   Hides the view by making it inactive.
+		/// </summary>
+		public void Hide()
+		{
+			if (!IsShown)
+				return;
+
+			IsShown = false;
+
+			if (RootElement != null)
+				RootElement.Visibility = Visibility.Collapsed;
+
+			Deactivate();
 		}
 
 		/// <summary>

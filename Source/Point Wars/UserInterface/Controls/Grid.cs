@@ -32,6 +32,20 @@ namespace PointWars.UserInterface.Controls
 	public class Grid : Panel
 	{
 		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="columns">The number of auto-sized columns that should be created.</param>
+		/// <param name="rows">The number of auto-sized rows that should be created.</param>
+		public Grid(int columns = 0, int rows = 0)
+		{
+			for (var i = 0; i < columns; ++i)
+				Columns.Add(new ColumnDefinition());
+
+			for (var i = 0; i < rows; ++i)
+				Rows.Add(new RowDefinition());
+		}
+
+		/// <summary>
 		///   Gets the columns of this grid.
 		/// </summary>
 		public List<ColumnDefinition> Columns { get; } = new List<ColumnDefinition>();

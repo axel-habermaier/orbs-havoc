@@ -47,7 +47,7 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Initialize()
 		{
-			IsActive = true;
+			Show();
 			RootElement = _layoutRoot;
 
 			for (var i = 0; i < MaxMessageCount; ++i)

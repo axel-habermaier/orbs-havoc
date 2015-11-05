@@ -37,23 +37,23 @@ namespace PointWars.Gameplay
 	{
 		private readonly PoolAllocator _allocator;
 		private readonly GameSession _gameSession;
-		private readonly EventMessages _eventMessages;
+		private readonly ViewCollection _views;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate pooled objects.</param>
 		/// <param name="gameSession">The game session that is being played.</param>
-		/// <param name="eventMessages">The event messages view that displays event messages for the client.</param>
-		public ClientLogic(PoolAllocator allocator, GameSession gameSession, EventMessages eventMessages)
+		/// <param name="views">The views that show the game.</param>
+		public ClientLogic(PoolAllocator allocator, GameSession gameSession, ViewCollection views)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
-			Assert.ArgumentNotNull(eventMessages, nameof(eventMessages));
+			Assert.ArgumentNotNull(views, nameof(views));
 
 			_allocator = allocator;
 			_gameSession = gameSession;
-			_eventMessages = eventMessages;
+			_views = views;
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace PointWars.Gameplay
 			var player = _gameSession.Players[message.Player];
 			Assert.NotNull(player, "Chat message references unknown player.");
 
-			_eventMessages.AddChatMessage(player, message.Message);
+			_views.EventMessages.AddChatMessage(player, message.Message);
 		}
 
 		/// <summary>
@@ -112,8 +112,10 @@ namespace PointWars.Gameplay
 		void IMessageHandler.OnPlayerJoin(PlayerJoinMessage message)
 		{
 			var player = Player.Create(_allocator, message.PlayerName, message.Player);
+
 			_gameSession.Players.Add(player);
-			_eventMessages.AddJoinMessage(player);
+			_views.EventMessages.AddJoinMessage(player);
+			_views.Scoreboard.OnPlayersChanged();
 		}
 
 		/// <summary>
@@ -128,7 +130,7 @@ namespace PointWars.Gameplay
 			Assert.NotNull(killer, "Kill message references unknown killer.");
 			Assert.NotNull(victim, "Kill message references unknown victim.");
 
-			_eventMessages.AddKillMessage(killer, victim);
+			_views.EventMessages.AddKillMessage(killer, victim);
 		}
 
 		/// <summary>
@@ -144,14 +146,14 @@ namespace PointWars.Gameplay
 			switch (message.Reason)
 			{
 				case LeaveReason.ConnectionDropped:
-					_eventMessages.AddTimeoutMessage(player);
+					_views.EventMessages.AddTimeoutMessage(player);
 					break;
 				case LeaveReason.Misbehaved:
-					_eventMessages.AddKickedMessage(player, "Network protocol violation.");
+					_views.EventMessages.AddKickedMessage(player, "Network protocol violation.");
 					break;
 				case LeaveReason.Disconnect:
 				case LeaveReason.Unknown:
-					_eventMessages.AddLeaveMessage(player);
+					_views.EventMessages.AddLeaveMessage(player);
 					break;
 				default:
 					Assert.InRange(message.Reason);
@@ -160,6 +162,7 @@ namespace PointWars.Gameplay
 
 			// Now we can remove the player
 			_gameSession.Players.Remove(player);
+			_views.Scoreboard.OnPlayersChanged();
 		}
 
 		/// <summary>
@@ -178,7 +181,8 @@ namespace PointWars.Gameplay
 			var previousName = player.Name;
 			player.Name = message.PlayerName;
 
-			_eventMessages.AddNameChangeMessage(player, previousName);
+			_views.EventMessages.AddNameChangeMessage(player, previousName);
+			_views.Scoreboard.OnPlayersChanged();
 		}
 
 		/// <summary>
@@ -220,6 +224,8 @@ namespace PointWars.Gameplay
 			player.Kills = message.Kills;
 			player.Deaths = message.Deaths;
 			player.Ping = message.Ping;
+
+			_views.Scoreboard.OnPlayersChanged();
 		}
 
 		/// <summary>

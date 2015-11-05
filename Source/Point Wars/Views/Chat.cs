@@ -71,7 +71,7 @@ namespace PointWars.Views
 				{
 					new KeyBinding(Send, Key.Enter),
 					new KeyBinding(Send, Key.NumpadEnter),
-					new KeyBinding(Cancel, Key.Escape)
+					new KeyBinding(Hide, Key.Escape)
 				},
 				Child = new StackPanel
 				{
@@ -122,15 +122,14 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Shows the chat input.
+		///   Invoked when the view should be activated.
 		/// </summary>
-		public void Show()
+		protected override void Activate()
 		{
 			_input.Text = String.Empty;
 			_validationLabel.Visibility = Visibility.Collapsed;
-
-			IsActive = true;
 		}
+
 
 		/// <summary>
 		///   Sends the message, if any, and closes the chat input.
@@ -143,15 +142,7 @@ namespace PointWars.Views
 			if (!String.IsNullOrWhiteSpace(_input.Text))
 				Commands.Say(_input.Text.Trim());
 
-			IsActive = false;
-		}
-
-		/// <summary>
-		///   Closes the chat input without sending.
-		/// </summary>
-		private void Cancel()
-		{
-			IsActive = false;
+			Hide();
 		}
 	}
 }

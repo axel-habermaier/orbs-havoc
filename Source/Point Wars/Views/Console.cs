@@ -364,7 +364,10 @@ namespace PointWars.Views
 		/// </summary>
 		private void ShowConsole(bool show)
 		{
-			IsActive = show;
+			if (show)
+				Show();
+			else
+				Hide();
 		}
 
 		/// <summary>

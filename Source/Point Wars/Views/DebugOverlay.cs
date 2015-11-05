@@ -115,7 +115,7 @@ namespace PointWars.Views
 
 			Cvars.VsyncChanged += OnVsyncChanged;
 
-			IsActive = true;
+			Show();
 			UpdateStatistics();
 
 			_timer.Timeout += UpdateStatistics;

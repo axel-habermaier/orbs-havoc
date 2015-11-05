@@ -46,7 +46,7 @@ namespace PointWars.Views
 		public override void Initialize()
 		{
 			RootElement = _areaPanel;
-			IsActive = true;
+			Show();
 		}
 
 		/// <summary>

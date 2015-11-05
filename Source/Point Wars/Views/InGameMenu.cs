@@ -24,43 +24,56 @@ namespace PointWars.Views
 {
 	using System;
 	using Assets;
+	using Platform.Input;
+	using Rendering;
+	using Scripting;
 	using UserInterface;
 	using UserInterface.Controls;
+	using UserInterface.Input;
 
 	/// <summary>
-	///   Represents the application's main menu when no game session is active.
+	///   Represents the application's in-game menu when a game session is active.
 	/// </summary>
-	internal sealed class MainMenu : View
+	internal sealed class InGameMenu : View
 	{
 		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
-			Show();
-
-			RootElement = new StackPanel
+			RootElement = new Border
 			{
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				Children =
+				Background = new Color(0xAA000000),
+				CapturesInput = true,
+				AutoFocus = true,
+				InputBindings = { new KeyBinding(Hide, Key.Escape) },
+				Child = new StackPanel
 				{
-					new Label
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
+					Children =
 					{
-						Text = Application.Name,
-						Font = AssetBundle.Moonhouse80,
-						Margin = new Thickness(0, 0, 0, 30),
-					},
-					CreateButton("Start Game", () => { }),
-					CreateButton("Join Game", () =>
-					{
-						Views.JoinGameMenu.Show();
-						Hide();
-					}),
-					CreateButton("Options", () => { }),
-					CreateButton("Exit", Views.Exit)
+						new Label
+						{
+							Text = "Paused",
+							Font = AssetBundle.Moonhouse80,
+							Margin = new Thickness(0, 0, 0, 30),
+						},
+						CreateButton("Continue", Hide),
+						CreateButton("Options", () => { }),
+						CreateButton("Leave", Leave),
+						CreateButton("Exit", Views.Exit)
+					}
 				}
 			};
+		}
+
+		/// <summary>
+		///   Leaves the game session after asking the user for confirmation.
+		/// </summary>
+		private void Leave()
+		{
+			Views.MessageBoxes.ShowYesNo("Leave Game", "Do you really want to leave the game?", Commands.Disconnect);
 		}
 
 		/// <summary>

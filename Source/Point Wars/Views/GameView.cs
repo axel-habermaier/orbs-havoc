@@ -26,6 +26,7 @@ namespace PointWars.Views
 	using Gameplay;
 	using Network;
 	using Network.Messages;
+	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Rendering;
@@ -43,7 +44,11 @@ namespace PointWars.Views
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
 		private Connection _connection;
-		private GameSession _gameSession;
+
+		/// <summary>
+		///   Gets the currently active game session.
+		/// </summary>
+		public GameSession GameSession { get; private set; }
 
 		/// <summary>
 		///   Gets the remote end point of the server.
@@ -66,7 +71,10 @@ namespace PointWars.Views
 				AutoFocus = true,
 				InputBindings =
 				{
-					new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar)
+					new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar),
+					new ConfigurableBinding(Views.Scoreboard.Show, Cvars.InputShowScoreboardCvar) { TriggerMode = TriggerMode.OnActivation },
+					new ConfigurableBinding(Views.Scoreboard.Hide, Cvars.InputShowScoreboardCvar) { TriggerMode = TriggerMode.OnDeactivation },
+					new KeyBinding(Views.InGameMenu.Show, Key.Escape)
 				}
 			};
 		}
@@ -87,7 +95,7 @@ namespace PointWars.Views
 						return;
 
 					Log.Info("Loading completed and game state synced. Now connected to game session hosted by {0}.", ServerEndPoint);
-					Views.LoadingOverlay.IsActive = false;
+					Views.LoadingOverlay.Hide();
 
 					// Resend player name, as it might have been changed during the connection attempt
 					OnPlayerNameChanged();
@@ -104,38 +112,38 @@ namespace PointWars.Views
 					var elapsedSeconds = (float)_clock.Seconds;
 					_clock.Reset();
 
-					_gameSession.Update(elapsedSeconds);
+					GameSession.Update(elapsedSeconds);
 					_connection.SendQueuedMessages();
 				}
 			}
 			catch (ConnectionDroppedException)
 			{
+				Commands.Disconnect();
+
 				if (!_clientLogic.IsSynced)
 					Views.MessageBoxes.ShowError("Connection Failed", $"Unable to connect to {ServerEndPoint}. The connection attempt timed out.");
 				else
 					Views.MessageBoxes.ShowError("Connection Lost", "The connection to the server has been lost.");
-
-				Commands.Disconnect();
 			}
 			catch (ServerFullException)
 			{
-				Views.MessageBoxes.ShowError("Connection Rejected", "The server is full and does not accept any additional players.");
 				Commands.Disconnect();
+				Views.MessageBoxes.ShowError("Connection Rejected", "The server is full and does not accept any additional players.");
 			}
 			catch (ProtocolMismatchException)
 			{
-				Views.MessageBoxes.ShowError("Connection Rejected", "The server uses an incompatible version of the network protocol.");
 				Commands.Disconnect();
+				Views.MessageBoxes.ShowError("Connection Rejected", "The server uses an incompatible version of the network protocol.");
 			}
 			catch (ServerQuitException)
 			{
-				Views.MessageBoxes.ShowError("Server Shutdown", "The server has ended the game session.");
 				Commands.Disconnect();
+				Views.MessageBoxes.ShowError("Server Shutdown", "The server has ended the game session.");
 			}
 			catch (NetworkException e)
 			{
-				Views.MessageBoxes.ShowError("Connection Error", $"The game session has been aborted due to a network error: {e.Message}");
 				Commands.Disconnect();
+				Views.MessageBoxes.ShowError("Connection Error", $"The game session has been aborted due to a network error: {e.Message}");
 			}
 		}
 
@@ -170,14 +178,14 @@ namespace PointWars.Views
 
 			ServerEndPoint = new IPEndPoint(serverAddress, serverPort);
 
-			_gameSession = new GameSession(_allocator);
-			_clientLogic = new ClientLogic(_allocator, _gameSession, Views.EventMessages);
+			GameSession = new GameSession(_allocator);
+			_clientLogic = new ClientLogic(_allocator, GameSession, Views);
 			_connection = Connection.Create(_allocator, ServerEndPoint);
 
-			_gameSession.InitializeClient();
+			GameSession.InitializeClient();
 			_connection.EnqueueMessage(ClientConnectMessage.Create(_allocator, Cvars.PlayerName));
 
-			IsActive = true;
+			Show();
 			Views.LoadingOverlay.Load(ServerEndPoint);
 		}
 
@@ -186,7 +194,7 @@ namespace PointWars.Views
 		/// </summary>
 		private void OnPlayerNameChanged()
 		{
-			_connection?.EnqueueMessage(PlayerNameMessage.Create(_allocator, _gameSession.Players.LocalPlayer.Identity, Cvars.PlayerName));
+			_connection?.EnqueueMessage(PlayerNameMessage.Create(_allocator, GameSession.Players.LocalPlayer.Identity, Cvars.PlayerName));
 		}
 
 		/// <summary>
@@ -195,10 +203,10 @@ namespace PointWars.Views
 		/// <param name="message">The message that the local player wants to send.</param>
 		private void OnSay(string message)
 		{
-			if (_gameSession?.Players.LocalPlayer == null)
+			if (GameSession?.Players.LocalPlayer == null)
 				return;
 
-			_connection?.EnqueueMessage(PlayerChatMessage.Create(_allocator, _gameSession.Players.LocalPlayer.Identity, message));
+			_connection?.EnqueueMessage(PlayerChatMessage.Create(_allocator, GameSession.Players.LocalPlayer.Identity, message));
 		}
 
 		/// <summary>
@@ -206,19 +214,22 @@ namespace PointWars.Views
 		/// </summary>
 		private void Disconnect()
 		{
-			Views.LoadingOverlay.IsActive = false;
-			Views.MainMenu.IsActive = true;
-			Views.Chat.IsActive = false;
+			Views.LoadingOverlay.Hide();
+			Views.MainMenu.Show();
+			Views.Chat.Hide();
 			Views.EventMessages.Clear();
-			IsActive = false;
+			Views.InGameMenu.Hide();
+			Views.MessageBoxes.CloseAll();
+			Views.Scoreboard.Hide();
+			Hide();
 
-			_gameSession.SafeDispose();
+			GameSession.SafeDispose();
 			_connection.SafeDispose();
 
 			if (_clientLogic != null && _clientLogic.IsSynced)
 				Log.Info("The game session has ended.");
 
-			_gameSession = null;
+			GameSession = null;
 			_clientLogic = null;
 			_connection = null;
 		}
