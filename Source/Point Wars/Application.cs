@@ -167,7 +167,7 @@ namespace PointWars
 		/// <summary>
 		///   Exists the application.
 		/// </summary>
-		public void Exit()
+		private void Exit()
 		{
 			_running = false;
 			Log.Info("Exiting {0}...", Name);

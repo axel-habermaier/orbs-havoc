@@ -29,6 +29,7 @@ namespace PointWars.Platform.Logging
 	using System.Text;
 	using System.Threading.Tasks;
 	using Memory;
+	using Utilities;
 
 	/// <summary>
 	///   Captures all generated logs and outputs them to a log file.
@@ -158,7 +159,7 @@ namespace PointWars.Platform.Logging
 				Builder.Append(entry.Time.ToString("F4").PadLeft(9));
 
 				Builder.Append("s   ");
-				Builder.Append(entry.Message);
+				TextString.Write(Builder, entry.Message);
 				Builder.Append("\n");
 			}
 
