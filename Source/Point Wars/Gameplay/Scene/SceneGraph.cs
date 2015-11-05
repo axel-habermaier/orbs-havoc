@@ -231,12 +231,12 @@ namespace PointWars.Gameplay.Scene
 		/// </summary>
 		/// <param name="sceneNode">The scene node the behavior should be added to.</param>
 		/// <param name="behavior">The behavior that should be attached.</param>
-		internal void AddBehavior(SceneNode sceneNode, IBehavior behavior)
+		internal void AddBehavior(SceneNode sceneNode, Behavior behavior)
 		{
 			Assert.NotDisposed(this);
 			Assert.ArgumentNotNull(sceneNode, nameof(sceneNode));
 			Assert.ArgumentNotNull(behavior, nameof(behavior));
-			Assert.ArgumentSatisfies(behavior.SceneNode == null, nameof(behavior), "The behavior is already attached to a scene node.");
+			Assert.ArgumentSatisfies(behavior.GetSceneNode() == null, nameof(behavior), "The behavior is already attached to a scene node.");
 
 			if (IsEnumerated)
 				_deferredUpdates.Enqueue(new Update { UpdateType = UpdateType.AddBehavior, SceneNode = sceneNode, Behavior = behavior });
@@ -248,7 +248,7 @@ namespace PointWars.Gameplay.Scene
 		///   Detaches the given behavior from the scene node.
 		/// </summary>
 		/// <param name="behavior">The behavior that should be detached.</param>
-		internal void RemoveBehavior(IBehavior behavior)
+		internal void RemoveBehavior(Behavior behavior)
 		{
 			Assert.NotDisposed(this);
 			Assert.ArgumentNotNull(behavior, nameof(behavior));
@@ -301,7 +301,7 @@ namespace PointWars.Gameplay.Scene
 		/// </summary>
 		/// <param name="sceneNode">The scene node the behavior should be added to.</param>
 		/// <param name="behavior">The behavior that should be attached.</param>
-		private void AddBehaviorImmediately(SceneNode sceneNode, IBehavior behavior)
+		private void AddBehaviorImmediately(SceneNode sceneNode, Behavior behavior)
 		{
 			behavior.Attach(sceneNode);
 			++Version;
@@ -311,7 +311,7 @@ namespace PointWars.Gameplay.Scene
 		///   Immediately detaches the given behavior from the scene node.
 		/// </summary>
 		/// <param name="behavior">The behavior that should be detached.</param>
-		private void RemoveBehaviorImmediately(IBehavior behavior)
+		private void RemoveBehaviorImmediately(Behavior behavior)
 		{
 			behavior.Detach();
 			++Version;
@@ -369,7 +369,7 @@ namespace PointWars.Gameplay.Scene
 			/// <summary>
 			///   The behavior that should be updated.
 			/// </summary>
-			public IBehavior Behavior;
+			public Behavior Behavior;
 
 			/// <summary>
 			///   The parent scene node.

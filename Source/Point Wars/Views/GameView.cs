@@ -126,7 +126,7 @@ namespace PointWars.Views
 			catch (ConnectionDroppedException)
 			{
 				var wasSynced = _clientLogic.IsSynced;
-                Commands.Disconnect();
+				Commands.Disconnect();
 
 				if (!wasSynced)
 					Views.MessageBoxes.ShowError("Connection Failed", $"Unable to connect to {ServerEndPoint}. The connection attempt timed out.");
@@ -150,8 +150,13 @@ namespace PointWars.Views
 			}
 			catch (NetworkException e)
 			{
+				var wasSynced = _clientLogic.IsSynced;
 				Commands.Disconnect();
-				Views.MessageBoxes.ShowError("Connection Error", $"The game session has been aborted due to a network error: {e.Message}");
+
+				if (!wasSynced)
+					Views.MessageBoxes.ShowError("Connection Error", $"The connection attempt has been aborted due to a network error: {e.Message}");
+				else
+					Views.MessageBoxes.ShowError("Connection Error", $"The game session has been aborted due to a network error: {e.Message}");
 			}
 		}
 
@@ -239,8 +244,8 @@ namespace PointWars.Views
 				Log.Info("The game session has ended.");
 
 			GameSession = null;
-			_clientLogic = null;
 			Connection = null;
+			_clientLogic = null;
 		}
 	}
 }

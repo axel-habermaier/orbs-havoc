@@ -55,8 +55,8 @@
     <Compile Include="Assets\AssetBundle.g.cs">
       <DependentUpon>AssetBundle.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gameplay\Behaviors\Behavior`1.cs" />
     <Compile Include="Gameplay\Behaviors\Behavior.cs" />
-    <Compile Include="Gameplay\Behaviors\IBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
     <Compile Include="Gameplay\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>

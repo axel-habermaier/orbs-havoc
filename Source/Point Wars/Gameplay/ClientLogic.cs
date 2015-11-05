@@ -218,8 +218,11 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnPlayerStats(PlayerStatsMessage message, uint sequenceNumber)
 		{
+			// Get the player, if we know it; since the message is unreliable, it might
+			// arrive sooner than the reliable join message for the message's player
 			var player = _gameSession.Players[message.Player];
-			Assert.NotNull(player, "Player stats message references unknown player.");
+			if (player == null)
+				return;
 
 			player.Kills = message.Kills;
 			player.Deaths = message.Deaths;
@@ -250,6 +253,8 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdateCircle(UpdateCircleMessage message, uint sequenceNumber)
 		{
+			// Get the entity, if we know it; since the message is unreliable, it might
+			// arrive sooner than the reliable entity add message for the message's entity
 			// TODO
 		}
 
@@ -260,6 +265,8 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdateTransform(UpdateTransformMessage message, uint sequenceNumber)
 		{
+			// Get the entity, if we know it; since the message is unreliable, it might
+			// arrive sooner than the reliable entity add message for the message's entity
 			// TODO
 		}
 
@@ -270,6 +277,8 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdatePosition(UpdatePositionMessage message, uint sequenceNumber)
 		{
+			// Get the entity, if we know it; since the message is unreliable, it might
+			// arrive sooner than the reliable entity add message for the message's entity
 			// TODO
 		}
 
@@ -280,6 +289,8 @@ namespace PointWars.Gameplay
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
 		void IMessageHandler.OnUpdateRay(UpdateRayMessage message, uint sequenceNumber)
 		{
+			// Get the entity, if we know it; since the message is unreliable, it might
+			// arrive sooner than the reliable entity add message for the message's entity
 			// TODO
 		}
 	}

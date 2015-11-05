@@ -140,7 +140,7 @@ namespace PointWars.Gameplay.Scene
 		/// <summary>
 		///   Gets or sets the head of the behavior list.
 		/// </summary>
-		internal IBehavior Behavior { get; set; }
+		internal Behavior Behavior { get; set; }
 
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all behaviors of the scene node.
@@ -276,11 +276,11 @@ namespace PointWars.Gameplay.Scene
 		///   Adds the given behavior to the scene node.
 		/// </summary>
 		/// <param name="behavior">The behavior that should be attached.</param>
-		public void AddBehavior(IBehavior behavior)
+		public void AddBehavior(Behavior behavior)
 		{
 			Assert.NotPooled(this);
 			Assert.ArgumentNotNull(behavior, nameof(behavior));
-			Assert.ArgumentSatisfies(behavior.SceneNode == null, nameof(behavior), "The behavior is already attached to a scene node.");
+			Assert.ArgumentSatisfies(behavior.GetSceneNode() == null, nameof(behavior), "The behavior is already attached to a scene node.");
 
 			// If we're not attached to a scene graph yet, we can just add the behavior; otherwise, the scene
 			// graph might have to defer the operation
@@ -294,11 +294,11 @@ namespace PointWars.Gameplay.Scene
 		///   Detaches the given behavior from the scene node.
 		/// </summary>
 		/// <param name="behavior">The behavior that should be detached.</param>
-		public void RemoveBehavior(IBehavior behavior)
+		public void RemoveBehavior(Behavior behavior)
 		{
 			Assert.NotPooled(this);
 			Assert.ArgumentNotNull(behavior, nameof(behavior));
-			Assert.ArgumentSatisfies(behavior.SceneNode == this, nameof(behavior), "The behavior is not attached to this scene node.");
+			Assert.ArgumentSatisfies(behavior.GetSceneNode() == this, nameof(behavior), "The behavior is not attached to this scene node.");
 
 			// If we're not attached to a scene graph yet, we can just add the behavior; otherwise, the scene
 			// graph might have to defer the operation
@@ -393,13 +393,13 @@ namespace PointWars.Gameplay.Scene
 			/// <summary>
 			///   The remaining behaviors that have yet to be enumerated.
 			/// </summary>
-			private IBehavior _behavior;
+			private Behavior _behavior;
 
 			/// <summary>
 			///   Initializes a new instance.
 			/// </summary>
 			/// <param name="behavior">The behaviors that should be enumerated.</param>
-			public BehaviorEnumerator(IBehavior behavior)
+			public BehaviorEnumerator(Behavior behavior)
 				: this()
 			{
 				_behavior = behavior;
@@ -408,7 +408,7 @@ namespace PointWars.Gameplay.Scene
 			/// <summary>
 			///   Gets the behavior at the current position of the enumerator.
 			/// </summary>
-			public IBehavior Current { get; private set; }
+			public Behavior Current { get; private set; }
 
 			/// <summary>
 			///   Advances the enumerator to the next item.
