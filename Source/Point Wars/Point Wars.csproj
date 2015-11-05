@@ -178,6 +178,7 @@
     <Compile Include="UserInterface\Visibility.cs" />
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
+    <Compile Include="Views\WaitingOverlay.cs" />
     <Compile Include="Views\Scoreboard.cs" />
     <Compile Include="Views\Chat.cs" />
     <Compile Include="Views\Console.cs" />

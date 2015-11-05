@@ -235,7 +235,8 @@ namespace PointWars.Views
 			/// </summary>
 			private void Close()
 			{
-				((Panel)Parent).Remove(this);
+				var panel = Parent as Panel;
+				panel?.Remove(this);
 			}
 		}
 	}

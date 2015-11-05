@@ -73,6 +73,7 @@ namespace PointWars.Views
 				EventMessages,
 				Scoreboard,
 				Chat,
+				WaitingOverlay,
 				Game
 			};
 
@@ -114,6 +115,11 @@ namespace PointWars.Views
 		///   Gets the application the view collection belongs to.
 		/// </summary>
 		public Application Application { get; }
+
+		/// <summary>
+		/// Gets the waiting-for-server overlay.
+		/// </summary>
+		public WaitingOverlay WaitingOverlay { get; } = new WaitingOverlay();
 
 		/// <summary>
 		///   Gets the loading view.
