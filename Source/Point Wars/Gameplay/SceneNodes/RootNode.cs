@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Scene
+namespace PointWars.Gameplay.SceneNodes
 {
 	using Platform.Memory;
 	using Utilities;

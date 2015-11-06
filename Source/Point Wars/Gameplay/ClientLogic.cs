@@ -23,10 +23,10 @@
 namespace PointWars.Gameplay
 {
 	using System;
-	using Entities;
 	using Network;
 	using Network.Messages;
 	using Platform.Memory;
+	using SceneNodes.Entities;
 	using Utilities;
 	using Views;
 
@@ -38,6 +38,7 @@ namespace PointWars.Gameplay
 		private readonly PoolAllocator _allocator;
 		private readonly GameSession _gameSession;
 		private readonly ViewCollection _views;
+		private NetworkIdentityMap<Entity> _entityMap = new NetworkIdentityMap<Entity>(NetworkProtocol.MaxEntities);
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -70,9 +71,10 @@ namespace PointWars.Gameplay
 			var player = _gameSession.Players[message.Player];
 			Assert.NotNull(player, "Entity add message references unknown player.");
 
-			// TODO
-			var avatar = Avatar.Create(_gameSession, player);
-			_gameSession.SceneGraph.Add(avatar, _gameSession.SceneGraph.Root);
+			var entity = Avatar.Create(_gameSession, player);
+			entity.NetworkIdentity = message.Entity;
+
+			_entityMap.Add(message.Entity, entity);
 		}
 
 		/// <summary>
@@ -93,7 +95,7 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnEntityCollision(EntityCollisionMessage message)
 		{
-			// TODO
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -208,7 +210,7 @@ namespace PointWars.Gameplay
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnEntityRemove(EntityRemoveMessage message)
 		{
-			// TODO
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -255,7 +257,7 @@ namespace PointWars.Gameplay
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			// TODO
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -267,7 +269,7 @@ namespace PointWars.Gameplay
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			// TODO
+			_entityMap[message.Entity]?.UpdateTransform(message, sequenceNumber);
 		}
 
 		/// <summary>
@@ -279,7 +281,7 @@ namespace PointWars.Gameplay
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			// TODO
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -291,7 +293,7 @@ namespace PointWars.Gameplay
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			// TODO
+			throw new NotImplementedException();
 		}
 	}
 }

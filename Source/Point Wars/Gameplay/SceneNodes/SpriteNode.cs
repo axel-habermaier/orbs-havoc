@@ -20,44 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Entities
+namespace PointWars.Gameplay.SceneNodes
 {
-	using System.Numerics;
-	using Behaviors;
-	using Utilities;
+	using Platform.Graphics;
+	using Rendering;
 
 	/// <summary>
-	///   Represents a player avatar.
+	///   Represents a node that draws a sprite.
 	/// </summary>
-	internal class Avatar : Entity
+	public class SpriteNode : SceneNode
 	{
 		/// <summary>
-		///   Gets or sets the avatar's player input behavior.
+		///   Gets or sets the texture of the sprite.
 		/// </summary>
-		public PlayerInputBehavior PlayerInput { get; private set; }
+		public Texture Texture { get; set; }
 
 		/// <summary>
-		///   Initializes a new instance.
+		///   Gets or sets the color of the sprite.
 		/// </summary>
-		/// <param name="gameSession">The game session the entity belongs to.</param>
-		/// <param name="player">The player the ship belongs to.</param>
-		/// <param name="position">The initial position of the ship.</param>
-		/// <param name="orientation">The initial orientation of the ship.</param>
-		public static Avatar Create(GameSession gameSession, Player player, Vector2 position = default(Vector2), float orientation = 0)
+		public Color Color { get; set; }
+
+		/// <summary>
+		///   Draws the sprite using the given sprite batch.
+		/// </summary>
+		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
+		public void Draw(SpriteBatch spriteBatch)
 		{
-			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
-
-			var ship = gameSession.Allocate<Avatar>();
-			ship.GameSession = gameSession;
-			ship.Player = player;
-			ship.Position = position;
-			ship.Orientation = orientation;
-			ship.Velocity = Vector2.Zero;
-
-			if (gameSession.ServerMode)
-				ship.AddBehavior(ship.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
-
-			return ship;
+			spriteBatch.Draw(Texture, WorldPosition, Color);
 		}
 	}
 }

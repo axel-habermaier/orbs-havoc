@@ -22,7 +22,7 @@
 
 namespace PointWars.Gameplay.Behaviors
 {
-	using Scene;
+	using SceneNodes;
 	using Utilities;
 
 	/// <summary>
@@ -48,10 +48,10 @@ namespace PointWars.Gameplay.Behaviors
 		/// <param name="sceneNode">The scene node the behavior should be attached to.</param>
 		public override void Attach(SceneNode sceneNode)
 		{
-			Assert.NotPooled(this);
 			Assert.ArgumentNotNull(sceneNode, nameof(sceneNode));
-			Assert.IsNull(SceneNode, "The behavior has already been attached to a scene node.");
 			Assert.ArgumentOfType<T>(sceneNode, nameof(sceneNode));
+			Assert.NotPooled(this);
+			Assert.IsNull(SceneNode, "The behavior has already been attached to a scene node.");
 
 			if (sceneNode.Behavior != null)
 				sceneNode.Behavior.Previous = this;

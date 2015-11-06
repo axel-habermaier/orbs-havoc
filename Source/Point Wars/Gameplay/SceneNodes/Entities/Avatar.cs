@@ -20,46 +20,57 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Behaviors
+namespace PointWars.Gameplay.SceneNodes.Entities
 {
-	using Platform.Memory;
-	using SceneNodes;
+	using Assets;
+	using Behaviors;
+	using Rendering;
 	using Utilities;
 
 	/// <summary>
-	///   Removes scene nodes after a specific amount of time.
+	///   Represents a player avatar.
 	/// </summary>
-	public class TimeToLiveBehavior : Behavior<SceneNode>
+	internal class Avatar : Entity
 	{
 		/// <summary>
-		///   The remaining number of seconds before the scene node is removed.
+		///   Initializes a new instance.
 		/// </summary>
-		private float _remainingTime;
+		public Avatar()
+		{
+			NetworkType = EntityType.Avatar;
+		}
 
 		/// <summary>
-		///   Invoked when the behavior should execute a step.
+		///   Gets the avatar's player input behavior in server mode.
 		/// </summary>
-		/// <param name="elapsedSeconds">The elapsed time in seconds since the last execution of the behavior.</param>
-		public override void Execute(float elapsedSeconds)
-		{
-			_remainingTime -= elapsedSeconds;
-
-			if (_remainingTime < 0)
-				SceneNode.Remove();
-		}
+		public PlayerInputBehavior PlayerInput { get; private set; }
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="allocator">The allocator that should be used to allocate pooled objects.</param>
-		/// <param name="seconds">The amount of time to wait in seconds before the scene node is removed.</param>
-		public static TimeToLiveBehavior Create(PoolAllocator allocator, float seconds)
+		/// <param name="gameSession">The game session the entity belongs to.</param>
+		/// <param name="player">The player the ship belongs to.</param>
+		public static Avatar Create(GameSession gameSession, Player player)
 		{
-			Assert.ArgumentNotNull(allocator, nameof(allocator));
+			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
 
-			var behavior = allocator.Allocate<TimeToLiveBehavior>();
-			behavior._remainingTime = seconds;
-			return behavior;
+			var avatar = gameSession.Allocate<Avatar>();
+			avatar.GameSession = gameSession;
+			avatar.Player = player;
+			
+			gameSession.SceneGraph.Add(avatar);
+
+			if (gameSession.ServerMode)
+				avatar.AddBehavior(avatar.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
+			else
+			{
+				var sprite = gameSession.Allocate<SpriteNode>();
+				sprite.Texture = AssetBundle.Avatar;
+				sprite.Color = Colors.YellowGreen;
+				sprite.AttachTo(avatar);
+			}
+
+			return avatar;
 		}
 	}
 }

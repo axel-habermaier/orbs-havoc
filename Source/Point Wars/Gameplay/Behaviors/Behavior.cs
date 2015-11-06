@@ -23,7 +23,7 @@
 namespace PointWars.Gameplay.Behaviors
 {
 	using Platform.Memory;
-	using Scene;
+	using SceneNodes;
 
 	/// <summary>
 	///   Represents a behavior that can be attached to a scene node.

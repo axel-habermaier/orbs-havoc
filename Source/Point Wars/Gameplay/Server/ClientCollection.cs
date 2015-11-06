@@ -77,7 +77,7 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(serverLogic, nameof(serverLogic));
 			Assert.ArgumentNotNull(listener, nameof(listener));
 
-			serverLogic.Broadcast += Broadcast;
+			serverLogic.Broadcast = Broadcast;
 
 			_allocator = allocator;
 			_serverLogic = serverLogic;

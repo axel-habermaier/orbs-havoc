@@ -20,9 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Network
+namespace PointWars.Gameplay.SceneNodes.Entities
 {
+	/// <summary>
+	///   Identifies the type of an entity.
+	/// </summary>
 	public enum EntityType
 	{
+		Unknown = 0,
+		Avatar
 	}
 }

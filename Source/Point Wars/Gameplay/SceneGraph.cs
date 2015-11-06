@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Scene
+namespace PointWars.Gameplay
 {
 	using System;
 	using System.Collections.Generic;
 	using Behaviors;
 	using Platform.Memory;
+	using SceneNodes;
 	using Utilities;
 
 	/// <summary>
@@ -186,9 +187,9 @@ namespace PointWars.Gameplay.Scene
 		///   followed by the first child subtree, followed by the second child subtree, etc.
 		/// </summary>
 		/// <param name="startNode">The scene node where the enumeration should start. Defaults to the root node.</param>
-		public PreOrderEnumerator EnumeratePreOrder(SceneNode startNode = null)
+		public PreOrderEnumerator<SceneNode> EnumeratePreOrder(SceneNode startNode = null)
 		{
-			return new PreOrderEnumerator(this, startNode);
+			return new PreOrderEnumerator<SceneNode>(this, startNode);
 		}
 
 		/// <summary>
@@ -196,9 +197,9 @@ namespace PointWars.Gameplay.Scene
 		///   second child subtree, ..., and the parent node last.
 		/// </summary>
 		/// <param name="startNode">The scene node where the enumeration should start. Defaults to the root node.</param>
-		public PostOrderEnumerator EnumeratePostOrder(SceneNode startNode = null)
+		public PostOrderEnumerator<SceneNode> EnumeratePostOrder(SceneNode startNode = null)
 		{
-			return new PostOrderEnumerator(this, startNode);
+			return new PostOrderEnumerator<SceneNode>(this, startNode);
 		}
 
 		/// <summary>
@@ -208,10 +209,10 @@ namespace PointWars.Gameplay.Scene
 		/// </summary>
 		/// <typeparam name="T">The type of the scene nodes that should be enumerated.</typeparam>
 		/// <param name="startNode">The scene node where the enumeration should start. Defaults to the root node.</param>
-		public TypedPreOrderEnumerator<T> EnumeratePreOrder<T>(SceneNode startNode = null)
+		public PreOrderEnumerator<T> EnumeratePreOrder<T>(SceneNode startNode = null)
 			where T : SceneNode
 		{
-			return new TypedPreOrderEnumerator<T>(this, startNode);
+			return new PreOrderEnumerator<T>(this, startNode);
 		}
 
 		/// <summary>
@@ -220,10 +221,10 @@ namespace PointWars.Gameplay.Scene
 		/// </summary>
 		/// <typeparam name="T">The type of the scene nodes that should be enumerated.</typeparam>
 		/// <param name="startNode">The scene node where the enumeration should start. Defaults to the root node.</param>
-		public TypedPostOrderEnumerator<T> EnumeratePostOrder<T>(SceneNode startNode = null)
+		public PostOrderEnumerator<T> EnumeratePostOrder<T>(SceneNode startNode = null)
 			where T : SceneNode
 		{
-			return new TypedPostOrderEnumerator<T>(this, startNode);
+			return new PostOrderEnumerator<T>(this, startNode);
 		}
 
 		/// <summary>
@@ -416,6 +417,278 @@ namespace PointWars.Gameplay.Scene
 			///   Indicates that a behavior should be removed from a scene node.
 			/// </summary>
 			RemoveBehavior
+		}
+
+		/// <summary>
+		///   Represents an enumerator that can be used to traverse the scene graph in post-order, that is,
+		///   the first child subtree first, followed by the second child subtree, ..., and the parent node last.
+		///   Only nodes of the given type are enumerated.
+		/// </summary>
+		/// <typeparam name="T">The type of the scene nodes that should be enumerated.</typeparam>
+		public struct PostOrderEnumerator<T> : IDisposable
+			where T : SceneNode
+		{
+			/// <summary>
+			///   The scene graph that is being enumerated.
+			/// </summary>
+			private readonly SceneGraph _sceneGraph;
+
+			/// <summary>
+			///   The node where the enumeration should start.
+			/// </summary>
+			private readonly SceneNode _startNode;
+
+			/// <summary>
+			///   The version of the scene graph when the enumerator was created.
+			/// </summary>
+			private readonly int _version;
+
+			/// <summary>
+			///   The next scene node that is enumerated.
+			/// </summary>
+			private SceneNode _next;
+
+			/// <summary>
+			///   The untyped scene node at the current position of the enumerator.
+			/// </summary>
+			private SceneNode _current;
+
+			/// <summary>
+			///   Initializes a new instance.
+			/// </summary>
+			/// <param name="sceneGraph">The scene graph that should be enumerated.</param>
+			/// <param name="startNode">The node where the enumeration should start. Defaults to the root node.</param>
+			public PostOrderEnumerator(SceneGraph sceneGraph, SceneNode startNode = null)
+				: this()
+			{
+				Assert.ArgumentNotNull(sceneGraph, nameof(sceneGraph));
+
+				_startNode = startNode ?? sceneGraph.Root;
+				_version = sceneGraph.Version;
+				_sceneGraph = sceneGraph;
+				++_sceneGraph.EnumeratorCount;
+			}
+
+			/// <summary>
+			///   Gets the scene node at the current position of the enumerator.
+			/// </summary>
+			public T Current { get; private set; }
+
+			/// <summary>
+			///   Disposes the object, releasing all managed and unmanaged resources.
+			/// </summary>
+			public void Dispose()
+			{
+				--_sceneGraph.EnumeratorCount;
+				_sceneGraph.ApplyDeferredUpdates();
+			}
+
+			/// <summary>
+			///   Advances the enumerator to the next item.
+			/// </summary>
+			private bool Next()
+			{
+				Assert.That(_version == _sceneGraph.Version, "The scene graph has been modified while it was being enumerated.");
+				Assert.NotDisposed(_sceneGraph);
+
+				// Special case for the first node
+				if (_next == null)
+				{
+					_next = GetLeftMostChild(_startNode);
+					_current = _next;
+					return true;
+				}
+
+				while (_current != _startNode)
+				{
+					if (_current.NextSibling != null)
+					{
+						_current = GetLeftMostChild(_current.NextSibling);
+						return true;
+					}
+
+					if (_current.Parent == null)
+						break;
+
+					_current = _current.Parent;
+					return true;
+				}
+
+				return false;
+			}
+
+			/// <summary>
+			///   Advances the enumerator to the next item.
+			/// </summary>
+			public bool MoveNext()
+			{
+				while (Next())
+				{
+					var typedNode = _current as T;
+					if (typedNode == null)
+						continue;
+
+					Current = typedNode;
+					return true;
+				}
+
+				return false;
+			}
+
+			/// <summary>
+			///   Gets the left-most child of the given scene node.
+			/// </summary>
+			/// <param name="sceneNode">The scene node the left-most child should be returned for.</param>
+			private static SceneNode GetLeftMostChild(SceneNode sceneNode)
+			{
+				while (sceneNode.Child != null)
+					sceneNode = sceneNode.Child;
+
+				return sceneNode;
+			}
+
+			/// <summary>
+			///   Enables C#'s foreach support for the enumerator.
+			/// </summary>
+			public PostOrderEnumerator<T> GetEnumerator()
+			{
+				return this;
+			}
+		}
+
+		/// <summary>
+		///   Represents an enumerator that can be used to traverse the scene graph in pre-order, that is, the parent node first,
+		///   followed by the first child subtree, followed by the second child subtree, etc. Only nodes of the given type are
+		///   enumerated.
+		/// </summary>
+		/// <typeparam name="T">The type of the scene nodes that should be enumerated.</typeparam>
+		public struct PreOrderEnumerator<T> : IDisposable
+			where T : SceneNode
+		{
+			/// <summary>
+			///   The scene graph that is being enumerated.
+			/// </summary>
+			private readonly SceneGraph _sceneGraph;
+
+			/// <summary>
+			///   The node where the enumeration should start.
+			/// </summary>
+			private readonly SceneNode _startNode;
+
+			/// <summary>
+			///   The version of the scene graph when the enumerator was created.
+			/// </summary>
+			private readonly int _version;
+
+			/// <summary>
+			///   The next scene node that is enumerated.
+			/// </summary>
+			private SceneNode _next;
+
+			/// <summary>
+			///   The untyped scene node at the current position of the enumerator.
+			/// </summary>
+			private SceneNode _current;
+
+			/// <summary>
+			///   Initializes a new instance.
+			/// </summary>
+			/// <param name="sceneGraph">The scene graph that should be enumerated.</param>
+			/// <param name="startNode">The node where the enumeration should start. Defaults to the root node.</param>
+			public PreOrderEnumerator(SceneGraph sceneGraph, SceneNode startNode = null)
+				: this()
+			{
+				Assert.ArgumentNotNull(sceneGraph, nameof(sceneGraph));
+
+				_startNode = startNode ?? sceneGraph.Root;
+				_version = sceneGraph.Version;
+				_sceneGraph = sceneGraph;
+				++_sceneGraph.EnumeratorCount;
+			}
+
+			/// <summary>
+			///   Gets the scene node at the current position of the enumerator.
+			/// </summary>
+			public T Current { get; private set; }
+
+			/// <summary>
+			///   Disposes the object, releasing all managed and unmanaged resources.
+			/// </summary>
+			public void Dispose()
+			{
+				--_sceneGraph.EnumeratorCount;
+				_sceneGraph.ApplyDeferredUpdates();
+			}
+
+			/// <summary>
+			///   Advances the enumerator to the next item.
+			/// </summary>
+			private bool Next()
+			{
+				Assert.That(_version == _sceneGraph.Version, "The scene graph has been modified while it was being enumerated.");
+				Assert.NotDisposed(_sceneGraph);
+
+				// Special case for the root node that gets the enumeration started
+				if (_next == null)
+				{
+					_next = _startNode;
+					_current = _next;
+					return true;
+				}
+
+				if (_current == null)
+					return false;
+
+				if (_current.Child != null)
+				{
+					_current = _current.Child;
+					return true;
+				}
+
+				if (_current == _startNode)
+					return false;
+
+				if (_current.NextSibling != null)
+				{
+					_current = _current.NextSibling;
+					return true;
+				}
+
+				while (_current != null && _current != _startNode && _current.NextSibling == null)
+					_current = _current.Parent;
+
+				if (_current == null || _current == _startNode)
+					return false;
+
+				_current = _current.NextSibling;
+				return true;
+			}
+
+			/// <summary>
+			///   Advances the enumerator to the next item.
+			/// </summary>
+			public bool MoveNext()
+			{
+				while (Next())
+				{
+					var typedNode = _current as T;
+					if (typedNode == null)
+						continue;
+
+					Current = typedNode;
+					return true;
+				}
+
+				return false;
+			}
+
+			/// <summary>
+			///   Enables C#'s foreach support for the enumerator.
+			/// </summary>
+			public PreOrderEnumerator<T> GetEnumerator()
+			{
+				return this;
+			}
 		}
 	}
 }

@@ -22,6 +22,7 @@
 
 namespace PointWars.Network.Messages
 {
+	using Gameplay.SceneNodes.Entities;
 	using Network;
 	using Platform.Memory;
 	using Utilities;

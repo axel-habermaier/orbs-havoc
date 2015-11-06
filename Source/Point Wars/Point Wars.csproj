@@ -58,23 +58,21 @@
     <Compile Include="Gameplay\Behaviors\Behavior`1.cs" />
     <Compile Include="Gameplay\Behaviors\Behavior.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
+    <Compile Include="Gameplay\ClientInputManager.cs" />
     <Compile Include="Gameplay\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>
     </Compile>
-    <Compile Include="Gameplay\Entities\Entity.cs" />
-    <Compile Include="Gameplay\Entities\Avatar.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\Entity.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\Avatar.cs" />
     <Compile Include="Gameplay\GameSession.cs" />
     <Compile Include="Gameplay\Player.cs" />
     <Compile Include="Gameplay\PlayerCollection.cs" />
-    <Compile Include="Gameplay\Scene\PostOrderEnumerator.cs" />
-    <Compile Include="Gameplay\Scene\PreOrderEnumerator.cs" />
-    <Compile Include="Gameplay\Scene\RootNode.cs" />
-    <Compile Include="Gameplay\Scene\SceneGraph.cs" />
-    <Compile Include="Gameplay\Scene\SceneNode.cs" />
+    <Compile Include="Gameplay\SceneNodes\RootNode.cs" />
+    <Compile Include="Gameplay\SceneGraph.cs" />
+    <Compile Include="Gameplay\SceneNodes\SceneNode.cs" />
     <Compile Include="Gameplay\Behaviors\TimeToLiveBehavior.cs" />
-    <Compile Include="Gameplay\Scene\TypedPostOrderEnumerator.cs" />
-    <Compile Include="Gameplay\Scene\TypedPreOrderEnumerator.cs" />
     <Compile Include="Gameplay\ClientLogic.cs" />
+    <Compile Include="Gameplay\SceneNodes\SpriteNode.cs" />
     <Compile Include="Gameplay\Server\Client.cs" />
     <Compile Include="Gameplay\Server\Client.Unsupported.cs">
       <DependentUpon>Client.cs</DependentUpon>
@@ -87,7 +85,7 @@
     <Compile Include="Network\Connection.cs" />
     <Compile Include="Network\ConnectionDroppedException.cs" />
     <Compile Include="Network\DeliveryManager.cs" />
-    <Compile Include="Network\EntityType.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\EntityType.cs" />
     <Compile Include="Network\IMessageHandler.cs" />
     <Compile Include="Network\LeaveReason.cs" />
     <Compile Include="Network\MessageDeserializer.cs" />
@@ -351,6 +349,9 @@
       <HotSpotX>7</HotSpotX>
       <HotSpotY>7</HotSpotY>
     </Cursor>
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\Avatar.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

@@ -20,18 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Entities
+namespace PointWars.Gameplay.SceneNodes.Entities
 {
+	using System;
 	using System.Numerics;
 	using Network;
 	using Network.Messages;
-	using Scene;
+	using Platform.Logging;
 
 	/// <summary>
 	///   A base class for server-side and client-side entity scene nodes.
 	/// </summary>
 	internal abstract class Entity : SceneNode
 	{
+		/// <summary>
+		///   The sequence number of the last remote transform update of the entity.
+		/// </summary>
+		private uint _lastTransformUpdateSequenceNumber;
+
 		/// <summary>
 		///   Gets the network type of the entity.
 		/// </summary>
@@ -41,11 +47,6 @@ namespace PointWars.Gameplay.Entities
 		///   Gets or sets the network identity of the entity.
 		/// </summary>
 		public NetworkIdentity NetworkIdentity { get; set; }
-
-		/// <summary>
-		///   Gets the type of the update messages that are sent for the entity.
-		/// </summary>
-		public MessageType UpdateMessageType { get; protected set; }
 
 		/// <summary>
 		///   Gets or sets the game session the entity belongs to.
@@ -107,6 +108,56 @@ namespace PointWars.Gameplay.Entities
 		/// <remarks>This method is not called when the game session is disposed.</remarks>
 		public virtual void OnRemoved()
 		{
+		}
+
+		/// <summary>
+		///   Broadcasts update messages for the entity.
+		/// </summary>
+		/// <param name="broadcast">The callback that should be used to broadcast the message.</param>
+		public virtual void BroadcastUpdates(Action<Message> broadcast)
+		{
+			broadcast(UpdateTransformMessage.Create(GameSession.Allocator, NetworkIdentity, Position, Orientation));
+		}
+
+		/// <summary>
+		///   Updates the entity's transformation based on the data in the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
+		public void UpdateTransform(UpdateTransformMessage message, uint sequenceNumber)
+		{
+			if (!AcceptUpdate(ref _lastTransformUpdateSequenceNumber, sequenceNumber))
+				return;
+
+			// TODO: Interpolation
+			Position = message.Position;
+			Orientation = message.Orientation;
+		}
+
+		/// <summary>
+		///   Checks whether the entity accepts an update with the given sequence number. All following entity updates are only
+		///   accepted when their sequence number exceeds the given one.
+		/// </summary>
+		/// <param name="lastSequenceNumber">The last accepted sequence number.</param>
+		/// <param name="sequenceNumber">The sequence number that should be checked.</param>
+		protected static bool AcceptUpdate(ref uint lastSequenceNumber, uint sequenceNumber)
+		{
+			if (lastSequenceNumber >= sequenceNumber)
+			{
+				Log.Debug("Entity rejected outdated update.");
+				return false;
+			}
+
+			lastSequenceNumber = sequenceNumber;
+			return true;
+		}
+
+		/// <summary>
+		///   Returns a string that represents the current object.
+		/// </summary>
+		public override string ToString()
+		{
+			return $"{GetType().Name} {NetworkIdentity}";
 		}
 	}
 }

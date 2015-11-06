@@ -31,6 +31,11 @@ namespace PointWars.Network
 	internal static class NetworkProtocol
 	{
 		/// <summary>
+		///   The frequency in Hz that determines how often the user input is sent to the server.
+		/// </summary>
+		public const int InputUpdateFrequency = 60;
+
+		/// <summary>
 		///   The application identifier that is used to determine whether a packet has been sent by another instance of the same
 		///   application.
 		/// </summary>
@@ -82,6 +87,11 @@ namespace PointWars.Network
 		///   The maximum allowed number of concurrently active players.
 		/// </summary>
 		public const int MaxPlayers = 8;
+
+		/// <summary>
+		///   The maximum allowed number of concurrently active entities.
+		/// </summary>
+		public const int MaxEntities = 4096;
 
 		/// <summary>
 		///   The default server port.

@@ -22,9 +22,9 @@
 
 namespace PointWars.Gameplay
 {
-	using Entities;
 	using Network;
 	using Platform.Memory;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>
@@ -73,9 +73,9 @@ namespace PointWars.Gameplay
 		public bool IsLocalPlayer { get; set; }
 
 		/// <summary>
-		///   Gets or sets the entity controlled by the player.
+		///   Gets or sets the avatar controlled by the player.
 		/// </summary>
-		public Avatar Entity { get; set; }
+		public Avatar Avatar { get; set; }
 
 		/// <summary>
 		///   Allocates a player using the given allocator.
@@ -113,7 +113,7 @@ namespace PointWars.Gameplay
 		/// </summary>
 		protected override void OnReturning()
 		{
-			Entity = null;
+			Avatar = null;
 		}
 	}
 }

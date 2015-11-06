@@ -23,8 +23,8 @@
 namespace PointWars.Gameplay.Behaviors
 {
 	using System.Numerics;
-	using Entities;
 	using Platform.Memory;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>
@@ -32,24 +32,39 @@ namespace PointWars.Gameplay.Behaviors
 	/// </summary>
 	internal class PlayerInputBehavior : Behavior<Entity>
 	{
+		private const float MaxSpeed = 4000;
+		private const float MaxAcceleration = 4000;
+		private const float Drag = .85f;
+		private Vector2 _acceleration;
+
 		/// <summary>
 		///   Handles the given player input.
 		/// </summary>
 		/// <param name="target">The target the ship should be facing, relative to the ship's position.</param>
-		/// <param name="forward">Indicates whether the ship should move forward.</param>
-		/// <param name="backward">Indicates whether the ship should move backward.</param>
-		/// <param name="strafeLeft">Indicates whether the ship should strafe to the left.</param>
-		/// <param name="strafeRight">Indicates whether the ship should strafe to the right.</param>
-		public void Handle(Vector2 target, bool forward, bool backward, bool strafeLeft, bool strafeRight)
+		/// <param name="moveUp">Indicates whether the player should move up.</param>
+		/// <param name="moveDown">Indicates whether the player should move down.</param>
+		/// <param name="moveLeft">Indicates whether the player should move to the left.</param>
+		/// <param name="moveRight">Indicates whether the player should move to the right.</param>
+		public void Handle(Vector2 target, bool moveUp, bool moveDown, bool moveLeft, bool moveRight)
 		{
-			if (forward)
-				SceneNode.Velocity += new Vector2(1, 0);
-			if (backward)
-				SceneNode.Velocity += new Vector2(-1, 0);
-			if (strafeLeft)
-				SceneNode.Velocity += new Vector2(0, -1);
-			if (strafeRight)
-				SceneNode.Velocity += new Vector2(0, 1);
+			// Compute the angular velocity, considering the target orientation.
+			// We always use the shortest path to rotate towards the target.
+			SceneNode.Orientation = MathUtils.ToAngle(target);
+
+			// Update the acceleration of the entity
+			_acceleration = Vector2.Zero;
+
+			if (moveLeft)
+				_acceleration += new Vector2(-1, 0);
+			if (moveRight)
+				_acceleration += new Vector2(1, 0);
+			if (moveUp)
+				_acceleration += new Vector2(0, -1);
+			if (moveDown)
+				_acceleration += new Vector2(0, 1);
+
+			if (_acceleration != Vector2.Zero)
+				_acceleration = Vector2.Normalize(_acceleration);
 		}
 
 		/// <summary>
@@ -58,6 +73,12 @@ namespace PointWars.Gameplay.Behaviors
 		/// <param name="elapsedSeconds">The elapsed time in seconds since the last execution of the behavior.</param>
 		public override void Execute(float elapsedSeconds)
 		{
+			SceneNode.Velocity += _acceleration * MaxAcceleration * elapsedSeconds;
+			SceneNode.Velocity *= Drag;
+
+			if (SceneNode.Velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+				SceneNode.Velocity = MaxSpeed * Vector2.Normalize(SceneNode.Velocity);
+
 			SceneNode.Position += SceneNode.Velocity * elapsedSeconds;
 		}
 
@@ -68,7 +89,10 @@ namespace PointWars.Gameplay.Behaviors
 		public static PlayerInputBehavior Create(PoolAllocator allocator)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
-			return allocator.Allocate<PlayerInputBehavior>();
+
+			var input = allocator.Allocate<PlayerInputBehavior>();
+			input._acceleration = Vector2.Zero;
+			return input;
 		}
 	}
 }

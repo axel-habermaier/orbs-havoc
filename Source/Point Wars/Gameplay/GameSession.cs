@@ -23,9 +23,9 @@
 namespace PointWars.Gameplay
 {
 	using System;
-	using Entities;
 	using Platform.Memory;
-	using Scene;
+	using SceneNodes;
+	using SceneNodes.Entities;
 	using Server;
 	using Utilities;
 

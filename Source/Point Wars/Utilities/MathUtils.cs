@@ -331,7 +331,7 @@ namespace PointWars.Utilities
 		}
 
 		/// <summary>
-		///     Rotates the given vector by the given angle.
+		///   Rotates the given vector by the given angle.
 		/// </summary>
 		/// <param name="vector">The vector that should be rotated.</param>
 		/// <param name="angle">The rotation angle in radians.</param>
@@ -340,6 +340,24 @@ namespace PointWars.Utilities
 			var cos = Cos(angle);
 			var sin = -Sin(angle);
 			return new Vector2(vector.X * cos - vector.Y * sin, vector.X * sin + vector.Y * cos);
+		}
+
+		/// <summary>
+		///   Computes the angle in radians from the given vector.
+		/// </summary>
+		/// <param name="vector">The vector the angle should be computed from.</param>
+		public static float ToAngle(Vector2 vector)
+		{
+			return Atan2(-vector.Y, vector.X);
+		}
+
+		/// <summary>
+		///   Computes the vector from the given angle.
+		/// </summary>
+		/// <param name="angle">The angle in radians the vector should be computed from.</param>
+		public static Vector2 FromAngle(float angle)
+		{
+			return new Vector2(Cos(angle), -Sin(angle));
 		}
 	}
 }

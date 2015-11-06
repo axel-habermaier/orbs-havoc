@@ -24,6 +24,7 @@ namespace PointWars.Views
 {
 	using System.Net;
 	using Gameplay;
+	using Gameplay.SceneNodes;
 	using Network;
 	using Network.Messages;
 	using Platform.Input;
@@ -43,6 +44,7 @@ namespace PointWars.Views
 		private readonly PoolAllocator _allocator = new PoolAllocator();
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
+		ClientInputManager _inputManager ;
 
 		/// <summary>
 		///   Gets the currently active server connection.
@@ -68,6 +70,8 @@ namespace PointWars.Views
 			Commands.OnDisconnect += Disconnect;
 			Commands.OnSay += OnSay;
 			Cvars.PlayerNameChanged += OnPlayerNameChanged;
+
+			_inputManager = new ClientInputManager(InputDevice);
 
 			RootElement = new Border
 			{
@@ -121,6 +125,12 @@ namespace PointWars.Views
 
 					if (Connection.IsLagging)
 						Views.WaitingOverlay.Show();
+
+					// Always send the input state, but update it only when the game session is focused 
+					if (RootElement.IsFocused && !Views.Scoreboard.IsShown)
+						_inputManager.Update();
+
+					_inputManager.SendInput(GameSession, Connection);
 				}
 			}
 			catch (ConnectionDroppedException)
@@ -166,6 +176,11 @@ namespace PointWars.Views
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
 		public void Draw(SpriteBatch spriteBatch)
 		{
+			if (GameSession == null)
+				return;
+
+			foreach (var spriteNode in GameSession.SceneGraph.EnumeratePostOrder<SpriteNode>())
+				spriteNode.Draw(spriteBatch);
 		}
 
 		/// <summary>
@@ -180,6 +195,7 @@ namespace PointWars.Views
 
 			Disconnect();
 			_allocator.SafeDispose();
+			_inputManager.SafeDispose();
 		}
 
 		/// <summary>

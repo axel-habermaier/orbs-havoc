@@ -96,64 +96,40 @@ namespace PointWars.Scripting
 		ConfigurableInput InputShowScoreboard { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, respawns the player after death.
-		/// </summary>
-		[DefaultValue(MouseButton.Left), Persistent]
-		ConfigurableInput InputRespawn { get; set; }
-
-		/// <summary>
-		///   When triggered in an active game session, moves the player forwards.
+		///   When triggered in an active game session, moves the player in the up direction.
 		/// </summary>
 		[DefaultValue(Key.W), Persistent]
-		ConfigurableInput InputForward { get; set; }
+		ConfigurableInput InputMoveUp { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, moves the player backwards.
+		///   When triggered in an active game session, moves the player in the down direction.
 		/// </summary>
 		[DefaultValue(Key.S), Persistent]
-		ConfigurableInput InputBackward { get; set; }
+		ConfigurableInput InputMoveDown { get; set; }
 
 		/// <summary>
 		///   When triggered in an active game session, moves the player to the left.
 		/// </summary>
 		[DefaultValue(Key.A), Persistent]
-		ConfigurableInput InputStrafeLeft { get; set; }
+		ConfigurableInput InputMoveLeft { get; set; }
 
 		/// <summary>
 		///   When triggered in an active game session, moves the player to the right.
 		/// </summary>
 		[DefaultValue(Key.D), Persistent]
-		ConfigurableInput InputStrafeRight { get; set; }
-
-		/// <summary>
-		///   When triggered in an active game session, triggers the player's after burner.
-		/// </summary>
-		[DefaultValue(Key.LeftShift), Persistent]
-		ConfigurableInput InputAfterBurner { get; set; }
+		ConfigurableInput InputMoveRight { get; set; }
 
 		/// <summary>
 		///   When triggered in an active game session, fires the player's primary weapon.
 		/// </summary>
 		[DefaultValue(MouseButton.Left), Persistent]
-		ConfigurableInput InputPrimaryWeapon { get; set; }
+		ConfigurableInput InputFirePrimary { get; set; }
 
 		/// <summary>
 		///   When triggered in an active game session, fires the player's secondary weapon.
 		/// </summary>
 		[DefaultValue(MouseButton.Right), Persistent]
-		ConfigurableInput InputSecondaryWeapon { get; set; }
-
-		/// <summary>
-		///   When triggered in an active game session, fires the player's tertiary weapon.
-		/// </summary>
-		[DefaultValue(Key.Q), Persistent]
-		ConfigurableInput InputTertiaryWeapon { get; set; }
-
-		/// <summary>
-		///   When triggered in an active game session, fires the player's quaternary weapon.
-		/// </summary>
-		[DefaultValue(Key.E), Persistent]
-		ConfigurableInput InputQuaternaryWeapon { get; set; }
+		ConfigurableInput InputFireSecondary { get; set; }
 
 		/// <summary>
 		///   When triggered in an active game session, opens the chat input.

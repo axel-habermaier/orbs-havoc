@@ -23,12 +23,11 @@
 namespace PointWars.Gameplay.Server
 {
 	using System;
-	using System.Numerics;
-	using Entities;
 	using Network;
 	using Network.Messages;
 	using Platform.Logging;
 	using Platform.Memory;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>
@@ -74,6 +73,11 @@ namespace PointWars.Gameplay.Server
 		}
 
 		/// <summary>
+		///   Gets or sets a handler for messages should be broadcast to all connected clients.
+		/// </summary>
+		public Action<Message> Broadcast { get; set; }
+
+		/// <summary>
 		///   Gets the number of players currently connected to the game session.
 		/// </summary>
 		public int PlayerCount => _gameSession.Players.Count;
@@ -85,10 +89,8 @@ namespace PointWars.Gameplay.Server
 		private void OnEntityAdded(Entity entity)
 		{
 			Assert.InRange(entity.NetworkType);
-			Assert.InRange(entity.UpdateMessageType);
 
 			entity.NetworkIdentity = _networkIdentities.Allocate();
-
 			var message = CreateEntityAddMessage(entity);
 			Broadcast(message);
 
@@ -108,11 +110,6 @@ namespace PointWars.Gameplay.Server
 			Broadcast(EntityRemoveMessage.Create(_allocator, entity.NetworkIdentity));
 			_networkIdentities.Free(entity.NetworkIdentity);
 		}
-
-		/// <summary>
-		///   Raised when a message should be broadcast to all connected clients.
-		/// </summary>
-		public event Action<Message> Broadcast;
 
 		/// <summary>
 		///   Sends a snapshot of the current game state to the given connection.
@@ -190,7 +187,7 @@ namespace PointWars.Gameplay.Server
 
 			Broadcast(PlayerLeaveMessage.Create(_allocator, player.Identity, player.LeaveReason));
 
-			player.Entity.SafeDispose();
+			player.Avatar.SafeDispose();
 			_gameSession.Players.Remove(player);
 
 			Log.DebugIf(EnableTracing, "(Server) Removed player '{0}' ({1}).", player.Name, player.Identity);
@@ -211,22 +208,21 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(inputMessage, nameof(inputMessage));
 
 			// Respawn the player if necessary
-			if (player.Entity == null || player.Entity.IsRemoved)
+			if (player.Avatar == null || player.Avatar.IsRemoved)
 			{
 				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
 
-				player.Entity.SafeDispose();
-				player.Entity = Avatar.Create(_gameSession, player, position: new Vector2(0, 30000));
-				player.Entity.AcquireOwnership();
-				player.Entity.AttachTo(_gameSession.SceneGraph.Root);
+				player.Avatar.SafeDispose();
+				player.Avatar = Avatar.Create(_gameSession, player);
+				player.Avatar.AcquireOwnership();
 			}
 
-			player.Entity.PlayerInput.Handle(
+			player.Avatar.PlayerInput.Handle(
 				inputMessage.Target,
-				(inputMask & inputMessage.Forward) != 0,
-				(inputMask & inputMessage.Backward) != 0,
-				(inputMask & inputMessage.StrafeLeft) != 0,
-				(inputMask & inputMessage.StrafeRight) != 0);
+				(inputMask & inputMessage.MoveUp) != 0,
+				(inputMask & inputMessage.MoveDown) != 0,
+				(inputMask & inputMessage.MoveLeft) != 0,
+				(inputMask & inputMessage.MoveRight) != 0);
 		}
 
 		/// <summary>
@@ -286,35 +282,7 @@ namespace PointWars.Gameplay.Server
 			foreach (var entity in _gameSession.SceneGraph.EnumeratePreOrder<Entity>())
 			{
 				Assert.InRange(entity.NetworkType);
-				Assert.That(entity.UpdateMessageType == MessageType.UpdateCircle ||
-							entity.UpdateMessageType == MessageType.UpdatePosition ||
-							entity.UpdateMessageType == MessageType.UpdateTransform ||
-							entity.UpdateMessageType == MessageType.UpdateShip ||
-							entity.UpdateMessageType == MessageType.UpdateRay, "Unsupported update message type.");
-
-				Broadcast(CreateUpdateMessage(entity));
-			}
-		}
-
-		/// <summary>
-		///   Creates the update message for the given entity.
-		/// </summary>
-		/// <param name="entity">The entity the update message should be created for.</param>
-		private Message CreateUpdateMessage(Entity entity)
-		{
-			var orientation = MathUtils.RadToDeg360(-entity.Orientation);
-
-			switch (entity.UpdateMessageType)
-			{
-				case MessageType.UpdateTransform:
-					return UpdateTransformMessage.Create(_allocator, entity.NetworkIdentity, entity.Position, orientation);
-				case MessageType.UpdatePosition:
-					return UpdatePositionMessage.Create(_allocator, entity.NetworkIdentity, entity.Position);
-				case MessageType.UpdateRay:
-					var target = NetworkProtocol.ReservedEntityIdentity;
-					return UpdateRayMessage.Create(_allocator, entity.NetworkIdentity, target, entity.Position, 2000, orientation);
-				default:
-					throw new InvalidOperationException("Unsupported update message type.");
+				entity.BroadcastUpdates(Broadcast);
 			}
 		}
 	}

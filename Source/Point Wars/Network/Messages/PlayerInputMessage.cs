@@ -33,14 +33,14 @@ namespace PointWars.Network.Messages
 	internal sealed class PlayerInputMessage : Message
 	{
 		/// <summary>
-		///   Gets the boolean state value for the backwards input, including the seven previous states.
+		///   Gets the boolean state value for the down movement input, including the seven previous states.
 		/// </summary>
-		public byte Backward { get; private set; }
+		public byte MoveDown { get; private set; }
 
 		/// <summary>
-		///   Gets the boolean state value for the forward input, including the seven previous states.
+		///   Gets the boolean state value for the up movement input, including the seven previous states.
 		/// </summary>
-		public byte Forward { get; private set; }
+		public byte MoveUp { get; private set; }
 
 		/// <summary>
 		///   Gets the monotonically increasing frame number, starting at 1.
@@ -53,14 +53,14 @@ namespace PointWars.Network.Messages
 		public NetworkIdentity Player { get; private set; }
 
 		/// <summary>
-		///   Gets the boolean state value for the strafe left input, including the seven previous states.
+		///   Gets the boolean state value for the left movement input, including the seven previous states.
 		/// </summary>
-		public byte StrafeLeft { get; private set; }
+		public byte MoveLeft { get; private set; }
 
 		/// <summary>
-		///   Gets the boolean state value for the strafe right input, including the seven previous states.
+		///   Gets the boolean state value for the right movement input, including the seven previous states.
 		/// </summary>
-		public byte StrafeRight { get; private set; }
+		public byte MoveRight { get; private set; }
 
 		/// <summary>
 		///   Gets the position of the client's target relative to the client's ship.
@@ -68,14 +68,14 @@ namespace PointWars.Network.Messages
 		public Vector2 Target { get; private set; }
 
 		/// <summary>
-		///   Gets the boolean state value for the turn left input, including the seven previous states.
+		///   Gets the boolean state value for the primary weapon firing input, including the seven previous states.
 		/// </summary>
-		public byte TurnLeft { get; private set; }
+		public byte FirePrimary { get; private set; }
 
 		/// <summary>
-		///   Gets the boolean state value for the turn right input, including the seven previous states.
+		///   Gets the boolean state value for the secondary weapon firing input, including the seven previous states.
 		/// </summary>
-		public byte TurnRight { get; private set; }
+		public byte FireSecondary { get; private set; }
 
 		/// <summary>
 		///   Serializes the message using the given writer.
@@ -85,12 +85,12 @@ namespace PointWars.Network.Messages
 		{
 			WriteIdentifier(ref writer, Player);
 			writer.WriteUInt32(FrameNumber);
-			writer.WriteByte(Forward);
-			writer.WriteByte(Backward);
-			writer.WriteByte(TurnLeft);
-			writer.WriteByte(TurnRight);
-			writer.WriteByte(StrafeLeft);
-			writer.WriteByte(StrafeRight);
+			writer.WriteByte(MoveUp);
+			writer.WriteByte(MoveDown);
+			writer.WriteByte(MoveLeft);
+			writer.WriteByte(MoveRight);
+			writer.WriteByte(FirePrimary);
+			writer.WriteByte(FireSecondary);
 			WriteVector2(ref writer, Target);
 		}
 
@@ -102,12 +102,12 @@ namespace PointWars.Network.Messages
 		{
 			Player = ReadIdentifier(ref reader);
 			FrameNumber = reader.ReadUInt32();
-			Forward = reader.ReadByte();
-			Backward = reader.ReadByte();
-			TurnLeft = reader.ReadByte();
-			TurnRight = reader.ReadByte();
-			StrafeLeft = reader.ReadByte();
-			StrafeRight = reader.ReadByte();
+			MoveUp = reader.ReadByte();
+			MoveDown = reader.ReadByte();
+			MoveLeft = reader.ReadByte();
+			MoveRight = reader.ReadByte();
+			FirePrimary = reader.ReadByte();
+			FireSecondary = reader.ReadByte();
 			Target = ReadVector2(ref reader);
 		}
 
@@ -128,16 +128,18 @@ namespace PointWars.Network.Messages
 		/// <param name="player">The player that generated the input.</param>
 		/// <param name="frameNumber">The number of the frame during which the input was generated, starting at 1.</param>
 		/// <param name="target"></param>
-		/// <param name="forward">The boolean state value for the forward input, including the seven previous states.</param>
-		/// <param name="backward">The boolean state value for the backwards input, including the seven previous states.</param>
-		/// <param name="strafeLeft">The boolean state value for the strafe left input, including the seven previous states.</param>
-		/// <param name="strafeRight">The boolean state value for the strafe right input, including the seven previous states.</param>
-		/// <param name="turnLeft">The boolean state value for the turn left input, including the seven previous states.</param>
-		/// <param name="turnRight">The boolean state value for the turn right input, including the seven previous states.</param>
+		/// <param name="moveUp">The boolean state value for the up movement input, including the seven previous states.</param>
+		/// <param name="moveDown">The boolean state value for the down movement input, including the seven previous states.</param>
+		/// <param name="moveLeft">The boolean state value for the left movement input, including the seven previous states.</param>
+		/// <param name="moveRight">The boolean state value for the right movement input, including the seven previous states.</param>
+		/// <param name="firePrimary">The boolean state value for the primary weapon firing input, including the seven previous states.</param>
+		/// <param name="fireSecondary">
+		///   The boolean state value for the secondary weapon firing input, including the seven previous states.
+		/// </param>
 		public static PlayerInputMessage Create(PoolAllocator poolAllocator, NetworkIdentity player, uint frameNumber, Vector2 target,
-												byte forward, byte backward,
-												byte strafeLeft, byte strafeRight,
-												byte turnLeft, byte turnRight)
+												byte moveUp, byte moveDown,
+												byte moveLeft, byte moveRight,
+												byte firePrimary, byte fireSecondary)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
 
@@ -145,12 +147,12 @@ namespace PointWars.Network.Messages
 			message.Player = player;
 			message.FrameNumber = frameNumber;
 			message.Target = target;
-			message.Forward = forward;
-			message.Backward = backward;
-			message.StrafeLeft = strafeLeft;
-			message.StrafeRight = strafeRight;
-			message.TurnLeft = turnLeft;
-			message.TurnRight = turnRight;
+			message.MoveUp = moveUp;
+			message.MoveDown = moveDown;
+			message.MoveLeft = moveLeft;
+			message.MoveRight = moveRight;
+			message.FirePrimary = firePrimary;
+			message.FireSecondary = fireSecondary;
 
 			return message;
 		}
@@ -160,8 +162,9 @@ namespace PointWars.Network.Messages
 		/// </summary>
 		public override string ToString()
 		{
-			return $"{MessageType}, Player={Player}, FrameNumber={FrameNumber}, Target={{{Target}}}, Forward={Forward}, Backward={Backward}, " +
-				   $"StrafeLeft={StrafeLeft}, StrafeRight={StrafeRight}, TurnLeft={TurnLeft}, TurnRight={TurnRight}";
+			return
+				$"{MessageType}, Player={Player}, FrameNumber={FrameNumber}, Target={{{Target}}}, Up={MoveUp}, Down={MoveDown}, " +
+				$"Left={MoveLeft}, Right={MoveRight}, FirePrimary={FirePrimary}, FireSecondary={FireSecondary}";
 		}
 	}
 }

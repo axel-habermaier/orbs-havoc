@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Scene
+namespace PointWars.Gameplay.SceneNodes
 {
 	using System.Numerics;
 	using Behaviors;
@@ -38,14 +38,14 @@ namespace PointWars.Gameplay.Scene
 		private Matrix3x2 _localMatrix = Matrix3x2.Identity;
 
 		/// <summary>
-		///   The scene node's position, relative to the parent scene node.
-		/// </summary>
-		private Vector2 _position;
-
-		/// <summary>
 		///   The scene node's rotation in radians, relative to the parent scene node.
 		/// </summary>
 		private float _orientation;
+
+		/// <summary>
+		///   The scene node's position, relative to the parent scene node.
+		/// </summary>
+		private Vector2 _position;
 
 		/// <summary>
 		///   The world transformation matrix of the scene node.
