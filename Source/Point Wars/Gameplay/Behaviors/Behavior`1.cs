@@ -35,7 +35,7 @@ namespace PointWars.Gameplay.Behaviors
 		/// <summary>
 		///   Gets the scene node the behavior is attached to.
 		/// </summary>
-		protected T SceneNode { get; private set; }
+		public T SceneNode { get; private set; }
 
 		/// <summary>
 		///   Gets the scene node the behavior is attached to.
@@ -46,7 +46,7 @@ namespace PointWars.Gameplay.Behaviors
 		///   Attaches the behavior to the given scene node.
 		/// </summary>
 		/// <param name="sceneNode">The scene node the behavior should be attached to.</param>
-		public override void Attach(SceneNode sceneNode)
+		public sealed override void Attach(SceneNode sceneNode)
 		{
 			Assert.ArgumentNotNull(sceneNode, nameof(sceneNode));
 			Assert.ArgumentOfType<T>(sceneNode, nameof(sceneNode));
@@ -66,7 +66,7 @@ namespace PointWars.Gameplay.Behaviors
 		/// <summary>
 		///   Detaches the behavior from the scene node it is attached to.
 		/// </summary>
-		public override void Detach()
+		public sealed override void Detach()
 		{
 			Assert.NotPooled(this);
 			Assert.NotNull(SceneNode, "The behavior is not attached to any scene node.");

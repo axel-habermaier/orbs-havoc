@@ -206,12 +206,12 @@ namespace PointWars.Network.Messages
 		}
 
 		/// <summary>
-		///   Reads an orientation from the buffer.
+		///   Reads an orientation, in radians, from the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the orientation should be read from.</param>
 		protected static float ReadOrientation(ref BufferReader buffer)
 		{
-			return buffer.ReadUInt16() / NetworkProtocol.AngleFactor;
+			return MathUtils.DegToRad(buffer.ReadUInt16() / NetworkProtocol.AngleFactor);
 		}
 
 		/// <summary>
@@ -241,11 +241,10 @@ namespace PointWars.Network.Messages
 		///   Writes the given orientation into the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the orientation should be written into.</param>
-		/// <param name="orientation">The orientation that should be written into the buffer.</param>
+		/// <param name="orientation">The orientation, in radians, that should be written into the buffer.</param>
 		protected static void WriteOrientation(ref BufferWriter buffer, float orientation)
 		{
-			Assert.InRange(orientation, 0, 360);
-			buffer.WriteUInt16((ushort)(orientation * NetworkProtocol.AngleFactor));
+			buffer.WriteUInt16((ushort)(MathUtils.RadToDeg360(orientation) * NetworkProtocol.AngleFactor));
 		}
 
 		/// <summary>

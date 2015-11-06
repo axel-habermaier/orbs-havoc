@@ -181,7 +181,7 @@ namespace PointWars.Gameplay.SceneNodes
 		/// </summary>
 		/// <param name="position">The local position relative to the parent scene node's position.</param>
 		/// <param name="orientation">The local orientation relative to the parent scene node's orientation.</param>
-		public void ChangeLocalTransformation(ref Vector2 position, ref float orientation)
+		public void ChangeLocalTransformation(Vector2 position, float orientation)
 		{
 			Assert.NotPooled(this);
 
@@ -196,7 +196,7 @@ namespace PointWars.Gameplay.SceneNodes
 		/// </summary>
 		private void UpdateMatrices()
 		{
-			_localMatrix = Matrix3x2.CreateRotation(Orientation) * Matrix3x2.CreateTranslation(Position);
+			_localMatrix = Matrix3x2.CreateRotation(-Orientation) * Matrix3x2.CreateTranslation(Position);
 
 			var parentMatrix = Parent?.WorldMatrix ?? Matrix3x2.Identity;
 			_worldMatrix = parentMatrix * LocalMatrix;
@@ -340,7 +340,6 @@ namespace PointWars.Gameplay.SceneNodes
 		public void Remove()
 		{
 			Assert.NotPooled(this);
-
 			SceneGraph?.Remove(this);
 		}
 
@@ -368,7 +367,7 @@ namespace PointWars.Gameplay.SceneNodes
 			}
 
 			foreach (var child in Children)
-				child.SafeDispose();
+				child.Remove();
 
 			Behavior = null;
 			Parent = null;

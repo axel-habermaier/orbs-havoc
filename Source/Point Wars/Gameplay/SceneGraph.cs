@@ -278,11 +278,20 @@ namespace PointWars.Gameplay
 		/// <param name="sceneNode">The scene node that should be removed.</param>
 		private void RemoveImmediately(SceneNode sceneNode)
 		{
-			sceneNode.Detach();
-			sceneNode.SafeDispose();
+			foreach (var behavior in sceneNode.Behaviors)
+			{
+				behavior.Detach();
+				behavior.SafeDispose();
+			}
 
+			foreach (var child in sceneNode.Children)
+				child.Remove();
+
+			sceneNode.Detach();
 			NodeRemoved?.Invoke(sceneNode);
+
 			++Version;
+			sceneNode.SafeDispose();
 		}
 
 		/// <summary>

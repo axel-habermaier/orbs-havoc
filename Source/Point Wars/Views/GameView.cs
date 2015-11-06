@@ -23,7 +23,9 @@
 namespace PointWars.Views
 {
 	using System.Net;
+	using System.Numerics;
 	using Gameplay;
+	using Gameplay.Client;
 	using Gameplay.SceneNodes;
 	using Network;
 	using Network.Messages;
@@ -44,7 +46,7 @@ namespace PointWars.Views
 		private readonly PoolAllocator _allocator = new PoolAllocator();
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
-		ClientInputManager _inputManager ;
+		private InputManager _inputManager;
 
 		/// <summary>
 		///   Gets the currently active server connection.
@@ -71,7 +73,7 @@ namespace PointWars.Views
 			Commands.OnSay += OnSay;
 			Cvars.PlayerNameChanged += OnPlayerNameChanged;
 
-			_inputManager = new ClientInputManager(InputDevice);
+			_inputManager = new InputManager(InputDevice);
 
 			RootElement = new Border
 			{
@@ -170,17 +172,14 @@ namespace PointWars.Views
 			}
 		}
 
+		Camera _camera;
 		/// <summary>
 		///   Draws the game session.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			if (GameSession == null)
-				return;
-
-			foreach (var spriteNode in GameSession.SceneGraph.EnumeratePostOrder<SpriteNode>())
-				spriteNode.Draw(spriteBatch);
+			_camera?.Draw(spriteBatch);
 		}
 
 		/// <summary>
@@ -209,7 +208,9 @@ namespace PointWars.Views
 
 			GameSession = new GameSession(_allocator);
 			Connection = Connection.Create(_allocator, ServerEndPoint);
+
 			_clientLogic = new ClientLogic(_allocator, GameSession, Views);
+			_camera = new Camera(GameSession, Window);
 
 			GameSession.InitializeClient();
 			Connection.EnqueueMessage(ClientConnectMessage.Create(_allocator, Cvars.PlayerName));
@@ -261,7 +262,9 @@ namespace PointWars.Views
 
 			GameSession = null;
 			Connection = null;
+
 			_clientLogic = null;
+			_camera = null;
 		}
 	}
 }

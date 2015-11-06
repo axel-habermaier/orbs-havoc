@@ -20,56 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.SceneNodes
+namespace PointWars.Gameplay.Behaviors
 {
-	using Platform.Graphics;
+	using System.Numerics;
 	using Platform.Memory;
-	using Rendering;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>
-	///   Represents a node that draws a sprite.
+	///   Fires a bullet when the weapon is triggered.
 	/// </summary>
-	public class SpriteNode : SceneNode
+	internal class MiniGunBehavior : WeaponBehavior
 	{
 		/// <summary>
-		///   Gets or sets the texture of the sprite.
+		///   Initializes a new instance.
 		/// </summary>
-		public Texture Texture { get; set; }
-
-		/// <summary>
-		///   Gets or sets the color of the sprite.
-		/// </summary>
-		public Color Color { get; set; }
-
-		/// <summary>
-		///   Draws the sprite using the given sprite batch.
-		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		public MiniGunBehavior()
 		{
-			spriteBatch.Draw(Texture, Color, WorldMatrix);
+			Template = WeaponTemplate.MiniGun;
 		}
 
 		/// <summary>
-		///   Creates a new instance.
+		///   Fires a single shot of a non-continuous weapon.
 		/// </summary>
-		/// <param name="allocator">The allocator that should be used to allocate the sprite.</param>
-		/// <param name="parent">The parent scene node the sprite should be attached to.</param>
-		/// <param name="texture">The texture that should be used to draw the sprite.</param>
-		/// <param name="color">The color that should be used to draw the sprite.</param>
-		public static SpriteNode Create(PoolAllocator allocator, SceneNode parent, Texture texture, Color color)
+		protected override void Fire()
+		{
+			var direction = MathUtils.FromAngle(SceneNode.Orientation);
+			var velocity = Vector2.Normalize(direction) * Template.BaseSpeed;
+
+			Bullet.Create(SceneNode.GameSession, SceneNode.Player, SceneNode.WorldPosition, velocity);
+		}
+
+		/// <summary>
+		///   Allocates an instance using the given allocator.
+		/// </summary>
+		/// <param name="allocator">The allocator that should be used to allocate the behavior.</param>
+		public static MiniGunBehavior Create(PoolAllocator allocator)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
-			Assert.ArgumentNotNull(parent, nameof(parent));
-			Assert.ArgumentNotNull(texture, nameof(texture));
-
-			var sprite = allocator.Allocate<SpriteNode>();
-			sprite.Texture = texture;
-			sprite.Color = color;
-			sprite.AttachTo(parent);
-
-			return sprite;
+			return allocator.Allocate<MiniGunBehavior>();
 		}
 	}
 }

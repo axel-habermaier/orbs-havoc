@@ -20,15 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.SceneNodes.Entities
+namespace PointWars.Gameplay.Client
 {
+	using Network;
+	using Network.Messages;
+	using Utilities;
+
 	/// <summary>
-	///   Identifies the type of an entity.
+	///   Implements the client logic for handling incoming and outgoing client messages.
 	/// </summary>
-	public enum EntityType
+	internal partial class ClientLogic
 	{
-		Unknown = 0,
-		Avatar,
-		Bullet
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnConnect(ClientConnectMessage message)
+		{
+			HandleUnsupportedMessage(message);
+		}
+
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnPlayerInput(PlayerInputMessage message)
+		{
+			HandleUnsupportedMessage(message);
+		}
+
+		/// <summary>
+		///   Handles an unsupported message.
+		/// </summary>
+		/// <param name="message">The unsupported message that should be handled.</param>
+		private static void HandleUnsupportedMessage(Message message)
+		{
+			Assert.That(false, "The client cannot handle a message of type '{0}'.", message.MessageType);
+		}
 	}
 }

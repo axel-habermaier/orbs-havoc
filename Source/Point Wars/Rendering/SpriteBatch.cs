@@ -326,7 +326,7 @@ namespace PointWars.Rendering
 		///   Draws a textured rectangle at the given position with the texture's size and rotation.
 		/// </summary>
 		/// <param name="texture">The texture that should be used to draw the quad.</param>
-		/// <param name="angle">The rotation of the quad.</param>
+		/// <param name="angle">The rotation of the quad, in radians.</param>
 		/// <param name="position">The position of the quad.</param>
 		/// <param name="color">The color of the quad.</param>
 		public void Draw(Texture texture, Vector2 position, float angle, Color color)
@@ -343,6 +343,23 @@ namespace PointWars.Rendering
 			var translation = Matrix3x2.CreateTranslation(position);
 			Quad.Transform(ref quad, ref translation);
 
+			Draw(ref quad, texture);
+		}
+
+		/// <summary>
+		///   Draws a textured rectangle with the texture's size, applying the given transformation matrix.
+		/// </summary>
+		/// <param name="texture">The texture that should be used to draw the quad.</param>
+		/// <param name="color">The color of the quad.</param>
+		/// <param name="transformation">The transformation that should be applied to the drawn quad.</param>
+		public void Draw(Texture texture, Color color, Matrix3x2 transformation)
+		{
+			Assert.ArgumentNotNull(texture, nameof(texture));
+
+			var size = new Size(texture.Width, texture.Height);
+			var quad = new Quad(new Rectangle(size / -2, size), color);
+
+			Quad.Transform(ref quad, ref transformation);
 			Draw(ref quad, texture);
 		}
 

@@ -20,56 +20,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.SceneNodes
+namespace PointWars.Gameplay.Behaviors
 {
-	using Platform.Graphics;
 	using Platform.Memory;
-	using Rendering;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>
-	///   Represents a node that draws a sprite.
+	///   Represents a collider, i.e., an area that determines the occupied space of an entity.
 	/// </summary>
-	public class SpriteNode : SceneNode
+	internal class ColliderBehavior : Behavior<Entity>
 	{
 		/// <summary>
-		///   Gets or sets the texture of the sprite.
+		///   Gets the entity's radius.
 		/// </summary>
-		public Texture Texture { get; set; }
+		public float Radius { get; private set; }
 
 		/// <summary>
-		///   Gets or sets the color of the sprite.
+		///   Invoked when the behavior is attached to a scene node.
 		/// </summary>
-		public Color Color { get; set; }
-
-		/// <summary>
-		///   Draws the sprite using the given sprite batch.
-		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		protected override void OnAttached()
 		{
-			spriteBatch.Draw(Texture, Color, WorldMatrix);
+			SceneNode.GameSession.PhysicsSimulation.AddCollider(this);
 		}
 
 		/// <summary>
-		///   Creates a new instance.
+		///   Invoked when the behavior is detached from the scene node it is attached to.
 		/// </summary>
-		/// <param name="allocator">The allocator that should be used to allocate the sprite.</param>
-		/// <param name="parent">The parent scene node the sprite should be attached to.</param>
-		/// <param name="texture">The texture that should be used to draw the sprite.</param>
-		/// <param name="color">The color that should be used to draw the sprite.</param>
-		public static SpriteNode Create(PoolAllocator allocator, SceneNode parent, Texture texture, Color color)
+		/// <remarks>This method is not called when the scene graph is disposed.</remarks>
+		protected override void OnDetached()
+		{
+			SceneNode.GameSession.PhysicsSimulation.RemoveCollider(this);
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="allocator">The allocator that should be used to allocate pooled objects.</param>
+		/// <param name="radius">The entity's radius.</param>
+		public static ColliderBehavior Create(PoolAllocator allocator, float radius)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
-			Assert.ArgumentNotNull(parent, nameof(parent));
-			Assert.ArgumentNotNull(texture, nameof(texture));
 
-			var sprite = allocator.Allocate<SpriteNode>();
-			sprite.Texture = texture;
-			sprite.Color = color;
-			sprite.AttachTo(parent);
-
-			return sprite;
+			var behavior = allocator.Allocate<ColliderBehavior>();
+			behavior.Radius = radius;
+			return behavior;
 		}
 	}
 }

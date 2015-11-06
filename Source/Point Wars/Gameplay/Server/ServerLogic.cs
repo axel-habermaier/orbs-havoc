@@ -88,7 +88,7 @@ namespace PointWars.Gameplay.Server
 		/// <param name="entity">The entity that has been added.</param>
 		private void OnEntityAdded(Entity entity)
 		{
-			Assert.InRange(entity.NetworkType);
+			Assert.InRange(entity.Type);
 
 			entity.NetworkIdentity = _networkIdentities.Allocate();
 			var message = CreateEntityAddMessage(entity);
@@ -104,7 +104,7 @@ namespace PointWars.Gameplay.Server
 		/// <param name="entity">The entity that has been removed.</param>
 		private void OnEntityRemoved(Entity entity)
 		{
-			Log.DebugIf(EnableTracing, "(Server) -{1} {0}", entity.NetworkIdentity, entity.NetworkType);
+			Log.DebugIf(EnableTracing, "(Server) -{1} {0}", entity.NetworkIdentity, entity.Type);
 			entity.OnRemoved();
 
 			Broadcast(EntityRemoveMessage.Create(_allocator, entity.NetworkIdentity));
@@ -222,7 +222,9 @@ namespace PointWars.Gameplay.Server
 				(inputMask & inputMessage.MoveUp) != 0,
 				(inputMask & inputMessage.MoveDown) != 0,
 				(inputMask & inputMessage.MoveLeft) != 0,
-				(inputMask & inputMessage.MoveRight) != 0);
+				(inputMask & inputMessage.MoveRight) != 0,
+				(inputMask & inputMessage.FirePrimary) != 0,
+				(inputMask & inputMessage.FireSecondary) != 0);
 		}
 
 		/// <summary>
@@ -271,7 +273,7 @@ namespace PointWars.Gameplay.Server
 			if (parentEntity != null)
 				parentIdentity = parentEntity.NetworkIdentity;
 
-			return EntityAddMessage.Create(_allocator, entity.NetworkIdentity, entity.Player.Identity, parentIdentity, entity.NetworkType);
+			return EntityAddMessage.Create(_allocator, entity.NetworkIdentity, entity.Player.Identity, parentIdentity, entity.Type);
 		}
 
 		/// <summary>
@@ -281,7 +283,7 @@ namespace PointWars.Gameplay.Server
 		{
 			foreach (var entity in _gameSession.SceneGraph.EnumeratePreOrder<Entity>())
 			{
-				Assert.InRange(entity.NetworkType);
+				Assert.InRange(entity.Type);
 				entity.BroadcastUpdates(Broadcast);
 			}
 		}

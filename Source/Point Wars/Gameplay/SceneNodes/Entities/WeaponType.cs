@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -22,40 +22,20 @@
 
 namespace PointWars.Gameplay
 {
-	using Network;
-	using Network.Messages;
-	using Utilities;
-
 	/// <summary>
-	///   Implements the client logic for handling incoming and outgoing client messages.
+	///   Identifies the type of a weapon.
 	/// </summary>
-	internal partial class ClientLogic
+	public enum WeaponType
 	{
-		/// <summary>
-		///   Handles the given message.
-		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnConnect(ClientConnectMessage message)
-		{
-			HandleUnsupportedMessage(message);
-		}
-
-		/// <summary>
-		///   Handles the given message.
-		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnPlayerInput(PlayerInputMessage message)
-		{
-			HandleUnsupportedMessage(message);
-		}
-
-		/// <summary>
-		///   Handles an unsupported message.
-		/// </summary>
-		/// <param name="message">The unsupported message that should be handled.</param>
-		private static void HandleUnsupportedMessage(Message message)
-		{
-			Assert.That(false, "The client cannot handle a message of type '{0}'.", message.MessageType);
-		}
+		Unknown = -1,
+		MiniGun,
+		ShotGun,
+		PlasmaGun,
+		LightingGun,
+		RocketLauncher,
+		Bfg,
+		Bomb,
+		Mine,
+		ShockWave
 	}
 }

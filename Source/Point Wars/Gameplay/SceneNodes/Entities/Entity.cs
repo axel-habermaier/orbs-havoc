@@ -39,9 +39,9 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		private uint _lastTransformUpdateSequenceNumber;
 
 		/// <summary>
-		///   Gets the network type of the entity.
+		///   Gets the type of the entity.
 		/// </summary>
-		public EntityType NetworkType { get; protected set; }
+		public EntityType Type { get; protected set; }
 
 		/// <summary>
 		///   Gets or sets the network identity of the entity.
@@ -85,13 +85,22 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			Velocity = Vector2.Zero;
 			Player = null;
 			GameSession = null;
+			_lastTransformUpdateSequenceNumber = 0;
 		}
 
 		/// <summary>
-		///   Updates the state of the entity.
+		///   Updates the state of the server-side entity.
 		/// </summary>
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
-		public virtual void Update(float elapsedSeconds)
+		public virtual void ServerUpdate(float elapsedSeconds)
+		{
+		}
+
+		/// <summary>
+		///   Updates the state of the client-side entity.
+		/// </summary>
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		public virtual void ClientUpdate(float elapsedSeconds)
 		{
 		}
 
@@ -107,6 +116,14 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// </summary>
 		/// <remarks>This method is not called when the game session is disposed.</remarks>
 		public virtual void OnRemoved()
+		{
+		}
+
+		/// <summary>
+		///   Handles the collision with the given entity.
+		/// </summary>
+		/// <param name="entity">The entity this entity collided with.</param>
+		public virtual void HandleCollision(Entity entity)
 		{
 		}
 
@@ -130,8 +147,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				return;
 
 			// TODO: Interpolation
-			Position = message.Position;
-			Orientation = message.Orientation;
+			ChangeLocalTransformation(message.Position, message.Orientation);
 		}
 
 		/// <summary>

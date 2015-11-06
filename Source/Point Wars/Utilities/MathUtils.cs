@@ -113,6 +113,23 @@ namespace PointWars.Utilities
 		}
 
 		/// <summary>
+		///   Clamps the given value to be in the range [min, max].
+		/// </summary>
+		/// <param name="value">The value that should be clamped.</param>
+		/// <param name="min">The lower bound of the clamped interval.</param>
+		/// <param name="max">The upper bound of the clamped interval.</param>
+		public static byte Clamp(byte value, byte min, byte max)
+		{
+			if (value < min || max <= min)
+				return min;
+
+			if (value > max)
+				return max;
+
+			return value;
+		}
+
+		/// <summary>
 		///   Computes the angle in radians between the two vectors starting at the given start position and ending in end and
 		///   relativeTo.
 		/// </summary>

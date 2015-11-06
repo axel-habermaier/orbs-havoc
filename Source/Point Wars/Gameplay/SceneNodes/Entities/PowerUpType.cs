@@ -23,12 +23,38 @@
 namespace PointWars.Gameplay.SceneNodes.Entities
 {
 	/// <summary>
-	///   Identifies the type of an entity.
+	///   Identifies the type of power up.
 	/// </summary>
-	public enum EntityType
+	public enum PowerUpType : byte
 	{
-		Unknown = 0,
-		Avatar,
-		Bullet
+		/// <summary>
+		///   Indicates that a player is not affected by any power up.
+		/// </summary>
+		None,
+
+		/// <summary>
+		///   The armor power up increases the player's resistance to damage.
+		/// </summary>
+		Armor,
+
+		/// <summary>
+		///   The regeneration power up increases the player's health continuously, exceeding the usual maximum.
+		/// </summary>
+		Regeneration,
+
+		/// <summary>
+		///   The quad damage power up quadruples the player's damage.
+		/// </summary>
+		QuadDamage,
+
+		/// <summary>
+		///   The speed power up increases both the player's movement speed as well as the firing rate.
+		/// </summary>
+		Speed,
+
+		/// <summary>
+		///   The invisibility power up makes the player almost invisible.
+		/// </summary>
+		Invisibility
 	}
 }

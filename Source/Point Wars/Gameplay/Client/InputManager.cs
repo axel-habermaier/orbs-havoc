@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay
+namespace PointWars.Gameplay.Client
 {
 	using System.Numerics;
 	using Network;
@@ -33,7 +33,7 @@ namespace PointWars.Gameplay
 	/// <summary>
 	///   Manages the input state of the local player.
 	/// </summary>
-	internal class ClientInputManager : DisposableObject
+	internal class InputManager : DisposableObject
 	{
 		private readonly LogicalInputDevice _inputDevice;
 		private Clock _clock = new Clock();
@@ -49,7 +49,7 @@ namespace PointWars.Gameplay
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="inputDevice">The input device that should be used to obtain the player input.</param>
-		public ClientInputManager(LogicalInputDevice inputDevice)
+		public InputManager(LogicalInputDevice inputDevice)
 		{
 			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
 
@@ -107,13 +107,8 @@ namespace PointWars.Gameplay
 			_firePrimary.Update();
 			_fireSecondary.Update();
 
-			// Get the coordinates the player currently targets
-			var target = Vector2.Zero;
-			//_gameSession.Camera.ToWorldCoordinates(_gameSession.InputDevice.NormalizedMousePosition);
-			//			if (_gameSession.LocalPlayer.Ship != null)
-			//				target = target - _gameSession.LocalPlayer.Ship.Position;
-
-			// Send the input message to the server
+			// Get the coordinates the player currently targets and end the input message to the server
+			var target = _inputDevice.Mouse.Position - new Vector2(_inputDevice.Window.Size.Width / 2, _inputDevice.Window.Size.Height / 2);
 			connection.EnqueueMessage(PlayerInputMessage.Create(
 				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, target,
 				_moveUp.State, _moveDown.State,

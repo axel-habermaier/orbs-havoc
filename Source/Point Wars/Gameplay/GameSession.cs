@@ -35,11 +35,6 @@ namespace PointWars.Gameplay
 	internal class GameSession : DisposableObject
 	{
 		/// <summary>
-		/// Gets a value indicating whether the game session is run in server mode.
-		/// </summary>
-		public bool ServerMode { get; private set; }
-
-		/// <summary>
 		///   Initializes a new client-side instance.
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate game objects.</param>
@@ -55,9 +50,19 @@ namespace PointWars.Gameplay
 		}
 
 		/// <summary>
+		///   Gets a value indicating whether the game session is run in server mode.
+		/// </summary>
+		public bool ServerMode { get; private set; }
+
+		/// <summary>
 		///   Gets the allocator that is used to allocate game objects.
 		/// </summary>
 		public PoolAllocator Allocator { get; }
+
+		/// <summary>
+		///   Gets the game session's collision handler in server mode.
+		/// </summary>
+		public PhysicsSimulation PhysicsSimulation { get; private set; }
 
 		/// <summary>
 		///   Gets the scene graph of the game session.
@@ -130,6 +135,9 @@ namespace PointWars.Gameplay
 
 			ServerMode = true;
 			Players = new PlayerCollection(Allocator, serverMode: true);
+			PhysicsSimulation = new PhysicsSimulation(this);
+
+			Avatar.Create(this, Players.ServerPlayer);
 		}
 
 		/// <summary>
@@ -138,8 +146,18 @@ namespace PointWars.Gameplay
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
 		public void Update(float elapsedSeconds)
 		{
-			foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
-				entity.Update(elapsedSeconds);
+			if (ServerMode)
+			{
+				PhysicsSimulation.Update(elapsedSeconds);
+
+				foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
+					entity.ServerUpdate(elapsedSeconds);
+			}
+			else
+			{
+				foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
+					entity.ClientUpdate(elapsedSeconds);
+			}
 
 			SceneGraph.ExecuteBehaviors(elapsedSeconds);
 		}

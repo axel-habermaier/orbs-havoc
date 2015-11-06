@@ -30,12 +30,22 @@ namespace PointWars.Gameplay.Behaviors
 	/// <summary>
 	///   Allows a player to control an entity.
 	/// </summary>
-	internal class PlayerInputBehavior : Behavior<Entity>
+	internal class PlayerInputBehavior : Behavior<Avatar>
 	{
 		private const float MaxSpeed = 4000;
 		private const float MaxAcceleration = 4000;
 		private const float Drag = .85f;
+		private readonly WeaponBehavior[] _weapons = new WeaponBehavior[Avatar.WeaponCount];
 		private Vector2 _acceleration;
+
+		/// <summary>
+		///   Invoked when the behavior is attached to a scene node.
+		/// </summary>
+		protected override void OnAttached()
+		{
+			foreach (var weapon in _weapons)
+				SceneNode.AddBehavior(weapon);
+		}
 
 		/// <summary>
 		///   Handles the given player input.
@@ -45,13 +55,15 @@ namespace PointWars.Gameplay.Behaviors
 		/// <param name="moveDown">Indicates whether the player should move down.</param>
 		/// <param name="moveLeft">Indicates whether the player should move to the left.</param>
 		/// <param name="moveRight">Indicates whether the player should move to the right.</param>
-		public void Handle(Vector2 target, bool moveUp, bool moveDown, bool moveLeft, bool moveRight)
+		/// <param name="firePrimary">Indicates whether the primary weapon should be fired.</param>
+		/// <param name="fireSecondary">Indicates whether the secondary weapon should be fired.</param>
+		public void Handle(Vector2 target, bool moveUp, bool moveDown, bool moveLeft, bool moveRight, bool firePrimary, bool fireSecondary)
 		{
-			// Compute the angular velocity, considering the target orientation.
-			// We always use the shortest path to rotate towards the target.
-			SceneNode.Orientation = MathUtils.ToAngle(target);
+			// Update the avatar's orientation
+			if (target.LengthSquared() > 10)
+				SceneNode.Orientation = MathUtils.ToAngle(target);
 
-			// Update the acceleration of the entity
+			// Update the avatar's acceleration
 			_acceleration = Vector2.Zero;
 
 			if (moveLeft)
@@ -65,6 +77,10 @@ namespace PointWars.Gameplay.Behaviors
 
 			if (_acceleration != Vector2.Zero)
 				_acceleration = Vector2.Normalize(_acceleration);
+
+			_weapons[(int)SceneNode.PrimaryWeapon].HandlePlayerInput(firePrimary);
+			if (SceneNode.SecondaryWeapon != WeaponType.Unknown)
+				_weapons[(int)SceneNode.SecondaryWeapon].HandlePlayerInput(fireSecondary);
 		}
 
 		/// <summary>
@@ -73,13 +89,13 @@ namespace PointWars.Gameplay.Behaviors
 		/// <param name="elapsedSeconds">The elapsed time in seconds since the last execution of the behavior.</param>
 		public override void Execute(float elapsedSeconds)
 		{
+			// Compute the new velocity and make sure the avatar eventually stops when the player doesn't move
 			SceneNode.Velocity += _acceleration * MaxAcceleration * elapsedSeconds;
 			SceneNode.Velocity *= Drag;
 
+			// Cap the velocity
 			if (SceneNode.Velocity.LengthSquared() > MaxSpeed * MaxSpeed)
 				SceneNode.Velocity = MaxSpeed * Vector2.Normalize(SceneNode.Velocity);
-
-			SceneNode.Position += SceneNode.Velocity * elapsedSeconds;
 		}
 
 		/// <summary>
@@ -92,6 +108,16 @@ namespace PointWars.Gameplay.Behaviors
 
 			var input = allocator.Allocate<PlayerInputBehavior>();
 			input._acceleration = Vector2.Zero;
+			input._weapons[(int)WeaponType.MiniGun] = MiniGunBehavior.Create(allocator);
+			input._weapons[(int)WeaponType.ShotGun] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[(int)WeaponType.PlasmaGun] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[(int)WeaponType.LightingGun] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[(int)WeaponType.RocketLauncher] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[(int)WeaponType.Bfg] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[(int)WeaponType.Bomb] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[(int)WeaponType.Mine] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[(int)WeaponType.ShockWave] = MiniGunBehavior.Create(allocator); // TODO
+
 			return input;
 		}
 	}

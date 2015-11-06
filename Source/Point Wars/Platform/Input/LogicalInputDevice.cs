@@ -44,11 +44,6 @@ namespace PointWars.Platform.Input
 		private readonly List<LogicalInput> _inputs = new List<LogicalInput>(256);
 
 		/// <summary>
-		///   The window the input device belongs to.
-		/// </summary>
-		private readonly Window _window;
-
-		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window that should be associated with this logical device.</param>
@@ -56,10 +51,15 @@ namespace PointWars.Platform.Input
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
 
-			_window = window;
+			Window = window;
 			Keyboard = new Keyboard(window);
 			Mouse = new Mouse(window);
 		}
+
+		/// <summary>
+		///   Gets the window the input device belongs to.
+		/// </summary>
+		public Window Window { get; }
 
 		/// <summary>
 		///   Gets the keyboard that is associated with this logical device.
@@ -76,8 +76,8 @@ namespace PointWars.Platform.Input
 		/// </summary>
 		public event Action LostFocus
 		{
-			add { _window.LostFocus += value; }
-			remove { _window.LostFocus -= value; }
+			add { Window.LostFocus += value; }
+			remove { Window.LostFocus -= value; }
 		}
 
 		/// <summary>
@@ -85,8 +85,8 @@ namespace PointWars.Platform.Input
 		/// </summary>
 		public event Action GainedFocus
 		{
-			add { _window.GainedFocus += value; }
-			remove { _window.GainedFocus -= value; }
+			add { Window.GainedFocus += value; }
+			remove { Window.GainedFocus -= value; }
 		}
 
 		/// <summary>

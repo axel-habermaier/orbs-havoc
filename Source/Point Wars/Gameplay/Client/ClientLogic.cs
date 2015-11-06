@@ -20,9 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay
+namespace PointWars.Gameplay.Client
 {
 	using System;
+	using System.Numerics;
 	using Network;
 	using Network.Messages;
 	using Platform.Memory;
@@ -66,36 +67,17 @@ namespace PointWars.Gameplay
 		///   Handles the given message.
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnEntityAdded(EntityAddMessage message)
+		void IMessageHandler.OnReject(ClientRejectedMessage message)
 		{
-			var player = _gameSession.Players[message.Player];
-			Assert.NotNull(player, "Entity add message references unknown player.");
-
-			var entity = Avatar.Create(_gameSession, player);
-			entity.NetworkIdentity = message.Entity;
-
-			_entityMap.Add(message.Entity, entity);
-		}
-
-		/// <summary>
-		///   Handles the given message.
-		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnPlayerChatMessage(PlayerChatMessage message)
-		{
-			var player = _gameSession.Players[message.Player];
-			Assert.NotNull(player, "Chat message references unknown player.");
-
-			_views.EventMessages.AddChatMessage(player, message.Message);
-		}
-
-		/// <summary>
-		///   Handles the given message.
-		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnEntityCollision(EntityCollisionMessage message)
-		{
-			throw new NotImplementedException();
+			switch (message.Reason)
+			{
+				case RejectReason.Full:
+					throw new ServerFullException();
+				case RejectReason.VersionMismatch:
+					throw new ProtocolMismatchException();
+				default:
+					throw new InvalidOperationException("Unknown reject reason.");
+			}
 		}
 
 		/// <summary>
@@ -111,6 +93,70 @@ namespace PointWars.Gameplay
 		///   Handles the given message.
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnSynced(ClientSyncedMessage message)
+		{
+			Assert.IsNull(_gameSession.Players.LocalPlayer, "A local player has already been set.");
+
+			var player = _gameSession.Players[message.LocalPlayer];
+			Assert.NotNull(player, "Unknown local player.");
+
+			player.IsLocalPlayer = true;
+			IsSynced = true;
+		}
+
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnEntityAdded(EntityAddMessage message)
+		{
+			var player = _gameSession.Players[message.Player];
+			Assert.NotNull(player, "Entity add message references unknown player.");
+
+			Entity entity = null;
+			switch (message.EntityType)
+			{
+				case EntityType.Avatar:
+					entity = Avatar.Create(_gameSession, player);
+					break;
+				case EntityType.Bullet:
+					entity = Bullet.Create(_gameSession, player, Vector2.Zero, Vector2.Zero);
+					break;
+				default:
+					Assert.NotReached("Unknown entity type.");
+					break;
+			}
+
+			entity.NetworkIdentity = message.Entity;
+			_entityMap.Add(message.Entity, entity);
+		}
+
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnEntityRemove(EntityRemoveMessage message)
+		{
+			var entity = _entityMap[message.Entity];
+			Assert.NotNull(entity, "Entity remove message references unknown entity.");
+
+			entity.Remove();
+			_entityMap.Remove(entity.NetworkIdentity);
+		}
+
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnEntityCollision(EntityCollisionMessage message)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnPlayerJoin(PlayerJoinMessage message)
 		{
 			var player = Player.Create(_allocator, message.PlayerName, message.Player);
@@ -118,21 +164,6 @@ namespace PointWars.Gameplay
 			_gameSession.Players.Add(player);
 			_views.EventMessages.AddJoinMessage(player);
 			_views.Scoreboard.OnPlayersChanged();
-		}
-
-		/// <summary>
-		///   Handles the given message.
-		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnPlayerKill(PlayerKillMessage message)
-		{
-			var killer = _gameSession.Players[message.Killer];
-			var victim = _gameSession.Players[message.Victim];
-
-			Assert.NotNull(killer, "Kill message references unknown killer.");
-			Assert.NotNull(victim, "Kill message references unknown victim.");
-
-			_views.EventMessages.AddKillMessage(killer, victim);
 		}
 
 		/// <summary>
@@ -171,6 +202,21 @@ namespace PointWars.Gameplay
 		///   Handles the given message.
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
+		void IMessageHandler.OnPlayerKill(PlayerKillMessage message)
+		{
+			var killer = _gameSession.Players[message.Killer];
+			var victim = _gameSession.Players[message.Victim];
+
+			Assert.NotNull(killer, "Kill message references unknown killer.");
+			Assert.NotNull(victim, "Kill message references unknown victim.");
+
+			_views.EventMessages.AddKillMessage(killer, victim);
+		}
+
+		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnPlayerName(PlayerNameMessage message)
 		{
 			// Ignore the server player
@@ -191,26 +237,12 @@ namespace PointWars.Gameplay
 		///   Handles the given message.
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnReject(ClientRejectedMessage message)
+		void IMessageHandler.OnPlayerChatMessage(PlayerChatMessage message)
 		{
-			switch (message.Reason)
-			{
-				case RejectReason.Full:
-					throw new ServerFullException();
-				case RejectReason.VersionMismatch:
-					throw new ProtocolMismatchException();
-				default:
-					throw new InvalidOperationException("Unknown reject reason.");
-			}
-		}
+			var player = _gameSession.Players[message.Player];
+			Assert.NotNull(player, "Chat message references unknown player.");
 
-		/// <summary>
-		///   Handles the given message.
-		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnEntityRemove(EntityRemoveMessage message)
-		{
-			throw new NotImplementedException();
+			_views.EventMessages.AddChatMessage(player, message.Message);
 		}
 
 		/// <summary>
@@ -231,21 +263,6 @@ namespace PointWars.Gameplay
 			player.Ping = message.Ping;
 
 			_views.Scoreboard.OnPlayersChanged();
-		}
-
-		/// <summary>
-		///   Handles the given message.
-		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
-		void IMessageHandler.OnSynced(ClientSyncedMessage message)
-		{
-			Assert.IsNull(_gameSession.Players.LocalPlayer, "A local player has already been set.");
-
-			var player = _gameSession.Players[message.LocalPlayer];
-			Assert.NotNull(player, "Unknown local player.");
-
-			player.IsLocalPlayer = true;
-			IsSynced = true;
 		}
 
 		/// <summary>

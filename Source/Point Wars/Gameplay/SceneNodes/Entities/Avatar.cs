@@ -22,8 +22,10 @@
 
 namespace PointWars.Gameplay.SceneNodes.Entities
 {
+	using System;
 	using Assets;
 	using Behaviors;
+	using Network.Messages;
 	using Rendering;
 	using Utilities;
 
@@ -33,17 +35,92 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	internal class Avatar : Entity
 	{
 		/// <summary>
+		///   The number of weapons that can be used by an avatar.
+		/// </summary>
+		public static readonly int WeaponCount = Enum.GetValues(typeof(WeaponType)).Length - 1;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		public Avatar()
 		{
-			NetworkType = EntityType.Avatar;
+			Type = EntityType.Avatar;
+			WeaponEnergyLevels[(int)WeaponType.MiniGun] = 1;
 		}
+
+		/// <summary>
+		///   Gets the energy levels of the avatar's weapons.
+		/// </summary>
+		public byte[] WeaponEnergyLevels { get; } = new byte[WeaponCount];
+
+		/// <summary>
+		///   Gets or sets the avatar's primary weapon.
+		/// </summary>
+		public WeaponType PrimaryWeapon { get; set; }
+
+		/// <summary>
+		///   Gets or sets the avatar's secondary weapon.
+		/// </summary>
+		public WeaponType SecondaryWeapon { get; set; }
 
 		/// <summary>
 		///   Gets the avatar's player input behavior in server mode.
 		/// </summary>
 		public PlayerInputBehavior PlayerInput { get; private set; }
+
+		/// <summary>
+		///   Gets or sets the power up that currently influences the avatar.
+		/// </summary>
+		public PowerUpType PowerUp { get; set; }
+
+		/// <summary>
+		///   Gets or sets the remaining time until the power up is removed.
+		/// </summary>
+		public float RemainingPowerUpTime { get; set; }
+
+		/// <summary>
+		///   Gets or sets the avatar's remaining health.
+		/// </summary>
+		public int Health { get; set; }
+
+		/// <summary>
+		///   Updates the state of the server-side entity.
+		/// </summary>
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		public override void ServerUpdate(float elapsedSeconds)
+		{
+			if (PowerUp != PowerUpType.None)
+			{
+				RemainingPowerUpTime -= elapsedSeconds;
+				if (RemainingPowerUpTime < 0)
+					PowerUp = PowerUpType.None;
+			}
+
+			if (Health <= 0)
+				Remove();
+		}
+
+		/// <summary>
+		/// Applies the given damage to the avatar.
+		/// </summary>
+		/// <param name="damage">The damage that should be applied.</param>
+		public void ApplyDamage(int damage)
+		{
+			Health -= PowerUp == PowerUpType.Armor ? damage / 2 : damage;
+		}
+
+		/// <summary>
+		///   Broadcasts update messages for the entity.
+		/// </summary>
+		/// <param name="broadcast">The callback that should be used to broadcast the message.</param>
+		public override void BroadcastUpdates(Action<Message> broadcast)
+		{
+			base.BroadcastUpdates(broadcast);
+
+			// TODO: PowerUpMessage
+			// TODO: WeaponMessage
+			return;
+		}
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -57,18 +134,26 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			var avatar = gameSession.Allocate<Avatar>();
 			avatar.GameSession = gameSession;
 			avatar.Player = player;
-			
+			avatar.PowerUp = PowerUpType.None;
+			avatar.PrimaryWeapon = WeaponType.MiniGun;
+			avatar.SecondaryWeapon = WeaponType.Unknown;
+			avatar.RemainingPowerUpTime = 0;
+			avatar.Health = 100;
+
+			// Reset the weapon energy levels, skipping the mini gun which can always be used
+			for (var i = 1; i < WeaponCount; ++i)
+				avatar.WeaponEnergyLevels[i] = 0;
+
+			player.Avatar = avatar;
 			gameSession.SceneGraph.Add(avatar);
 
 			if (gameSession.ServerMode)
-				avatar.AddBehavior(avatar.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
-			else
 			{
-				var sprite = gameSession.Allocate<SpriteNode>();
-				sprite.Texture = AssetBundle.Avatar;
-				sprite.Color = Colors.YellowGreen;
-				sprite.AttachTo(avatar);
+				avatar.AddBehavior(avatar.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
+				avatar.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, 32));
 			}
+			else
+				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, Colors.YellowGreen);
 
 			return avatar;
 		}
