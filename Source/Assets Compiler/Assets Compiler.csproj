@@ -80,12 +80,16 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Point Wars\Gameplay\BlockType.cs">
+      <Link>BlockType.cs</Link>
+    </Compile>
     <Compile Include="BundleCompiler.cs" />
     <Compile Include="CodeWriter.cs" />
     <Compile Include="ExternalProcess.cs" />
     <Compile Include="GLGenerator.cs" />
     <Compile Include="RegistryGenerator.cs" />
     <Compile Include="CursorCompiler.cs" />
+    <Compile Include="LevelCompiler.cs" />
     <Compile Include="TextureCompiler.cs" />
     <Compile Include="FontCompiler.cs" />
     <Compile Include="ShaderCompiler.cs" />

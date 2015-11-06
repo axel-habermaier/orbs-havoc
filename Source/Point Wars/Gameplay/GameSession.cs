@@ -23,6 +23,9 @@
 namespace PointWars.Gameplay
 {
 	using System;
+	using System.Numerics;
+	using Behaviors;
+	using Client;
 	using Platform.Memory;
 	using SceneNodes;
 	using SceneNodes.Entities;
@@ -60,6 +63,16 @@ namespace PointWars.Gameplay
 		public PoolAllocator Allocator { get; }
 
 		/// <summary>
+		///   Gets the renderer for the game session's level.
+		/// </summary>
+		public LevelRenderer LevelRenderer { get; private set; }
+
+		/// <summary>
+		///   Gets the level that is used by the game session.
+		/// </summary>
+		public Level Level { get; private set; }
+
+		/// <summary>
 		///   Gets the game session's collision handler in server mode.
 		/// </summary>
 		public PhysicsSimulation PhysicsSimulation { get; private set; }
@@ -73,6 +86,20 @@ namespace PointWars.Gameplay
 		///   Gets the collection of players that are participating in the game session.
 		/// </summary>
 		public PlayerCollection Players { get; private set; }
+
+		/// <summary>
+		///   Changes level that is used by the game session.
+		/// </summary>
+		/// <param name="level">The level that should be used by the game session.</param>
+		public void ChangeLevel(Level level)
+		{
+			Assert.ArgumentNotNull(level, nameof(level));
+
+			Level = level;
+
+			if (!ServerMode)
+				LevelRenderer = new LevelRenderer(level);
+		}
 
 		/// <summary>
 		///   Allocates an instance of the given type using the game session's allocator.
@@ -137,7 +164,9 @@ namespace PointWars.Gameplay
 			Players = new PlayerCollection(Allocator, serverMode: true);
 			PhysicsSimulation = new PhysicsSimulation(this);
 
-			Avatar.Create(this, Players.ServerPlayer);
+			var avatar = Avatar.Create(this, Players.ServerPlayer);
+			avatar.AddBehavior(AiBehavior.Create(Allocator));
+			avatar.Position = new Vector2(100, 100);
 		}
 
 		/// <summary>

@@ -58,14 +58,18 @@
     <Compile Include="Gameplay\Behaviors\Behavior`1.cs" />
     <Compile Include="Gameplay\Behaviors\Behavior.cs" />
     <Compile Include="Gameplay\Behaviors\MiniGunBehavior.cs" />
+    <Compile Include="Gameplay\Behaviors\AiBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\ColliderBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\WeaponBehavior.cs" />
+    <Compile Include="Gameplay\BlockType.cs" />
     <Compile Include="Gameplay\Client\Camera.cs" />
     <Compile Include="Gameplay\Client\InputManager.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gameplay\Client\LevelRenderer.cs" />
+    <Compile Include="Gameplay\Level.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\PowerUpType.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Bullet.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Entity.cs" />
@@ -364,6 +368,12 @@
   </ItemGroup>
   <ItemGroup>
     <Texture Include="Assets\Textures\Bullet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Level Include="Assets\Levels\TestLevel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\LevelBorders.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

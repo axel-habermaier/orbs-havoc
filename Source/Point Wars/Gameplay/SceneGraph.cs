@@ -284,11 +284,8 @@ namespace PointWars.Gameplay
 				behavior.SafeDispose();
 			}
 
-			foreach (var child in sceneNode.Children)
-				child.Remove();
-
-			sceneNode.Detach();
 			NodeRemoved?.Invoke(sceneNode);
+			sceneNode.Detach();
 
 			++Version;
 			sceneNode.SafeDispose();

@@ -85,6 +85,9 @@ namespace AssetsCompiler
 			[VerbOption("font", HelpText = "Compiles a font.")]
 			public FontCompiler FontCompiler { get; set; }
 
+			[VerbOption("level", HelpText = "Compiles a level.")]
+			public LevelCompiler LevelCompiler { get; set; }
+
 			[VerbOption("bundle", HelpText = "Compiles a bundle.")]
 			public BundleCompiler BundleCompiler { get; set; }
 

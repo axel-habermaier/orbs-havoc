@@ -32,17 +32,20 @@ namespace AssetsCompiler
 
 	public class BundleCompiler : IExecutable
 	{
-		[Option("shaders", Required = true, HelpText = "The path to the input shader files.")]
+		[Option("shaders", Required = true, HelpText = "The paths to the input shader files.")]
 		public string Shaders { get; set; }
 
-		[Option("fonts", Required = true, HelpText = "The path to the input font files.")]
+		[Option("fonts", Required = true, HelpText = "The paths to the input font files.")]
 		public string Fonts { get; set; }
 
-		[Option("textures", Required = true, HelpText = "The path to the input texture files.")]
+		[Option("textures", Required = true, HelpText = "The paths to the input texture files.")]
 		public string Textures { get; set; }
 
-		[Option("cursors", Required = true, HelpText = "The path to the input cursor files.")]
+		[Option("cursors", Required = true, HelpText = "The paths to the input cursor files.")]
 		public string Cursors { get; set; }
+
+		[Option("levels", Required = true, HelpText = "The paths to the input level files.")]
+		public string Levels { get; set; }
 
 		[Option("output", Required = true, HelpText = "The path to the output bundle files.")]
 		public string PakFile { get; set; }
@@ -55,11 +58,13 @@ namespace AssetsCompiler
 			var shaders = Shaders.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(shader => shader).ToArray();
 			var fonts = Fonts.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(font => font).ToArray();
 			var textures = Textures.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(texture => texture).ToArray();
+			var levels = Levels.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(level => level).ToArray();
 			var cursors = Cursors.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(cursor => cursor).ToArray();
 			var assets = shaders
 				.Select(shader => new { Type = "Shader", Name = Path.GetFileNameWithoutExtension(shader), File = shader })
 				.Concat(fonts.Select(font => new { Type = "Font", Name = Path.GetFileNameWithoutExtension(font), File = font }).OrderBy(s => s.Name))
 				.Concat(textures.Select(texture => new { Type = "Texture", Name = Path.GetFileNameWithoutExtension(texture), File = texture }))
+				.Concat(levels.Select(level => new { Type = "Level", Name = Path.GetFileNameWithoutExtension(level), File = level }))
 				.Concat(cursors.Select(cursor => new { Type = "Cursor", Name = Path.GetFileNameWithoutExtension(cursor), File = cursor }))
 				.ToArray();
 
@@ -101,6 +106,7 @@ namespace AssetsCompiler
 			writer.AppendBlockStatement(() =>
 			{
 				writer.AppendLine("using System;");
+				writer.AppendLine("using Gameplay;");
 				writer.AppendLine("using Platform.Graphics;");
 				writer.AppendLine("using Platform.Memory;");
 				writer.AppendLine("using UserInterface;");

@@ -186,8 +186,6 @@ namespace PointWars.Gameplay.Server
 			}
 
 			Broadcast(PlayerLeaveMessage.Create(_allocator, player.Identity, player.LeaveReason));
-
-			player.Avatar.SafeDispose();
 			_gameSession.Players.Remove(player);
 
 			Log.DebugIf(EnableTracing, "(Server) Removed player '{0}' ({1}).", player.Name, player.Identity);
@@ -208,16 +206,13 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(inputMessage, nameof(inputMessage));
 
 			// Respawn the player if necessary
-			if (player.Avatar == null || player.Avatar.IsRemoved)
+			if ((player.Avatar == null) && (inputMask & inputMessage.FirePrimary) != 0)
 			{
 				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
-
-				player.Avatar.SafeDispose();
 				player.Avatar = Avatar.Create(_gameSession, player);
-				player.Avatar.AcquireOwnership();
 			}
 
-			player.Avatar.PlayerInput.Handle(
+			player.Avatar?.PlayerInput.HandleInput(
 				inputMessage.Target,
 				(inputMask & inputMessage.MoveUp) != 0,
 				(inputMask & inputMessage.MoveDown) != 0,

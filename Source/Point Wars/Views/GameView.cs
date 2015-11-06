@@ -23,10 +23,8 @@
 namespace PointWars.Views
 {
 	using System.Net;
-	using System.Numerics;
 	using Gameplay;
 	using Gameplay.Client;
-	using Gameplay.SceneNodes;
 	using Network;
 	using Network.Messages;
 	using Platform.Input;
@@ -44,6 +42,8 @@ namespace PointWars.Views
 	internal sealed class GameView : View
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
+
+		private Camera _camera;
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
 		private InputManager _inputManager;
@@ -172,29 +172,16 @@ namespace PointWars.Views
 			}
 		}
 
-		Camera _camera;
 		/// <summary>
 		///   Draws the game session.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			_camera?.Draw(spriteBatch);
-		}
+			if (_clientLogic == null || !_clientLogic.IsSynced)
+				return;
 
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		protected override void OnDisposing()
-		{
-			Commands.OnConnect -= Connect;
-			Commands.OnDisconnect -= Disconnect;
-			Commands.OnSay -= OnSay;
-			Cvars.PlayerNameChanged -= OnPlayerNameChanged;
-
-			Disconnect();
-			_allocator.SafeDispose();
-			_inputManager.SafeDispose();
+			_camera.Draw(spriteBatch);
 		}
 
 		/// <summary>
@@ -217,26 +204,6 @@ namespace PointWars.Views
 
 			Show();
 			Views.LoadingOverlay.Load(ServerEndPoint);
-		}
-
-		/// <summary>
-		///   Invoked when the local player changed his or her name.
-		/// </summary>
-		private void OnPlayerNameChanged()
-		{
-			Connection?.EnqueueMessage(PlayerNameMessage.Create(_allocator, GameSession.Players.LocalPlayer.Identity, Cvars.PlayerName));
-		}
-
-		/// <summary>
-		///   Invoked when the local player entered a chat message.
-		/// </summary>
-		/// <param name="message">The message that the local player wants to send.</param>
-		private void OnSay(string message)
-		{
-			if (GameSession?.Players.LocalPlayer == null)
-				return;
-
-			Connection?.EnqueueMessage(PlayerChatMessage.Create(_allocator, GameSession.Players.LocalPlayer.Identity, message));
 		}
 
 		/// <summary>
@@ -265,6 +232,41 @@ namespace PointWars.Views
 
 			_clientLogic = null;
 			_camera = null;
+		}
+
+		/// <summary>
+		///   Disposes the object, releasing all managed and unmanaged resources.
+		/// </summary>
+		protected override void OnDisposing()
+		{
+			Commands.OnConnect -= Connect;
+			Commands.OnDisconnect -= Disconnect;
+			Commands.OnSay -= OnSay;
+			Cvars.PlayerNameChanged -= OnPlayerNameChanged;
+
+			Disconnect();
+			_allocator.SafeDispose();
+			_inputManager.SafeDispose();
+		}
+
+		/// <summary>
+		///   Invoked when the local player changed his or her name.
+		/// </summary>
+		private void OnPlayerNameChanged()
+		{
+			Connection?.EnqueueMessage(PlayerNameMessage.Create(_allocator, GameSession.Players.LocalPlayer.Identity, Cvars.PlayerName));
+		}
+
+		/// <summary>
+		///   Invoked when the local player entered a chat message.
+		/// </summary>
+		/// <param name="message">The message that the local player wants to send.</param>
+		private void OnSay(string message)
+		{
+			if (GameSession?.Players.LocalPlayer == null)
+				return;
+
+			Connection?.EnqueueMessage(PlayerChatMessage.Create(_allocator, GameSession.Players.LocalPlayer.Identity, message));
 		}
 	}
 }

@@ -24,6 +24,7 @@ namespace PointWars.Gameplay.Client
 {
 	using System;
 	using System.Numerics;
+	using Assets;
 	using Network;
 	using Network.Messages;
 	using Platform.Memory;
@@ -102,6 +103,9 @@ namespace PointWars.Gameplay.Client
 
 			player.IsLocalPlayer = true;
 			IsSynced = true;
+
+			// TODO: Server should send level in Sync message
+			_gameSession.ChangeLevel(AssetBundle.TestLevel);
 		}
 
 		/// <summary>
@@ -127,8 +131,10 @@ namespace PointWars.Gameplay.Client
 					break;
 			}
 
-			entity.NetworkIdentity = message.Entity;
 			_entityMap.Add(message.Entity, entity);
+
+			entity.NetworkIdentity = message.Entity;
+			entity.OnAdded();
 		}
 
 		/// <summary>
@@ -140,7 +146,9 @@ namespace PointWars.Gameplay.Client
 			var entity = _entityMap[message.Entity];
 			Assert.NotNull(entity, "Entity remove message references unknown entity.");
 
+			entity.OnRemoved();
 			entity.Remove();
+
 			_entityMap.Remove(entity.NetworkIdentity);
 		}
 

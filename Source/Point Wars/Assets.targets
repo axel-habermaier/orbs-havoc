@@ -6,6 +6,7 @@
 		<AvailableItemName Include="Texture" /> 
 		<AvailableItemName Include="Cursor" /> 
 		<AvailableItemName Include="OpenGL" /> 
+		<AvailableItemName Include="Level" /> 
 	</ItemGroup>
 	
 	<PropertyGroup>
@@ -17,6 +18,7 @@
 		<CompiledFonts Include="@(Font->'$(TargetDir)obj\%(Identity)')" />
 		<CompiledTextures Include="@(Texture->'$(TargetDir)obj\%(Identity)')" />
 		<CompiledCursors Include="@(Cursor->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledLevels Include="@(Level->'$(TargetDir)obj\%(Identity)')" />
 	</ItemGroup>
 	
 	<Target Name="CompileShaders" BeforeTargets="BeforeBuild" Inputs="@(Shader);$(OutDir)pwc.exe" Outputs="@(Shader->'$(TargetDir)obj\%(Identity)')">
@@ -39,8 +41,13 @@
 		<Message Importance="High" Text="Compiled cursor '%(Cursor.Identity)'." />
 	</Target>
 	
-	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);@(CompiledFonts);@(CompiledTextures);@(CompiledCursors);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
-		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;@(CompiledTextures->'%(FullPath)')&quot; --cursors &quot;@(CompiledCursors->'%(FullPath)')&quot; --output &quot;$(AssetBundle)&quot; --code &quot;../../Source/Point Wars/Assets/AssetBundle.g.cs&quot;" WorkingDirectory="$(OutDir)" />
+	<Target Name="CompileLevels" BeforeTargets="BeforeBuild" Inputs="@(Level);$(OutDir)pwc.exe" Outputs="@(Level->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe level --input &quot;%(Level.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Level.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled level '%(Level.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);@(CompiledLevels);@(CompiledFonts);@(CompiledTextures);@(CompiledCursors);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
+		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;@(CompiledTextures->'%(FullPath)')&quot; --cursors &quot;@(CompiledCursors->'%(FullPath)')&quot; --levels &quot;@(CompiledLevels->'%(FullPath)')&quot; --output &quot;$(AssetBundle)&quot; --code &quot;../../Source/Point Wars/Assets/AssetBundle.g.cs&quot;" WorkingDirectory="$(OutDir)" />
 		<Message Importance="High" Text="Compiled asset bundle." />
 	</Target>
 	

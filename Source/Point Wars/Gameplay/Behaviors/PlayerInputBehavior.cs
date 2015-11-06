@@ -28,7 +28,7 @@ namespace PointWars.Gameplay.Behaviors
 	using Utilities;
 
 	/// <summary>
-	///   Allows a player to control an entity.
+	///   Allows a player to control an avatar.
 	/// </summary>
 	internal class PlayerInputBehavior : Behavior<Avatar>
 	{
@@ -57,7 +57,7 @@ namespace PointWars.Gameplay.Behaviors
 		/// <param name="moveRight">Indicates whether the player should move to the right.</param>
 		/// <param name="firePrimary">Indicates whether the primary weapon should be fired.</param>
 		/// <param name="fireSecondary">Indicates whether the secondary weapon should be fired.</param>
-		public void Handle(Vector2 target, bool moveUp, bool moveDown, bool moveLeft, bool moveRight, bool firePrimary, bool fireSecondary)
+		public void HandleInput(Vector2 target, bool moveUp, bool moveDown, bool moveLeft, bool moveRight, bool firePrimary, bool fireSecondary)
 		{
 			// Update the avatar's orientation
 			if (target.LengthSquared() > 10)

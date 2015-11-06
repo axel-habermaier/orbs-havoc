@@ -101,6 +101,15 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		}
 
 		/// <summary>
+		///   Invoked when the entity is removed from a game session.
+		/// </summary>
+		/// <remarks>This method is not called when the game session is disposed.</remarks>
+		public override void OnRemoved()
+		{
+			Player.Avatar = null;
+		}
+
+		/// <summary>
 		/// Applies the given damage to the avatar.
 		/// </summary>
 		/// <param name="damage">The damage that should be applied.</param>
