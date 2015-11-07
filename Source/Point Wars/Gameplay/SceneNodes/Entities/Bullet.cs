@@ -51,8 +51,16 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				return;
 
 			var avatar = (Avatar)entity;
-			avatar.ApplyDamage(20);
+			avatar.ApplyDamage(5);
 
+			Remove();
+		}
+
+		/// <summary>
+		///   Handles the collision with a level wall.
+		/// </summary>
+		public override void HandleWallCollision()
+		{
 			Remove();
 		}
 

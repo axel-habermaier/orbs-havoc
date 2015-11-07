@@ -66,9 +66,6 @@ namespace PointWars.Gameplay.Client
 					Rectangle texCoords;
 					switch (level[x, y])
 					{
-						case BlockType.Empty:
-						case BlockType.Wall:
-							continue;
 						case BlockType.VerticalWall:
 							texCoords = verticalTexCoords;
 							break;
@@ -88,9 +85,7 @@ namespace PointWars.Gameplay.Client
 							texCoords = rightBottomWallTexCoords;
 							break;
 						default:
-							texCoords = Rectangle.Empty;
-							Assert.NotReached("Unknown block type.");
-							break;
+							continue;
 					}
 
 					quads.Add(new Quad(level.GetBlockArea(x, y), Colors.White, texCoords));

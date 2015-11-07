@@ -23,13 +23,16 @@
 namespace PointWars.Gameplay.Server
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Sockets;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using Network;
 	using Platform.Logging;
 	using Platform.Memory;
+	using Scripting;
 	using Utilities;
 
 	/// <summary>
@@ -43,14 +46,34 @@ namespace PointWars.Gameplay.Server
 		private readonly PoolAllocator _allocator;
 
 		/// <summary>
-		///   Allows the cancellation of the server task.
+		///   The avaiable and currently unused bot names.
 		/// </summary>
-		private CancellationTokenSource _cancellation;
+		private readonly List<string> _botNames = new List<string>
+		{
+			"The Dark One",
+			"\\redDevil 666",
+			"\\magentaSuperGirl",
+			"Lord Pain",
+			"Broken Vector",
+			"Annihilator",
+			"Dr. Unstoppable",
+			"Your Worst Enemy"
+		};
+
+		/// <summary>
+		///   The currently active bots in the game session.
+		/// </summary>
+		private readonly List<Player> _bots = new List<Player>();
 
 		/// <summary>
 		///   The step timer that is used to update the server at a fixed rate.
 		/// </summary>
 		private readonly StepTimer _timer = new StepTimer { UseFixedTimeStep = true };
+
+		/// <summary>
+		///   Allows the cancellation of the server task.
+		/// </summary>
+		private CancellationTokenSource _cancellation;
 
 		/// <summary>
 		///   The clients connected to the server.
@@ -91,6 +114,9 @@ namespace PointWars.Gameplay.Server
 			_timer.TargetElapsedSeconds = updateRate;
 			_timer.UpdateRequired += () => Update(_timer.ElapsedSeconds);
 			_allocator = new PoolAllocator();
+
+			Commands.OnAddBot += AddBot;
+			Commands.OnRemoveBot += RemoveBot;
 		}
 
 		/// <summary>
@@ -178,7 +204,42 @@ namespace PointWars.Gameplay.Server
 				_listener.SafeDispose();
 				_serverDiscovery.SafeDispose();
 				_task = null;
+
+				foreach (var bot in _bots)
+					_botNames.Add(bot.Name);
+
+				_bots.Clear();
 			}
+		}
+
+		/// <summary>
+		///   Adds a bot to the currently active game session.
+		/// </summary>
+		private void AddBot()
+		{
+			if (_gameSession == null || _gameSession.Players.Count >= NetworkProtocol.MaxPlayers)
+				return;
+
+			var nameIndex = RandomNumberGenerator.NextIndex(_botNames);
+			var bot = _serverLogic.CreatePlayer(_botNames[nameIndex], PlayerKind.Bot);
+
+			_botNames.RemoveAt(nameIndex);
+			_bots.Add(bot);
+		}
+
+		/// <summary>
+		///   Removes a bot from the currently active game session.
+		/// </summary>
+		private void RemoveBot()
+		{
+			if (_gameSession == null || _bots.Count == 0)
+				return;
+
+			var index = RandomNumberGenerator.NextIndex(_bots);
+			_bots[index].LeaveReason = LeaveReason.Disconnect;
+			_botNames.Add(_bots[index].Name);
+			_serverLogic.RemovePlayer(_bots[index]);
+			_bots.RemoveAt(index);
 		}
 
 		/// <summary>
@@ -188,12 +249,18 @@ namespace PointWars.Gameplay.Server
 		private void Update(double elapsedSeconds)
 		{
 			_serverDiscovery.SendDiscoveryMessage(elapsedSeconds);
-	
+
 			_clients.UpdateClientConnections();
 			_clients.DispatchClientMessages();
 			_gameSession.Update((float)elapsedSeconds);
 			_serverLogic.BroadcastEntityUpdates();
 			_clients.SendQueuedMessages();
+
+			foreach (var bot in _bots)
+			{
+				if (bot.Avatar == null)
+					_serverLogic.RespawnPlayer(bot);
+			}
 		}
 
 		/// <summary>
@@ -212,6 +279,9 @@ namespace PointWars.Gameplay.Server
 		{
 			Stop();
 			_allocator.SafeDispose();
+
+			Commands.OnAddBot -= AddBot;
+			Commands.OnRemoveBot -= RemoveBot;
 		}
 	}
 }

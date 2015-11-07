@@ -23,6 +23,7 @@
 namespace PointWars.Network.Messages
 {
 	using System.Text;
+	using Gameplay;
 	using Network;
 	using Platform.Memory;
 	using Utilities;
@@ -39,6 +40,11 @@ namespace PointWars.Network.Messages
 		public string PlayerName { get; private set; }
 
 		/// <summary>
+		///   Gets or sets the kind of the player.
+		/// </summary>
+		public PlayerKind PlayerKind { get; set; }
+
+		/// <summary>
 		///   Gets the identifier of the player that joined the game session.
 		/// </summary>
 		public NetworkIdentity Player { get; private set; }
@@ -50,6 +56,7 @@ namespace PointWars.Network.Messages
 		public override void Serialize(ref BufferWriter writer)
 		{
 			WriteIdentifier(ref writer, Player);
+			writer.WriteByte((byte)PlayerKind);
 			writer.WriteString(PlayerName, NetworkProtocol.PlayerNameLength);
 		}
 
@@ -60,6 +67,7 @@ namespace PointWars.Network.Messages
 		public override void Deserialize(ref BufferReader reader)
 		{
 			Player = ReadIdentifier(ref reader);
+			PlayerKind = (PlayerKind)reader.ReadByte();
 			PlayerName = reader.ReadString(NetworkProtocol.PlayerNameLength);
 		}
 
@@ -78,15 +86,18 @@ namespace PointWars.Network.Messages
 		/// </summary>
 		/// <param name="poolAllocator">The pool allocator that should be used to allocate the message.</param>
 		/// <param name="player">The player that has joined the game session.</param>
+		/// <param name="playerKind">The kind of the player.</param>
 		/// <param name="playerName">The name of the player.</param>
-		public static Message Create(PoolAllocator poolAllocator, NetworkIdentity player, string playerName)
+		public static Message Create(PoolAllocator poolAllocator, NetworkIdentity player, PlayerKind playerKind, string playerName)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
 			Assert.ArgumentNotNullOrWhitespace(playerName, nameof(playerName));
+			Assert.ArgumentInRange(playerKind, nameof(playerKind));
 			Assert.That(Encoding.UTF8.GetByteCount(playerName) <= NetworkProtocol.PlayerNameLength, "Player name is too long.");
 
 			var message = poolAllocator.Allocate<PlayerJoinMessage>();
 			message.Player = player;
+			message.PlayerKind = playerKind;
 			message.PlayerName = playerName;
 			return message;
 		}
@@ -96,7 +107,7 @@ namespace PointWars.Network.Messages
 		/// </summary>
 		public override string ToString()
 		{
-			return $"{MessageType}, Player={Player}, PlayerName='{PlayerName}'";
+			return $"{MessageType}, Player={Player}, PlayerName='{PlayerName}', PlayerKind='{PlayerKind}'";
 		}
 	}
 }

@@ -23,18 +23,18 @@
 namespace PointWars.Gameplay
 {
 	/// <summary>
-	///   Represents the type of a level block.
+	///   Identifies the kind of a player, i.e., whether the player is a human or a computer-controlled bot.
 	/// </summary>
-	public enum BlockType : byte
+	internal enum PlayerKind
 	{
-		Empty = 0,
-		HorizontalWall,
-		VerticalWall,
-		Wall,
-		LeftTopWall,
-		RightTopWall,
-		LeftBottomWall,
-		RightBottomWall,
-		PlayerStart
+		/// <summary>
+		///   Indicates that the player is a human.
+		/// </summary>
+		Human,
+
+		/// <summary>
+		///   Indicates that the player is a computer-controlled bot.
+		/// </summary>
+		Bot
 	}
 }

@@ -38,6 +38,11 @@ namespace PointWars.Gameplay
 		public string Name { get; set; }
 
 		/// <summary>
+		///   Gets or sets the kind of the player.
+		/// </summary>
+		public PlayerKind Kind { get; set; }
+
+		/// <summary>
 		///   Gets or sets the player's ping.
 		/// </summary>
 		public int Ping { get; set; }
@@ -82,15 +87,18 @@ namespace PointWars.Gameplay
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate the player.</param>
 		/// <param name="name">The name of the player.</param>
+		/// <param name="kind">The kind of the player.</param>
 		/// <param name="identity">The network identity of the player.</param>
-		public static Player Create(PoolAllocator allocator, string name, NetworkIdentity identity = default(NetworkIdentity))
+		public static Player Create(PoolAllocator allocator, string name, PlayerKind kind, NetworkIdentity identity = default(NetworkIdentity))
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));
+			Assert.ArgumentInRange(kind, nameof(kind));
 
 			var player = allocator.Allocate<Player>();
 			player.Identity = identity;
 			player.Name = name;
+			player.Kind = kind;
 			player.Kills = 0;
 			player.Deaths = 0;
 			player.Ping = 0;

@@ -70,6 +70,7 @@
     </Compile>
     <Compile Include="Gameplay\Client\LevelRenderer.cs" />
     <Compile Include="Gameplay\Level.cs" />
+    <Compile Include="Gameplay\PlayerKind.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\PowerUpType.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Bullet.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Entity.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="Utilities\Circle.cs" />
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
+    <Compile Include="Utilities\RandomNumberGenerator.cs" />
     <Compile Include="Views\WaitingOverlay.cs" />
     <Compile Include="Views\Scoreboard.cs" />
     <Compile Include="Views\Chat.cs" />

@@ -128,6 +128,13 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		}
 
 		/// <summary>
+		///   Handles the collision with a level wall.
+		/// </summary>
+		public virtual void HandleWallCollision()
+		{
+		}
+
+		/// <summary>
 		///   Broadcasts update messages for the entity.
 		/// </summary>
 		/// <param name="broadcast">The callback that should be used to broadcast the message.</param>

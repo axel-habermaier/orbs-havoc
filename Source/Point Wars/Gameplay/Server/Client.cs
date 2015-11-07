@@ -102,7 +102,7 @@ namespace PointWars.Gameplay.Server
 			}
 			else
 			{
-				_player = _serverLogic.CreatePlayer(message.PlayerName);
+				_player = _serverLogic.CreatePlayer(message.PlayerName, PlayerKind.Human);
 				_serverLogic.SendStateSnapshot(_connection, _player);
 				IsSynced = true;
 			}

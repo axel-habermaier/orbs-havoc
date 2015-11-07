@@ -67,7 +67,7 @@ namespace PointWars.Gameplay
 			{
 				_identityAllocator = new NetworkIdentityAllocator(NetworkProtocol.MaxPlayers + 1);
 
-				var serverPlayer = Player.Create(allocator, "<server>", NetworkProtocol.ServerPlayerIdentity);
+				var serverPlayer = Player.Create(allocator, "<server>", PlayerKind.Bot, NetworkProtocol.ServerPlayerIdentity);
 				serverPlayer.IsLocalPlayer = true;
 
 				Add(serverPlayer);
@@ -111,9 +111,9 @@ namespace PointWars.Gameplay
 		}
 
 		/// <summary>
-		///   Gets the number of active players.
+		///   Gets the number of active players, not counting the server player.
 		/// </summary>
-		public int Count => _players.Count;
+		public int Count => _players.Count - 1;
 
 		/// <summary>
 		///   Gets the player that corresponds to the given identity. Returns null if no player with the given identity could

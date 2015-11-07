@@ -22,6 +22,7 @@
 
 namespace PointWars.Gameplay
 {
+	using System.Collections.Generic;
 	using System.Numerics;
 	using Platform.Memory;
 	using Utilities;
@@ -64,6 +65,11 @@ namespace PointWars.Gameplay
 		public int Height { get; private set; }
 
 		/// <summary>
+		///   Gets the player start positions within the level.
+		/// </summary>
+		public List<BlockIndex> PlayerStarts { get; } = new List<BlockIndex>();
+
+		/// <summary>
 		///   Gets the level's blocks.
 		/// </summary>
 		public BlockType[] Blocks { get; private set; }
@@ -104,11 +110,18 @@ namespace PointWars.Gameplay
 			Width = buffer.ReadInt16();
 			Height = buffer.ReadInt16();
 
-			PositionOffset = new Vector2(-MathUtils.Round(Width / 2 * BlockSize), -MathUtils.Round(Height / 2 * BlockSize));
+			PositionOffset = new Vector2(-MathUtils.Round(Width / 2.0f * BlockSize), -MathUtils.Round(Height / 2.0f * BlockSize));
 			Blocks = new BlockType[Width * Height];
 
-			for (var i = 0; i < Width * Height; ++i)
-				Blocks[i] = (BlockType)buffer.ReadByte();
+			for (var x = 0; x < Width; ++x)
+			{
+				for (var y = 0; y < Height; ++y)
+				{
+					Blocks[x * Height + y] = (BlockType)buffer.ReadByte();
+					if (Blocks[x * Height + y] == BlockType.PlayerStart)
+						PlayerStarts.Add(new BlockIndex(x, y));
+				}
+			}
 		}
 
 		/// <summary>
@@ -148,6 +161,15 @@ namespace PointWars.Gameplay
 		}
 
 		/// <summary>
+		///   Gets the area occupied by the block with the given index.
+		/// </summary>
+		/// <param name="index">The index of the block whose area should be returned.</param>
+		public Rectangle GetBlockArea(BlockIndex index)
+		{
+			return GetBlockArea(index.X, index.Y);
+		}
+
+		/// <summary>
 		///   Gets the area occupied by the block at the given location.
 		/// </summary>
 		/// <param name="x">The zero-based index of the block in x-direction.</param>
@@ -158,6 +180,33 @@ namespace PointWars.Gameplay
 			Assert.InRange(y, 0, Height - 1);
 
 			return new Rectangle(x * BlockSize + PositionOffset.X, y * BlockSize + PositionOffset.Y, BlockSize, BlockSize);
+		}
+
+		/// <summary>
+		///   Represents the 2-dimensional index of a block.
+		/// </summary>
+		public struct BlockIndex
+		{
+			/// <summary>
+			///   The zero-based block index in x-direction.
+			/// </summary>
+			public int X;
+
+			/// <summary>
+			///   The zero-based block index in Y-direction.
+			/// </summary>
+			public int Y;
+
+			/// <summary>
+			///   Initializes a instance.
+			/// </summary>
+			/// <param name="x">The zero-based block index in x-direction.</param>
+			/// <param name="y">The zero-based block index in y-direction.</param>
+			public BlockIndex(int x, int y)
+			{
+				X = x;
+				Y = y;
+			}
 		}
 	}
 }

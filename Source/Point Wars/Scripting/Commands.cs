@@ -157,5 +157,15 @@ namespace PointWars.Scripting
 		/// </summary>
 		/// <param name="message">The message that should be sent.</param>
 		void Say([NotEmpty, MaximumLength(NetworkProtocol.ChatMessageLength, checkUtf8Length: true)] string message);
+
+		/// <summary>
+		///   Adds a bot to the currently active, locally-hosted game session.
+		/// </summary>
+		void AddBot();
+
+		/// <summary>
+		///   Removes a bot from the currently active, locally-hosted game session.
+		/// </summary>
+		void RemoveBot();
 	}
 }

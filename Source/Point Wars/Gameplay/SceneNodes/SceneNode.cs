@@ -177,6 +177,22 @@ namespace PointWars.Gameplay.SceneNodes
 		public bool IsRemoved { get; internal set; }
 
 		/// <summary>
+		///   Gets the first behavior of the given type, or null if there is none.
+		/// </summary>
+		internal T GetBehavior<T>()
+			where T : Behavior
+		{
+			for (var behavior = Behavior; behavior != null; behavior = behavior.Next)
+			{
+				var typedBehavior = behavior as T;
+				if (typedBehavior != null)
+					return typedBehavior;
+			}
+
+			return null;
+		}
+
+		/// <summary>
 		///   Changes the local position and rotation of the scene node, relative to the parent scene node.
 		/// </summary>
 		/// <param name="position">The local position relative to the parent scene node's position.</param>

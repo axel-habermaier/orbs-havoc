@@ -78,6 +78,8 @@ namespace PointWars
 			Commands.Bind(Key.F3, "connect ::1");
 			Commands.Bind(Key.F4, "disconnect");
 			Commands.Bind(Key.F5, "reload_assets");
+			Commands.Bind(new ConfigurableInput(Key.B, KeyModifiers.Control), "add_bot");
+			Commands.Bind(new ConfigurableInput(Key.B, KeyModifiers.Control | KeyModifiers.Shift), "remove_bot");
 
 			Commands.Bind(new ConfigurableInput(Key.Escape, KeyModifiers.LeftShift), "exit");
 			Commands.Bind(Key.F10, "toggle show_debug_overlay");

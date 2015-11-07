@@ -108,14 +108,34 @@ namespace PointWars.Platform.Input
 			if (MouseButton != null)
 				trigger = new MouseTrigger(mouseTriggerType, MouseButton.Value);
 
-			if ((Modifiers & KeyModifiers.Alt) != 0)
-				trigger &= Input.Key.LeftAlt.IsPressed() | Input.Key.RightAlt.IsPressed();
-
-			if ((Modifiers & KeyModifiers.Shift) != 0)
-				trigger &= Input.Key.LeftShift.IsPressed() | Input.Key.RightShift.IsPressed();
-
-			if ((Modifiers & KeyModifiers.Control) != 0)
-				trigger &= Input.Key.LeftControl.IsPressed() | Input.Key.RightControl.IsPressed();
+			if ((Modifiers & KeyModifiers.Alt) != 0 && (Modifiers & KeyModifiers.Shift) != 0 && (Modifiers & KeyModifiers.Control) != 0)
+				trigger &= (Input.Key.LeftAlt.IsPressed() | Input.Key.RightAlt.IsPressed()) &
+						   (Input.Key.LeftShift.IsPressed() | Input.Key.RightShift.IsPressed()) &
+						   (Input.Key.LeftControl.IsPressed() | Input.Key.RightControl.IsPressed());
+			else if ((Modifiers & KeyModifiers.Shift) != 0 && (Modifiers & KeyModifiers.Control) != 0)
+				trigger &= (Input.Key.LeftAlt.IsReleased() & Input.Key.RightAlt.IsReleased()) &
+						   (Input.Key.LeftShift.IsPressed() | Input.Key.RightShift.IsPressed()) &
+						   (Input.Key.LeftControl.IsPressed() | Input.Key.RightControl.IsPressed());
+			else if ((Modifiers & KeyModifiers.Alt) != 0 && (Modifiers & KeyModifiers.Control) != 0)
+				trigger &= (Input.Key.LeftAlt.IsPressed() | Input.Key.RightAlt.IsPressed()) &
+						   (Input.Key.LeftShift.IsReleased() & Input.Key.RightShift.IsReleased()) &
+						   (Input.Key.LeftControl.IsPressed() | Input.Key.RightControl.IsPressed());
+			else if ((Modifiers & KeyModifiers.Alt) != 0 && (Modifiers & KeyModifiers.Shift) != 0)
+				trigger &= (Input.Key.LeftAlt.IsPressed() | Input.Key.RightAlt.IsPressed()) &
+						   (Input.Key.LeftShift.IsPressed() | Input.Key.RightShift.IsPressed()) &
+						   (Input.Key.LeftControl.IsReleased() & Input.Key.RightControl.IsReleased());
+			else if ((Modifiers & KeyModifiers.Alt) != 0)
+				trigger &= (Input.Key.LeftAlt.IsPressed() | Input.Key.RightAlt.IsPressed()) &
+						   (Input.Key.LeftShift.IsReleased() & Input.Key.RightShift.IsReleased()) &
+						   (Input.Key.LeftControl.IsReleased() & Input.Key.RightControl.IsReleased());
+			else if ((Modifiers & KeyModifiers.Shift) != 0)
+				trigger &= (Input.Key.LeftAlt.IsReleased() & Input.Key.RightAlt.IsReleased()) &
+						   (Input.Key.LeftShift.IsPressed() | Input.Key.RightShift.IsPressed()) &
+						   (Input.Key.LeftControl.IsReleased() & Input.Key.RightControl.IsReleased());
+			else if ((Modifiers & KeyModifiers.Control) != 0)
+				trigger &= (Input.Key.LeftAlt.IsReleased() & Input.Key.RightAlt.IsReleased()) &
+						   (Input.Key.LeftShift.IsReleased() & Input.Key.RightShift.IsReleased()) &
+						   (Input.Key.LeftControl.IsPressed() | Input.Key.RightControl.IsPressed());
 
 			return trigger;
 		}

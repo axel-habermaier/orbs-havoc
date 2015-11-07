@@ -167,7 +167,7 @@ namespace PointWars.Gameplay.Client
 		/// <param name="message">The message that should be dispatched.</param>
 		void IMessageHandler.OnPlayerJoin(PlayerJoinMessage message)
 		{
-			var player = Player.Create(_allocator, message.PlayerName, message.Player);
+			var player = Player.Create(_allocator, message.PlayerName, message.PlayerKind, message.Player);
 
 			_gameSession.Players.Add(player);
 			_views.EventMessages.AddJoinMessage(player);

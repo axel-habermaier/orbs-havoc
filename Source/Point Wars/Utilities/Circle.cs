@@ -154,9 +154,8 @@ namespace PointWars.Utilities
 		[Pure]
 		public bool Intersects(Circle circle)
 		{
-			var distance = (Position - circle.Position).LengthSquared();
 			var radiusSum = Radius + circle.Radius;
-			return distance <= radiusSum * radiusSum;
+			return Vector2.DistanceSquared(Position, circle.Position) <= radiusSum * radiusSum;
 		}
 
 		/// <summary>
@@ -185,8 +184,7 @@ namespace PointWars.Utilities
 		[Pure]
 		public bool Intersects(Vector2 point)
 		{
-			var distance = (Position - point).LengthSquared();
-			return distance <= Radius * Radius;
+			return Vector2.DistanceSquared(Position, point) <= Radius * Radius;
 		}
 	}
 }

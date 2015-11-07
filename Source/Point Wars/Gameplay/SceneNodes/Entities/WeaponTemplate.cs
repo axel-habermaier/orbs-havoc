@@ -34,7 +34,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		{
 			Cooldown = 0.1f,
 			DepleteSpeed = 0,
-			BaseSpeed = 800,
+			BaseSpeed = 1500,
 			WeaponType = WeaponType.MiniGun,
 			MaxEnergy = 1
 		};

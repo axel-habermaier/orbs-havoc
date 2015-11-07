@@ -145,6 +145,9 @@ namespace AssetsCompiler
 			if (color == Color.Black.ToArgb())
 				return BlockType.Wall;
 
+			if (color == Color.Gray.ToArgb())
+				return BlockType.PlayerStart;
+
 			return null;
 		}
 	}

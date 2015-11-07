@@ -23,6 +23,7 @@
 namespace PointWars.Gameplay.Server
 {
 	using System;
+	using Behaviors;
 	using Network;
 	using Network.Messages;
 	using Platform.Logging;
@@ -127,7 +128,7 @@ namespace PointWars.Gameplay.Server
 			// Synchronize all players
 			foreach (var player in _gameSession.Players)
 			{
-				var message = PlayerJoinMessage.Create(_allocator, player.Identity, player.Name);
+				var message = PlayerJoinMessage.Create(_allocator, player.Identity, player.Kind, player.Name);
 				connection.EnqueueMessage(message);
 
 				Log.DebugIf(EnableTracing, "(Server)    {0}", message);
@@ -153,18 +154,19 @@ namespace PointWars.Gameplay.Server
 		///   Creates a new player with the given name.
 		/// </summary>
 		/// <param name="playerName">The name of the new player.</param>
-		public Player CreatePlayer(string playerName)
+		/// <param name="playerKind">The kind of the new player.</param>
+		public Player CreatePlayer(string playerName, PlayerKind playerKind)
 		{
 			Assert.ArgumentNotNullOrWhitespace(playerName, nameof(playerName));
 
 			// TODO: Assign unique names to all players.
 			// TODO: (only take those players into account with player.LeaveReason == null when checking for shared names)
 
-			var player = Player.Create(_allocator, playerName);
+			var player = Player.Create(_allocator, playerName, playerKind);
 			_gameSession.Players.Add(player);
 
 			// Broadcast the news about the new player to all clients (this message is not sent to the new client yet)
-			Broadcast(PlayerJoinMessage.Create(_allocator, player.Identity, playerName));
+			Broadcast(PlayerJoinMessage.Create(_allocator, player.Identity, player.Kind, playerName));
 
 			Log.DebugIf(EnableTracing, "(Server) Created player '{0}' ({1})", playerName, player.Identity);
 			return player;
@@ -207,11 +209,8 @@ namespace PointWars.Gameplay.Server
 
 			// Respawn the player if necessary
 			var firePrimary = (inputMask & inputMessage.FirePrimary) != 0;
-			if ((player.Avatar == null) && firePrimary)
-			{
-				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
-				player.Avatar = Avatar.Create(_gameSession, player);
-			}
+			if (player.Avatar == null && firePrimary)
+				RespawnPlayer(player);
 
 			player.Avatar?.PlayerInput.HandleInput(
 				inputMessage.Target,
@@ -221,6 +220,46 @@ namespace PointWars.Gameplay.Server
 				(inputMask & inputMessage.MoveRight) != 0,
 				(inputMask & inputMessage.FirePrimary) != 0,
 				(inputMask & inputMessage.FireSecondary) != 0);
+		}
+
+		/// <summary>
+		///   Respawns the given player.
+		/// </summary>
+		/// <param name="player">The player that should be respawned.</param>
+		public void RespawnPlayer(Player player)
+		{
+			Assert.ArgumentNotNull(player, nameof(player));
+			Assert.ArgumentSatisfies(player.Avatar == null, nameof(player), "The player cannot be respawned.");
+
+			// Try to find a player start location that is currently not occupied by any other player; if there
+			// is none, don't spawn the player and try again in a later frame (that shouldn't happen at all
+			// or at least not often anyway); we'll give up after a couple of retries for this reason...
+			const int retries = 16;
+			for (var i = 0; i < retries; ++i)
+			{
+				var startIndex = RandomNumberGenerator.NextIndex(_gameSession.Level.PlayerStarts);
+				var startBlockIndex = _gameSession.Level.PlayerStarts[startIndex];
+				var startArea = _gameSession.Level.GetBlockArea(startBlockIndex);
+				var isOccupied = false;
+
+				foreach (var avatar in _gameSession.SceneGraph.EnumeratePostOrder<Avatar>())
+				{
+					var collider = avatar.GetBehavior<ColliderBehavior>();
+					if (!collider.Circle.Intersects(startArea))
+						continue;
+
+					isOccupied = true;
+					break;
+				}
+
+				if (isOccupied)
+					continue;
+
+				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
+				player.Avatar = Avatar.Create(_gameSession, player);
+				player.Avatar.Position = startArea.Center;
+				break;
+			}
 		}
 
 		/// <summary>

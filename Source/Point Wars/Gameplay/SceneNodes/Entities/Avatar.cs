@@ -158,8 +158,12 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 
 			if (gameSession.ServerMode)
 			{
-				avatar.AddBehavior(avatar.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
 				avatar.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, 32));
+
+				if (player.Kind == PlayerKind.Bot)
+					avatar.AddBehavior(AiBehavior.Create(gameSession.Allocator));
+				else
+					avatar.AddBehavior(avatar.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
 			}
 			else
 				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, Colors.YellowGreen);
