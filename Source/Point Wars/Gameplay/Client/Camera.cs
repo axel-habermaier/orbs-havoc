@@ -63,7 +63,7 @@ namespace PointWars.Gameplay.Client
 			if (avatar != null)
 				_position = -avatar.WorldPosition;
 
-			spriteBatch.PositionOffset = _position + new Vector2(_window.Size.Width / 2, _window.Size.Height / 2);
+			spriteBatch.PositionOffset = _position + new Vector2(MathUtils.Round(_window.Size.Width / 2), MathUtils.Round(_window.Size.Height / 2));
 
 			foreach (var spriteNode in _gameSession.SceneGraph.EnumeratePostOrder<SpriteNode>())
 				spriteNode.Draw(spriteBatch);

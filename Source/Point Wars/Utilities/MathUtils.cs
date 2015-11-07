@@ -348,6 +348,15 @@ namespace PointWars.Utilities
 		}
 
 		/// <summary>
+		///   Returns the absolute value of the given value.
+		/// </summary>
+		/// <param name="value">The value the absolute value should be returned for.</param>
+		public static float Abs(float value)
+		{
+			return value < 0 ? value * -1 : value;
+		}
+
+		/// <summary>
 		///   Rotates the given vector by the given angle.
 		/// </summary>
 		/// <param name="vector">The vector that should be rotated.</param>

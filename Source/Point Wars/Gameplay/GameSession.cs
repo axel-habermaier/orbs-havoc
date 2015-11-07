@@ -24,6 +24,7 @@ namespace PointWars.Gameplay
 {
 	using System;
 	using System.Numerics;
+	using Assets;
 	using Behaviors;
 	using Client;
 	using Platform.Memory;
@@ -167,6 +168,8 @@ namespace PointWars.Gameplay
 			var avatar = Avatar.Create(this, Players.ServerPlayer);
 			avatar.AddBehavior(AiBehavior.Create(Allocator));
 			avatar.Position = new Vector2(100, 100);
+
+			ChangeLevel(AssetBundle.TestLevel);
 		}
 
 		/// <summary>

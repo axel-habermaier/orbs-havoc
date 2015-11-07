@@ -187,6 +187,7 @@
     <Compile Include="UserInterface\UIElementCollection.cs" />
     <Compile Include="UserInterface\VerticalAlignment.cs" />
     <Compile Include="UserInterface\Visibility.cs" />
+    <Compile Include="Utilities\Circle.cs" />
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
     <Compile Include="Views\WaitingOverlay.cs" />

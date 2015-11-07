@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay
+namespace PointWars.Gameplay.SceneNodes.Entities
 {
 	/// <summary>
 	///   Identifies the type of a weapon.

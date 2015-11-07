@@ -206,7 +206,8 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(inputMessage, nameof(inputMessage));
 
 			// Respawn the player if necessary
-			if ((player.Avatar == null) && (inputMask & inputMessage.FirePrimary) != 0)
+			var firePrimary = (inputMask & inputMessage.FirePrimary) != 0;
+			if ((player.Avatar == null) && firePrimary)
 			{
 				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
 				player.Avatar = Avatar.Create(_gameSession, player);

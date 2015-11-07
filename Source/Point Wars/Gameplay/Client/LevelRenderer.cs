@@ -23,6 +23,7 @@
 namespace PointWars.Gameplay.Client
 {
 	using System.Collections.Generic;
+	using System.Numerics;
 	using Assets;
 	using Platform.Graphics;
 	using Rendering;
@@ -33,8 +34,7 @@ namespace PointWars.Gameplay.Client
 	/// </summary>
 	public class LevelRenderer
 	{
-		private const int BlockSize = 64;
-		private const int TexSize = 64;
+		private readonly Level _level;
 		private readonly Quad[] _quads;
 
 		/// <summary>
@@ -45,26 +45,26 @@ namespace PointWars.Gameplay.Client
 		{
 			Assert.ArgumentNotNull(level, nameof(level));
 
+			_level = level;
 			var texWidth = AssetBundle.LevelBorders.Width;
 			var texHeight = AssetBundle.LevelBorders.Height;
 
-			var offsetX = MathUtils.Round(level.Width / 2 * BlockSize);
-			var offsetY = MathUtils.Round(level.Height / 2 * BlockSize);
+			const int texSize = 128;
 			var quads = new List<Quad>(10000);
 
-			var horizontalTexCoords = new Rectangle(TexSize * 2 / texWidth, TexSize / texHeight, TexSize / texWidth, TexSize / texHeight);
-			var verticalTexCoords = new Rectangle(TexSize * 2 / texWidth, 0 / texHeight, TexSize / texWidth, TexSize / texHeight);
-			var leftTopWallTexCoords = new Rectangle(0 / texWidth, 0 / texHeight, TexSize / texWidth, TexSize / texHeight);
-			var rightTopWallTexCoords = new Rectangle(TexSize / texWidth, 0 / texHeight, TexSize / texWidth, TexSize / texHeight);
-			var leftBottomWallTexCoords = new Rectangle(0 / texWidth, TexSize / texHeight, TexSize / texWidth, TexSize / texHeight);
-			var rightBottomWallTexCoords = new Rectangle(TexSize / texWidth, TexSize / texHeight, TexSize / texWidth, TexSize / texHeight);
+			var horizontalTexCoords = new Rectangle(texSize * 2 / texWidth, texSize / texHeight, texSize / texWidth, texSize / texHeight);
+			var verticalTexCoords = new Rectangle(texSize * 2 / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
+			var leftTopWallTexCoords = new Rectangle(0 / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
+			var rightTopWallTexCoords = new Rectangle(texSize / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
+			var leftBottomWallTexCoords = new Rectangle(0 / texWidth, texSize / texHeight, texSize / texWidth, texSize / texHeight);
+			var rightBottomWallTexCoords = new Rectangle(texSize / texWidth, texSize / texHeight, texSize / texWidth, texSize / texHeight);
 
 			for (var x = 0; x < level.Width; ++x)
 			{
 				for (var y = 0; y < level.Height; ++y)
 				{
 					Rectangle texCoords;
-					switch (level.Blocks[x][y])
+					switch (level[x, y])
 					{
 						case BlockType.Empty:
 						case BlockType.Wall:
@@ -88,13 +88,12 @@ namespace PointWars.Gameplay.Client
 							texCoords = rightBottomWallTexCoords;
 							break;
 						default:
-							Assert.NotReached("Unknown block type.");
 							texCoords = Rectangle.Empty;
+							Assert.NotReached("Unknown block type.");
 							break;
 					}
 
-					var rectangle = new Rectangle(x * BlockSize - offsetX, y * BlockSize - offsetY, BlockSize, BlockSize);
-					quads.Add(new Quad(rectangle, Colors.White, texCoords));
+					quads.Add(new Quad(level.GetBlockArea(x, y), Colors.White, texCoords));
 				}
 			}
 
@@ -112,6 +111,22 @@ namespace PointWars.Gameplay.Client
 			spriteBatch.SamplerState = SamplerState.Point;
 			spriteBatch.Draw(_quads, _quads.Length, AssetBundle.LevelBorders);
 			spriteBatch.SamplerState = SamplerState.Bilinear;
+
+#if true
+			--spriteBatch.Layer;
+
+			for (var y = 0; y <= _level.Height; ++y)
+			{
+				var position = _level.PositionOffset + new Vector2(0, y * Level.BlockSize);
+				spriteBatch.DrawLine(position, position + new Vector2(_level.Width * Level.BlockSize, 0), Colors.DarkRed, 1);
+			}
+
+			for (var x = 0; x <= _level.Width; ++x)
+			{
+				var position = _level.PositionOffset + new Vector2(x * Level.BlockSize, 0);
+				spriteBatch.DrawLine(position, position + new Vector2(0, _level.Height * Level.BlockSize), Colors.DarkRed, 1);
+			}
+#endif
 		}
 	}
 }

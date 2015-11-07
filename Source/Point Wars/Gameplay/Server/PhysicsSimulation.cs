@@ -25,6 +25,7 @@ namespace PointWars.Gameplay.Server
 	using System.Collections.Generic;
 	using System.Numerics;
 	using Behaviors;
+	using Platform.Logging;
 	using SceneNodes.Entities;
 	using Utilities;
 
@@ -83,6 +84,59 @@ namespace PointWars.Gameplay.Server
 			// Secondly, check for collisions
 			for (var i = 0; i < _colliders.Count; ++i)
 			{
+				// Check for collisions with static world geometry
+				int x, y;
+				_gameSession.Level.GetBlock(_colliders[i].Circle.Position, out x, out y);
+
+				switch (_gameSession.Level[x, y])
+				{
+					case BlockType.HorizontalWall:
+					{
+						var area = _gameSession.Level.GetBlockArea(x, y);
+						var circle = _colliders[i].Circle;
+						var newY = HandleCollisionWithNonCurvedWall(circle.Position.Y, circle.Radius, area.Center.Y);
+						_colliders[i].SceneNode.Position = new Vector2(circle.Position.X, newY);
+						break;
+					}
+					case BlockType.VerticalWall:
+					{
+						var area = _gameSession.Level.GetBlockArea(x, y);
+						var circle = _colliders[i].Circle;
+						var newX = HandleCollisionWithNonCurvedWall(circle.Position.X, circle.Radius, area.Center.X);
+						_colliders[i].SceneNode.Position = new Vector2(newX, circle.Position.Y);
+						break;
+					}
+					case BlockType.LeftTopWall:
+					{
+						var area = _gameSession.Level.GetBlockArea(x, y);
+						var offset = HandleCollisionWithCurvedWall(_colliders[i].Circle, area.BottomRight);
+						_colliders[i].SceneNode.Position += offset;
+						break;
+					}
+					case BlockType.RightTopWall:
+					{
+						var area = _gameSession.Level.GetBlockArea(x, y);
+						var offset = HandleCollisionWithCurvedWall(_colliders[i].Circle, area.BottomLeft);
+						_colliders[i].SceneNode.Position += offset;
+						break;
+					}
+					case BlockType.LeftBottomWall:
+					{
+						var area = _gameSession.Level.GetBlockArea(x, y);
+						var offset = HandleCollisionWithCurvedWall(_colliders[i].Circle, area.TopRight);
+						_colliders[i].SceneNode.Position += offset;
+						break;
+					}
+					case BlockType.RightBottomWall:
+					{
+						var area = _gameSession.Level.GetBlockArea(x, y);
+						var offset = HandleCollisionWithCurvedWall(_colliders[i].Circle, area.TopLeft);
+						_colliders[i].SceneNode.Position += offset;
+						break;
+					}
+				}
+
+				// Check for collisions with other entities
 				for (var j = i + 1; j < _colliders.Count; ++j)
 				{
 					var collider1 = _colliders[i];
@@ -91,7 +145,7 @@ namespace PointWars.Gameplay.Server
 					var entity1 = collider1.SceneNode;
 					var entity2 = collider2.SceneNode;
 
-					if (!CheckForCollision(entity1.WorldPosition, entity2.WorldPosition, collider1.Radius, collider2.Radius))
+					if (!collider1.Circle.Intersects(collider2.Circle))
 						continue;
 
 					entity1.HandleCollision(entity2);
@@ -101,15 +155,45 @@ namespace PointWars.Gameplay.Server
 		}
 
 		/// <summary>
-		///   Checks whether there is a collision between the two circles.
+		///   Handles an entity collision with a horizontal or vertical wall.
 		/// </summary>
-		private static bool CheckForCollision(Vector2 position1, Vector2 position2, float radius1, float radius2)
+		private static float HandleCollisionWithNonCurvedWall(float circlePosition, float radius, float areaCenter)
 		{
-			var distance = Vector2.DistanceSquared(position1, position2);
-			var r = radius1 + radius2;
-			r *= r;
+			if (MathUtils.Abs(circlePosition - areaCenter) > radius + Level.WallThickness / 2)
+				return circlePosition;
 
-			return distance <= r;
+			if (circlePosition < areaCenter)
+				circlePosition -= circlePosition + radius - areaCenter + Level.WallThickness / 2;
+			else
+				circlePosition += areaCenter + Level.WallThickness / 2 - circlePosition + radius;
+
+			return circlePosition;
+		}
+
+		/// <summary>
+		///   Handles an entity collision with a curved wall.
+		/// </summary>
+		private static Vector2 HandleCollisionWithCurvedWall(Circle entityCircle, Vector2 wallPosition)
+		{
+			var wallCircle = new Circle(wallPosition, Level.BlockSize / 2 + Level.WallThickness / 2);
+			if (!entityCircle.Intersects(wallCircle))
+				return Vector2.Zero;
+
+			var distance = Vector2.Distance(entityCircle.Position, wallCircle.Position);
+			if (distance < wallCircle.Radius - Level.WallThickness / 2)
+			{
+				var overlap = distance + entityCircle.Radius - wallCircle.Radius + Level.WallThickness;
+				if (overlap > 0)
+					return -Vector2.Normalize(entityCircle.Position - wallCircle.Position) * overlap;
+				
+				return Vector2.Zero;
+			}
+			else
+			{
+				var radius = entityCircle.Radius + wallCircle.Radius;
+				var overlap = MathUtils.Abs(distance - radius);
+				return -Vector2.Normalize(wallCircle.Position - entityCircle.Position) * overlap;
+			}
 		}
 	}
 }

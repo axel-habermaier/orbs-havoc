@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay
+namespace PointWars.Gameplay.SceneNodes.Entities
 {
 	/// <summary>
 	///   The configurable parameters of a weapon.
@@ -34,7 +34,7 @@ namespace PointWars.Gameplay
 		{
 			Cooldown = 0.1f,
 			DepleteSpeed = 0,
-			BaseSpeed = 1000,
+			BaseSpeed = 800,
 			WeaponType = WeaponType.MiniGun,
 			MaxEnergy = 1
 		};

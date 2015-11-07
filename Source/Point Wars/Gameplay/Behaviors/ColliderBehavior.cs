@@ -37,6 +37,11 @@ namespace PointWars.Gameplay.Behaviors
 		public float Radius { get; private set; }
 
 		/// <summary>
+		///   Gets the circle representing the collision area.
+		/// </summary>
+		public Circle Circle => new Circle(SceneNode.WorldPosition, Radius);
+
+		/// <summary>
 		///   Invoked when the behavior is attached to a scene node.
 		/// </summary>
 		protected override void OnAttached()

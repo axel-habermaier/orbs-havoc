@@ -131,6 +131,11 @@ namespace PointWars.Utilities
 		public Vector2 Position => new Vector2(Left, Top);
 
 		/// <summary>
+		///   Gets the center of the rectangle.
+		/// </summary>
+		public Vector2 Center => new Vector2(Left + Width / 2, Top + Height / 2);
+
+		/// <summary>
 		///   Gets the size of the rectangle.
 		/// </summary>
 		public Size Size => new Size(Width, Height);
@@ -320,6 +325,16 @@ namespace PointWars.Utilities
 		public bool Intersects(Vector2 point)
 		{
 			return point.X >= Left && point.X <= Right && point.Y >= Top && point.Y <= Bottom;
+		}
+
+		/// <summary>
+		///   Checks whether this rectangle intersects with the given circle.
+		/// </summary>
+		/// <param name="circle">The circle that should be checked.</param>
+		[Pure]
+		public bool Intersects(Circle circle)
+		{
+			return circle.Intersects(this);
 		}
 	}
 }
