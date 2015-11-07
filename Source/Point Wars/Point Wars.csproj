@@ -59,6 +59,7 @@
     <Compile Include="Gameplay\Behaviors\Behavior.cs" />
     <Compile Include="Gameplay\Behaviors\MiniGunBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\AiBehavior.cs" />
+    <Compile Include="Gameplay\Behaviors\InterpolateTransformBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\ColliderBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\WeaponBehavior.cs" />

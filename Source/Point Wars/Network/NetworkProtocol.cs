@@ -31,6 +31,11 @@ namespace PointWars.Network
 	internal static class NetworkProtocol
 	{
 		/// <summary>
+		///   The frequency in Hz that determines how often per second the server computes and broadcasts a new game state.
+		/// </summary>
+		public const int ServerUpdateFrequency = 60;
+
+		/// <summary>
 		///   The frequency in Hz that determines how often the user input is sent to the server.
 		/// </summary>
 		public const int InputUpdateFrequency = 60;

@@ -29,7 +29,6 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	{
 		Unknown = -1,
 		MiniGun,
-		ShotGun,
 		PlasmaGun,
 		LightingGun,
 		RocketLauncher,

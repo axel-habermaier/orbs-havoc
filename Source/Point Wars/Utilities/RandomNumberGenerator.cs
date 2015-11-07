@@ -59,7 +59,7 @@ namespace PointWars.Utilities
 		///   Gets the next random integer between the specified minimum and maximum values.
 		/// </summary>
 		/// <param name="min">The inclusive minimum value.</param>
-		/// <param name="max">The v maximum value.</param>
+		/// <param name="max">The inclusive maximum value.</param>
 		public static int NextInteger(int min, int max)
 		{
 			return (int)((max - min) * NextSingle()) + min;

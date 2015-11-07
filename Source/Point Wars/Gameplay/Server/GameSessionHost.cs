@@ -108,10 +108,9 @@ namespace PointWars.Gameplay.Server
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="updateRate">The server update rate in frames per second.</param>
-		public GameSessionHost(float updateRate = 1 / 60.0f)
+		public GameSessionHost()
 		{
-			_timer.TargetElapsedSeconds = updateRate;
+			_timer.TargetElapsedSeconds = 1.0f / NetworkProtocol.ServerUpdateFrequency;
 			_timer.UpdateRequired += () => Update(_timer.ElapsedSeconds);
 			_allocator = new PoolAllocator();
 

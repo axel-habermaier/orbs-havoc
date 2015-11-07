@@ -294,7 +294,7 @@ namespace PointWars.Gameplay.Client
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			_entityMap[message.Entity]?.UpdateTransform(message, sequenceNumber);
+			_entityMap[message.Entity]?.TransformationInterpolator.UpdateTransform(message, sequenceNumber);
 		}
 
 		/// <summary>

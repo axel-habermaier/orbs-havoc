@@ -109,7 +109,6 @@ namespace PointWars.Gameplay.Behaviors
 			var input = allocator.Allocate<PlayerInputBehavior>();
 			input._acceleration = Vector2.Zero;
 			input._weapons[(int)WeaponType.MiniGun] = MiniGunBehavior.Create(allocator);
-			input._weapons[(int)WeaponType.ShotGun] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[(int)WeaponType.PlasmaGun] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[(int)WeaponType.LightingGun] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[(int)WeaponType.RocketLauncher] = MiniGunBehavior.Create(allocator); // TODO
