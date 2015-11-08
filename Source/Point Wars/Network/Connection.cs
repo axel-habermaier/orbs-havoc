@@ -53,6 +53,11 @@ namespace PointWars.Network
 		private readonly MessageQueue _outgoingMessages;
 
 		/// <summary>
+		///   The packet assembler that the connection uses to assemble packets.
+		/// </summary>
+		private readonly PacketAssembler _packetAssembler = new PacketAssembler();
+
+		/// <summary>
 		///   A cached queue of received messages.
 		/// </summary>
 		private readonly Queue<SequencedMessage> _receivedMessages = new Queue<SequencedMessage>();
@@ -66,11 +71,6 @@ namespace PointWars.Network
 		///   Provides the time that is used to check whether a connection is lagging or dropped.
 		/// </summary>
 		private Clock _clock = new Clock();
-
-		/// <summary>
-		/// The packet assembler that the connection uses to assemble packets.
-		/// </summary>
-		PacketAssembler _packetAssembler = new PacketAssembler();
 
 		/// <summary>
 		///   The deserializer that is used to deserialize incoming messages.
@@ -121,6 +121,11 @@ namespace PointWars.Network
 		///   Gets a value indicating whether the connection to the remote peer is lagging.
 		/// </summary>
 		public bool IsLagging => _timeSinceLastPacket > NetworkProtocol.LaggingTimeout;
+
+		/// <summary>
+		///   Gets the connection's ping, i.e., the time it took the remote peer to acknowledge the last reliable message.
+		/// </summary>
+		public int Ping => _deliveryManager.Ping;
 
 		/// <summary>
 		///   Dispatches all received messages using the given message dispatcher.
@@ -206,7 +211,7 @@ namespace PointWars.Network
 		}
 
 		/// <summary>
-		/// Sends the given packet of the given size.
+		///   Sends the given packet of the given size.
 		/// </summary>
 		/// <param name="packet">The packet that should be sent.</param>
 		/// <param name="sizeInBytes">The size of the packet that should be sent.</param>

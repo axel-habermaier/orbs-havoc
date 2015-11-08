@@ -24,7 +24,6 @@ namespace PointWars.Utilities
 {
 	using System;
 	using System.Collections;
-	using Platform.Logging;
 
 	/// <summary>
 	///   A random number generator that uses the FastRand algorithm to generate random values.
@@ -34,7 +33,7 @@ namespace PointWars.Utilities
 		/// <summary>
 		///   The internal state that is used to determine the next random value.
 		/// </summary>
-		private static int _state = 1;
+		private static int _state = (int)DateTime.Now.Ticks;
 
 		/// <summary>
 		///   Gets the next random integer value.

@@ -77,8 +77,6 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(serverLogic, nameof(serverLogic));
 			Assert.ArgumentNotNull(listener, nameof(listener));
 
-			serverLogic.Broadcast = Broadcast;
-
 			_allocator = allocator;
 			_serverLogic = serverLogic;
 			_listener = listener;
@@ -159,7 +157,7 @@ namespace PointWars.Gameplay.Server
 		///   Sends the given message to all connected clients.
 		/// </summary>
 		/// <param name="message">The message that should be sent to all clients.</param>
-		private void Broadcast(Message message)
+		public void Broadcast(Message message)
 		{
 			Assert.ArgumentNotNull(message, nameof(message));
 

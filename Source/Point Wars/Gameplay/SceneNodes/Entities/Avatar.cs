@@ -91,9 +91,6 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				if (RemainingPowerUpTime < 0)
 					PowerUp = EntityType.None;
 			}
-
-			if (Health <= 0)
-				Remove();
 		}
 
 		/// <summary>
@@ -126,19 +123,29 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Applies the given damage to the avatar.
 		/// </summary>
+		/// <param name="player">The player that causes the damage.</param>
 		/// <param name="damage">The damage that should be applied.</param>
-		public void ApplyDamage(int damage)
+		public void ApplyDamage(Player player, int damage)
 		{
+			Assert.ArgumentNotNull(player, nameof(player));
+
 			Health -= (int)(PowerUp == EntityType.Armor ? damage * Game.ArmorDamageFactor : damage);
+			if (Health > 0)
+				return;
+
+			++player.Kills;
+			++Player.Deaths;
+
+			GameSession.Broadcast(PlayerKillMessage.Create(GameSession.Allocator, player.Identity, Player.Identity));
+			Remove();
 		}
 
 		/// <summary>
 		///   Broadcasts update messages for the entity.
 		/// </summary>
-		/// <param name="broadcast">The callback that should be used to broadcast the message.</param>
-		public override void BroadcastUpdates(Action<Message> broadcast)
+		public override void BroadcastUpdates()
 		{
-			base.BroadcastUpdates(broadcast);
+			base.BroadcastUpdates();
 
 			// TODO: PowerUpMessage
 			// TODO: WeaponMessage

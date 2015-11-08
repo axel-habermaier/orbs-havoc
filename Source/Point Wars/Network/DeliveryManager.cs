@@ -46,6 +46,21 @@ namespace PointWars.Network
 		private uint _lastAssignedUnreliableSequenceNumber;
 
 		/// <summary>
+		///   The reliable sequence number that is currently used for ping probing.
+		/// </summary>
+		private uint _pingProbeSequenceNumber;
+
+		/// <summary>
+		///   The time the reliable sequence number was generated that is used for ping probing.
+		/// </summary>
+		private double _pingProbeTime = - 1;
+
+		/// <summary>
+		///   Gets the connection's ping, i.e., the time it took the remote peer to acknowledge the last reliable message.
+		/// </summary>
+		public int Ping { get; private set; }
+
+		/// <summary>
 		///   Gets the sequence number of the last reliable message that has been received and processed.
 		/// </summary>
 		public uint LastReceivedReliableSequenceNumber { get; private set; }
@@ -82,6 +97,12 @@ namespace PointWars.Network
 		{
 			if (ackedSequenceNumber > _lastAckedSequenceNumber)
 				_lastAckedSequenceNumber = ackedSequenceNumber;
+
+			if (_pingProbeSequenceNumber > ackedSequenceNumber || _pingProbeTime < 0)
+				return;
+
+			Ping = MathUtils.RoundIntegral((float)(Clock.GetTime() - _pingProbeTime) * 1000);
+			_pingProbeTime = -1;
 		}
 
 		/// <summary>
@@ -93,7 +114,15 @@ namespace PointWars.Network
 			Assert.ArgumentNotNull(message, nameof(message));
 			Assert.ArgumentSatisfies(message.IsReliable, nameof(message), "Expected a reliable message.");
 
-			return new SequencedMessage(message, ++_lastAssignedReliableSequenceNumber);
+			++_lastAssignedReliableSequenceNumber;
+
+			if (_pingProbeTime < 0)
+			{
+				_pingProbeTime = Clock.GetTime();
+				_pingProbeSequenceNumber = _lastAssignedReliableSequenceNumber;
+			}
+
+			return new SequencedMessage(message, _lastAssignedReliableSequenceNumber);
 		}
 
 		/// <summary>

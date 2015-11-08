@@ -74,11 +74,6 @@ namespace PointWars.Gameplay.Server
 		}
 
 		/// <summary>
-		///   Gets or sets a handler for messages should be broadcast to all connected clients.
-		/// </summary>
-		public Action<Message> Broadcast { get; set; }
-
-		/// <summary>
 		///   Gets the number of players currently connected to the game session.
 		/// </summary>
 		public int PlayerCount => _gameSession.Players.Count;
@@ -93,7 +88,7 @@ namespace PointWars.Gameplay.Server
 
 			entity.NetworkIdentity = _networkIdentities.Allocate();
 			var message = CreateEntityAddMessage(entity);
-			Broadcast(message);
+			_gameSession.Broadcast(message);
 
 			Log.DebugIf(EnableTracing, "(Server) +{1} {0}", message.Entity, message.EntityType);
 			entity.OnAdded();
@@ -108,7 +103,7 @@ namespace PointWars.Gameplay.Server
 			Log.DebugIf(EnableTracing, "(Server) -{1} {0}", entity.NetworkIdentity, entity.Type);
 			entity.OnRemoved();
 
-			Broadcast(EntityRemoveMessage.Create(_allocator, entity.NetworkIdentity));
+			_gameSession.Broadcast(EntityRemoveMessage.Create(_allocator, entity.NetworkIdentity));
 			_networkIdentities.Free(entity.NetworkIdentity);
 		}
 
@@ -166,7 +161,7 @@ namespace PointWars.Gameplay.Server
 			_gameSession.Players.Add(player);
 
 			// Broadcast the news about the new player to all clients (this message is not sent to the new client yet)
-			Broadcast(PlayerJoinMessage.Create(_allocator, player.Identity, player.Kind, playerName));
+			_gameSession.Broadcast(PlayerJoinMessage.Create(_allocator, player.Identity, player.Kind, playerName));
 
 			Log.DebugIf(EnableTracing, "(Server) Created player '{0}' ({1})", playerName, player.Identity);
 			return player;
@@ -187,7 +182,7 @@ namespace PointWars.Gameplay.Server
 					entity.Remove();
 			}
 
-			Broadcast(PlayerLeaveMessage.Create(_allocator, player.Identity, player.LeaveReason));
+			_gameSession.Broadcast(PlayerLeaveMessage.Create(_allocator, player.Identity, player.LeaveReason));
 			_gameSession.Players.Remove(player);
 
 			Log.DebugIf(EnableTracing, "(Server) Removed player '{0}' ({1}).", player.Name, player.Identity);
@@ -279,7 +274,7 @@ namespace PointWars.Gameplay.Server
 
 			Log.DebugIf(EnableTracing, "(Server) Player '{0}' ({1}) is renamed to '{2}'.", player.Name, player.Identity, playerName);
 			player.Name = playerName;
-			Broadcast(PlayerNameMessage.Create(_allocator, player.Identity, playerName));
+			_gameSession.Broadcast(PlayerNameMessage.Create(_allocator, player.Identity, playerName));
 		}
 
 		/// <summary>
@@ -292,7 +287,7 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(player, nameof(player));
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
 
-			Broadcast(PlayerChatMessage.Create(_allocator, player.Identity, message));
+			_gameSession.Broadcast(PlayerChatMessage.Create(_allocator, player.Identity, message));
 			Log.DebugIf(EnableTracing, "(Server) Player '{0}' ({1}): {2}", player.Name, player.Identity, message);
 		}
 
@@ -321,7 +316,21 @@ namespace PointWars.Gameplay.Server
 			foreach (var entity in _gameSession.SceneGraph.EnumeratePreOrder<Entity>())
 			{
 				Assert.InRange(entity.Type);
-				entity.BroadcastUpdates(Broadcast);
+				entity.BroadcastUpdates();
+			}
+		}
+
+		/// <summary>
+		///   Broadcasts the player stats to all connected clients.
+		/// </summary>
+		public void BroadcastPlayerStats()
+		{
+			foreach (var player in _gameSession.Players)
+			{
+				if (player.IsServerPlayer)
+					continue;
+
+				_gameSession.Broadcast(PlayerStatsMessage.Create(_gameSession.Allocator, player.Identity, player.Kills, player.Deaths, player.Ping));
 			}
 		}
 	}

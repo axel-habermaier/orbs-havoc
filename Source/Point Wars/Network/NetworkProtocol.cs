@@ -41,6 +41,11 @@ namespace PointWars.Network
 		public const int InputUpdateFrequency = 60;
 
 		/// <summary>
+		///   The frequency in Hz that determines how often player stats update are sent by the server.
+		/// </summary>
+		public const int PlayerStatsUpdateFrequency = 1;
+
+		/// <summary>
 		///   The application identifier that is used to determine whether a packet has been sent by another instance of the same
 		///   application.
 		/// </summary>

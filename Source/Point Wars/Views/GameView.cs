@@ -129,7 +129,7 @@ namespace PointWars.Views
 						Views.WaitingOverlay.Show();
 
 					// Always send the input state, but update it only when the game session is focused 
-					if (RootElement.IsFocused && !Views.Scoreboard.IsShown)
+					if (RootElement.IsFocused)
 						_inputManager.Update();
 
 					_inputManager.SendInput(GameSession, Connection);

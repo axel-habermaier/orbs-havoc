@@ -26,6 +26,7 @@ namespace PointWars.Gameplay
 	using Assets;
 	using Behaviors;
 	using Client;
+	using Network.Messages;
 	using Platform.Memory;
 	using SceneNodes;
 	using SceneNodes.Entities;
@@ -86,6 +87,11 @@ namespace PointWars.Gameplay
 		///   Gets the collection of players that are participating in the game session.
 		/// </summary>
 		public PlayerCollection Players { get; private set; }
+
+		/// <summary>
+		///   Gets or sets a handler for messages that should be broadcast to all connected clients.
+		/// </summary>
+		public Action<Message> Broadcast { get; set; }
 
 		/// <summary>
 		///   Changes level that is used by the game session.

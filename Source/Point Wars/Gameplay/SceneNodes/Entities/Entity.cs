@@ -22,13 +22,11 @@
 
 namespace PointWars.Gameplay.SceneNodes.Entities
 {
-	using System;
 	using System.Numerics;
 	using Behaviors;
 	using Network;
 	using Network.Messages;
 	using Platform.Logging;
-	using Platform.Memory;
 
 	/// <summary>
 	///   A base class for server-side and client-side entity scene nodes.
@@ -141,10 +139,9 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Broadcasts update messages for the entity.
 		/// </summary>
-		/// <param name="broadcast">The callback that should be used to broadcast the message.</param>
-		public virtual void BroadcastUpdates(Action<Message> broadcast)
+		public virtual void BroadcastUpdates()
 		{
-			broadcast(UpdateTransformMessage.Create(GameSession.Allocator, NetworkIdentity, Position, Orientation));
+			GameSession.Broadcast(UpdateTransformMessage.Create(GameSession.Allocator, NetworkIdentity, Position, Orientation));
 		}
 
 		/// <summary>

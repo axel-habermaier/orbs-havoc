@@ -34,6 +34,7 @@ namespace PointWars.Gameplay.Server
 	using Platform.Memory;
 	using Scripting;
 	using Utilities;
+	using Timer = Utilities.Timer;
 
 	/// <summary>
 	///   Represents a server hosting a game session.
@@ -105,6 +106,12 @@ namespace PointWars.Gameplay.Server
 		/// </summary>
 		private Task _task;
 
+
+		/// <summary>
+		/// The timer that is used to schedule player stats updates.
+		/// </summary>
+		Timer _playerStatsTimer= new Timer(1000.0f / NetworkProtocol.PlayerStatsUpdateFrequency);
+
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
@@ -136,11 +143,13 @@ namespace PointWars.Gameplay.Server
 
 			_gameSession = new GameSession(_allocator);
 			_serverLogic = new ServerLogic(_allocator, _gameSession);
+			_playerStatsTimer.Timeout += _serverLogic.BroadcastPlayerStats;
 
 			_listener = new Socket(SocketType.Dgram, ProtocolType.Udp);
 			_listener.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
 
 			_clients = new ClientCollection(_allocator, _serverLogic, _listener);
+			_gameSession.Broadcast = _clients.Broadcast;
 			_gameSession.InitializeServer(_serverLogic);
 
 			_cancellation = new CancellationTokenSource();
@@ -197,12 +206,21 @@ namespace PointWars.Gameplay.Server
 				if (IsRunning)
 					Log.Info("Server stopped.");
 
+				if (_serverLogic != null)
+					_playerStatsTimer.Timeout -= _serverLogic.BroadcastPlayerStats;
+
 				_cancellation.SafeDispose();
 				_clients.SafeDispose();
 				_gameSession.SafeDispose();
 				_listener.SafeDispose();
 				_serverDiscovery.SafeDispose();
+
 				_task = null;
+				_clients = null;
+				_listener = null;
+				_gameSession = null;
+				_serverLogic = null;
+				_serverDiscovery = null;
 
 				foreach (var bot in _bots)
 					_botNames.Add(bot.Name);
@@ -249,6 +267,7 @@ namespace PointWars.Gameplay.Server
 		{
 			_serverDiscovery.SendDiscoveryMessage(elapsedSeconds);
 
+			_playerStatsTimer.Update();
 			_clients.UpdateClientConnections();
 			_clients.DispatchClientMessages();
 			_gameSession.Update((float)elapsedSeconds);

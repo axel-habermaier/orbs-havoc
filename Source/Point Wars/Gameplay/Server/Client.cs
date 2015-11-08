@@ -196,8 +196,14 @@ namespace PointWars.Gameplay.Server
 
 			try
 			{
-				if (!IsDisconnected)
-					_connection.DispatchReceivedMessages(this);
+				if (IsDisconnected)
+					return;
+
+				// Dispatch the messages
+				_connection.DispatchReceivedMessages(this);
+
+				// Update the player's ping
+				_player.Ping = _connection.Ping;
 			}
 			catch (ConnectionDroppedException)
 			{
