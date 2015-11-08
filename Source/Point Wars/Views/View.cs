@@ -33,6 +33,7 @@ namespace PointWars.Views
 	/// </summary>
 	internal abstract class View : DisposableObject
 	{
+		private bool _isShown;
 		private UIElement _rootElement;
 
 		/// <summary>
@@ -73,7 +74,17 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets or sets a value indicating whether the view is currently shown.
 		/// </summary>
-		public bool IsShown { get; private set; }
+		public bool IsShown
+		{
+			get { return _isShown; }
+			set
+			{
+				if (value)
+					Show();
+				else
+					Hide();
+			}
+		}
 
 		/// <summary>
 		///   Shows the view by making it active.
@@ -83,8 +94,7 @@ namespace PointWars.Views
 			if (IsShown)
 				return;
 
-			IsShown = true;
-
+			_isShown = true;
 			if (RootElement != null)
 				RootElement.Visibility = Visibility.Visible;
 
@@ -99,7 +109,7 @@ namespace PointWars.Views
 			if (!IsShown)
 				return;
 
-			IsShown = false;
+			_isShown = false;
 
 			if (RootElement != null)
 				RootElement.Visibility = Visibility.Collapsed;

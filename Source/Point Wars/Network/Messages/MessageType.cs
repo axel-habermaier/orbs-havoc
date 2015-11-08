@@ -42,9 +42,8 @@ namespace PointWars.Network.Messages
 		PlayerName = 9,
 		PlayerStats = 101,
 		UpdateCircle = 113,
-		UpdatePosition = 111,
+		UpdateAvatar = 111,
 		UpdateRay = 112,
-		UpdateShip = 114,
 		UpdateTransform = 110,
 	}
 }

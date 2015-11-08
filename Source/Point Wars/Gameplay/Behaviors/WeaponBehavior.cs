@@ -53,7 +53,7 @@ namespace PointWars.Gameplay.Behaviors
 		/// <summary>
 		///   Gets or sets the weapon's energy level.
 		/// </summary>
-		private byte Energy
+		private int Energy
 		{
 			get { return SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()]; }
 			set { SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()] = value; }

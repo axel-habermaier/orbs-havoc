@@ -134,7 +134,7 @@ namespace PointWars.Network
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
-		void OnUpdatePosition(UpdatePositionMessage message, uint sequenceNumber);
+		void OnUpdateAvatar(UpdateAvatarMessage message, uint sequenceNumber);
 
 		/// <summary>
 		///   Handles the given message.

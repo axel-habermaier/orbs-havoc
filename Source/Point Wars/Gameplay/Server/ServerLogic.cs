@@ -327,10 +327,8 @@ namespace PointWars.Gameplay.Server
 		{
 			foreach (var player in _gameSession.Players)
 			{
-				if (player.IsServerPlayer)
-					continue;
-
-				_gameSession.Broadcast(PlayerStatsMessage.Create(_gameSession.Allocator, player.Identity, player.Kills, player.Deaths, player.Ping));
+				if (!player.IsServerPlayer)
+					_gameSession.Broadcast(PlayerStatsMessage.Create(_gameSession.Allocator, player));
 			}
 		}
 	}

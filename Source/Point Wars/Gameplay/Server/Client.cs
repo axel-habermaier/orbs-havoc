@@ -236,8 +236,15 @@ namespace PointWars.Gameplay.Server
 		{
 			Assert.NotPooled(this);
 
-			if (!IsDisconnected)
-				_connection.SendQueuedMessages();
+			if (IsDisconnected)
+				return;
+
+			// Send an avatar update message if the player is not dead, to keep the client up-to-date; these updates
+			// are not broadcasted, as they are irrelevant for other clients
+			if (_player.Avatar != null)
+				_connection.EnqueueMessage(UpdateAvatarMessage.Create(_allocator, _player.Avatar));
+
+			_connection.SendQueuedMessages();
 		}
 
 		/// <summary>

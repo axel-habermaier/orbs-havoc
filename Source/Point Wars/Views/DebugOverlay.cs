@@ -155,7 +155,7 @@ namespace PointWars.Views
 			if (!_gcCheck.IsAlive)
 			{
 				++_garbageCollections;
-				_gcLabel.Text = _garbageCollections.ToString();
+				_gcLabel.Text = StringCache.GetString(_garbageCollections);
 				_gcCheck.Target = new object();
 			}
 
@@ -173,10 +173,10 @@ namespace PointWars.Views
 			if (!Cvars.ShowDebugOverlay)
 				return;
 
-			_gpuTimeLabel.Text = _gpuFrameTime.Average.ToString("F2");
-			_cpuTimeLabel.Text = _cpuFrameTime.Average.ToString("F2");
-			_updateTimeLabel.Text = _cpuUpdateTime.Average.ToString("F2");
-			_renderTimeLabel.Text = _cpuRenderTime.Average.ToString("F2");
+			_gpuTimeLabel.Text = StringCache.GetFrameTimeString(_gpuFrameTime.Average);
+			_cpuTimeLabel.Text = StringCache.GetFrameTimeString(_cpuFrameTime.Average);
+			_updateTimeLabel.Text = StringCache.GetFrameTimeString(_cpuUpdateTime.Average);
+			_renderTimeLabel.Text = StringCache.GetFrameTimeString(_cpuRenderTime.Average);
 		}
 
 		/// <summary>

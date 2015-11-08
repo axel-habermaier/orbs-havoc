@@ -27,7 +27,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	/// <summary>
 	///   Identifies the type of an entity.
 	/// </summary>
-	public enum EntityType
+	public enum EntityType : byte
 	{
 		Unknown = 0,
 		None = Unknown,

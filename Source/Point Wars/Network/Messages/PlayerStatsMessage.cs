@@ -23,6 +23,7 @@
 namespace PointWars.Network.Messages
 {
 	using System;
+	using Gameplay;
 	using Network;
 	using Platform.Memory;
 	using Utilities;
@@ -91,22 +92,20 @@ namespace PointWars.Network.Messages
 		///   Creates a stats message that the server broadcasts to all clients.
 		/// </summary>
 		/// <param name="poolAllocator">The pool allocator that should be used to allocate the message.</param>
-		/// <param name="player">The player that has joined the game session.</param>
-		/// <param name="kills">The kills scored by the player.</param>
-		/// <param name="deaths">The number of times the player died.</param>
-		/// <param name="ping">The latency between the server and the client in milliseconds.</param>
-		public static Message Create(PoolAllocator poolAllocator, NetworkIdentity player, int kills, int deaths, int ping)
+		/// <param name="player">The player whose stats are updated.</param>
+		public static Message Create(PoolAllocator poolAllocator, Player player)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
-			Assert.ArgumentInRange(kills, 0, UInt16.MaxValue, nameof(kills));
-			Assert.ArgumentInRange(deaths, 0, UInt16.MaxValue, nameof(deaths));
-			Assert.ArgumentInRange(ping, 0, UInt16.MaxValue, nameof(ping));
+			Assert.ArgumentNotNull(player, nameof(player));
+			Assert.InRange(player.Kills, 0, UInt16.MaxValue);
+			Assert.InRange(player.Deaths, 0, UInt16.MaxValue);
+			Assert.InRange(player.Ping, 0, UInt16.MaxValue);
 
 			var message = poolAllocator.Allocate<PlayerStatsMessage>();
-			message.Player = player;
-			message.Kills = (ushort)kills;
-			message.Deaths = (ushort)deaths;
-			message.Ping = (ushort)ping;
+			message.Player = player.Identity;
+			message.Kills = (ushort)player.Kills;
+			message.Deaths = (ushort)player.Deaths;
+			message.Ping = (ushort)player.Ping;
 			return message;
 		}
 

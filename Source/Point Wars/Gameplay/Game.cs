@@ -30,7 +30,7 @@ namespace PointWars.Gameplay
 	internal static class Game
 	{
 		public const int WeaponCount = 8;
-		public const int HealthCollectibleHealthIncrease = 20;
+		public const float HealthCollectibleHealthIncrease = 20;
 		public const float ArmorRespawenDelay = 3 * 60;
 		public const float ArmorDamageFactor = 0.5f;
 		public const float RegenerationRespawenDelay = 3 * 60;
@@ -38,6 +38,8 @@ namespace PointWars.Gameplay
 		public const float SpeedRespawenDelay = 3 * 60;
 		public const float InvisibilityRespawenDelay = 3 * 60;
 		public const float HealthRespawenDelay = 30;
+		public const float MaxAvatarHealth = 100;
+		public const float MaxAvatarRegenerationHealth = 200;
 
 		public static WeaponTemplate MiniGunTemplate = new WeaponTemplate
 		{
@@ -45,7 +47,8 @@ namespace PointWars.Gameplay
 			DepleteSpeed = 0,
 			BaseSpeed = 1200,
 			WeaponType = EntityType.MiniGun,
-			MaxEnergy = 1
+			MaxEnergy = 1,
+			Damage = 5
 		};
 
 		public static WeaponTemplate LightingGunTemplate = new WeaponTemplate
@@ -66,6 +69,7 @@ namespace PointWars.Gameplay
 			public float Range;
 			public byte MaxEnergy;
 			public bool FiresContinuously => Cooldown < 0;
+			public float Damage;
 		}
 	}
 }

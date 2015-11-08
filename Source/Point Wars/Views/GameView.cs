@@ -133,6 +133,8 @@ namespace PointWars.Views
 						_inputManager.Update();
 
 					_inputManager.SendInput(GameSession, Connection);
+
+					Views.Hud.IsShown = GameSession.Players.LocalPlayer?.Avatar != null;
 				}
 			}
 			catch (ConnectionDroppedException)
@@ -219,6 +221,7 @@ namespace PointWars.Views
 			Views.MessageBoxes.CloseAll();
 			Views.Scoreboard.Hide();
 			Views.WaitingOverlay.Hide();
+			Views.Hud.Hide();
 			Hide();
 
 			GameSession.SafeDispose();

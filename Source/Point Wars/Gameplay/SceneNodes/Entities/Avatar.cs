@@ -47,7 +47,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Gets the energy levels of the avatar's weapons.
 		/// </summary>
-		public byte[] WeaponEnergyLevels { get; } = new byte[Game.WeaponCount];
+		public int[] WeaponEnergyLevels { get; } = new int[Game.WeaponCount];
 
 		/// <summary>
 		///   Gets or sets the avatar's primary weapon.
@@ -77,7 +77,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Gets or sets the avatar's remaining health.
 		/// </summary>
-		public int Health { get; set; }
+		public float Health { get; set; }
 
 		/// <summary>
 		///   Updates the state of the server-side entity.
@@ -104,7 +104,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				case EntityType.Health:
 					if (Health < 100)
 					{
-						Health = Math.Max(100, Health + Game.HealthCollectibleHealthIncrease);
+						Health = Math.Min(100, Health + Game.HealthCollectibleHealthIncrease);
 						entity.Remove();
 					}
 					break;
@@ -125,11 +125,11 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// </summary>
 		/// <param name="player">The player that causes the damage.</param>
 		/// <param name="damage">The damage that should be applied.</param>
-		public void ApplyDamage(Player player, int damage)
+		public void ApplyDamage(Player player, float damage)
 		{
 			Assert.ArgumentNotNull(player, nameof(player));
 
-			Health -= (int)(PowerUp == EntityType.Armor ? damage * Game.ArmorDamageFactor : damage);
+			Health -= PowerUp == EntityType.Armor ? damage * Game.ArmorDamageFactor : damage;
 			if (Health > 0)
 				return;
 
@@ -170,7 +170,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			avatar.PrimaryWeapon = EntityType.MiniGun;
 			avatar.SecondaryWeapon = EntityType.None;
 			avatar.RemainingPowerUpTime = 0;
-			avatar.Health = 100;
+			avatar.Health = Game.MaxAvatarHealth;
 			avatar.Position = position;
 			avatar.Orientation = orientation;
 

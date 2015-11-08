@@ -51,7 +51,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				return;
 
 			var avatar = (Avatar)entity;
-			avatar.ApplyDamage(Player, 5);
+			avatar.ApplyDamage(Player, Game.MiniGunTemplate.Damage);
 
 			Remove();
 		}

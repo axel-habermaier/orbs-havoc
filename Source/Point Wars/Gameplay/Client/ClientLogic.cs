@@ -307,11 +307,22 @@ namespace PointWars.Gameplay.Client
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
-		void IMessageHandler.OnUpdatePosition(UpdatePositionMessage message, uint sequenceNumber)
+		void IMessageHandler.OnUpdateAvatar(UpdateAvatarMessage message, uint sequenceNumber)
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			throw new NotImplementedException();
+			var avatar = _entityMap[message.Avatar] as Avatar;
+			if (avatar == null)
+				return;
+
+			avatar.PowerUp = message.PowerUp;
+			avatar.RemainingPowerUpTime = message.RemainingPowerUpTime;
+			avatar.Health = message.Health;
+			avatar.PrimaryWeapon = message.PrimaryWeapon;
+			avatar.SecondaryWeapon = message.SecondaryWeapon;
+
+			for (var i = 0; i < Game.WeaponCount; ++i)
+				avatar.WeaponEnergyLevels[i] = message.WeaponEnergyLevels[i];
 		}
 
 		/// <summary>

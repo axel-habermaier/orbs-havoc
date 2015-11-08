@@ -74,6 +74,7 @@ namespace PointWars.Views
 				Scoreboard,
 				Chat,
 				WaitingOverlay,
+				Hud,
 				Game
 			};
 
@@ -90,6 +91,11 @@ namespace PointWars.Views
 		///   Gets the root UI element of all views within the collection.
 		/// </summary>
 		public RootUIElement RootElement { get; }
+
+		/// <summary>
+		///   Gets the HUD overlay.
+		/// </summary>
+		public HudOverlay Hud { get; } = new HudOverlay();
 
 		/// <summary>
 		///   The in-game chat view.
@@ -117,7 +123,7 @@ namespace PointWars.Views
 		public Application Application { get; }
 
 		/// <summary>
-		/// Gets the waiting-for-server overlay.
+		///   Gets the waiting-for-server overlay.
 		/// </summary>
 		public WaitingOverlay WaitingOverlay { get; } = new WaitingOverlay();
 
@@ -259,10 +265,7 @@ namespace PointWars.Views
 		/// </summary>
 		private void ToggleConsole()
 		{
-			if (Console.IsShown)
-				Console.Hide();
-			else
-				Console.Show();
+			Console.IsShown = !Console.IsShown;
 		}
 
 		/// <summary>

@@ -121,7 +121,7 @@
     <Compile Include="Network\Messages\PlayerNameMessage.cs" />
     <Compile Include="Network\Messages\PlayerStatsMessage.cs" />
     <Compile Include="Network\Messages\UpdateCircleMessage.cs" />
-    <Compile Include="Network\Messages\UpdatePositionMessage.cs" />
+    <Compile Include="Network\Messages\UpdateAvatarMessage.cs" />
     <Compile Include="Network\Messages\UpdateRayMessage.cs" />
     <Compile Include="Network\Messages\UpdateTransformMessage.cs" />
     <Compile Include="Network\NetworkException.cs" />
@@ -192,6 +192,8 @@
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
     <Compile Include="Utilities\RandomNumberGenerator.cs" />
+    <Compile Include="Utilities\StringCache.cs" />
+    <Compile Include="Views\HudOverlay.cs" />
     <Compile Include="Views\WaitingOverlay.cs" />
     <Compile Include="Views\Scoreboard.cs" />
     <Compile Include="Views\Chat.cs" />
