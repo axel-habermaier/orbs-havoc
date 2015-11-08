@@ -24,6 +24,7 @@ namespace PointWars.Gameplay
 {
 	using System;
 	using Assets;
+	using Behaviors;
 	using Client;
 	using Platform.Memory;
 	using SceneNodes;
@@ -96,7 +97,9 @@ namespace PointWars.Gameplay
 
 			Level = level;
 
-			if (!ServerMode)
+			if (ServerMode)
+				CreateSpawners();
+			else
 				LevelRenderer = new LevelRenderer(level);
 		}
 
@@ -195,6 +198,22 @@ namespace PointWars.Gameplay
 		{
 			SceneGraph.SafeDispose();
 			Players.SafeDispose();
+		}
+
+		/// <summary>
+		///   Creates the spawners within the level.
+		/// </summary>
+		private void CreateSpawners()
+		{
+			for (var x = 0; x < Level.Width; ++x)
+			{
+				for (var y = 0; y < Level.Height; ++y)
+				{
+					var type = Level[x, y];
+					if (type.IsCollectible())
+						SceneGraph.Root.AddBehavior(SpawnBehavior.Create(this, Level.GetBlockArea(x, y).Center, type));
+				}
+			}
 		}
 	}
 }

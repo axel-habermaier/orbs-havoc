@@ -22,8 +22,8 @@
 
 namespace PointWars.Network.Messages
 {
+	using System.Numerics;
 	using Gameplay.SceneNodes.Entities;
-	using Network;
 	using Platform.Memory;
 	using Utilities;
 
@@ -50,6 +50,16 @@ namespace PointWars.Network.Messages
 		public NetworkIdentity Player { get; private set; }
 
 		/// <summary>
+		///   Gets the entity's initial position.
+		/// </summary>
+		public Vector2 Position { get; private set; }
+
+		/// <summary>
+		///   Gets the entity's initial orientation.
+		/// </summary>
+		public float Orientation { get; private set; }
+
+		/// <summary>
 		///   Gets the type of the entity that is added.
 		/// </summary>
 		public EntityType EntityType { get; private set; }
@@ -63,6 +73,8 @@ namespace PointWars.Network.Messages
 			WriteIdentifier(ref writer, Entity);
 			WriteIdentifier(ref writer, Player);
 			WriteIdentifier(ref writer, ParentEntity);
+			WriteVector2(ref writer, Position);
+			WriteOrientation(ref writer, Orientation);
 			writer.WriteByte((byte)EntityType);
 		}
 
@@ -75,6 +87,8 @@ namespace PointWars.Network.Messages
 			Entity = ReadIdentifier(ref reader);
 			Player = ReadIdentifier(ref reader);
 			ParentEntity = ReadIdentifier(ref reader);
+			Position = ReadVector2(ref reader);
+			Orientation = ReadOrientation(ref reader);
 			EntityType = (EntityType)reader.ReadByte();
 		}
 
@@ -96,8 +110,11 @@ namespace PointWars.Network.Messages
 		/// <param name="player">The player the entity belongs to.</param>
 		/// <param name="parentEntity">The parent entity of the entity that is added.</param>
 		/// <param name="entityType">The type of the entity.</param>
+		/// <param name="position">The entity's initial position.</param>
+		/// <param name="orientation">The entity's initial orientation.</param>
 		public static EntityAddMessage Create(PoolAllocator poolAllocator, NetworkIdentity entity, NetworkIdentity player,
-											  NetworkIdentity parentEntity, EntityType entityType)
+											  NetworkIdentity parentEntity, EntityType entityType,
+											  Vector2 position, float orientation)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
 
@@ -106,6 +123,8 @@ namespace PointWars.Network.Messages
 			message.ParentEntity = parentEntity;
 			message.Player = player;
 			message.EntityType = entityType;
+			message.Position = position;
+			message.Orientation = orientation;
 			return message;
 		}
 
@@ -114,7 +133,8 @@ namespace PointWars.Network.Messages
 		/// </summary>
 		public override string ToString()
 		{
-			return $"{MessageType}, Entity={Entity}, Player={Player}, ParentEntity={ParentEntity}, EntityType={EntityType}";
+			return $"{MessageType}, Entity={Entity}, Player={Player}, ParentEntity={ParentEntity}, EntityType={EntityType}, " +
+				   $"Position={Position}, Orientation={Orientation}";
 		}
 	}
 }

@@ -118,17 +118,22 @@ namespace PointWars.Gameplay.Client
 			Assert.NotNull(player, "Entity add message references unknown player.");
 
 			Entity entity = null;
-			switch (message.EntityType)
+			if (message.EntityType.IsCollectible())
+				entity = Collectible.Create(_gameSession, message.Position, message.EntityType);
+			else
 			{
-				case EntityType.Avatar:
-					entity = Avatar.Create(_gameSession, player);
-					break;
-				case EntityType.Bullet:
-					entity = Bullet.Create(_gameSession, player, Vector2.Zero, Vector2.Zero);
-					break;
-				default:
-					Assert.NotReached("Unknown entity type.");
-					break;
+				switch (message.EntityType)
+				{
+					case EntityType.Avatar:
+						entity = Avatar.Create(_gameSession, player, message.Position, message.Orientation);
+						break;
+					case EntityType.Bullet:
+						entity = Bullet.Create(_gameSession, player, message.Position, Vector2.Zero);
+						break;
+					default:
+						Assert.NotReached("Unknown entity type.");
+						break;
+				}
 			}
 
 			_entityMap.Add(message.Entity, entity);

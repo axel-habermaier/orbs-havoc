@@ -35,7 +35,7 @@ namespace PointWars.Gameplay.Behaviors
 		private const float MaxSpeed = 4000;
 		private const float MaxAcceleration = 4000;
 		private const float Drag = .85f;
-		private readonly WeaponBehavior[] _weapons = new WeaponBehavior[Avatar.WeaponCount];
+		private readonly WeaponBehavior[] _weapons = new WeaponBehavior[Game.WeaponCount];
 		private Vector2 _acceleration;
 
 		/// <summary>
@@ -78,9 +78,9 @@ namespace PointWars.Gameplay.Behaviors
 			if (_acceleration != Vector2.Zero)
 				_acceleration = Vector2.Normalize(_acceleration);
 
-			_weapons[(int)SceneNode.PrimaryWeapon].HandlePlayerInput(firePrimary);
-			if (SceneNode.SecondaryWeapon != WeaponType.Unknown)
-				_weapons[(int)SceneNode.SecondaryWeapon].HandlePlayerInput(fireSecondary);
+			_weapons[SceneNode.PrimaryWeapon.GetWeaponSlot()].HandlePlayerInput(firePrimary);
+			if (SceneNode.SecondaryWeapon != EntityType.Unknown)
+				_weapons[SceneNode.SecondaryWeapon.GetWeaponSlot()].HandlePlayerInput(fireSecondary);
 		}
 
 		/// <summary>
@@ -108,14 +108,14 @@ namespace PointWars.Gameplay.Behaviors
 
 			var input = allocator.Allocate<PlayerInputBehavior>();
 			input._acceleration = Vector2.Zero;
-			input._weapons[(int)WeaponType.MiniGun] = MiniGunBehavior.Create(allocator);
-			input._weapons[(int)WeaponType.PlasmaGun] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[(int)WeaponType.LightingGun] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[(int)WeaponType.RocketLauncher] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[(int)WeaponType.Bfg] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[(int)WeaponType.Bomb] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[(int)WeaponType.Mine] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[(int)WeaponType.ShockWave] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.MiniGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator);
+			input._weapons[EntityType.PlasmaGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.LightingGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.RocketLauncher.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.Bfg.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.Bomb.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.Mine.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.ShockWave.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
 
 			return input;
 		}

@@ -48,15 +48,15 @@ namespace PointWars.Gameplay.Behaviors
 		/// <summary>
 		///   Gets or sets the weapon's template.
 		/// </summary>
-		protected WeaponTemplate Template { get; set; }
+		protected Game.WeaponTemplate Template { get; set; }
 
 		/// <summary>
 		///   Gets or sets the weapon's energy level.
 		/// </summary>
 		private byte Energy
 		{
-			get { return SceneNode.WeaponEnergyLevels[(int)Template.WeaponType]; }
-			set { SceneNode.WeaponEnergyLevels[(int)Template.WeaponType] = value; }
+			get { return SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()]; }
+			set { SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()] = value; }
 		}
 
 		/// <summary>

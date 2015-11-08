@@ -72,26 +72,26 @@ namespace PointWars.Gameplay.Behaviors
 
 			switch (level[x, y])
 			{
-				case BlockType.HorizontalWall:
+				case EntityType.HorizontalWall:
 					var newY = HandleCollisionWithNonCurvedWall(SceneNode.WorldPosition.Y, Radius, level.GetBlockArea(x, y).Center.Y);
 					if (SceneNode != null)
 						SceneNode.Position = new Vector2(Circle.Position.X, newY);
 					break;
-				case BlockType.VerticalWall:
+				case EntityType.VerticalWall:
 					var newX = HandleCollisionWithNonCurvedWall(SceneNode.WorldPosition.X, Radius, level.GetBlockArea(x, y).Center.X);
 					if (SceneNode != null)
 						SceneNode.Position = new Vector2(newX, SceneNode.WorldPosition.Y);
 					break;
-				case BlockType.LeftTopWall:
+				case EntityType.LeftTopWall:
 					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).BottomRight);
 					break;
-				case BlockType.RightTopWall:
+				case EntityType.RightTopWall:
 					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).BottomLeft);
 					break;
-				case BlockType.LeftBottomWall:
+				case EntityType.LeftBottomWall:
 					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).TopRight);
 					break;
-				case BlockType.RightBottomWall:
+				case EntityType.RightBottomWall:
 					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).TopLeft);
 					break;
 			}

@@ -63,23 +63,23 @@
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\ColliderBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\WeaponBehavior.cs" />
-    <Compile Include="Gameplay\BlockType.cs" />
     <Compile Include="Gameplay\Client\Camera.cs" />
     <Compile Include="Gameplay\Client\InputManager.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>
     </Compile>
     <Compile Include="Gameplay\Client\LevelRenderer.cs" />
+    <Compile Include="Gameplay\Game.cs" />
     <Compile Include="Gameplay\Level.cs" />
     <Compile Include="Gameplay\PlayerKind.cs" />
-    <Compile Include="Gameplay\SceneNodes\Entities\PowerUpType.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\Collectible.cs" />
+    <Compile Include="Gameplay\Behaviors\SpawnBehavior.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Bullet.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Entity.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Avatar.cs" />
     <Compile Include="Gameplay\GameSession.cs" />
     <Compile Include="Gameplay\Player.cs" />
     <Compile Include="Gameplay\PlayerCollection.cs" />
-    <Compile Include="Gameplay\SceneNodes\Entities\WeaponType.cs" />
     <Compile Include="Gameplay\SceneNodes\RootNode.cs" />
     <Compile Include="Gameplay\SceneGraph.cs" />
     <Compile Include="Gameplay\SceneNodes\SceneNode.cs" />
@@ -95,7 +95,6 @@
     <Compile Include="Gameplay\Server\ServerDiscovery.cs" />
     <Compile Include="Gameplay\Server\GameSessionHost.cs" />
     <Compile Include="Gameplay\Server\ServerLogic.cs" />
-    <Compile Include="Gameplay\SceneNodes\Entities\WeaponTemplate.cs" />
     <Compile Include="Network\BatchedMessage.cs" />
     <Compile Include="Network\Connection.cs" />
     <Compile Include="Network\ConnectionDroppedException.cs" />
@@ -378,6 +377,9 @@
   </ItemGroup>
   <ItemGroup>
     <Texture Include="Assets\Textures\LevelBorders.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\Health.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

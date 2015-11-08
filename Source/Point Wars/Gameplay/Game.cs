@@ -22,19 +22,50 @@
 
 namespace PointWars.Gameplay
 {
+	using SceneNodes.Entities;
+
 	/// <summary>
-	///   Represents the type of a level block.
+	///   Provides gameplay-specific constants.
 	/// </summary>
-	public enum BlockType : byte
+	internal static class Game
 	{
-		Empty = 0,
-		HorizontalWall,
-		VerticalWall,
-		Wall,
-		LeftTopWall,
-		RightTopWall,
-		LeftBottomWall,
-		RightBottomWall,
-		PlayerStart
+		public const int WeaponCount = 8;
+		public const int HealthCollectibleHealthIncrease = 20;
+		public const float ArmorRespawenDelay = 3 * 60;
+		public const float ArmorDamageFactor = 0.5f;
+		public const float RegenerationRespawenDelay = 3 * 60;
+		public const float QuadDamageRespawenDelay = 3 * 60;
+		public const float SpeedRespawenDelay = 3 * 60;
+		public const float InvisibilityRespawenDelay = 3 * 60;
+		public const float HealthRespawenDelay = 30;
+
+		public static WeaponTemplate MiniGunTemplate = new WeaponTemplate
+		{
+			Cooldown = 0.1f,
+			DepleteSpeed = 0,
+			BaseSpeed = 1200,
+			WeaponType = EntityType.MiniGun,
+			MaxEnergy = 1
+		};
+
+		public static WeaponTemplate LightingGunTemplate = new WeaponTemplate
+		{
+			Cooldown = -1,
+			DepleteSpeed = 50,
+			Range = 2000,
+			WeaponType = EntityType.LightingGun,
+			MaxEnergy = 200
+		};
+
+		internal struct WeaponTemplate
+		{
+			public float BaseSpeed;
+			public float Cooldown;
+			public byte DepleteSpeed;
+			public EntityType WeaponType;
+			public float Range;
+			public byte MaxEnergy;
+			public bool FiresContinuously => Cooldown < 0;
+		}
 	}
 }

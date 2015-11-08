@@ -22,39 +22,42 @@
 
 namespace PointWars.Gameplay.SceneNodes.Entities
 {
+	using System.Numerics;
+	using Assets;
+	using Behaviors;
+	using Rendering;
+	using Utilities;
+
 	/// <summary>
-	///   Identifies the type of power up.
+	///   Represents a collectible within a level.
 	/// </summary>
-	public enum PowerUpType : byte
+	internal class Collectible : Entity
 	{
 		/// <summary>
-		///   Indicates that a player is not affected by any power up.
+		///   Creates a new instance.
 		/// </summary>
-		None,
+		/// <param name="gameSession">The game session the collectible belongs to.</param>
+		/// <param name="position">The position of the collectible.</param>
+		/// <param name="collectibleType">The type of the collectible.</param>
+		public static Collectible Create(GameSession gameSession, Vector2 position, EntityType collectibleType)
+		{
+			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
+			Assert.ArgumentSatisfies(collectibleType.IsCollectible(), nameof(collectibleType), "Expected a collectible type.");
 
-		/// <summary>
-		///   The armor power up increases the player's resistance to damage.
-		/// </summary>
-		Armor,
+			var collectible = gameSession.Allocate<Collectible>();
+			collectible.GameSession = gameSession;
+			collectible.Position = position;
+			collectible.Type = collectibleType;
+			collectible.Player = gameSession.Players.ServerPlayer;
 
-		/// <summary>
-		///   The regeneration power up increases the player's health continuously, exceeding the usual maximum.
-		/// </summary>
-		Regeneration,
+			gameSession.SceneGraph.Add(collectible);
 
-		/// <summary>
-		///   The quad damage power up quadruples the player's damage.
-		/// </summary>
-		QuadDamage,
+			if (gameSession.ServerMode)
+				collectible.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, 16));
+			else
+				SpriteNode.Create(gameSession.Allocator, collectible, AssetBundle.Health, Colors.Green);
 
-		/// <summary>
-		///   The speed power up increases both the player's movement speed as well as the firing rate.
-		/// </summary>
-		Speed,
-
-		/// <summary>
-		///   The invisibility power up makes the player almost invisible.
-		/// </summary>
-		Invisibility
+			return collectible;
+		}
 	}
 }

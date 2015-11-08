@@ -26,7 +26,7 @@ namespace AssetsCompiler
 	using System.Drawing;
 	using System.IO;
 	using CommandLine;
-	using PointWars.Gameplay;
+	using PointWars.Gameplay.SceneNodes.Entities;
 
 	public class LevelCompiler : IExecutable
 	{
@@ -47,16 +47,16 @@ namespace AssetsCompiler
 				writer.Write((short)bitmap.Width);
 				writer.Write((short)bitmap.Height);
 
-				var originalBlocks = new BlockType[bitmap.Width][];
-				var lineBlocks = new BlockType[bitmap.Width][];
-				var edgeBlocks = new BlockType[bitmap.Width][];
+				var originalBlocks = new EntityType[bitmap.Width][];
+				var lineBlocks = new EntityType[bitmap.Width][];
+				var edgeBlocks = new EntityType[bitmap.Width][];
 
 				// Get the basic blocks from the level texture
 				for (var x = 0; x < bitmap.Width; ++x)
 				{
-					originalBlocks[x] = new BlockType[bitmap.Height];
-					lineBlocks[x] = new BlockType[bitmap.Height];
-					edgeBlocks[x] = new BlockType[bitmap.Height];
+					originalBlocks[x] = new EntityType[bitmap.Height];
+					lineBlocks[x] = new EntityType[bitmap.Height];
+					edgeBlocks[x] = new EntityType[bitmap.Height];
 
 					for (var y = 0; y < bitmap.Height; ++y)
 					{
@@ -77,19 +77,19 @@ namespace AssetsCompiler
 				{
 					for (var y = 0; y < bitmap.Height; ++y)
 					{
-						if (originalBlocks[x][y] != BlockType.Wall)
+						if (originalBlocks[x][y] != EntityType.Wall)
 							continue;
 
 						// The type of the wall depends on how the block is surrounded with walls
-						var left = x > 0 && originalBlocks[x - 1][y] == BlockType.Wall;
-						var right = x < bitmap.Width - 1 && originalBlocks[x + 1][y] == BlockType.Wall;
-						var top = y > 0 && originalBlocks[x][y - 1] == BlockType.Wall;
-						var bottom = y < bitmap.Height - 1 && originalBlocks[x][y + 1] == BlockType.Wall;
+						var left = x > 0 && originalBlocks[x - 1][y] == EntityType.Wall;
+						var right = x < bitmap.Width - 1 && originalBlocks[x + 1][y] == EntityType.Wall;
+						var top = y > 0 && originalBlocks[x][y - 1] == EntityType.Wall;
+						var bottom = y < bitmap.Height - 1 && originalBlocks[x][y + 1] == EntityType.Wall;
 
 						if (!top || !bottom)
-							lineBlocks[x][y] = BlockType.HorizontalWall;
+							lineBlocks[x][y] = EntityType.HorizontalWall;
 						else if (!left || !right)
-							lineBlocks[x][y] = BlockType.VerticalWall;
+							lineBlocks[x][y] = EntityType.VerticalWall;
 
 						edgeBlocks[x][y] = lineBlocks[x][y];
 					}
@@ -100,31 +100,31 @@ namespace AssetsCompiler
 				{
 					for (var y = 0; y < bitmap.Height; ++y)
 					{
-						if (originalBlocks[x][y] != BlockType.Wall)
+						if (originalBlocks[x][y] != EntityType.Wall)
 							continue;
 
 						// The type of the wall depends on how the block is surrounded with walls
-						var left = x > 0 ? lineBlocks[x - 1][y] : BlockType.Empty;
-						var right = x < bitmap.Width - 1 ? lineBlocks[x + 1][y] : BlockType.Empty;
-						var top = y > 0 ? lineBlocks[x][y - 1] : BlockType.Empty;
-						var bottom = y < bitmap.Height - 1 ? lineBlocks[x][y + 1] : BlockType.Empty;
+						var left = x > 0 ? lineBlocks[x - 1][y] : EntityType.None;
+						var right = x < bitmap.Width - 1 ? lineBlocks[x + 1][y] : EntityType.None;
+						var top = y > 0 ? lineBlocks[x][y - 1] : EntityType.None;
+						var bottom = y < bitmap.Height - 1 ? lineBlocks[x][y + 1] : EntityType.None;
 
-						if (right == BlockType.HorizontalWall && bottom == BlockType.VerticalWall)
-							edgeBlocks[x][y] = BlockType.LeftTopWall;
-						else if (right != BlockType.Empty && bottom != BlockType.Empty && left == BlockType.Empty && top == BlockType.Empty)
-							edgeBlocks[x][y] = BlockType.LeftTopWall;
-						else if (left == BlockType.HorizontalWall && bottom == BlockType.VerticalWall)
-							edgeBlocks[x][y] = BlockType.RightTopWall;
-						else if (right == BlockType.Empty && bottom != BlockType.Empty && left != BlockType.Empty && top == BlockType.Empty)
-							edgeBlocks[x][y] = BlockType.RightTopWall;
-						else if (right == BlockType.HorizontalWall && top == BlockType.VerticalWall)
-							edgeBlocks[x][y] = BlockType.LeftBottomWall;
-						else if (right != BlockType.Empty && bottom == BlockType.Empty && left == BlockType.Empty && top != BlockType.Empty)
-							edgeBlocks[x][y] = BlockType.LeftBottomWall;
-						else if (left == BlockType.HorizontalWall && top == BlockType.VerticalWall)
-							edgeBlocks[x][y] = BlockType.RightBottomWall;
-						else if (right == BlockType.Empty && bottom == BlockType.Empty && left != BlockType.Empty && top != BlockType.Empty)
-							edgeBlocks[x][y] = BlockType.RightBottomWall;
+						if (right == EntityType.HorizontalWall && bottom == EntityType.VerticalWall)
+							edgeBlocks[x][y] = EntityType.LeftTopWall;
+						else if (right.IsWall() && bottom.IsWall() && !left.IsWall() && !top.IsWall())
+							edgeBlocks[x][y] = EntityType.LeftTopWall;
+						else if (left == EntityType.HorizontalWall && bottom == EntityType.VerticalWall)
+							edgeBlocks[x][y] = EntityType.RightTopWall;
+						else if (!right.IsWall() && bottom.IsWall() && left.IsWall() && !top.IsWall())
+							edgeBlocks[x][y] = EntityType.RightTopWall;
+						else if (right == EntityType.HorizontalWall && top == EntityType.VerticalWall)
+							edgeBlocks[x][y] = EntityType.LeftBottomWall;
+						else if (right.IsWall() && !bottom.IsWall() && !left.IsWall() && top.IsWall())
+							edgeBlocks[x][y] = EntityType.LeftBottomWall;
+						else if (left == EntityType.HorizontalWall && top == EntityType.VerticalWall)
+							edgeBlocks[x][y] = EntityType.RightBottomWall;
+						else if (!right.IsWall() && !bottom.IsWall() && left.IsWall() && top.IsWall())
+							edgeBlocks[x][y] = EntityType.RightBottomWall;
 					}
 				}
 
@@ -137,18 +137,24 @@ namespace AssetsCompiler
 			}
 		}
 
-		private static BlockType? MapColor(int color)
+		private static EntityType? MapColor(int color)
 		{
-			if (color == Color.White.ToArgb())
-				return BlockType.Empty;
+			unchecked
+			{
+				if (color == Color.White.ToArgb())
+					return EntityType.None;
 
-			if (color == Color.Black.ToArgb())
-				return BlockType.Wall;
+				if (color == Color.Black.ToArgb())
+					return EntityType.Wall;
 
-			if (color == Color.Gray.ToArgb())
-				return BlockType.PlayerStart;
+				if (color == Color.Gray.ToArgb())
+					return EntityType.PlayerStart;
 
-			return null;
+				if (color == (int)0xFF00FF00)
+					return EntityType.Health;
+
+				return null;
+			}
 		}
 	}
 }

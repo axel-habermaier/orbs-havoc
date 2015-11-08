@@ -27,6 +27,7 @@ namespace PointWars.Gameplay.Client
 	using Assets;
 	using Platform.Graphics;
 	using Rendering;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>
@@ -66,29 +67,29 @@ namespace PointWars.Gameplay.Client
 					Rectangle texCoords;
 					switch (level[x, y])
 					{
-						case BlockType.VerticalWall:
+						case EntityType.VerticalWall:
 							texCoords = verticalTexCoords;
 							break;
-						case BlockType.HorizontalWall:
+						case EntityType.HorizontalWall:
 							texCoords = horizontalTexCoords;
 							break;
-						case BlockType.LeftTopWall:
+						case EntityType.LeftTopWall:
 							texCoords = leftTopWallTexCoords;
 							break;
-						case BlockType.RightTopWall:
+						case EntityType.RightTopWall:
 							texCoords = rightTopWallTexCoords;
 							break;
-						case BlockType.LeftBottomWall:
+						case EntityType.LeftBottomWall:
 							texCoords = leftBottomWallTexCoords;
 							break;
-						case BlockType.RightBottomWall:
+						case EntityType.RightBottomWall:
 							texCoords = rightBottomWallTexCoords;
 							break;
 						default:
 							continue;
 					}
 
-					quads.Add(new Quad(level.GetBlockArea(x, y), Colors.White, texCoords));
+					quads.Add(new Quad(level.GetBlockArea(x, y), new Color(0xFF130C49), texCoords));
 				}
 			}
 
@@ -110,16 +111,16 @@ namespace PointWars.Gameplay.Client
 #if true
 			--spriteBatch.Layer;
 
-			for (var y = 0; y <= _level.Height; ++y)
+			for (var y = 0; y < _level.Height * 2 - 1; ++y)
 			{
-				var position = _level.PositionOffset + new Vector2(0, y * Level.BlockSize);
-				spriteBatch.DrawLine(position, position + new Vector2(_level.Width * Level.BlockSize, 0), Colors.DarkRed, 1);
+				var position = _level.PositionOffset + new Vector2(Level.BlockSize / 2, (y + 1) * Level.BlockSize / 2);
+				spriteBatch.DrawLine(position, position + new Vector2((_level.Width - 1) * Level.BlockSize, 0), new Color(0xFF130C49), 1);
 			}
 
-			for (var x = 0; x <= _level.Width; ++x)
+			for (var x = 0; x < _level.Width * 2 - 1; ++x)
 			{
-				var position = _level.PositionOffset + new Vector2(x * Level.BlockSize, 0);
-				spriteBatch.DrawLine(position, position + new Vector2(0, _level.Height * Level.BlockSize), Colors.DarkRed, 1);
+				var position = _level.PositionOffset + new Vector2((x + 1) * Level.BlockSize / 2, Level.BlockSize / 2);
+				spriteBatch.DrawLine(position, position + new Vector2(0, (_level.Height - 1) * Level.BlockSize), new Color(0xFF130C49), 1);
 			}
 #endif
 		}

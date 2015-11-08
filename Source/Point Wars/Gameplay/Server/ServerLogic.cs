@@ -256,8 +256,7 @@ namespace PointWars.Gameplay.Server
 					continue;
 
 				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
-				player.Avatar = Avatar.Create(_gameSession, player);
-				player.Avatar.Position = startArea.Center;
+				player.Avatar = Avatar.Create(_gameSession, player, startArea.Center, 0);
 				break;
 			}
 		}
@@ -303,12 +302,15 @@ namespace PointWars.Gameplay.Server
 		/// <param name="entity">The entity the message should be created for.</param>
 		private EntityAddMessage CreateEntityAddMessage(Entity entity)
 		{
+			Assert.NotNull(entity.Player, "Entity has no player.");
+
 			var parentIdentity = NetworkProtocol.ReservedEntityIdentity;
 			var parentEntity = entity.Parent as Entity;
 			if (parentEntity != null)
 				parentIdentity = parentEntity.NetworkIdentity;
 
-			return EntityAddMessage.Create(_allocator, entity.NetworkIdentity, entity.Player.Identity, parentIdentity, entity.Type);
+			return EntityAddMessage.Create(_allocator, entity.NetworkIdentity, entity.Player.Identity, parentIdentity,
+				entity.Type, entity.Position, entity.Orientation);
 		}
 
 		/// <summary>

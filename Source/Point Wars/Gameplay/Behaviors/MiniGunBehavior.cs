@@ -37,7 +37,7 @@ namespace PointWars.Gameplay.Behaviors
 		/// </summary>
 		public MiniGunBehavior()
 		{
-			Template = WeaponTemplate.MiniGun;
+			Template = Game.MiniGunTemplate;
 		}
 
 		/// <summary>

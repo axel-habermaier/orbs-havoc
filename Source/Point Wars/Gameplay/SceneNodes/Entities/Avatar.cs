@@ -23,6 +23,7 @@
 namespace PointWars.Gameplay.SceneNodes.Entities
 {
 	using System;
+	using System.Numerics;
 	using Assets;
 	using Behaviors;
 	using Network.Messages;
@@ -35,33 +36,28 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	internal class Avatar : Entity
 	{
 		/// <summary>
-		///   The number of weapons that can be used by an avatar.
-		/// </summary>
-		public static readonly int WeaponCount = Enum.GetValues(typeof(WeaponType)).Length - 1;
-
-		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		public Avatar()
 		{
 			Type = EntityType.Avatar;
-			WeaponEnergyLevels[(int)WeaponType.MiniGun] = 1;
+			WeaponEnergyLevels[EntityType.MiniGun.GetWeaponSlot()] = 1;
 		}
 
 		/// <summary>
 		///   Gets the energy levels of the avatar's weapons.
 		/// </summary>
-		public byte[] WeaponEnergyLevels { get; } = new byte[WeaponCount];
+		public byte[] WeaponEnergyLevels { get; } = new byte[Game.WeaponCount];
 
 		/// <summary>
 		///   Gets or sets the avatar's primary weapon.
 		/// </summary>
-		public WeaponType PrimaryWeapon { get; set; }
+		public EntityType PrimaryWeapon { get; set; }
 
 		/// <summary>
 		///   Gets or sets the avatar's secondary weapon.
 		/// </summary>
-		public WeaponType SecondaryWeapon { get; set; }
+		public EntityType SecondaryWeapon { get; set; }
 
 		/// <summary>
 		///   Gets the avatar's player input behavior in server mode.
@@ -71,7 +67,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Gets or sets the power up that currently influences the avatar.
 		/// </summary>
-		public PowerUpType PowerUp { get; set; }
+		public EntityType PowerUp { get; set; }
 
 		/// <summary>
 		///   Gets or sets the remaining time until the power up is removed.
@@ -89,15 +85,33 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
 		public override void ServerUpdate(float elapsedSeconds)
 		{
-			if (PowerUp != PowerUpType.None)
+			if (PowerUp != EntityType.None)
 			{
 				RemainingPowerUpTime -= elapsedSeconds;
 				if (RemainingPowerUpTime < 0)
-					PowerUp = PowerUpType.None;
+					PowerUp = EntityType.None;
 			}
 
 			if (Health <= 0)
 				Remove();
+		}
+
+		/// <summary>
+		///   Handles the collision with the given entity.
+		/// </summary>
+		/// <param name="entity">The entity this entity collided with.</param>
+		public override void HandleCollision(Entity entity)
+		{
+			switch (entity.Type)
+			{
+				case EntityType.Health:
+					if (Health < 100)
+					{
+						Health = Math.Max(100, Health + Game.HealthCollectibleHealthIncrease);
+						entity.Remove();
+					}
+					break;
+			}
 		}
 
 		/// <summary>
@@ -110,12 +124,12 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		}
 
 		/// <summary>
-		/// Applies the given damage to the avatar.
+		///   Applies the given damage to the avatar.
 		/// </summary>
 		/// <param name="damage">The damage that should be applied.</param>
 		public void ApplyDamage(int damage)
 		{
-			Health -= PowerUp == PowerUpType.Armor ? damage / 2 : damage;
+			Health -= (int)(PowerUp == EntityType.Armor ? damage * Game.ArmorDamageFactor : damage);
 		}
 
 		/// <summary>
@@ -135,22 +149,26 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="gameSession">The game session the entity belongs to.</param>
-		/// <param name="player">The player the ship belongs to.</param>
-		public static Avatar Create(GameSession gameSession, Player player)
+		/// <param name="player">The player the avatar belongs to.</param>
+		/// <param name="position">The position of the avatar.</param>
+		/// <param name="orientation">The orientation of the avatar.</param>
+		public static Avatar Create(GameSession gameSession, Player player, Vector2 position, float orientation)
 		{
 			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
 
 			var avatar = gameSession.Allocate<Avatar>();
 			avatar.GameSession = gameSession;
 			avatar.Player = player;
-			avatar.PowerUp = PowerUpType.None;
-			avatar.PrimaryWeapon = WeaponType.MiniGun;
-			avatar.SecondaryWeapon = WeaponType.Unknown;
+			avatar.PowerUp = EntityType.None;
+			avatar.PrimaryWeapon = EntityType.MiniGun;
+			avatar.SecondaryWeapon = EntityType.None;
 			avatar.RemainingPowerUpTime = 0;
 			avatar.Health = 100;
+			avatar.Position = position;
+			avatar.Orientation = orientation;
 
 			// Reset the weapon energy levels, skipping the mini gun which can always be used
-			for (var i = 1; i < WeaponCount; ++i)
+			for (var i = 1; i < Game.WeaponCount; ++i)
 				avatar.WeaponEnergyLevels[i] = 0;
 
 			player.Avatar = avatar;

@@ -25,6 +25,7 @@ namespace PointWars.Gameplay
 	using System.Collections.Generic;
 	using System.Numerics;
 	using Platform.Memory;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>
@@ -72,14 +73,14 @@ namespace PointWars.Gameplay
 		/// <summary>
 		///   Gets the level's blocks.
 		/// </summary>
-		public BlockType[] Blocks { get; private set; }
+		public EntityType[] Blocks { get; private set; }
 
 		/// <summary>
 		///   Gets the block type at the given location.
 		/// </summary>
 		/// <param name="x">The zero-based index in x-direction.</param>
 		/// <param name="y">The zero-based index in y-direction.</param>
-		public BlockType this[int x, int y]
+		public EntityType this[int x, int y]
 		{
 			get
 			{
@@ -111,14 +112,14 @@ namespace PointWars.Gameplay
 			Height = buffer.ReadInt16();
 
 			PositionOffset = new Vector2(-MathUtils.Round(Width / 2.0f * BlockSize), -MathUtils.Round(Height / 2.0f * BlockSize));
-			Blocks = new BlockType[Width * Height];
+			Blocks = new EntityType[Width * Height];
 
 			for (var x = 0; x < Width; ++x)
 			{
 				for (var y = 0; y < Height; ++y)
 				{
-					Blocks[x * Height + y] = (BlockType)buffer.ReadByte();
-					if (Blocks[x * Height + y] == BlockType.PlayerStart)
+					Blocks[x * Height + y] = (EntityType)buffer.ReadByte();
+					if (Blocks[x * Height + y] == EntityType.PlayerStart)
 						PlayerStarts.Add(new BlockIndex(x, y));
 				}
 			}
