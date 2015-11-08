@@ -24,7 +24,6 @@ namespace PointWars.Network.Messages
 {
 	using System;
 	using Gameplay;
-	using Network;
 	using Platform.Memory;
 	using Utilities;
 
@@ -55,6 +54,11 @@ namespace PointWars.Network.Messages
 		public byte Rank { get; private set; }
 
 		/// <summary>
+		///   Gets the player's remaining respawn delay.
+		/// </summary>
+		public byte RespawnDelay { get; private set; }
+
+		/// <summary>
 		///   Gets the player whose stats are updated.
 		/// </summary>
 		public NetworkIdentity Player { get; private set; }
@@ -70,6 +74,7 @@ namespace PointWars.Network.Messages
 			writer.WriteUInt16(Deaths);
 			writer.WriteUInt16(Ping);
 			writer.WriteByte(Rank);
+			writer.WriteByte(RespawnDelay);
 		}
 
 		/// <summary>
@@ -83,6 +88,7 @@ namespace PointWars.Network.Messages
 			Deaths = reader.ReadUInt16();
 			Ping = reader.ReadUInt16();
 			Rank = reader.ReadByte();
+			RespawnDelay = reader.ReadByte();
 		}
 
 		/// <summary>
@@ -115,6 +121,7 @@ namespace PointWars.Network.Messages
 			message.Deaths = (ushort)player.Deaths;
 			message.Ping = (ushort)player.Ping;
 			message.Rank = (byte)player.Rank;
+			message.RespawnDelay = (byte)MathUtils.RoundIntegral(player.RemainingRespawnDelay);
 			return message;
 		}
 

@@ -268,7 +268,7 @@ namespace PointWars.Gameplay.Server
 			_serverDiscovery.SendDiscoveryMessage(elapsedSeconds);
 
 			_playerStatsTimer.Update();
-			_clients.UpdateClientConnections();
+			_clients.Update((float)elapsedSeconds);
 			_clients.DispatchClientMessages();
 			_gameSession.Update((float)elapsedSeconds);
 			_serverLogic.BroadcastEntityUpdates();

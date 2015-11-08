@@ -134,7 +134,8 @@ namespace PointWars.Views
 
 					_inputManager.SendInput(GameSession, Connection);
 
-					Views.Hud.IsShown = GameSession.Players.LocalPlayer?.Avatar != null;
+					Views.Hud.IsShown = !GameSession.IsLocalPlayerDead;
+					Views.RespawnOverlay.IsShown = GameSession.IsLocalPlayerDead;
 				}
 			}
 			catch (ConnectionDroppedException)
@@ -222,6 +223,7 @@ namespace PointWars.Views
 			Views.Scoreboard.Hide();
 			Views.WaitingOverlay.Hide();
 			Views.Hud.Hide();
+			Views.RespawnOverlay.Hide();
 			Hide();
 
 			GameSession.SafeDispose();

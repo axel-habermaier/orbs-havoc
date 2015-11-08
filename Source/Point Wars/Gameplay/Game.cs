@@ -40,6 +40,7 @@ namespace PointWars.Gameplay
 		public const float HealthRespawenDelay = 10;
 		public const float MaxAvatarHealth = 100;
 		public const float MaxAvatarRegenerationHealth = 200;
+		public const float RespawnDelay = 2;
 
 		public static WeaponTemplate MiniGunTemplate = new WeaponTemplate
 		{

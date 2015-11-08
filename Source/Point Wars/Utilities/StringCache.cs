@@ -23,6 +23,7 @@
 namespace PointWars.Utilities
 {
 	using System.Globalization;
+	using Gameplay;
 
 	/// <summary>
 	///   Caches commonly used string representations of numbers.
@@ -31,6 +32,7 @@ namespace PointWars.Utilities
 	{
 		private static readonly string[] Integers = new string[1000];
 		private static readonly string[] FrameTimes = new string[2000];
+		private static readonly string[] RespawnDelay = new string[100];
 
 		/// <summary>
 		///   Initializes the cached strings.
@@ -42,6 +44,9 @@ namespace PointWars.Utilities
 
 			for (var i = 0; i < FrameTimes.Length; ++i)
 				FrameTimes[i] = (i / 100.0).ToString("F2");
+
+			for (var i = 0; i < RespawnDelay.Length; ++i)
+				RespawnDelay[i] = (i / 10.0f).ToString("F1");
 		}
 
 		/// <summary>
@@ -64,6 +69,17 @@ namespace PointWars.Utilities
 				return FrameTimes[MathUtils.RoundIntegral((float)(value * 100))];
 
 			return value.ToString("F2");
+		}
+
+		/// <summary>
+		///   Gets a possible cached string representation for the given frame time.
+		/// </summary>
+		public static string GetRespawnDelayTimeString(float value)
+		{
+			if (value >= 0 && value * 10 < FrameTimes.Length)
+				return RespawnDelay[MathUtils.RoundIntegral(value * 10)];
+
+			return value.ToString("F1");
 		}
 	}
 }

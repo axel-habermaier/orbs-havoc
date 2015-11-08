@@ -22,6 +22,7 @@
 
 namespace PointWars.Gameplay.Server
 {
+	using System.Diagnostics;
 	using Network;
 	using Network.Messages;
 	using Utilities;
@@ -154,6 +155,7 @@ namespace PointWars.Gameplay.Server
 		///   Handles an unsupported message.
 		/// </summary>
 		/// <param name="message">The unsupported message that should be handled.</param>
+		[DebuggerHidden]
 		private void HandleUnsupportedMessage(Message message)
 		{
 			Assert.NotReached("Received an unexpected message of type '{0}' from client at '{1}'.", message.MessageType, _connection.RemoteEndPoint);

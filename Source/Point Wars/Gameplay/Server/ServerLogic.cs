@@ -199,11 +199,6 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(player, nameof(player));
 			Assert.ArgumentNotNull(inputMessage, nameof(inputMessage));
 
-			// Respawn the player if necessary
-			var firePrimary = (inputMask & inputMessage.FirePrimary) != 0;
-			if (player.Avatar == null && firePrimary)
-				RespawnPlayer(player);
-
 			player.Avatar?.PlayerInput.HandleInput(
 				inputMessage.Target,
 				(inputMask & inputMessage.MoveUp) != 0,

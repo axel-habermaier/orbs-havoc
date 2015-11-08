@@ -83,9 +83,10 @@ namespace PointWars.Gameplay.Server
 		}
 
 		/// <summary>
-		///   Handles new or dropped client connections.
+		///   Updates the clients.
 		/// </summary>
-		public void UpdateClientConnections()
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		public void Update(float elapsedSeconds)
 		{
 			try
 			{
@@ -98,6 +99,9 @@ namespace PointWars.Gameplay.Server
 			}
 
 			RemoveDisconnectedClients();
+
+			foreach (var client in _clients)
+				client.Update(elapsedSeconds);
 		}
 
 		/// <summary>

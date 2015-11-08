@@ -104,6 +104,7 @@ namespace PointWars.Gameplay.Server
 			{
 				_player = _serverLogic.CreatePlayer(message.PlayerName, PlayerKind.Human);
 				_serverLogic.SendStateSnapshot(_connection, _player);
+
 				IsSynced = true;
 			}
 		}
@@ -230,13 +231,12 @@ namespace PointWars.Gameplay.Server
 		}
 
 		/// <summary>
-		///   Sends all queued messages to the client.
+		///   Updates the client.
 		/// </summary>
-		public void SendQueuedMessages()
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		public void Update(float elapsedSeconds)
 		{
-			Assert.NotPooled(this);
-
-			if (IsDisconnected)
+			if (IsDisconnected || _player == null || !IsSynced)
 				return;
 
 			// Send an avatar update message if the player is not dead, to keep the client up-to-date; these updates
@@ -244,7 +244,24 @@ namespace PointWars.Gameplay.Server
 			if (_player.Avatar != null)
 				_connection.EnqueueMessage(UpdateAvatarMessage.Create(_allocator, _player.Avatar));
 
-			_connection.SendQueuedMessages();
+			if (_player.Avatar != null)
+				return;
+
+			_player.RemainingRespawnDelay -= elapsedSeconds;
+
+			if (_player.RemainingRespawnDelay <= 0)
+				_serverLogic.RespawnPlayer(_player);
+		}
+
+		/// <summary>
+		///   Sends all queued messages to the client.
+		/// </summary>
+		public void SendQueuedMessages()
+		{
+			Assert.NotPooled(this);
+
+			if (!IsDisconnected)
+				_connection.SendQueuedMessages();
 		}
 
 		/// <summary>

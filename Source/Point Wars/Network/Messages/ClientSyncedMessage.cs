@@ -27,7 +27,7 @@ namespace PointWars.Network.Messages
 	using Utilities;
 
 	/// <summary>
-	///   Informs a client that the game state is now fully synced.
+	///   Informs a remote peer that the game state is now fully synced.
 	/// </summary>
 	[ReliableTransmission(MessageType.ClientSynced)]
 	internal sealed class ClientSyncedMessage : Message

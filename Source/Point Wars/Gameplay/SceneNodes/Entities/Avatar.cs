@@ -117,6 +117,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <remarks>This method is not called when the game session is disposed.</remarks>
 		public override void OnRemoved()
 		{
+			Player.RemainingRespawnDelay = Game.RespawnDelay;
 			Player.Avatar = null;
 		}
 

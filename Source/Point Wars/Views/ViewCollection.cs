@@ -74,6 +74,7 @@ namespace PointWars.Views
 				Scoreboard,
 				Chat,
 				WaitingOverlay,
+				RespawnOverlay,
 				Hud,
 				Game
 			};
@@ -161,6 +162,11 @@ namespace PointWars.Views
 		///   Gets the game session view.
 		/// </summary>
 		public GameView Game { get; } = new GameView();
+
+		/// <summary>
+		///   Gets the respawn overlay.
+		/// </summary>
+		public RespawnOverlay RespawnOverlay { get; } = new RespawnOverlay();
 
 		/// <summary>
 		///   Changes the size available to the views.

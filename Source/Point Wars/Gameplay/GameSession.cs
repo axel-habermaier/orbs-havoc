@@ -54,6 +54,11 @@ namespace PointWars.Gameplay
 		}
 
 		/// <summary>
+		///   Gets a value indicating whether the local player is dead.
+		/// </summary>
+		public bool IsLocalPlayerDead => Players.LocalPlayer?.Avatar == null;
+
+		/// <summary>
 		///   Gets a value indicating whether the game session is run in server mode.
 		/// </summary>
 		public bool ServerMode { get; private set; }
