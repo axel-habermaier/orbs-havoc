@@ -51,8 +51,6 @@ namespace PointWars.Utilities
 		private static readonly ColorSpecifier[] Colors =
 		{
 			new ColorSpecifier(ColorMarker + "default", null),
-			new ColorSpecifier(ColorMarker + "white", new Color(255, 255, 255, 255)),
-			new ColorSpecifier(ColorMarker + "black", new Color(0, 0, 0, 255)),
 			new ColorSpecifier(ColorMarker + "red", new Color(255, 0, 0, 255)),
 			new ColorSpecifier(ColorMarker + "green", new Color(0, 255, 0, 255)),
 			new ColorSpecifier(ColorMarker + "blue", new Color(0, 0, 255, 255)),
@@ -344,6 +342,43 @@ namespace PointWars.Utilities
 		public override string ToString()
 		{
 			return _text.ToString();
+		}
+
+		/// <summary>
+		///   Checks whether the two strings are equal when displayed.
+		/// </summary>
+		public static bool DisplayEqual(string s1, string s2)
+		{
+			Assert.ArgumentNotNull(s1, nameof(s1));
+			Assert.ArgumentNotNull(s2, nameof(s2));
+
+			using (var t1 = Create(s1))
+			using (var t2 = Create(s2))
+				return DisplayEqual(t1, t2);
+		}
+
+		/// <summary>
+		///   Checks whether the two strings are equal when displayed.
+		/// </summary>
+		public static bool DisplayEqual(TextString s1, TextString s2)
+		{
+			if (s1.Length != s2.Length)
+				return false;
+
+			for (var i = 0; i < s1.Length; ++i)
+			{
+				if (s1[i] != s2[i])
+					return false;
+
+				Color? c1, c2;
+				s1.GetColor(i, out c1);
+				s2.GetColor(i, out c2);
+
+				if (c1 != c2)
+					return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>

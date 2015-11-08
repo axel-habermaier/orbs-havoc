@@ -107,7 +107,7 @@ namespace PointWars.Network.Messages
 			Assert.InRange(player.Kills, 0, UInt16.MaxValue);
 			Assert.InRange(player.Deaths, 0, UInt16.MaxValue);
 			Assert.InRange(player.Ping, 0, UInt16.MaxValue);
-			Assert.InRange(player.Rank, 1, NetworkProtocol.MaxPlayers);
+			Assert.InRange(player.Rank, 0, NetworkProtocol.MaxPlayers);
 
 			var message = poolAllocator.Allocate<PlayerStatsMessage>();
 			message.Player = player.Identity;

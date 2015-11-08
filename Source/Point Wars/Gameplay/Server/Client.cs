@@ -166,7 +166,7 @@ namespace PointWars.Gameplay.Server
 			Assert.NotPooled(this);
 
 			if (IsClientConnected(message) && IsClientPlayer(message, message.Player))
-				_serverLogic.ChangePlayerName(_player, message.PlayerName);
+				_serverLogic.RenamePlayer(_player, message.PlayerName);
 		}
 
 		/// <summary>

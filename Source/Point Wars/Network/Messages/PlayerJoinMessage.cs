@@ -57,7 +57,7 @@ namespace PointWars.Network.Messages
 		{
 			WriteIdentifier(ref writer, Player);
 			writer.WriteByte((byte)PlayerKind);
-			writer.WriteString(PlayerName, NetworkProtocol.PlayerNameLength);
+			writer.WriteString(PlayerName, NetworkProtocol.MessagePlayerNameLength);
 		}
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace PointWars.Network.Messages
 		{
 			Player = ReadIdentifier(ref reader);
 			PlayerKind = (PlayerKind)reader.ReadByte();
-			PlayerName = reader.ReadString(NetworkProtocol.PlayerNameLength);
+			PlayerName = reader.ReadString(NetworkProtocol.MessagePlayerNameLength);
 		}
 
 		/// <summary>
@@ -86,19 +86,18 @@ namespace PointWars.Network.Messages
 		/// </summary>
 		/// <param name="poolAllocator">The pool allocator that should be used to allocate the message.</param>
 		/// <param name="player">The player that has joined the game session.</param>
-		/// <param name="playerKind">The kind of the player.</param>
-		/// <param name="playerName">The name of the player.</param>
-		public static Message Create(PoolAllocator poolAllocator, NetworkIdentity player, PlayerKind playerKind, string playerName)
+		public static Message Create(PoolAllocator poolAllocator, Player player)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
-			Assert.ArgumentNotNullOrWhitespace(playerName, nameof(playerName));
-			Assert.ArgumentInRange(playerKind, nameof(playerKind));
-			Assert.That(Encoding.UTF8.GetByteCount(playerName) <= NetworkProtocol.PlayerNameLength, "Player name is too long.");
+			Assert.ArgumentNotNull(player, nameof(player));
+			Assert.NotNullOrWhitespace(player.Name, "Invalid player name.");
+			Assert.InRange(player.Kind);
+			Assert.That(Encoding.UTF8.GetByteCount(player.Name) <= NetworkProtocol.MessagePlayerNameLength, "Player name is too long.");
 
 			var message = poolAllocator.Allocate<PlayerJoinMessage>();
-			message.Player = player;
-			message.PlayerKind = playerKind;
-			message.PlayerName = playerName;
+			message.Player = player.Identity;
+			message.PlayerKind = player.Kind;
+			message.PlayerName = player.Name;
 			return message;
 		}
 

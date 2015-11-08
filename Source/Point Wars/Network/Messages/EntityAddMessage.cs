@@ -112,19 +112,24 @@ namespace PointWars.Network.Messages
 		/// <param name="entityType">The type of the entity.</param>
 		/// <param name="position">The entity's initial position.</param>
 		/// <param name="orientation">The entity's initial orientation.</param>
-		public static EntityAddMessage Create(PoolAllocator poolAllocator, NetworkIdentity entity, NetworkIdentity player,
-											  NetworkIdentity parentEntity, EntityType entityType,
-											  Vector2 position, float orientation)
+		public static EntityAddMessage Create(PoolAllocator poolAllocator, Entity entity)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
+			Assert.ArgumentNotNull(entity, nameof(entity));
+			Assert.NotNull(entity.Player, "Entity has no player.");
+
+			var parentIdentity = NetworkProtocol.ReservedEntityIdentity;
+			var parentEntity = entity.Parent as Entity;
+			if (parentEntity != null)
+				parentIdentity = parentEntity.NetworkIdentity;
 
 			var message = poolAllocator.Allocate<EntityAddMessage>();
-			message.Entity = entity;
-			message.ParentEntity = parentEntity;
-			message.Player = player;
-			message.EntityType = entityType;
-			message.Position = position;
-			message.Orientation = orientation;
+			message.Entity = entity.NetworkIdentity;
+			message.ParentEntity = parentIdentity;
+			message.Player = entity.Player.Identity;
+			message.EntityType = entity.Type;
+			message.Position = entity.Position;
+			message.Orientation = entity.Orientation;
 			return message;
 		}
 

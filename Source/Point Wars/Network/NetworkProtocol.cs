@@ -74,6 +74,12 @@ namespace PointWars.Network
 		public const byte PlayerNameLength = 32;
 
 		/// <summary>
+		///   The maximum allowed byte length of an UTF8-encoded player name within a packet; must be greater than the maximum player
+		///   name length as the server might assign a suffix to make player names unique.
+		/// </summary>
+		public const byte MessagePlayerNameLength = 40;
+
+		/// <summary>
 		///   The maximum allowed byte length of an UTF8-encoded server name.
 		/// </summary>
 		public const byte ServerNameLength = 32;

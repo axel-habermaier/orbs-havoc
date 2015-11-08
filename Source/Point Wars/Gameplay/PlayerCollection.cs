@@ -25,7 +25,6 @@ namespace PointWars.Gameplay
 	using System;
 	using System.Collections.Generic;
 	using Network;
-	using Platform.Logging;
 	using Platform.Memory;
 	using Utilities;
 
@@ -185,6 +184,42 @@ namespace PointWars.Gameplay
 
 			for (var i = 0; i < _players.Count; ++i)
 				_players[i].Rank = i + 1;
+		}
+
+		/// <summary>
+		///   Makes the given name unique within the list of connected players.
+		/// </summary>
+		/// <param name="player">The player to ignore, if any, when doing the uniqueness check.</param>
+		/// <param name="name">The name that should be made unique.</param>
+		public string MakeUniquePlayerName(Player player, string name)
+		{
+			var index = 2;
+			var uniqueName = name;
+
+			while (!IsUnique(player, uniqueName))
+			{
+				uniqueName = $"{name} ({index})";
+				++index;
+			}
+
+			return uniqueName;
+		}
+
+		/// <summary>
+		///   Checks whether the name is unique within the list of connected players.
+		/// </summary>
+		private bool IsUnique(Player ignoredPlayer, string name)
+		{
+			foreach (var player in _players)
+			{
+				if (player == ignoredPlayer || player.IsServerPlayer || player.LeaveReason != LeaveReason.Unknown)
+					continue;
+
+				if (TextString.DisplayEqual(player.Name, name))
+					return false;
+			}
+
+			return true;
 		}
 
 		private class PlayerComparer : IComparer<Player>

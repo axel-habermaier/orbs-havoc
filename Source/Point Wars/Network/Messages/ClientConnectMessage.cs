@@ -50,7 +50,7 @@ namespace PointWars.Network.Messages
 		public override void Serialize(ref BufferWriter writer)
 		{
 			writer.WriteByte(NetworkRevision);
-			writer.WriteString(PlayerName, NetworkProtocol.PlayerNameLength);
+			writer.WriteString(PlayerName, NetworkProtocol.MessagePlayerNameLength);
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace PointWars.Network.Messages
 		public override void Deserialize(ref BufferReader reader)
 		{
 			NetworkRevision = reader.ReadByte();
-			PlayerName = reader.ReadString(NetworkProtocol.PlayerNameLength);
+			PlayerName = reader.ReadString(NetworkProtocol.MessagePlayerNameLength);
 		}
 
 		/// <summary>
@@ -82,7 +82,7 @@ namespace PointWars.Network.Messages
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
 			Assert.ArgumentNotNullOrWhitespace(playerName, nameof(playerName));
-			Assert.That(Encoding.UTF8.GetByteCount(playerName) <= NetworkProtocol.PlayerNameLength, "Player name is too long.");
+			Assert.That(Encoding.UTF8.GetByteCount(playerName) <= NetworkProtocol.MessagePlayerNameLength, "Player name is too long.");
 
 			var message = poolAllocator.Allocate<ClientConnectMessage>();
 			message.PlayerName = playerName;

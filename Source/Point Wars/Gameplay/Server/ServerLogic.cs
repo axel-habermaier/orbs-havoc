@@ -87,7 +87,7 @@ namespace PointWars.Gameplay.Server
 			Assert.InRange(entity.Type);
 
 			entity.NetworkIdentity = _networkIdentities.Allocate();
-			var message = CreateEntityAddMessage(entity);
+			var message = EntityAddMessage.Create(_allocator, entity);
 			_gameSession.Broadcast(message);
 
 			Log.DebugIf(EnableTracing, "(Server) +{1} {0}", message.Entity, message.EntityType);
@@ -123,7 +123,7 @@ namespace PointWars.Gameplay.Server
 			// Synchronize all players
 			foreach (var player in _gameSession.Players)
 			{
-				var message = PlayerJoinMessage.Create(_allocator, player.Identity, player.Kind, player.Name);
+				var message = PlayerJoinMessage.Create(_allocator, player);
 				connection.EnqueueMessage(message);
 
 				Log.DebugIf(EnableTracing, "(Server)    {0}", message);
@@ -132,7 +132,7 @@ namespace PointWars.Gameplay.Server
 			// Synchronize all entities
 			foreach (var entity in _gameSession.SceneGraph.EnumeratePreOrder<Entity>())
 			{
-				var message = CreateEntityAddMessage(entity);
+				var message = EntityAddMessage.Create(_allocator, entity);
 				connection.EnqueueMessage(message);
 
 				Log.DebugIf(EnableTracing, "(Server)    {0}", message);
@@ -154,14 +154,11 @@ namespace PointWars.Gameplay.Server
 		{
 			Assert.ArgumentNotNullOrWhitespace(playerName, nameof(playerName));
 
-			// TODO: Assign unique names to all players.
-			// TODO: (only take those players into account with player.LeaveReason == null when checking for shared names)
-
-			var player = Player.Create(_allocator, playerName, playerKind);
+			var player = Player.Create(_allocator, _gameSession.Players.MakeUniquePlayerName(null, playerName), playerKind);
 			_gameSession.Players.Add(player);
 
 			// Broadcast the news about the new player to all clients (this message is not sent to the new client yet)
-			_gameSession.Broadcast(PlayerJoinMessage.Create(_allocator, player.Identity, player.Kind, playerName));
+			_gameSession.Broadcast(PlayerJoinMessage.Create(_allocator, player));
 
 			Log.DebugIf(EnableTracing, "(Server) Created player '{0}' ({1})", playerName, player.Identity);
 			return player;
@@ -261,20 +258,18 @@ namespace PointWars.Gameplay.Server
 		/// </summary>
 		/// <param name="player">The player whose name should be changed.</param>
 		/// <param name="playerName">The new name of the player.</param>
-		public void ChangePlayerName(Player player, string playerName)
+		public void RenamePlayer(Player player, string playerName)
 		{
 			Assert.ArgumentNotNull(player, nameof(player));
 			Assert.ArgumentNotNullOrWhitespace(playerName, nameof(playerName));
 
-			if (player.Name == playerName)
+			playerName = _gameSession.Players.MakeUniquePlayerName(player, playerName);
+			if (TextString.DisplayEqual(player.Name, playerName))
 				return;
-
-			// TODO: Assign unique names to all players.
-			// TODO: (only take those players into account with player.LeaveReason == null when checking for shared names)
 
 			Log.DebugIf(EnableTracing, "(Server) Player '{0}' ({1}) is renamed to '{2}'.", player.Name, player.Identity, playerName);
 			player.Name = playerName;
-			_gameSession.Broadcast(PlayerNameMessage.Create(_allocator, player.Identity, playerName));
+			_gameSession.Broadcast(PlayerNameMessage.Create(_allocator, player.Identity, player.Name));
 		}
 
 		/// <summary>
@@ -289,23 +284,6 @@ namespace PointWars.Gameplay.Server
 
 			_gameSession.Broadcast(PlayerChatMessage.Create(_allocator, player.Identity, message));
 			Log.DebugIf(EnableTracing, "(Server) Player '{0}' ({1}): {2}", player.Name, player.Identity, message);
-		}
-
-		/// <summary>
-		///   Creates an entity add message for the given entity.
-		/// </summary>
-		/// <param name="entity">The entity the message should be created for.</param>
-		private EntityAddMessage CreateEntityAddMessage(Entity entity)
-		{
-			Assert.NotNull(entity.Player, "Entity has no player.");
-
-			var parentIdentity = NetworkProtocol.ReservedEntityIdentity;
-			var parentEntity = entity.Parent as Entity;
-			if (parentEntity != null)
-				parentIdentity = parentEntity.NetworkIdentity;
-
-			return EntityAddMessage.Create(_allocator, entity.NetworkIdentity, entity.Player.Identity, parentIdentity,
-				entity.Type, entity.Position, entity.Orientation);
 		}
 
 		/// <summary>
