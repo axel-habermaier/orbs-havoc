@@ -37,7 +37,7 @@ namespace PointWars.Gameplay
 		public const float QuadDamageRespawenDelay = 3 * 60;
 		public const float SpeedRespawenDelay = 3 * 60;
 		public const float InvisibilityRespawenDelay = 3 * 60;
-		public const float HealthRespawenDelay = 30;
+		public const float HealthRespawenDelay = 10;
 		public const float MaxAvatarHealth = 100;
 		public const float MaxAvatarRegenerationHealth = 200;
 
@@ -45,7 +45,7 @@ namespace PointWars.Gameplay
 		{
 			Cooldown = 0.1f,
 			DepleteSpeed = 0,
-			BaseSpeed = 1200,
+			BaseSpeed = 1300,
 			WeaponType = EntityType.MiniGun,
 			MaxEnergy = 1,
 			Damage = 5

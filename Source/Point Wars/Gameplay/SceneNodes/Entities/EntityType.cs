@@ -47,13 +47,19 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		Mine,
 		ShockWave,
 		Health,
-		HorizontalWall,
-		VerticalWall,
+		LeftWall,
+		RightWall,
+		TopWall,
+		BottomWall,
 		Wall,
 		LeftTopWall,
 		RightTopWall,
 		LeftBottomWall,
 		RightBottomWall,
+		InverseLeftTopWall,
+		InverseRightTopWall,
+		InverseLeftBottomWall,
+		InverseRightBottomWall,
 		PlayerStart
 	}
 
@@ -97,13 +103,19 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		{
 			switch (type)
 			{
-				case EntityType.HorizontalWall:
-				case EntityType.VerticalWall:
+				case EntityType.LeftWall:
+				case EntityType.RightWall:
+				case EntityType.TopWall:
+				case EntityType.BottomWall:
 				case EntityType.Wall:
 				case EntityType.LeftTopWall:
 				case EntityType.RightTopWall:
 				case EntityType.LeftBottomWall:
 				case EntityType.RightBottomWall:
+				case EntityType.InverseLeftTopWall:
+				case EntityType.InverseRightTopWall:
+				case EntityType.InverseLeftBottomWall:
+				case EntityType.InverseRightBottomWall:
 					return true;
 				default:
 					return false;

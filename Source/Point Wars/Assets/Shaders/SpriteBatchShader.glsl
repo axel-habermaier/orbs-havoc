@@ -34,6 +34,6 @@ Fragment
 
 	void main()
 	{
-		OutColor = texture(Texture, TexCoords).a * Color;
+		OutColor = texture(Texture, TexCoords) * Color;
 	}
 }

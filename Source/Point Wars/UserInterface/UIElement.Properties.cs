@@ -37,7 +37,7 @@ namespace PointWars.UserInterface
 		private int _column;
 		private Dock _dock = Dock.Left;
 		private Font _font;
-		private Color _foreground = Colors.Transparent;
+		private Color _foreground = Colors.White;
 		private float _height = Single.NaN;
 		private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Stretch;
 		private Action<UIElement> _hoveredStyle;

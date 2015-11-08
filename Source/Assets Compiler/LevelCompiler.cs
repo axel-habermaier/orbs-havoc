@@ -86,10 +86,14 @@ namespace AssetsCompiler
 						var top = y > 0 && originalBlocks[x][y - 1] == EntityType.Wall;
 						var bottom = y < bitmap.Height - 1 && originalBlocks[x][y + 1] == EntityType.Wall;
 
-						if (!top || !bottom)
-							lineBlocks[x][y] = EntityType.HorizontalWall;
-						else if (!left || !right)
-							lineBlocks[x][y] = EntityType.VerticalWall;
+						if (!right && left)
+							lineBlocks[x][y] = EntityType.LeftWall;
+						else if (right && !left)
+							lineBlocks[x][y] = EntityType.RightWall;
+						else if (!top && bottom)
+							lineBlocks[x][y] = EntityType.BottomWall;
+						else if (top && !bottom)
+							lineBlocks[x][y] = EntityType.TopWall;
 
 						edgeBlocks[x][y] = lineBlocks[x][y];
 					}
@@ -108,23 +112,27 @@ namespace AssetsCompiler
 						var right = x < bitmap.Width - 1 ? lineBlocks[x + 1][y] : EntityType.None;
 						var top = y > 0 ? lineBlocks[x][y - 1] : EntityType.None;
 						var bottom = y < bitmap.Height - 1 ? lineBlocks[x][y + 1] : EntityType.None;
+						var topLeft = x > 0 && y > 0 ? lineBlocks[x - 1][y - 1] : EntityType.None;
+						var topRight = x < bitmap.Width - 1 && y > 0 ? lineBlocks[x + 1][y - 1] : EntityType.None;
+						var bottomLeft = x > 0 && y < bitmap.Height - 1 ? lineBlocks[x - 1][y + 1] : EntityType.None;
+						var bottomRight = x < bitmap.Width - 1 && y < bitmap.Height - 1 ? lineBlocks[x + 1][y + 1] : EntityType.None;
 
-						if (right == EntityType.HorizontalWall && bottom == EntityType.VerticalWall)
+						if (right.IsWall() && bottom.IsWall() && !left.IsWall() && !top.IsWall())
 							edgeBlocks[x][y] = EntityType.LeftTopWall;
-						else if (right.IsWall() && bottom.IsWall() && !left.IsWall() && !top.IsWall())
-							edgeBlocks[x][y] = EntityType.LeftTopWall;
-						else if (left == EntityType.HorizontalWall && bottom == EntityType.VerticalWall)
+						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !bottomRight.IsWall())
+							edgeBlocks[x][y] = EntityType.InverseLeftTopWall;
+						else if (left.IsWall() && bottom.IsWall() && !right.IsWall() && !top.IsWall())
 							edgeBlocks[x][y] = EntityType.RightTopWall;
-						else if (!right.IsWall() && bottom.IsWall() && left.IsWall() && !top.IsWall())
-							edgeBlocks[x][y] = EntityType.RightTopWall;
-						else if (right == EntityType.HorizontalWall && top == EntityType.VerticalWall)
+						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !bottomLeft.IsWall())
+							edgeBlocks[x][y] = EntityType.InverseRightTopWall;
+						else if (right.IsWall() && top.IsWall() && !left.IsWall() && !bottom.IsWall())
 							edgeBlocks[x][y] = EntityType.LeftBottomWall;
-						else if (right.IsWall() && !bottom.IsWall() && !left.IsWall() && top.IsWall())
-							edgeBlocks[x][y] = EntityType.LeftBottomWall;
-						else if (left == EntityType.HorizontalWall && top == EntityType.VerticalWall)
+						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !topRight.IsWall())
+							edgeBlocks[x][y] = EntityType.InverseLeftBottomWall;
+						else if (left.IsWall() && top.IsWall() && !right.IsWall() && !bottom.IsWall())
 							edgeBlocks[x][y] = EntityType.RightBottomWall;
-						else if (!right.IsWall() && !bottom.IsWall() && left.IsWall() && top.IsWall())
-							edgeBlocks[x][y] = EntityType.RightBottomWall;
+						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !topLeft.IsWall())
+							edgeBlocks[x][y] = EntityType.InverseRightBottomWall;
 					}
 				}
 

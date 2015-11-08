@@ -255,6 +255,7 @@ namespace PointWars.Views
 
 			_layoutRoot = new Border
 			{
+				Foreground = Colors.White,
 				Background = new Color(0xEE222222),
 				VerticalAlignment = VerticalAlignment.Top,
 				Child = new DockPanel

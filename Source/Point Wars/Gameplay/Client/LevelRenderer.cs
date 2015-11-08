@@ -53,43 +53,82 @@ namespace PointWars.Gameplay.Client
 			const int texSize = 128;
 			var quads = new List<Quad>(10000);
 
-			var horizontalTexCoords = new Rectangle(texSize * 2 / texWidth, texSize / texHeight, texSize / texWidth, texSize / texHeight);
-			var verticalTexCoords = new Rectangle(texSize * 2 / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
-			var leftTopWallTexCoords = new Rectangle(0 / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
-			var rightTopWallTexCoords = new Rectangle(texSize / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
-			var leftBottomWallTexCoords = new Rectangle(0 / texWidth, texSize / texHeight, texSize / texWidth, texSize / texHeight);
-			var rightBottomWallTexCoords = new Rectangle(texSize / texWidth, texSize / texHeight, texSize / texWidth, texSize / texHeight);
+			var curvedWallTexCoords = new Rectangle(0 / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
+			var inverseCurvedTopWallTexCoords = new Rectangle(texSize / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
+			var straightWallTexCoords = new Rectangle(texSize * 2 / texWidth, 0, texSize / texWidth, texSize / texHeight);
+			var wallTexCoords = new Rectangle(texSize * 3 / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
 
 			for (var x = 0; x < level.Width; ++x)
 			{
 				for (var y = 0; y < level.Height; ++y)
 				{
 					Rectangle texCoords;
+					float  rotation ;
+
 					switch (level[x, y])
 					{
-						case EntityType.VerticalWall:
-							texCoords = verticalTexCoords;
+						case EntityType.Wall:
+							texCoords = wallTexCoords;
+							rotation = 0;
 							break;
-						case EntityType.HorizontalWall:
-							texCoords = horizontalTexCoords;
+						case EntityType.LeftWall:
+							texCoords = straightWallTexCoords;
+							rotation = 180;
+							break;
+						case EntityType.RightWall:
+							texCoords = straightWallTexCoords;
+							rotation = 0;
+							break;
+						case EntityType.TopWall:
+							texCoords = straightWallTexCoords;
+							rotation = 270;
+							break;
+						case EntityType.BottomWall:
+							texCoords = straightWallTexCoords;
+							rotation = 90;
 							break;
 						case EntityType.LeftTopWall:
-							texCoords = leftTopWallTexCoords;
+							texCoords = curvedWallTexCoords;
+							rotation = 0;
 							break;
 						case EntityType.RightTopWall:
-							texCoords = rightTopWallTexCoords;
+							texCoords = curvedWallTexCoords;
+							rotation = 90;
 							break;
 						case EntityType.LeftBottomWall:
-							texCoords = leftBottomWallTexCoords;
+							texCoords = curvedWallTexCoords;
+							rotation = 270;
 							break;
 						case EntityType.RightBottomWall:
-							texCoords = rightBottomWallTexCoords;
+							texCoords = curvedWallTexCoords;
+							rotation = 180;
+							break;
+						case EntityType.InverseLeftTopWall:
+							texCoords = inverseCurvedTopWallTexCoords;
+							rotation = 0;
+							break;
+						case EntityType.InverseRightTopWall:
+							texCoords = inverseCurvedTopWallTexCoords;
+							rotation = 90;
+							break;
+						case EntityType.InverseLeftBottomWall:
+							texCoords = inverseCurvedTopWallTexCoords;
+							rotation = 270;
+							break;
+						case EntityType.InverseRightBottomWall:
+							texCoords = inverseCurvedTopWallTexCoords;
+							rotation = 180;
 							break;
 						default:
 							continue;
 					}
 
-					quads.Add(new Quad(level.GetBlockArea(x, y), new Color(0xFF130C49), texCoords));
+					var area = new Rectangle(-Level.BlockSize / 2, -Level.BlockSize / 2, Level.BlockSize, Level.BlockSize);
+					var quad = new Quad(area, new Color(0xFF130C49), texCoords);
+					var matrix = Matrix3x2.CreateRotation(MathUtils.DegToRad(rotation)) * Matrix3x2.CreateTranslation(level.GetBlockArea(x, y).Center);
+
+					Quad.Transform(ref quad, ref matrix);
+					quads.Add(quad);
 				}
 			}
 

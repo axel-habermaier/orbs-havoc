@@ -87,6 +87,20 @@ namespace AssetsCompiler
 							foreach (var glyph in glyphs.Where(glyph => glyph.Bitmap != null))
 								graphics.DrawImage(glyph.Bitmap, new Point(glyph.Area.Left, glyph.Area.Top));
 						}
+
+						for (var y = 0; y < bitmap.Height; y++)
+						{
+							for (var x = 0; x < bitmap.Width; x++)
+							{
+								var pixelColor = bitmap.GetPixel(x, y);
+								var a = pixelColor.A;
+								var r = (byte)(255 - pixelColor.R);
+								var g = (byte)(255 - pixelColor.G);
+								var b = (byte)(255 - pixelColor.B);
+								bitmap.SetPixel(x, y, Color.FromArgb(a, r, g, b));
+							}
+						}
+
 						TextureCompiler.Compile(writer, bitmap);
 					}
 

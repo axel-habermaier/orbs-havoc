@@ -170,11 +170,8 @@ namespace PointWars.Utilities
 			var closestY = MathUtils.Clamp(Position.Y, rectangle.Top, rectangle.Bottom);
 			var closest = new Vector2(closestX, closestY);
 
-			// Calculate the distance between the circle's center and the closest point
-			var distance = Position - closest;
-
 			// There is an intersection only if the distance is less than or equal to the circle's radius
-			return distance.LengthSquared() <= Radius * Radius;
+			return Vector2.DistanceSquared(Position, closest) <= Radius * Radius;
 		}
 
 		/// <summary>
