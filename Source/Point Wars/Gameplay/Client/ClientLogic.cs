@@ -23,6 +23,7 @@
 namespace PointWars.Gameplay.Client
 {
 	using System;
+	using System.Net.NetworkInformation;
 	using System.Numerics;
 	using Assets;
 	using Network;
@@ -274,6 +275,7 @@ namespace PointWars.Gameplay.Client
 			player.Kills = message.Kills;
 			player.Deaths = message.Deaths;
 			player.Ping = message.Ping;
+			player.Rank = message.Rank;
 
 			_views.Scoreboard.OnPlayersChanged();
 		}

@@ -195,6 +195,9 @@ namespace PointWars.Gameplay
 			}
 
 			SceneGraph.ExecuteBehaviors(elapsedSeconds);
+
+			if (ServerMode)
+				Players.UpdatePlayerRanks();
 		}
 
 		/// <summary>

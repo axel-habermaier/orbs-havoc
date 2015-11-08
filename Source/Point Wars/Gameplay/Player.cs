@@ -27,6 +27,7 @@ namespace PointWars.Gameplay
 	using SceneNodes.Entities;
 	using Utilities;
 
+
 	/// <summary>
 	///   Represents a player that is participating in a game session.
 	/// </summary>
@@ -46,6 +47,11 @@ namespace PointWars.Gameplay
 		///   Gets or sets the player's ping.
 		/// </summary>
 		public int Ping { get; set; }
+
+		/// <summary>
+		///   Gets or sets the player's rank. At the end of a game session, the player with rank 1 wins.
+		/// </summary>
+		public int Rank { get; set; }
 
 		/// <summary>
 		///   Gets or sets the reason why the player left the game session.

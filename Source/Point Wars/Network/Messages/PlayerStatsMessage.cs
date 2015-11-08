@@ -50,6 +50,11 @@ namespace PointWars.Network.Messages
 		public ushort Ping { get; private set; }
 
 		/// <summary>
+		///   Gets the player's rank.
+		/// </summary>
+		public byte Rank { get; private set; }
+
+		/// <summary>
 		///   Gets the player whose stats are updated.
 		/// </summary>
 		public NetworkIdentity Player { get; private set; }
@@ -64,6 +69,7 @@ namespace PointWars.Network.Messages
 			writer.WriteUInt16(Kills);
 			writer.WriteUInt16(Deaths);
 			writer.WriteUInt16(Ping);
+			writer.WriteByte(Rank);
 		}
 
 		/// <summary>
@@ -76,6 +82,7 @@ namespace PointWars.Network.Messages
 			Kills = reader.ReadUInt16();
 			Deaths = reader.ReadUInt16();
 			Ping = reader.ReadUInt16();
+			Rank = reader.ReadByte();
 		}
 
 		/// <summary>
@@ -100,12 +107,14 @@ namespace PointWars.Network.Messages
 			Assert.InRange(player.Kills, 0, UInt16.MaxValue);
 			Assert.InRange(player.Deaths, 0, UInt16.MaxValue);
 			Assert.InRange(player.Ping, 0, UInt16.MaxValue);
+			Assert.InRange(player.Rank, 1, NetworkProtocol.MaxPlayers);
 
 			var message = poolAllocator.Allocate<PlayerStatsMessage>();
 			message.Player = player.Identity;
 			message.Kills = (ushort)player.Kills;
 			message.Deaths = (ushort)player.Deaths;
 			message.Ping = (ushort)player.Ping;
+			message.Rank = (byte)player.Rank;
 			return message;
 		}
 

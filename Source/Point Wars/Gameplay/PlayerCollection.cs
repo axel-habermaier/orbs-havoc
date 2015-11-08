@@ -22,8 +22,10 @@
 
 namespace PointWars.Gameplay
 {
+	using System;
 	using System.Collections.Generic;
 	using Network;
+	using Platform.Logging;
 	using Platform.Memory;
 	using Utilities;
 
@@ -172,6 +174,45 @@ namespace PointWars.Gameplay
 		protected override void OnDisposing()
 		{
 			_players.SafeDisposeAll();
+		}
+
+		/// <summary>
+		///   Updates the ranks of the players.
+		/// </summary>
+		public void UpdatePlayerRanks()
+		{
+			_players.Sort(PlayerComparer.Instance);
+
+			for (var i = 0; i < _players.Count; ++i)
+				_players[i].Rank = i + 1;
+		}
+
+		private class PlayerComparer : IComparer<Player>
+		{
+			public static readonly PlayerComparer Instance = new PlayerComparer();
+
+			public int Compare(Player x, Player y)
+			{
+				// The server player is always the last one
+				if (x.IsServerPlayer)
+					return 1;
+
+				if (y.IsServerPlayer)
+					return -1;
+
+				// First rank by kills; higher kill count = lower rank
+				var result = x.Kills.CompareTo(y.Kills);
+				if (result != 0)
+					return -result;
+
+				// Then rank by deaths; higher death count = higher rank
+				result = x.Deaths.CompareTo(y.Deaths);
+				if (result != 0)
+					return result;
+
+				// If all else is equal, then rank by name in order to guarantee fixed ranks 
+				return String.Compare(x.Name, y.Name, StringComparison.Ordinal);
+			}
 		}
 	}
 }

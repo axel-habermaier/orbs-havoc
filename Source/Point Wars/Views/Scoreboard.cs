@@ -84,19 +84,16 @@ namespace PointWars.Views
 			foreach (var row in _rows)
 				row.Hide();
 
-			var i = 0;
 			foreach (var player in Views.Game.GameSession.Players)
 			{
-				if (player.IsServerPlayer)
+				if (player.IsServerPlayer || player.Rank == 0)
 					continue;
 
-				_rows[i].Show();
-				_rows[i].PlayerName.Text = player.Name;
-				_rows[i].Kills.Text = player.Kills.ToString();
-				_rows[i].Deaths.Text = player.Deaths.ToString();
-				_rows[i].Ping.Text = player.Ping.ToString();
-
-				++i;
+				_rows[player.Rank - 1].Show();
+				_rows[player.Rank - 1].PlayerName.Text = player.Name;
+				_rows[player.Rank - 1].Kills.Text = player.Kills.ToString();
+				_rows[player.Rank - 1].Deaths.Text = player.Deaths.ToString();
+				_rows[player.Rank - 1].Ping.Text = player.Ping.ToString();
 			}
 
 			_dirty = false;

@@ -281,6 +281,7 @@ namespace PointWars.Gameplay.Server
 			}
 		}
 
+
 		/// <summary>
 		///   Checks whether any server errors occurred. If so, stops the server and raises an exception.
 		/// </summary>
