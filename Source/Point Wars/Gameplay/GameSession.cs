@@ -74,6 +74,11 @@ namespace PointWars.Gameplay
 		public LevelRenderer LevelRenderer { get; private set; }
 
 		/// <summary>
+		///   Gets the particle effect templates.
+		/// </summary>
+		public ParticleEffects Effects { get; private set; }
+
+		/// <summary>
 		///   Gets the level that is used by the game session.
 		/// </summary>
 		public Level Level { get; private set; }
@@ -163,6 +168,7 @@ namespace PointWars.Gameplay
 		{
 			ServerMode = false;
 			Players = new PlayerCollection(Allocator, serverMode: false);
+			Effects = new ParticleEffects();
 		}
 
 		/// <summary>
@@ -203,6 +209,11 @@ namespace PointWars.Gameplay
 
 			if (ServerMode)
 				Players.UpdatePlayerRanks();
+			else
+			{
+				foreach (var particleNode in SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
+					particleNode.Update(elapsedSeconds);
+			}
 		}
 
 		/// <summary>
@@ -212,6 +223,7 @@ namespace PointWars.Gameplay
 		{
 			SceneGraph.SafeDispose();
 			Players.SafeDispose();
+			Effects.SafeDispose();
 		}
 
 		/// <summary>

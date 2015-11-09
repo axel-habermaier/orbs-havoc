@@ -26,6 +26,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	using System.Numerics;
 	using Assets;
 	using Behaviors;
+	using Client;
 	using Network.Messages;
 	using Rendering;
 	using Utilities;
@@ -119,6 +120,9 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		{
 			Player.RemainingRespawnDelay = Game.RespawnDelay;
 			Player.Avatar = null;
+
+			if (!GameSession.ServerMode)
+				SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, GameSession.Effects.AvatarExplosion, WorldPosition));
 		}
 
 		/// <summary>

@@ -25,6 +25,7 @@ namespace PointWars.Rendering
 	using System;
 	using System.Collections.Generic;
 	using System.Numerics;
+	using System.Runtime.InteropServices;
 	using Assets;
 	using Platform;
 	using Platform.Graphics;
@@ -38,7 +39,7 @@ namespace PointWars.Rendering
 	/// <summary>
 	///   Efficiently draws large amounts of 2D sprites by batching together quads with the same texture.
 	/// </summary>
-	public sealed class Renderer : DisposableObject
+	public sealed unsafe class Renderer : DisposableObject
 	{
 		/// <summary>
 		///   The maximum number of quads that can be drawn.
@@ -73,7 +74,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   The list of all quads.
 		/// </summary>
-		private readonly Quad[] _quads = new Quad[MaxQuads];
+		private readonly Quad* _quads;
 
 		/// <summary>
 		///   The vertex buffer that is used for drawing.
@@ -139,9 +140,13 @@ namespace PointWars.Rendering
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window the renderer should belong to.</param>
-		public unsafe Renderer(Window window)
+		public Renderer(Window window)
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
+
+			// Allocate the memory for the quads
+			_quads = (Quad*)Marshal.AllocHGlobal(sizeof(Quad) * MaxQuads).ToPointer();
+			GC.AddMemoryPressure(sizeof(Quad) * MaxQuads);
 
 			// Initialize the indices; this can be done once, so after the indices are copied to the index buffer,
 			// we never have to change the index buffer again
@@ -234,6 +239,9 @@ namespace PointWars.Rendering
 			_projectionMatrixBuffer.SafeDispose();
 			_positionOffsetBuffer.SafeDispose();
 			_window.Resized -= UpdateProjectionMatrix;
+
+			Marshal.FreeHGlobal(new IntPtr(_quads));
+			GC.RemoveMemoryPressure(sizeof(Quad) * MaxQuads);
 		}
 
 		/// <summary>
@@ -465,9 +473,34 @@ namespace PointWars.Rendering
 			ChangeSection(texture);
 
 			// Add the quads to the list and update the quad counts
-			Array.Copy(quads, 0, _quads, _numQuads, count);
+			fixed (Quad* ptr = quads)
+				MemCopy.Copy(_quads + _numQuads, ptr, count * sizeof(Quad));
+
 			_numQuads += count;
 			_sections[_currentSection].NumQuads += count;
+		}
+
+		/// <summary>
+		///   Allocates the given number of quads and returns a pointer to the memory location the quad data should be written to. The
+		///   written number of quads must match the specified count exactly, otherwise undefined behavior occurs.
+		/// </summary>
+		/// <param name="count">The number of quads that will be written.</param>
+		/// <param name="texture">The texture that should be used to draw the quads.</param>
+		public unsafe Quad* AddQuads(int count, Texture texture)
+		{
+			Assert.ArgumentNotNull(texture, nameof(texture));
+			Assert.ArgumentSatisfies(count > 0, nameof(count), "At least one quad must be drawn.");
+
+			if (!CheckQuadCount(count))
+				throw new OutOfMemoryException($"Failed to allocated '{count}' additional quads.");
+
+			ChangeSection(texture);
+
+			var quads = &_quads[_numQuads];
+			_numQuads += count;
+			_sections[_currentSection].NumQuads += count;
+
+			return quads;
 		}
 
 		/// <summary>
@@ -489,7 +522,7 @@ namespace PointWars.Rendering
 
 			// Create the fullscreen quad, rotating it by 180 degrees as OpenGL draws it upside-down otherwise...
 			var rectangle = new Rectangle(Vector2.Zero, _window.Size);
-            var quad = new Quad(rectangle, Colors.White, 0, 1, 1, 0);
+			var quad = new Quad(rectangle, Colors.White, 0, 1, 1, 0);
 
 			// Add the quad to the list
 			_quads[_numQuads++] = quad;
@@ -600,7 +633,7 @@ namespace PointWars.Rendering
 			Assert.ArgumentInRange(quadCount, 0, MaxQuads, nameof(quadCount));
 
 			// Check whether we would overflow if we added the given batch.
-			var tooManyQuads = _numQuads + quadCount >= _quads.Length;
+			var tooManyQuads = _numQuads + quadCount >= MaxQuads;
 
 			if (tooManyQuads)
 				Log.Warn("Renderer buffer overflow: {0} out of {1} allocated quads in use (could not add {2} quad(s)).",
@@ -612,39 +645,33 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Copies the quads to the vertex buffer, sorted by texture.
 		/// </summary>
-		private unsafe void UpdateBuffers()
+		private void UpdateBuffers()
 		{
 			var vertexData = (Quad*)_vertexBuffer.Map();
-			fixed (Quad* quads = _quads)
+			for (var i = 0; i < _numSectionLists; ++i)
 			{
-				for (var i = 0; i < _numSectionLists; ++i)
+				var section = _sectionLists[i].FirstSection;
+				while (section != -1)
 				{
-					var section = _sectionLists[i].FirstSection;
-					while (section != -1)
-					{
-						// Calculate the offsets into the arrays and the amount of bytes to copy
-						var quadOffset = quads + _sections[section].Offset;
-						var bytes = _sections[section].NumQuads * sizeof(Quad);
+					// Calculate the offsets into the arrays and the amount of bytes to copy
+					var quadOffset = _quads + _sections[section].Offset;
+					var bytes = _sections[section].NumQuads * sizeof(Quad);
 
-						// Copy the entire section to the vertex buffer
-						MemCopy.Copy(vertexData, quadOffset, bytes);
+					// Copy the entire section to the vertex buffer
+					MemCopy.Copy(vertexData, quadOffset, bytes);
 
-						// Update the section list's total quad count
-						_sectionLists[i].NumQuads += _sections[section].NumQuads;
+					// Update the section list's total quad count
+					_sectionLists[i].NumQuads += _sections[section].NumQuads;
 
-						// Update the offset and advance to the next section
-						vertexData += _sections[section].NumQuads;
-						section = _sections[section].Next;
-					}
+					// Update the offset and advance to the next section
+					vertexData += _sections[section].NumQuads;
+					section = _sections[section].Next;
 				}
 			}
 
-			fixed (Vector2* offsets = _positionOffsets)
-			{
-				var buffer = (byte*)_positionOffsetBuffer.Map();
-				for (var i = 0; i < _numPositionOffsets; ++i, buffer += _positionOffsetBuffer.ElementSize)
-					*(Vector2*)buffer = offsets[i];
-			}
+			var buffer = (byte*)_positionOffsetBuffer.Map();
+			for (var i = 0; i < _numPositionOffsets; ++i, buffer += _positionOffsetBuffer.ElementSize)
+				*(Vector2*)buffer = _positionOffsets[i];
 		}
 
 		/// <summary>

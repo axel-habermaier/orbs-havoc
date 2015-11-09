@@ -80,11 +80,13 @@
     <Compile Include="Gameplay\GameSession.cs" />
     <Compile Include="Gameplay\Player.cs" />
     <Compile Include="Gameplay\PlayerCollection.cs" />
+    <Compile Include="Gameplay\Client\ParticleEffects.cs" />
     <Compile Include="Gameplay\SceneNodes\RootNode.cs" />
     <Compile Include="Gameplay\SceneGraph.cs" />
     <Compile Include="Gameplay\SceneNodes\SceneNode.cs" />
     <Compile Include="Gameplay\Behaviors\TimeToLiveBehavior.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.cs" />
+    <Compile Include="Gameplay\SceneNodes\ParticleEffectNode.cs" />
     <Compile Include="Gameplay\SceneNodes\SpriteNode.cs" />
     <Compile Include="Gameplay\Server\Client.cs" />
     <Compile Include="Gameplay\Server\Client.Unsupported.cs">
@@ -142,6 +144,13 @@
     <Compile Include="Platform\Memory\BufferOverflowException.cs" />
     <Compile Include="Rendering\BloomEffect.cs" />
     <Compile Include="Rendering\FullscreenEffect.cs" />
+    <Compile Include="Rendering\Particles\Emitter.cs" />
+    <Compile Include="Rendering\Particles\FadeOutModifier.cs" />
+    <Compile Include="Rendering\Particles\Modifier.cs" />
+    <Compile Include="Rendering\Particles\ParticleEffectTemplate.cs" />
+    <Compile Include="Rendering\Particles\ScaleModifier.cs" />
+    <Compile Include="Rendering\Particles\ParticleCollection.cs" />
+    <Compile Include="Rendering\Particles\ParticleEffect.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
     <Compile Include="UserInterface\Controls\Button.cs" />
@@ -195,6 +204,7 @@
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
     <Compile Include="Utilities\RandomNumberGenerator.cs" />
+    <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringCache.cs" />
     <Compile Include="Views\HudOverlay.cs" />
     <Compile Include="Views\RespawnOverlay.cs" />

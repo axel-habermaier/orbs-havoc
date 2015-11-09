@@ -185,8 +185,6 @@ namespace PointWars.Network
 		/// <param name="message">The message that should be sent.</param>
 		public void EnqueueMessage(Message message)
 		{
-			CheckAccess();
-
 			using (message)
 				_outgoingMessages.Enqueue(message);
 		}

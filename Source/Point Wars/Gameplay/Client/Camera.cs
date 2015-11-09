@@ -24,6 +24,7 @@ namespace PointWars.Gameplay.Client
 {
 	using System.Numerics;
 	using Platform;
+	using Platform.Graphics;
 	using Rendering;
 	using SceneNodes;
 	using Utilities;
@@ -59,16 +60,27 @@ namespace PointWars.Gameplay.Client
 		{
 			Assert.ArgumentNotNull(renderer, nameof(renderer));
 
+			// The avatar, if alive, should always be at the center of the screen
 			var avatar = _gameSession.Players?.LocalPlayer?.Avatar;
 			if (avatar != null)
 				_position = -avatar.WorldPosition;
 
 			renderer.PositionOffset = _position + new Vector2(MathUtils.Round(_window.Size.Width / 2), MathUtils.Round(_window.Size.Height / 2));
+
+			// Draw the level first; everything else is drawn above
 			_gameSession.LevelRenderer.Draw(renderer);
 
+			// Draw the entity sprites next, using layers to control draw order
 			foreach (var spriteNode in _gameSession.SceneGraph.EnumeratePostOrder<SpriteNode>())
 				spriteNode.Draw(renderer);
 
+			// Draw the particles last, on top of everything, using additive blending
+			renderer.BlendState = BlendState.Additive;
+			renderer.Layer = 10000;
+			foreach (var particleNode in _gameSession.SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
+				particleNode.Draw(renderer);
+
+			renderer.BlendState = BlendState.Premultiplied;
 			renderer.PositionOffset = Vector2.Zero;
 		}
 	}

@@ -162,8 +162,8 @@ namespace PointWars.Rendering
 				_temporaryTarget1.SafeDispose();
 				_temporaryTarget2.SafeDispose();
 
-				_temporaryTarget1 = new RenderTarget(size / 2);
-				_temporaryTarget2 = new RenderTarget(size / 2);
+				_temporaryTarget1 = new RenderTarget(size);
+				_temporaryTarget2 = new RenderTarget(size);
 			}
 
 			if (_dirty)

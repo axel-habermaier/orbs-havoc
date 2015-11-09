@@ -35,22 +35,22 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   The red component of the color.
 		/// </summary>
-		public readonly byte Red;
+		public byte Red;
 
 		/// <summary>
 		///   The green component of the color.
 		/// </summary>
-		public readonly byte Green;
+		public byte Green;
 
 		/// <summary>
 		///   The blue component of the color.
 		/// </summary>
-		public readonly byte Blue;
+		public byte Blue;
 
 		/// <summary>
 		///   The alpha component of the color.
 		/// </summary>
-		public readonly byte Alpha;
+		public byte Alpha;
 
 		/// <summary>
 		///   Initializes a new instance.

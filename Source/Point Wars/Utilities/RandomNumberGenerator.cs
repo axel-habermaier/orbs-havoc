@@ -24,6 +24,7 @@ namespace PointWars.Utilities
 {
 	using System;
 	using System.Collections;
+	using System.Numerics;
 
 	/// <summary>
 	///   A random number generator that uses the FastRand algorithm to generate random values.
@@ -112,18 +113,12 @@ namespace PointWars.Utilities
 		}
 
 		/// <summary>
-		///   Gets the next random three-dimensional unit vector.
+		///   Gets the next random two-dimensional unit vector.
 		/// </summary>
 		/// <param name="vector">A pointer to an array of three floating point values where the resulting unit vector should be stored.</param>
-		public static unsafe void NextUnitVector(float* vector)
+		public static unsafe void NextUnitVector(Vector2* vector)
 		{
-			var theta = NextSingle(0.0f, MathUtils.TwoPi);
-			var r = MathUtils.Sqrt(NextSingle(0.0f, 1.0f));
-			var z = MathUtils.Sqrt(1.0f - r * r) * (NextSingle() > 0.5f ? -1.0f : 1.0f);
-
-			vector[0] = r * MathUtils.Cos(theta);
-			vector[1] = r * MathUtils.Sin(theta);
-			vector[2] = z;
+			*vector = MathUtils.Rotate(Vector2.UnitX, NextSingle(0.0f, MathUtils.TwoPi));
 		}
 	}
 }

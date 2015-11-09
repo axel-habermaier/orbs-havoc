@@ -22,6 +22,7 @@
 
 namespace PointWars.Platform.Memory
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
@@ -37,12 +38,12 @@ namespace PointWars.Platform.Memory
 	/// <typeparam name="T">The type of the pooled objects.</typeparam>
 	[DebuggerDisplay("{_pooledObjects.Count} of {_allocationCount} available ({typeof(T)})")]
 	public sealed class ObjectPool<T> : ObjectPool
-		where T : class, new()
+		where T : class
 	{
 #if DEBUG
-	/// <summary>
-	///   The allocated objects that are tracked in debug builds so that memory leaks can be debugged more easily.
-	/// </summary>
+		/// <summary>
+		///   The allocated objects that are tracked in debug builds so that memory leaks can be debugged more easily.
+		/// </summary>
 		private readonly List<T> _allocatedObjects = new List<T>();
 #endif
 
@@ -57,16 +58,24 @@ namespace PointWars.Platform.Memory
 		private int _allocationCount;
 
 		/// <summary>
+		///   The function that is used by the pool to allocate a new instance.
+		/// </summary>
+		private readonly Func<T> _instanceCreator;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="instanceCreator">The function that should be used by the pool to allocate a new instance.</param>
 		/// <param name="hasGlobalLifetime">
 		///   Indicates whether the object pool should have global lifetime and should be
 		///   disposed automatically during application shutdown.
 		/// </param>
-		public ObjectPool(bool hasGlobalLifetime = false)
+		public ObjectPool(Func<T> instanceCreator = null, bool hasGlobalLifetime = false)
 		{
 			if (hasGlobalLifetime)
 				AddGlobalPool(this);
+
+			_instanceCreator = instanceCreator ?? Activator.CreateInstance<T>;
 		}
 
 		/// <summary>
@@ -80,7 +89,7 @@ namespace PointWars.Platform.Memory
 			if (_pooledObjects.Count == 0)
 			{
 				++_allocationCount;
-				obj = new T();
+				obj = _instanceCreator();
 #if DEBUG
 				_allocatedObjects.Add(obj);
 #endif
