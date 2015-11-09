@@ -23,6 +23,7 @@
 namespace PointWars.Platform.Graphics
 {
 	using Logging;
+	using Memory;
 	using Rendering;
 	using Utilities;
 	using static OpenGL3;
@@ -101,6 +102,8 @@ namespace PointWars.Platform.Graphics
 			var buffer = GL_COLOR_ATTACHMENT0;
 			glDrawBuffers(1, &buffer);
 			CheckErrors();
+
+			State.RenderTarget = null;
 		}
 
 		/// <summary>
@@ -230,6 +233,9 @@ namespace PointWars.Platform.Graphics
 
 			Unset(ref State.RenderTarget, this);
 			Deallocate(glDeleteFramebuffers, Handle);
+
+			if (!IsBackBuffer)
+				Texture.SafeDispose();
 		}
 	}
 }

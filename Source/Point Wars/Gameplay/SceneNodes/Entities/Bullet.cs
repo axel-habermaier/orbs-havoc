@@ -71,7 +71,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		/// <param name="player">The player the bullet belongs to.</param>
 		/// <param name="initialPosition">The initial position of the bullet.</param>
 		/// <param name="initialVelocity">The initial velocity of the bullet.</param>
-		public static Bullet Create(GameSession gameSession, Player player, Vector2 initialPosition, Vector2 initialVelocity)
+		/// <param name="orientation">The bullet's orientation.</param>
+		public static Bullet Create(GameSession gameSession, Player player, Vector2 initialPosition, Vector2 initialVelocity, float orientation)
 		{
 			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
 			Assert.ArgumentNotNull(player, nameof(player));
@@ -81,13 +82,14 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			bullet.Player = player;
 			bullet.Position = initialPosition;
 			bullet.Velocity = initialVelocity;
+			bullet.Orientation = orientation;
 
 			gameSession.SceneGraph.Add(bullet);
 
 			if (gameSession.ServerMode)
 				bullet.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, 8));
 			else
-				SpriteNode.Create(gameSession.Allocator, bullet, AssetBundle.Bullet, Colors.CornflowerBlue);
+				SpriteNode.Create(gameSession.Allocator, bullet, AssetBundle.Bullet, new Color(0xFF00EDFF), 500);
 
 			return bullet;
 		}

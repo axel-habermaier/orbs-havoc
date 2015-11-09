@@ -170,7 +170,7 @@ namespace PointWars.Platform.Memory
 		{
 			Assert.NotNull(_buffer.Array, "No buffer has been set for writing.");
 			if (!CanWrite(size))
-				throw new IndexOutOfRangeException("Attempted to write past the end of the buffer.");
+				throw new BufferOverflowException();
 		}
 
 		/// <summary>
@@ -425,7 +425,7 @@ namespace PointWars.Platform.Memory
 				serializer(ref this, obj);
 				return true;
 			}
-			catch (IndexOutOfRangeException)
+			catch (BufferOverflowException)
 			{
 				_writePosition = previousWritePosition;
 				_maxWritePosition = previousMaxWritePosition;

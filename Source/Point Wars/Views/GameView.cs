@@ -65,6 +65,11 @@ namespace PointWars.Views
 		public IPEndPoint ServerEndPoint { get; private set; }
 
 		/// <summary>
+		///   Gets a value indicating whether a game session is currently running.
+		/// </summary>
+		public bool IsRunning => GameSession != null;
+
+		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
@@ -184,13 +189,13 @@ namespace PointWars.Views
 		/// <summary>
 		///   Draws the game session.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		/// <param name="renderer">The renderer that should be used to draw the view.</param>
+		public void Draw(Renderer renderer)
 		{
 			if (_clientLogic == null || !_clientLogic.IsSynced)
 				return;
 
-			_camera.Draw(spriteBatch);
+			_camera.Draw(renderer);
 		}
 
 		/// <summary>

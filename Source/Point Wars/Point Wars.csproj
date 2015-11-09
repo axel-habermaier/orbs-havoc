@@ -139,6 +139,9 @@
     <Compile Include="Network\ServerQuitException.cs" />
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
+    <Compile Include="Platform\Memory\BufferOverflowException.cs" />
+    <Compile Include="Rendering\BloomEffect.cs" />
+    <Compile Include="Rendering\FullscreenEffect.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
     <Compile Include="UserInterface\Controls\Button.cs" />
@@ -281,7 +284,7 @@
     <Compile Include="Rendering\Colors.cs" />
     <Compile Include="UserInterface\Font.cs" />
     <Compile Include="Rendering\Quad.cs" />
-    <Compile Include="Rendering\SpriteBatch.cs" />
+    <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Scripting\Binding.cs" />
     <Compile Include="Scripting\BindingCollection.cs" />
     <Compile Include="Scripting\CommandLine.cs" />

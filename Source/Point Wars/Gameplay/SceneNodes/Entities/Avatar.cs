@@ -192,7 +192,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 					avatar.AddBehavior(avatar.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
 			}
 			else
-				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, Colors.YellowGreen);
+				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, new Color(0xFFFFD800), 200);
 
 			return avatar;
 		}

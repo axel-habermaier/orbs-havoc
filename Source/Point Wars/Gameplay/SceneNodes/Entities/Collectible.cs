@@ -55,7 +55,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			if (gameSession.ServerMode)
 				collectible.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, 16));
 			else
-				SpriteNode.Create(gameSession.Allocator, collectible, AssetBundle.Health, Colors.Green);
+				SpriteNode.Create(gameSession.Allocator, collectible, AssetBundle.Health, new Color(0,255,0,255), 100);
 
 			return collectible;
 		}

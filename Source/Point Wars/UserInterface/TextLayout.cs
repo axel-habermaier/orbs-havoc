@@ -228,12 +228,12 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Draws the layouted text.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
+		/// <param name="renderer">The renderer that should be used for drawing.</param>
 		/// <param name="position">The position of the top left corner of the text's drawing area.</param>
 		/// <param name="color">The default color that should be used to draw the text.</param>
-		public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color)
+		public void Draw(Renderer renderer, Vector2 position, Color color)
 		{
-			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
+			Assert.ArgumentNotNull(renderer, nameof(renderer));
 
 			if (String.IsNullOrWhiteSpace(_arranged.Text))
 				return;
@@ -265,7 +265,7 @@ namespace PointWars.UserInterface
 			_position = position;
 			_color = color;
 
-			spriteBatch.Draw(_quads, _numQuads, _arranged.Font.Texture);
+			renderer.Draw(_quads, _numQuads, _arranged.Font.Texture);
 		}
 
 		/// <summary>

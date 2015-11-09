@@ -1,4 +1,4 @@
-﻿layout(std140, binding = 1) uniform BloomSettings
+﻿layout(std140, binding = 2) uniform BloomSettings
 {
 	float BaseIntensity;
 	float BaseSaturation;

@@ -158,7 +158,7 @@ namespace PointWars.Platform.Memory
 		{
 			Assert.NotNull(_buffer.Array, "No buffer has been set for reading.");
 			if (!CanRead(size))
-				throw new IndexOutOfRangeException("Attempted to read past the end of the buffer.");
+				throw new BufferOverflowException();
 		}
 
 		/// <summary>
@@ -443,7 +443,7 @@ namespace PointWars.Platform.Memory
 				obj = deserializer(ref this);
 				return true;
 			}
-			catch (IndexOutOfRangeException)
+			catch (BufferOverflowException)
 			{
 				_readPosition = offset;
 				obj = default(T);

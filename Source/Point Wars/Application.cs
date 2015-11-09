@@ -22,7 +22,6 @@
 
 namespace PointWars
 {
-	using System.Numerics;
 	using System.Threading;
 	using Assets;
 	using Platform;
@@ -44,8 +43,9 @@ namespace PointWars
 		/// </summary>
 		public const string Name = "Point Wars";
 
+		private Renderer _renderer;
+
 		private bool _running;
-		private SpriteBatch _spriteBatch;
 		private ViewCollection _views;
 
 		/// <summary>
@@ -70,9 +70,7 @@ namespace PointWars
 		{
 			_views.Initialize();
 
-			Window.Resized += Resize;
 			Commands.OnExit += Exit;
-
 			Commands.Bind(Key.F1, "start_server TestServer");
 			Commands.Bind(Key.F2, "stop_server");
 			Commands.Bind(Key.F3, "connect ::1");
@@ -80,11 +78,8 @@ namespace PointWars
 			Commands.Bind(Key.F5, "reload_assets");
 			Commands.Bind(new ConfigurableInput(Key.B, KeyModifiers.Control), "add_bot");
 			Commands.Bind(new ConfigurableInput(Key.B, KeyModifiers.Control | KeyModifiers.Shift), "remove_bot");
-
 			Commands.Bind(new ConfigurableInput(Key.Escape, KeyModifiers.LeftShift), "exit");
 			Commands.Bind(Key.F10, "toggle show_debug_overlay");
-
-			Resize(Window.Size);
 		}
 
 		/// <summary>
@@ -99,7 +94,7 @@ namespace PointWars
 			using (InputDevice = new LogicalInputDevice(Window))
 			using (var bindings = new BindingCollection(InputDevice))
 			using (new AssetBundle())
-			using (_spriteBatch = new SpriteBatch { RenderTarget = Window.BackBuffer })
+			using (_renderer = new Renderer(Window))
 			using (_views = new ViewCollection(this))
 			{
 				Initialize();
@@ -128,8 +123,8 @@ namespace PointWars
 						GraphicsDevice.BeginFrame();
 						Window.BackBuffer.Clear(Colors.Black);
 
-						_views.Draw(_spriteBatch);
-						_spriteBatch.DrawFrame();
+						_views.Draw(_renderer);
+						_renderer.DrawFrame();
 
 						GraphicsDevice.EndFrame();
 					}
@@ -173,14 +168,6 @@ namespace PointWars
 		{
 			_running = false;
 			Log.Info("Exiting {0}...", Name);
-		}
-
-		/// <summary>
-		///   Resizes the application's views.
-		/// </summary>
-		private void Resize(Size size)
-		{
-			_spriteBatch.ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(0, size.Width, size.Height, 0, 0, 1);
 		}
 	}
 }

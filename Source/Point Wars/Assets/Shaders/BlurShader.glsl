@@ -4,7 +4,7 @@ Fragment
 {
 	#include BloomSettings.glsl
 
-	layout(std140, binding = 2) uniform BlurConfig
+	layout(std140, binding = 3) uniform BlurSettings
 	{
 		vec2 SampleOffsets[15];
 		float SampleWeights[15];
@@ -17,7 +17,7 @@ Fragment
 
 	void main()
 	{
-		OutColor = vec4(0, 0, 0, 0);
+		OutColor = vec4(0);
 
 		for (int i = 0; i < BlurSampleCount; i++)
 			OutColor += texture(Texture, TexCoords + SampleOffsets[i]) * SampleWeights[i];

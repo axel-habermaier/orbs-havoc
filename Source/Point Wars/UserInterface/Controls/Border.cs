@@ -162,12 +162,12 @@ namespace PointWars.UserInterface.Controls
 		protected override Enumerator<UIElement> GetChildren() => Enumerator<UIElement>.FromItemOrEmpty(Child);
 
 		/// <summary>
-		///   Draws the UI element using the given sprite batch.
+		///   Draws the UI element using the given renderer.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
-		protected override void DrawCore(SpriteBatch spriteBatch)
+		/// <param name="renderer">The renderer that should be used to draw the UI element.</param>
+		protected override void DrawCore(Renderer renderer)
 		{
-			base.DrawCore(spriteBatch);
+			base.DrawCore(renderer);
 
 			if (BorderColor == Colors.Transparent)
 				return;
@@ -175,12 +175,12 @@ namespace PointWars.UserInterface.Controls
 			var area = VisualArea;
 
 			// Make sure there is no overdraw at the corners
-			++spriteBatch.Layer;
-			spriteBatch.DrawLine(area.TopLeft, area.TopRight, BorderColor, BorderThickness.Top);
-			spriteBatch.DrawLine(area.BottomLeft + new Vector2(1, -2), area.TopLeft + new Vector2(1, 0), BorderColor, BorderThickness.Left);
-			spriteBatch.DrawLine(area.TopRight, area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Right);
-			spriteBatch.DrawLine(area.BottomLeft - new Vector2(0, 1), area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Bottom);
-			--spriteBatch.Layer;
+			++renderer.Layer;
+			renderer.DrawLine(area.TopLeft, area.TopRight, BorderColor, BorderThickness.Top);
+			renderer.DrawLine(area.BottomLeft + new Vector2(1, -2), area.TopLeft + new Vector2(1, 0), BorderColor, BorderThickness.Left);
+			renderer.DrawLine(area.TopRight, area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Right);
+			renderer.DrawLine(area.BottomLeft - new Vector2(0, 1), area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Bottom);
+			--renderer.Layer;
 		}
 	}
 }

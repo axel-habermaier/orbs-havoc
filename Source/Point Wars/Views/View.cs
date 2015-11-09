@@ -44,10 +44,10 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets or sets the root UI element of the view.
 		/// </summary>
-		protected UIElement RootElement
+		public UIElement RootElement
 		{
 			get { return _rootElement; }
-			set
+			protected set
 			{
 				_rootElement = value;
 

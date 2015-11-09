@@ -54,22 +54,22 @@ namespace PointWars.Gameplay.Client
 		/// <summary>
 		///   Draws the game session.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		/// <param name="renderer">The renderer that should be used to draw the view.</param>
+		public void Draw(Renderer renderer)
 		{
-			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
+			Assert.ArgumentNotNull(renderer, nameof(renderer));
 
 			var avatar = _gameSession.Players?.LocalPlayer?.Avatar;
 			if (avatar != null)
 				_position = -avatar.WorldPosition;
 
-			spriteBatch.PositionOffset = _position + new Vector2(MathUtils.Round(_window.Size.Width / 2), MathUtils.Round(_window.Size.Height / 2));
+			renderer.PositionOffset = _position + new Vector2(MathUtils.Round(_window.Size.Width / 2), MathUtils.Round(_window.Size.Height / 2));
+			_gameSession.LevelRenderer.Draw(renderer);
 
 			foreach (var spriteNode in _gameSession.SceneGraph.EnumeratePostOrder<SpriteNode>())
-				spriteNode.Draw(spriteBatch);
+				spriteNode.Draw(renderer);
 
-			_gameSession.LevelRenderer.Draw(spriteBatch);
-			spriteBatch.PositionOffset = Vector2.Zero;
+			renderer.PositionOffset = Vector2.Zero;
 		}
 	}
 }

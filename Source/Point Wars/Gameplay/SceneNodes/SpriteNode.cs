@@ -43,12 +43,18 @@ namespace PointWars.Gameplay.SceneNodes
 		public Color Color { get; set; }
 
 		/// <summary>
-		///   Draws the sprite using the given sprite batch.
+		///   Gets or sets the layer the sprite is drawn on.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		public int Layer { get; set; }
+
+		/// <summary>
+		///   Draws the sprite using the given renderer.
+		/// </summary>
+		/// <param name="renderer">The renderer that should be used for drawing.</param>
+		public void Draw(Renderer renderer)
 		{
-			spriteBatch.Draw(Texture, Color, WorldMatrix);
+			renderer.Layer = Layer;
+			renderer.Draw(Texture, Color, WorldMatrix);
 		}
 
 		/// <summary>
@@ -58,7 +64,8 @@ namespace PointWars.Gameplay.SceneNodes
 		/// <param name="parent">The parent scene node the sprite should be attached to.</param>
 		/// <param name="texture">The texture that should be used to draw the sprite.</param>
 		/// <param name="color">The color that should be used to draw the sprite.</param>
-		public static SpriteNode Create(PoolAllocator allocator, SceneNode parent, Texture texture, Color color)
+		/// <param name="layer">The layer the sprite should be drawn on.</param>
+		public static SpriteNode Create(PoolAllocator allocator, SceneNode parent, Texture texture, Color color, int layer)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNull(parent, nameof(parent));
@@ -67,6 +74,7 @@ namespace PointWars.Gameplay.SceneNodes
 			var sprite = allocator.Allocate<SpriteNode>();
 			sprite.Texture = texture;
 			sprite.Color = color;
+			sprite.Layer = layer;
 			sprite.AttachTo(parent);
 
 			return sprite;

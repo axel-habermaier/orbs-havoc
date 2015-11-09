@@ -27,6 +27,7 @@ namespace PointWars.Views
 	using Assets;
 	using Gameplay.Server;
 	using Network;
+	using Platform.Graphics;
 	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
@@ -43,6 +44,8 @@ namespace PointWars.Views
 	internal class ViewCollection : DisposableObject
 	{
 		private readonly View[] _views;
+		private BloomEffect _bloomEffect;
+		private RenderTarget _blurredRenderTarget;
 		private bool _exitMessageBoxOpen;
 
 		/// <summary>
@@ -60,6 +63,9 @@ namespace PointWars.Views
 
 			Application = app;
 			Application.Window.Closing += Exit;
+			Application.Window.Resized += OnResized;
+
+			OnResized(Application.Window.Size);
 
 			_views = new View[]
 			{
@@ -198,16 +204,28 @@ namespace PointWars.Views
 		/// <summary>
 		///   Draws the views' contents.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the views.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		/// <param name="renderer">The renderer that should be used to draw the views.</param>
+		public void Draw(Renderer renderer)
 		{
-			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
+			Assert.ArgumentNotNull(renderer, nameof(renderer));
 
-			spriteBatch.Layer = 0;
-			spriteBatch.PositionOffset = Vector2.Zero;
-			Game.Draw(spriteBatch);
+			renderer.Layer = 0;
 
-			RootElement.Draw(spriteBatch);
+			if (Game.IsRunning)
+			{
+				_blurredRenderTarget.Clear(Colors.Black);
+
+				renderer.PositionOffset = Vector2.Zero;
+				renderer.RenderTarget = _blurredRenderTarget;
+				Game.Draw(renderer);
+
+				renderer.Layer = 1000000;
+				renderer.DrawFullscreenEffect(_bloomEffect);
+				++renderer.Layer;
+			}
+
+			renderer.RenderTarget = Application.Window.BackBuffer;
+			RootElement.Draw(renderer);
 			DrawCursor();
 		}
 
@@ -238,9 +256,25 @@ namespace PointWars.Views
 			Commands.OnStartServer -= StartHost;
 			Commands.OnStopServer -= Host.Stop;
 
-			Host.SafeDispose();
 			Application.Window.Closing -= Exit;
+			Application.Window.Resized -= OnResized;
+			Host.SafeDispose();
+
+			_blurredRenderTarget.SafeDispose();
+			_bloomEffect.SafeDispose();
 			_views.SafeDisposeAll();
+		}
+
+		/// <summary>
+		///   Resizes the render targets.
+		/// </summary>
+		private void OnResized(Size size)
+		{
+			_blurredRenderTarget.SafeDispose();
+			_bloomEffect.SafeDispose();
+
+			_blurredRenderTarget = new RenderTarget(size);
+			_bloomEffect = new BloomEffect(_blurredRenderTarget, Application.Window.BackBuffer);
 		}
 
 		/// <summary>

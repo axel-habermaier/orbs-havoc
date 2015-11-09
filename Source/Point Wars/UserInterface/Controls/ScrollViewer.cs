@@ -159,26 +159,26 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Draws the child UI elements of the current UI element using the given sprite batch.
+		///   Draws the child UI elements of the current UI element using the given renderer.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
-		protected override void DrawChildren(SpriteBatch spriteBatch)
+		/// <param name="renderer">The renderer that should be used to draw the UI element's children.</param>
+		protected override void DrawChildren(Renderer renderer)
 		{
 			var width = MathUtils.RoundIntegral(ActualWidth);
 			var height = MathUtils.RoundIntegral(ActualHeight);
 			var x = MathUtils.RoundIntegral(VisualOffset.X);
 			var y = MathUtils.RoundIntegral(VisualOffset.Y);
 
-			var scissorArea = spriteBatch.ScissorArea;
-			var positionOffset = spriteBatch.PositionOffset;
+			var scissorArea = renderer.ScissorArea;
+			var positionOffset = renderer.PositionOffset;
 
-			spriteBatch.ScissorArea = new Rectangle(x, y, width, height);
-			spriteBatch.PositionOffset = new Vector2(-MathUtils.RoundIntegral(ScrollOffset.X), -MathUtils.RoundIntegral(ScrollOffset.Y));
+			renderer.ScissorArea = new Rectangle(x, y, width, height);
+			renderer.PositionOffset = new Vector2(-MathUtils.RoundIntegral(ScrollOffset.X), -MathUtils.RoundIntegral(ScrollOffset.Y));
 
-			base.DrawChildren(spriteBatch);
+			base.DrawChildren(renderer);
 
-			spriteBatch.ScissorArea = scissorArea;
-			spriteBatch.PositionOffset = positionOffset;
+			renderer.ScissorArea = scissorArea;
+			renderer.PositionOffset = positionOffset;
 		}
 
 		/// <summary>

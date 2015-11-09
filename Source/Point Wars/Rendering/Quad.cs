@@ -83,6 +83,34 @@ namespace PointWars.Rendering
 		}
 
 		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="rectangle">The position and size of the rectangular quad.</param>
+		/// <param name="color">The color of the quad.</param>
+		/// <param name="texLeft">The texture coordinates on the left-hand side of the quad.</param>
+		/// <param name="texTop">The texture coordinates at the top of the quad.</param>
+		/// <param name="texRight">The texture coordinates on the right-hand side of the quad.</param>
+		/// <param name="texBottom">The texture coordinates at the bottom of the quad.</param>
+		public Quad(Rectangle rectangle, Color color, float texLeft, float texTop, float texRight, float texBottom)
+			: this()
+		{
+			BottomLeft.Position = new Vector2(rectangle.Left, rectangle.Bottom);
+			BottomRight.Position = new Vector2(rectangle.Right, rectangle.Bottom);
+			TopLeft.Position = new Vector2(rectangle.Left, rectangle.Top);
+			TopRight.Position = new Vector2(rectangle.Right, rectangle.Top);
+
+			BottomLeft.Color = color;
+			BottomRight.Color = color;
+			TopLeft.Color = color;
+			TopRight.Color = color;
+
+			BottomLeft.TextureCoordinates = new Vector2(texLeft, texBottom);
+			BottomRight.TextureCoordinates = new Vector2(texRight, texBottom);
+			TopLeft.TextureCoordinates = new Vector2(texLeft, texTop);
+			TopRight.TextureCoordinates = new Vector2(texRight, texTop);
+		}
+
+		/// <summary>
 		///   Changes the color of the quad.
 		/// </summary>
 		/// <param name="color">The new color of the quad.</param>

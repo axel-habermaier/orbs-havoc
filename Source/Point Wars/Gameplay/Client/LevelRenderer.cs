@@ -138,30 +138,29 @@ namespace PointWars.Gameplay.Client
 		/// <summary>
 		///   Draws the game session.
 		/// </summary>
-		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		/// <param name="renderer">The renderer that should be used to draw the view.</param>
+		public void Draw(Renderer renderer)
 		{
-			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
-
-			spriteBatch.SamplerState = SamplerState.Point;
-			spriteBatch.Draw(_quads, _quads.Length, AssetBundle.LevelBorders);
-			spriteBatch.SamplerState = SamplerState.Bilinear;
+			Assert.ArgumentNotNull(renderer, nameof(renderer));
 
 #if true
-			--spriteBatch.Layer;
-
 			for (var y = 0; y < _level.Height * 2 - 1; ++y)
 			{
 				var position = _level.PositionOffset + new Vector2(Level.BlockSize / 2, (y + 1) * Level.BlockSize / 2);
-				spriteBatch.DrawLine(position, position + new Vector2((_level.Width - 1) * Level.BlockSize, 0), new Color(0xFF130C49), 1);
+				renderer.DrawLine(position, position + new Vector2((_level.Width - 1) * Level.BlockSize, 0), new Color(0xFF130C49), 1);
 			}
 
 			for (var x = 0; x < _level.Width * 2 - 1; ++x)
 			{
 				var position = _level.PositionOffset + new Vector2((x + 1) * Level.BlockSize / 2, Level.BlockSize / 2);
-				spriteBatch.DrawLine(position, position + new Vector2(0, (_level.Height - 1) * Level.BlockSize), new Color(0xFF130C49), 1);
+				renderer.DrawLine(position, position + new Vector2(0, (_level.Height - 1) * Level.BlockSize), new Color(0xFF130C49), 1);
 			}
 #endif
+
+			++renderer.Layer;
+			renderer.SamplerState = SamplerState.Point;
+			renderer.Draw(_quads, _quads.Length, AssetBundle.LevelBorders);
+			renderer.SamplerState = SamplerState.Bilinear;
 		}
 	}
 }

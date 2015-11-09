@@ -36,9 +36,29 @@ namespace PointWars.Platform.Graphics
 		public const int ConstantBufferSlotCount = 14;
 
 		/// <summary>
+		///   The maximum number of constant buffers that can be bound simultaneously.
+		/// </summary>
+		public const int TextureSlotCount = 8;
+
+		/// <summary>
 		///   The constant buffers that are currently bound.
 		/// </summary>
 		public readonly Buffer[] ConstantBuffers = new Buffer[ConstantBufferSlotCount];
+
+		/// <summary>
+		///   The currently bound sampler states.
+		/// </summary>
+		public readonly SamplerState[] SamplerStates = new SamplerState[TextureSlotCount];
+
+		/// <summary>
+		///   The currently bound textures.
+		/// </summary>
+		public readonly Texture[] Textures = new Texture[TextureSlotCount];
+
+		/// <summary>
+		///   The currently active texture slot.
+		/// </summary>
+		public int ActiveTextureSlot = -1;
 
 		/// <summary>
 		///   Indicates whether drawing operations are currently allowed.
@@ -51,19 +71,9 @@ namespace PointWars.Platform.Graphics
 		public RenderTarget RenderTarget;
 
 		/// <summary>
-		///   The currently bound sampler state.
-		/// </summary>
-		public SamplerState SamplerState;
-
-		/// <summary>
 		///   The currently bound shader.
 		/// </summary>
 		public Shader Shader;
-
-		/// <summary>
-		///   The currently bound texture.
-		/// </summary>
-		public Texture Texture;
 
 		/// <summary>
 		///   The currently bound vertex layout.

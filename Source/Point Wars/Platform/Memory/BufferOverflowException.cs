@@ -20,45 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Gameplay.Behaviors
+namespace PointWars.Platform.Memory
 {
-	using System.Numerics;
-	using Platform.Memory;
-	using SceneNodes.Entities;
-	using Utilities;
+	using System;
 
 	/// <summary>
-	///   Fires a bullet when the weapon is triggered.
+	///   Raised when an attempt was made to read or write past the end of a buffer.
 	/// </summary>
-	internal class MiniGunBehavior : WeaponBehavior
+	public class BufferOverflowException : Exception
 	{
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public MiniGunBehavior()
-		{
-			Template = Game.MiniGunTemplate;
-		}
-
-		/// <summary>
-		///   Fires a single shot of a non-continuous weapon.
-		/// </summary>
-		protected override void Fire()
-		{
-			var direction = MathUtils.FromAngle(SceneNode.Orientation);
-			var velocity = Vector2.Normalize(direction) * Template.BaseSpeed;
-
-			Bullet.Create(SceneNode.GameSession, SceneNode.Player, SceneNode.WorldPosition, velocity, SceneNode.Orientation);
-		}
-
-		/// <summary>
-		///   Allocates an instance using the given allocator.
-		/// </summary>
-		/// <param name="allocator">The allocator that should be used to allocate the behavior.</param>
-		public static MiniGunBehavior Create(PoolAllocator allocator)
-		{
-			Assert.ArgumentNotNull(allocator, nameof(allocator));
-			return allocator.Allocate<MiniGunBehavior>();
-		}
 	}
 }

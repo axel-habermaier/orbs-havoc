@@ -102,18 +102,25 @@ namespace PointWars.Platform.Graphics
 			glBindTexture(GL_TEXTURE_2D, Handle);
 			glTexImage2D(GL_TEXTURE_2D, 0, format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
 			CheckErrors();
+
+			if (State.ActiveTextureSlot != -1)
+				State.Textures[State.ActiveTextureSlot] = null;
 		}
 
 		/// <summary>
 		///   Binds the texture for rendering.
 		/// </summary>
-		public void Bind()
+		public void Bind(int slot)
 		{
 			Assert.That(Handle != 0, "The texture has not been initialized.");
 
-			if (Change(ref State.Texture, this))
-				glBindTexture(GL_TEXTURE_2D, Handle);
+			if (!Change(State.Textures, slot, this))
+				return;
 
+			if (Change(ref State.ActiveTextureSlot, slot))
+				glActiveTexture(GL_TEXTURE0 + slot);
+
+			glBindTexture(GL_TEXTURE_2D, Handle);
 			CheckErrors();
 		}
 
@@ -122,7 +129,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Unset(ref State.Texture, this);
+			Unset(State.Textures, this);
 			Deallocate(glDeleteTextures, Handle);
 		}
 	}

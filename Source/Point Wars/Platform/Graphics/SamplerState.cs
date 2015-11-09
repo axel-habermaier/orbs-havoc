@@ -64,7 +64,7 @@ namespace PointWars.Platform.Graphics
 			Point = new SamplerState(GL_NEAREST, GL_CLAMP_TO_EDGE);
 			Bilinear = new SamplerState(GL_LINEAR, GL_CLAMP_TO_EDGE);
 
-			Bilinear.Bind();
+			Bilinear.Bind(0);
 		}
 
 		/// <summary>
@@ -79,10 +79,10 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   Binds the sampler state for rendering.
 		/// </summary>
-		public void Bind()
+		public void Bind(int slot)
 		{
-			if (Change(ref State.SamplerState, this))
-				glBindSampler(0, Handle);
+			if (Change(State.SamplerStates, slot, this))
+				glBindSampler(slot, Handle);
 		}
 
 		/// <summary>
@@ -90,7 +90,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Unset(ref State.SamplerState, this);
+			Unset(State.SamplerStates, this);
 			Deallocate(glDeleteSamplers, Handle);
 		}
 	}
