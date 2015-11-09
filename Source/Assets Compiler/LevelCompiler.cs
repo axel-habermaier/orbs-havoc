@@ -28,7 +28,7 @@ namespace AssetsCompiler
 	using CommandLine;
 	using PointWars.Gameplay.SceneNodes.Entities;
 
-	public class LevelCompiler : IExecutable
+	public class LevelCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input level file.")]
 		public string InFile { get; set; }
@@ -36,7 +36,9 @@ namespace AssetsCompiler
 		[Option("output", Required = true, HelpText = "The path to the output level file.")]
 		public string OutFile { get; set; }
 
-		public void Execute()
+		protected override string GeneratedFile => OutFile;
+
+		protected override void Execute()
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(OutFile));
 
@@ -64,7 +66,7 @@ namespace AssetsCompiler
 						var block = MapColor(color.ToArgb());
 
 						if (block == null)
-							throw new InvalidOperationException($"{color} at {x}x{y} is invalid.");
+							throw new InvalidOperationException($"'{InFile}': {color} at {x}x{y} is invalid.");
 
 						originalBlocks[x][y] = block.Value;
 						lineBlocks[x][y] = block.Value;

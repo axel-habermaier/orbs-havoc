@@ -169,16 +169,6 @@ namespace PointWars.Views
 		public RespawnOverlay RespawnOverlay { get; } = new RespawnOverlay();
 
 		/// <summary>
-		///   Changes the size available to the views.
-		/// </summary>
-		/// <param name="size">The new size available to the views.</param>
-		public void Resize(Size size)
-		{
-			foreach (var view in _views)
-				view.Resize(size);
-		}
-
-		/// <summary>
 		///   Initializes the views.
 		/// </summary>
 		public void Initialize()

@@ -22,8 +22,26 @@
 
 namespace AssetsCompiler
 {
-	public interface IExecutable
+	using System;
+	using System.IO;
+
+	public abstract class CompilationTask
 	{
-		void Execute();
+		protected abstract string GeneratedFile { get; }
+
+		public void Run()
+		{
+			try
+			{
+				Execute();
+			}
+			catch (Exception)
+			{
+				File.Delete(GeneratedFile);
+				throw;
+			}
+		}
+
+		protected abstract void Execute();
 	}
 }

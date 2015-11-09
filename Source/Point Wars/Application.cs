@@ -99,7 +99,7 @@ namespace PointWars
 			using (InputDevice = new LogicalInputDevice(Window))
 			using (var bindings = new BindingCollection(InputDevice))
 			using (new AssetBundle())
-			using (_spriteBatch = new SpriteBatch())
+			using (_spriteBatch = new SpriteBatch { RenderTarget = Window.BackBuffer })
 			using (_views = new ViewCollection(this))
 			{
 				Initialize();
@@ -129,7 +129,7 @@ namespace PointWars
 						Window.BackBuffer.Clear(Colors.Black);
 
 						_views.Draw(_spriteBatch);
-						_spriteBatch.DrawBatch(Window.BackBuffer);
+						_spriteBatch.DrawFrame();
 
 						GraphicsDevice.EndFrame();
 					}
@@ -181,7 +181,6 @@ namespace PointWars
 		private void Resize(Size size)
 		{
 			_spriteBatch.ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(0, size.Width, size.Height, 0, 0, 1);
-			_views.Resize(size);
 		}
 	}
 }

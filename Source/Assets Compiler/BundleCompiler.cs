@@ -30,7 +30,7 @@ namespace AssetsCompiler
 	using System.Text;
 	using CommandLine;
 
-	public class BundleCompiler : IExecutable
+	public class BundleCompiler : CompilationTask
 	{
 		[Option("shaders", Required = true, HelpText = "The paths to the input shader files.")]
 		public string Shaders { get; set; }
@@ -53,7 +53,9 @@ namespace AssetsCompiler
 		[Option("code", Required = true, HelpText = "The path to the generated code file.")]
 		public string CodeFile { get; set; }
 
-		public void Execute()
+		protected override string GeneratedFile => PakFile;
+
+		protected override void Execute()
 		{
 			var shaders = Shaders.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(shader => shader).ToArray();
 			var fonts = Fonts.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).OrderBy(font => font).ToArray();

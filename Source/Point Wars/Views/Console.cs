@@ -98,15 +98,6 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
-		///   Sets the height of the console's layout root to half of the height of the console itself.
-		/// </summary>
-		/// <param name="size">The new size available to the view.</param>
-		public override void Resize(Size size)
-		{
-			_layoutRoot.Height = MathUtils.Round(size.Height / 2);
-		}
-
-		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
@@ -128,6 +119,8 @@ namespace PointWars.Views
 		/// </summary>
 		public override void Update()
 		{
+			_layoutRoot.Height = MathUtils.Round(Window.Size.Height / 2);
+
 			// Make sure the text box never loses focus while the console is active
 			_input.Focus();
 

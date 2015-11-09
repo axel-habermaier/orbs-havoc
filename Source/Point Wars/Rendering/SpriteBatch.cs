@@ -210,6 +210,11 @@ namespace PointWars.Rendering
 		public BlendState BlendState { get; set; } = BlendState.Premultiplied;
 
 		/// <summary>
+		///   Gets or sets the render target that should be used for drawing.
+		/// </summary>
+		public RenderTarget RenderTarget { get; set; }
+
+		/// <summary>
 		///   Gets or sets the scissor area that should be used for the scissor test. A value of null indicates that the scissor test is
 		///   disabled.
 		/// </summary>
@@ -463,8 +468,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Draws all batched sprites.
 		/// </summary>
-		/// <param name="renderTarget">The render target the sprite batch should draw to.</param>
-		public void DrawBatch(RenderTarget renderTarget)
+		public void DrawFrame()
 		{
 			Assert.That(SamplerState != null, "No sampler state has been set.");
 			Assert.NotDisposed(this);
@@ -502,17 +506,19 @@ namespace PointWars.Rendering
 					glDisable(GL_SCISSOR_TEST);
 				else
 				{
+					var y = sectionList.RenderTarget.Size.Height - sectionList.ScissorArea.Value.Height - sectionList.ScissorArea.Value.Top;
+
 					glEnable(GL_SCISSOR_TEST);
 					glScissor(
 						MathUtils.RoundIntegral(sectionList.ScissorArea.Value.Left),
-						MathUtils.RoundIntegral(renderTarget.Size.Height - sectionList.ScissorArea.Value.Height - sectionList.ScissorArea.Value.Top),
+						MathUtils.RoundIntegral(y),
 						MathUtils.RoundIntegral(sectionList.ScissorArea.Value.Width),
 						MathUtils.RoundIntegral(sectionList.ScissorArea.Value.Height));
 				}
 
 				// Draw and increase the offset
 				var numIndices = sectionList.NumQuads * 6;
-				renderTarget.DrawIndexed(numIndices, offset, _vertexBuffer.VertexOffset);
+				sectionList.RenderTarget.DrawIndexed(numIndices, offset, _vertexBuffer.VertexOffset);
 				offset += numIndices;
 			}
 
@@ -600,6 +606,8 @@ namespace PointWars.Rendering
 		/// <param name="texture">The texture that should be used for newly added quads.</param>
 		private void ChangeSection(Texture texture)
 		{
+			Assert.That(RenderTarget != null, "No render target has been set.");
+
 			// If nothing has changed, just continue to append to the current section
 			if (_currentSectionList != -1 && _currentSection != -1 && SectionListMatches(_currentSectionList, texture))
 				return;
@@ -648,7 +656,8 @@ namespace PointWars.Rendering
 					LastSection = _numSections,
 					NumQuads = 0,
 					PositionOffset = PositionOffset,
-					PostitionOffsetIndex = positionOffsetIndex
+					PostitionOffsetIndex = positionOffsetIndex,
+					RenderTarget = RenderTarget
 				});
 			}
 
@@ -669,7 +678,8 @@ namespace PointWars.Rendering
 			var list = _sectionLists[sectionList];
 
 			return list.Texture == texture && list.Layer == Layer && list.BlendState == BlendState &&
-				   list.SamplerState == SamplerState && list.ScissorArea == ScissorArea && list.PositionOffset == PositionOffset;
+				   list.SamplerState == SamplerState && list.ScissorArea == ScissorArea &&
+				   list.PositionOffset == PositionOffset && list.RenderTarget == RenderTarget;
 		}
 
 		/// <summary>
@@ -752,6 +762,7 @@ namespace PointWars.Rendering
 			public int NumQuads;
 			public Vector2 PositionOffset;
 			public int PostitionOffsetIndex;
+			public RenderTarget RenderTarget;
 
 			/// <summary>
 			///   Used to compare the layers of two section lists.

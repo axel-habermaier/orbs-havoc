@@ -28,7 +28,7 @@ namespace AssetsCompiler
 	using System.IO;
 	using CommandLine;
 
-	public class CursorCompiler : IExecutable
+	public class CursorCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input cursor file.")]
 		public string InFile { get; set; }
@@ -42,7 +42,9 @@ namespace AssetsCompiler
 		[Option("hotspotY", Required = true, HelpText = "The Y value of the hot spot.")]
 		public int HotSpotY { get; set; }
 
-		public unsafe void Execute()
+		protected override string GeneratedFile => OutFile;
+
+		protected override unsafe void Execute()
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(OutFile));
 
@@ -51,7 +53,7 @@ namespace AssetsCompiler
 			using (var bitmap = (Bitmap)Image.FromFile(InFile))
 			{
 				if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-					throw new InvalidOperationException("Cursor must be in 32bit RGBA format.");
+					throw new InvalidOperationException($"Cursor '{InFile}' must be in 32bit RGBA format.");
 
 				var length = bitmap.Width * bitmap.Height * 4;
 				var rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);

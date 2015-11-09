@@ -28,7 +28,7 @@ namespace AssetsCompiler
 	using System.Text.RegularExpressions;
 	using CommandLine;
 
-	public class ShaderCompiler : IExecutable
+	public class ShaderCompiler : CompilationTask
 	{
 		private const string Preamble = @"
 	#version 330
@@ -43,7 +43,9 @@ namespace AssetsCompiler
 		[Option("output", Required = true, HelpText = "The path to the output shader file.")]
 		public string OutFile { get; set; }
 
-		public void Execute()
+		protected override string GeneratedFile => OutFile;
+
+		protected override void Execute()
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(OutFile));
 
@@ -51,7 +53,20 @@ namespace AssetsCompiler
 			using (var writer = new BinaryWriter(stream))
 			{
 				var shader = File.ReadAllText(InFile);
+				var includesMatch = Regex.Match(shader, @"#include (.*)");
+
+				while (includesMatch.Success)
+				{
+					var include = File.ReadAllText(Path.Combine(Path.GetDirectoryName(InFile), includesMatch.Groups[1].Value.Trim()));
+					shader = shader.Replace(includesMatch.Groups[0].Value, include);
+
+					includesMatch = includesMatch.NextMatch();
+				}
+			
 				var match = Regex.Match(shader, @"Vertex(\s*){(?<vs>(.|\s)*?)}(\s*)Fragment(\s*){(?<fs>(.|\s)*?)}$", RegexOptions.Multiline);
+				if (!match.Success)
+					throw new InvalidOperationException($"Invalid shader '{InFile}': Expected Vertex and Fragment sections.");
+
 				var vertexShader = Preamble + match.Groups["vs"].Value.Trim();
 				var fragmentShader = Preamble + match.Groups["fs"].Value.Trim();
 
@@ -73,7 +88,7 @@ namespace AssetsCompiler
 			}
 		}
 
-		void Validate(string shader, string extension)
+		private void Validate(string shader, string extension)
 		{
 			var path = Path.ChangeExtension(InFile, extension);
 
@@ -81,9 +96,9 @@ namespace AssetsCompiler
 			{
 				File.WriteAllText(path, shader);
 
-                var process = new ExternalProcess("../../Dependencies/glslangValidator.exe", "\"{0}\"", path);
+				var process = new ExternalProcess("../../Dependencies/glslangValidator.exe", "\"{0}\"", path);
 				if (process.Run() != 0)
-					throw new InvalidOperationException("Invalid GLSL shader.");
+					throw new InvalidOperationException($"GLSL shader '{InFile}' contains errors.");
 			}
 			finally
 			{

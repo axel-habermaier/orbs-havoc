@@ -93,7 +93,7 @@
     <Compile Include="TextureCompiler.cs" />
     <Compile Include="FontCompiler.cs" />
     <Compile Include="ShaderCompiler.cs" />
-    <Compile Include="IExecutable.cs" />
+    <Compile Include="CompilationTask.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

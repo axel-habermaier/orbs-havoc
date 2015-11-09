@@ -41,13 +41,13 @@ namespace AssetsCompiler
 				//foreach (var arg in args)
 				//	Log.Info("{0}: {1}", index++, arg);
 
-				IExecutable executable = null;
+				CompilationTask compilationTask = null;
 				var options = new Options();
 
-				if (!Parser.Default.ParseArguments(args, options, (verb, parsedCommand) => executable = (IExecutable)parsedCommand))
+				if (!Parser.Default.ParseArguments(args, options, (verb, parsedCommand) => compilationTask = (CompilationTask)parsedCommand))
 					return -1;
 
-				executable.Execute();
+				compilationTask.Run();
 				return 0;
 			}
 			catch (Exception e)

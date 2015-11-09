@@ -64,12 +64,12 @@ namespace PointWars.Views
 		/// <summary>
 		///   Gets the window the view is drawn in.
 		/// </summary>
-		public Window Window => Views.Application.Window;
+		protected Window Window => Views.Application.Window;
 
 		/// <summary>
 		///   Gets the input device that should be used by the view.
 		/// </summary>
-		public LogicalInputDevice InputDevice => Views.Application.InputDevice;
+		protected LogicalInputDevice InputDevice => Views.Application.InputDevice;
 
 		/// <summary>
 		///   Gets or sets a value indicating whether the view is currently shown.
@@ -115,14 +115,6 @@ namespace PointWars.Views
 				RootElement.Visibility = Visibility.Collapsed;
 
 			Deactivate();
-		}
-
-		/// <summary>
-		///   Changes the size available to the view.
-		/// </summary>
-		/// <param name="size">The new size available to the view.</param>
-		public virtual void Resize(Size size)
-		{
 		}
 
 		/// <summary>

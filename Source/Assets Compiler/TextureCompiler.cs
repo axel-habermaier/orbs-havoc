@@ -28,7 +28,7 @@ namespace AssetsCompiler
 	using System.IO;
 	using CommandLine;
 
-	public class TextureCompiler : IExecutable
+	public class TextureCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input texture file.")]
 		public string InFile { get; set; }
@@ -36,7 +36,9 @@ namespace AssetsCompiler
 		[Option("output", Required = true, HelpText = "The path to the output texture file.")]
 		public string OutFile { get; set; }
 
-		public void Execute()
+		protected override string GeneratedFile => OutFile;
+
+		protected override void Execute()
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(OutFile));
 

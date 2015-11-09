@@ -29,7 +29,7 @@ namespace AssetsCompiler
 	using System.Xml.Linq;
 	using CommandLine;
 
-	public class GLGenerator : IExecutable
+	public class GLGenerator : CompilationTask
 	{
 		private static readonly string[] Extensions = { "GL_ARB_buffer_storage" };
 
@@ -39,7 +39,9 @@ namespace AssetsCompiler
 		[Option("output", Required = true, HelpText = "The path to the output OpenGL file.")]
 		public string OutFile { get; set; }
 
-		public void Execute()
+		protected override string GeneratedFile => OutFile;
+
+		protected override void Execute()
 		{
 			var spec = XDocument.Load(InFile);
 			var enums = spec

@@ -33,7 +33,7 @@ namespace AssetsCompiler
 	using Microsoft.CodeAnalysis.CSharp;
 	using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-	public class RegistryGenerator : IExecutable
+	public class RegistryGenerator : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input cvars file.")]
 		public string InFile { get; set; }
@@ -41,7 +41,9 @@ namespace AssetsCompiler
 		[Option("output", Required = true, HelpText = "The path to the output cvars file.")]
 		public string OutFile { get; set; }
 
-		public void Execute()
+		protected override string GeneratedFile => OutFile;
+
+		protected override void Execute()
 		{
 			var syntaxTree = SyntaxFactory.ParseSyntaxTree(File.ReadAllText(InFile));
 			var root = syntaxTree.GetRoot();

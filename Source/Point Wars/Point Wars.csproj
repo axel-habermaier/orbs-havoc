@@ -384,6 +384,15 @@
   <ItemGroup>
     <Texture Include="Assets\Textures\Health.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Shader Include="Assets\Shaders\ExtractBloomShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\BloomSettings.glsl" />
+    <Shader Include="Assets\Shaders\BlurShader.glsl" />
+    <Shader Include="Assets\Shaders\CombineBloomShader.glsl" />
+    <None Include="Assets\Shaders\VertexShader.glsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />
   <Import Project="Assets.targets" />

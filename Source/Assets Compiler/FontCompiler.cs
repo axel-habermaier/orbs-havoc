@@ -32,7 +32,7 @@ namespace AssetsCompiler
 	using CommandLine;
 	using SharpFont;
 
-	public class FontCompiler : IExecutable
+	public class FontCompiler : CompilationTask
 	{
 		private const int Padding = 1;
 
@@ -42,7 +42,9 @@ namespace AssetsCompiler
 		[Option("output", Required = true, HelpText = "The path to the output font file.")]
 		public string OutFile { get; set; }
 
-		public void Execute()
+		protected override string GeneratedFile => OutFile;
+
+		protected override void Execute()
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(OutFile));
 
@@ -55,6 +57,9 @@ namespace AssetsCompiler
 					RegexOptions.Multiline);
 
 				var file = Path.Combine(Path.GetDirectoryName(InFile), match.Groups["file"].Value.Trim());
+				if (!File.Exists(file))
+					throw new InvalidOperationException($"Failed to find font file '{file}'.");
+
 				var size = UInt32.Parse(match.Groups["size"].Value.Trim());
 				var aliased = Boolean.Parse(match.Groups["aliased"].Value.Trim());
 				var characters = ParseCharacterRanges(match.Groups["range"].Value.Trim()).Distinct().ToArray();
@@ -187,11 +192,11 @@ namespace AssetsCompiler
 			return size;
 		}
 
-		private static Glyph LoadGlyph(Face face, uint character, bool aliased)
+		private Glyph LoadGlyph(Face face, uint character, bool aliased)
 		{
 			var glyphIndex = face.GetCharIndex(character);
 			if (glyphIndex == 0)
-				throw new InvalidOperationException($"The font does not contain a glyph for '{(char)character}'.");
+				throw new InvalidOperationException($"The font '{InFile}' does not contain a glyph for '{(char)character}'.");
 
 			var flags = aliased ? LoadTarget.Mono : LoadTarget.Normal;
 			face.LoadGlyph(glyphIndex, LoadFlags.Default, flags);
@@ -213,19 +218,19 @@ namespace AssetsCompiler
 			};
 		}
 
-		private static IEnumerable<char> ParseCharacterRanges(string range)
+		private IEnumerable<char> ParseCharacterRanges(string range)
 		{
 			var ranges = range.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (var r in ranges)
 			{
 				var pair = r.Split(new[] { "-" }, StringSplitOptions.RemoveEmptyEntries);
 				if (pair.Length != 2)
-					throw new InvalidOperationException($"Invalid character range '{range}'.");
+					throw new InvalidOperationException($"'{InFile}': Invalid character range '{range}'.");
 
 				int begin;
 				int end;
 				if (!Int32.TryParse(pair[0], out begin) || !Int32.TryParse(pair[1], out end))
-					throw new InvalidOperationException($"Invalid character range '{range}'.");
+					throw new InvalidOperationException($"'{InFile}': Invalid character range '{range}'.");
 
 				for (var i = begin; i <= end; ++i)
 				{
