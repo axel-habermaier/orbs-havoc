@@ -51,14 +51,14 @@ namespace PointWars.Gameplay.Server
 		/// </summary>
 		private readonly List<string> _botNames = new List<string>
 		{
-			"The Dark One",
+			"\\greyThe Dark One",
 			"\\redDevil 666",
 			"\\magentaSuperGirl",
 			"Lord Pain",
 			"Broken Vector",
 			"Annihilator",
 			"Dr. Unstoppable",
-			"Your Worst Enemy"
+			"Bad Boy"
 		};
 
 		/// <summary>

@@ -23,7 +23,6 @@
 namespace PointWars.Gameplay.Server
 {
 	using System.Collections.Generic;
-	using System.Numerics;
 	using Behaviors;
 	using SceneNodes.Entities;
 	using Utilities;
@@ -103,7 +102,5 @@ namespace PointWars.Gameplay.Server
 				}
 			}
 		}
-
-		
 	}
 }

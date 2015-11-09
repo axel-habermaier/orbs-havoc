@@ -47,6 +47,7 @@ namespace PointWars.Views
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
 		private InputManager _inputManager;
+		private LogicalInput _showScoreboard;
 
 		/// <summary>
 		///   Gets the currently active server connection.
@@ -74,6 +75,9 @@ namespace PointWars.Views
 			Cvars.PlayerNameChanged += OnPlayerNameChanged;
 
 			_inputManager = new InputManager(InputDevice);
+			_showScoreboard = new LogicalInput(Cvars.InputShowScoreboardCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+
+			InputDevice.Add(_showScoreboard);
 
 			RootElement = new Border
 			{
@@ -82,8 +86,6 @@ namespace PointWars.Views
 				InputBindings =
 				{
 					new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar),
-					new ConfigurableBinding(Views.Scoreboard.Show, Cvars.InputShowScoreboardCvar) { TriggerMode = TriggerMode.OnActivation },
-					new ConfigurableBinding(Views.Scoreboard.Hide, Cvars.InputShowScoreboardCvar) { TriggerMode = TriggerMode.OnDeactivation },
 					new KeyBinding(Views.InGameMenu.Show, Key.Escape)
 				}
 			};
@@ -130,12 +132,16 @@ namespace PointWars.Views
 
 					// Always send the input state, but update it only when the game session is focused 
 					if (RootElement.IsFocused)
+					{
 						_inputManager.Update();
-
-					_inputManager.SendInput(GameSession, Connection);
+						_inputManager.SendInput(GameSession, Connection);
+					}
+					else
+						_inputManager.SendInactiveInput(GameSession, Connection);
 
 					Views.Hud.IsShown = !GameSession.IsLocalPlayerDead;
 					Views.RespawnOverlay.IsShown = GameSession.IsLocalPlayerDead;
+					Views.Scoreboard.IsShown = RootElement.IsFocused && (_showScoreboard.IsTriggered || GameSession.IsLocalPlayerDead);
 				}
 			}
 			catch (ConnectionDroppedException)
@@ -252,6 +258,8 @@ namespace PointWars.Views
 			Disconnect();
 			_allocator.SafeDispose();
 			_inputManager.SafeDispose();
+
+			InputDevice.Remove(_showScoreboard);
 		}
 
 		/// <summary>

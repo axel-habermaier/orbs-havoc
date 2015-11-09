@@ -44,7 +44,7 @@ namespace PointWars.Views
 			{
 				IsHitTestVisible = false,
 				Background = new Color(0x44000000),
-				Font = AssetBundle.Roboto14,
+				Font = AssetBundle.Moonhouse24,
 				Child = new StackPanel
 				{
 					Margin = new Thickness(0, 0, 0, 400),
@@ -52,7 +52,7 @@ namespace PointWars.Views
 					VerticalAlignment = VerticalAlignment.Center,
 					Children =
 					{
-						new Label { Text = "You're Dead!", Font = AssetBundle.Moonhouse80 },
+						new Label { Text = "You got killed!", Font = AssetBundle.Moonhouse80 },
 						_label
 					}
 				}

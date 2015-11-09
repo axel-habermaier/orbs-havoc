@@ -117,6 +117,26 @@ namespace PointWars.Gameplay.Client
 		}
 
 		/// <summary>
+		///   Sends the input state when the local game session is inactive, i.e., when a menu is open.
+		/// </summary>
+		/// <param name="gameSession">The game session the input should be provided for.</param>
+		/// <param name="connection">The connection to the server the client input should be sent to.</param>
+		public void SendInactiveInput(GameSession gameSession, Connection connection)
+		{
+			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
+			Assert.ArgumentNotNull(connection, nameof(connection));
+
+			// Ensure we don't spam the server with input message
+			if (_clock.Milliseconds < 1000.0 / NetworkProtocol.InputUpdateFrequency)
+				return;
+
+			_clock.Reset();
+
+			connection.EnqueueMessage(PlayerInputMessage.Create(
+				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, Vector2.Zero, 0, 0, 0, 0, 0, 0));
+		}
+
+		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()

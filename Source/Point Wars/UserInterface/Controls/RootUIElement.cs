@@ -51,11 +51,11 @@ namespace PointWars.UserInterface.Controls
 			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
 
 			IsVisible = true;
-			IsFocusable = true;
+			IsFocusable = false;
 			IsAttachedToRoot = true;
 			Font = AssetBundle.DefaultFont;
 			Foreground = Colors.White;
-			FocusedElement = this;
+			FocusedElement = null;
 
 			_inputDevice = inputDevice;
 			_inputDevice.Mouse.Pressed += MousePressed;
@@ -89,15 +89,16 @@ namespace PointWars.UserInterface.Controls
 					_focusedElement.IsFocused = false;
 
 				_focusedElement = value;
-				_focusedElement.IsFocused = true;
 
-				if (_focusedElement != this)
+				if (_focusedElement != null)
 				{
+					_focusedElement.IsFocused = true;
 					_focusedElements.Add(value);
+
 					CleanFocusedElements();
 				}
 
-				Log.DebugIf(false, "Focused element: {0}", _focusedElement.GetType().Name);
+				Log.DebugIf(false, "Focused element: {0}", _focusedElement?.GetType().Name);
 				Log.DebugIf(_focusedElements.Count > 32, "Unusually large focused elements history stack.");
 			}
 		}
@@ -127,7 +128,7 @@ namespace PointWars.UserInterface.Controls
 
 			// We have to check every frame whether the focused element must be reset; it could have been removed
 			// or hidden since the last frame, among other things.
-			if (FocusedElement != this && !FocusedElement.CanBeFocused)
+			if (FocusedElement != null && !FocusedElement.CanBeFocused)
 				ResetFocusedElement();
 
 			// Update the layout of the tree

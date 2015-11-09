@@ -80,22 +80,22 @@ namespace PointWars.Gameplay.Behaviors
 				case EntityType.TopWall:
 					position = level.GetBlockArea(x, y).TopLeft;
 					size = new Size(Level.BlockSize, Level.BlockSize / 2 + Level.WallThickness / 2);
-					HandleWallCollision(new Rectangle(position, size), blockType);
+					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
 					break;
 				case EntityType.LeftWall:
 					position = level.GetBlockArea(x, y).TopLeft;
 					size = new Size(Level.BlockSize / 2 + Level.WallThickness / 2, Level.BlockSize);
-					HandleWallCollision(new Rectangle(position, size), blockType);
+					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
 					break;
 				case EntityType.BottomWall:
 					position = level.GetBlockArea(x, y).TopLeft + new Vector2(0, Level.BlockSize / 2 - Level.WallThickness / 2);
 					size = new Size(Level.BlockSize, Level.BlockSize / 2 + Level.WallThickness);
-					HandleWallCollision(new Rectangle(position, size), blockType);
+					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
 					break;
 				case EntityType.RightWall:
 					position = level.GetBlockArea(x, y).TopLeft + new Vector2(Level.BlockSize / 2 - Level.WallThickness / 2, 0);
 					size = new Size(Level.BlockSize / 2 + Level.WallThickness, Level.BlockSize);
-					HandleWallCollision(new Rectangle(position, size), blockType);
+					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
 					break;
 				case EntityType.LeftTopWall:
 					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).BottomRight, isInverse);
@@ -130,24 +130,24 @@ namespace PointWars.Gameplay.Behaviors
 		/// <summary>
 		///   Handles an entity collision with a horizontal or vertical wall.
 		/// </summary>
-		private void HandleWallCollision(Rectangle wall, EntityType wallType)
+		private void HandleWallCollision(Circle circle, Rectangle wall, EntityType wallType)
 		{
-			if (!wall.Intersects(Circle))
+			if (!wall.Intersects(circle))
 				return;
 
 			switch (wallType)
 			{
 				case EntityType.LeftWall:
-					SceneNode.Position += new Vector2(wall.Right - Circle.Position.X + Circle.Radius, 0);
+					SceneNode.Position += new Vector2(wall.Right - circle.Position.X + circle.Radius, 0);
 					break;
 				case EntityType.RightWall:
-					SceneNode.Position += new Vector2(wall.Left - Circle.Position.X - Circle.Radius, 0);
+					SceneNode.Position += new Vector2(wall.Left - circle.Position.X - circle.Radius, 0);
 					break;
 				case EntityType.TopWall:
-					SceneNode.Position += new Vector2(0, wall.Bottom - Circle.Position.Y + Circle.Radius);
+					SceneNode.Position += new Vector2(0, wall.Bottom - circle.Position.Y + circle.Radius);
 					break;
 				case EntityType.BottomWall:
-					SceneNode.Position += new Vector2(0, wall.Top - Circle.Position.Y - Circle.Radius);
+					SceneNode.Position += new Vector2(0, wall.Top - circle.Position.Y - circle.Radius);
 					break;
 			}
 
