@@ -69,5 +69,15 @@ namespace PointWars.Utilities
 			LowerBound = bounds;
 			UpperBound = bounds;
 		}
+
+		/// <summary>
+		///   Creates a range that consists of the given value only. For multi-component values such as vectors or colors, this
+		///   is the lower and upper bound per component.
+		/// </summary>
+		/// <param name="value">The single value of the range.</param>
+		public static implicit operator Range<T>(T value)
+		{
+			return new Range<T>(value);
+		}
 	}
 }

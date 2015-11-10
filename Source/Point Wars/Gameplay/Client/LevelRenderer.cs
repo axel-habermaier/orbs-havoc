@@ -51,7 +51,7 @@ namespace PointWars.Gameplay.Client
 			var texHeight = AssetBundle.LevelBorders.Height;
 
 			const int texSize = 128;
-			var quads = new List<Quad>(10000);
+			var quads = new List<Quad>(1000);
 
 			var curvedWallTexCoords = new Rectangle(0 / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
 			var inverseCurvedTopWallTexCoords = new Rectangle(texSize / texWidth, 0 / texHeight, texSize / texWidth, texSize / texHeight);
@@ -63,7 +63,7 @@ namespace PointWars.Gameplay.Client
 				for (var y = 0; y < level.Height; ++y)
 				{
 					Rectangle texCoords;
-					float  rotation ;
+					float rotation;
 
 					switch (level[x, y])
 					{
@@ -123,11 +123,15 @@ namespace PointWars.Gameplay.Client
 							continue;
 					}
 
-					var area = new Rectangle(-Level.BlockSize / 2, -Level.BlockSize / 2, Level.BlockSize, Level.BlockSize);
-					var quad = new Quad(area, new Color(0xFF130C49), texCoords);
-					var matrix = Matrix3x2.CreateRotation(MathUtils.DegToRad(rotation)) * Matrix3x2.CreateTranslation(level.GetBlockArea(x, y).Center);
+					var quad = new Quad
+					{
+						Color = new Color(0xFF130C49),
+						Position = level.GetBlockArea(x, y).Center,
+						Orientation = rotation,
+						Size = new Size(Level.BlockSize, Level.BlockSize),
+						TextureCoordinates = texCoords
+					};
 
-					Quad.Transform(ref quad, ref matrix);
 					quads.Add(quad);
 				}
 			}
@@ -138,29 +142,29 @@ namespace PointWars.Gameplay.Client
 		/// <summary>
 		///   Draws the game session.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the view.</param>
-		public void Draw(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
+		public void Draw(SpriteBatch spriteBatch)
 		{
-			Assert.ArgumentNotNull(renderer, nameof(renderer));
+			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
 #if true
 			for (var y = 0; y < _level.Height * 2 - 1; ++y)
 			{
 				var position = _level.PositionOffset + new Vector2(Level.BlockSize / 2, (y + 1) * Level.BlockSize / 2);
-				renderer.DrawLine(position, position + new Vector2((_level.Width - 1) * Level.BlockSize, 0), new Color(0xFF130C49), 1);
+				spriteBatch.DrawLine(position, position + new Vector2((_level.Width - 1) * Level.BlockSize, 0), new Color(0xFF130C49), 1);
 			}
 
 			for (var x = 0; x < _level.Width * 2 - 1; ++x)
 			{
 				var position = _level.PositionOffset + new Vector2((x + 1) * Level.BlockSize / 2, Level.BlockSize / 2);
-				renderer.DrawLine(position, position + new Vector2(0, (_level.Height - 1) * Level.BlockSize), new Color(0xFF130C49), 1);
+				spriteBatch.DrawLine(position, position + new Vector2(0, (_level.Height - 1) * Level.BlockSize), new Color(0xFF130C49), 1);
 			}
 #endif
 
-			++renderer.Layer;
-			renderer.SamplerState = SamplerState.Point;
-			renderer.Draw(_quads, _quads.Length, AssetBundle.LevelBorders);
-			renderer.SamplerState = SamplerState.Bilinear;
+			spriteBatch.RenderState.Layer += 1;
+			spriteBatch.RenderState.SamplerState = SamplerState.Point;
+			spriteBatch.Draw(_quads, _quads.Length, AssetBundle.LevelBorders);
+			spriteBatch.RenderState.SamplerState = SamplerState.Bilinear;
 		}
 	}
 }

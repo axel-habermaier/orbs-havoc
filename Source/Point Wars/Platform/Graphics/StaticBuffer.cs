@@ -22,70 +22,60 @@
 
 namespace PointWars.Platform.Graphics
 {
+	using System;
 	using Memory;
+	using Utilities;
 	using static OpenGL3;
 	using static GraphicsHelpers;
 
 	/// <summary>
-	///   Describes a sampler state of a shader pipeline stage.
+	///   Represents a vertex, index, or uniform buffer whose contents are completely static or at least don't change every frame.
 	/// </summary>
-	public sealed unsafe class SamplerState : DisposableObject
+	public sealed unsafe class StaticBuffer : DisposableObject
 	{
-		private readonly int _state;
+		private readonly int _type;
+		private readonly int _buffer;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///   Initializes a new buffer.
 		/// </summary>
-		private SamplerState(int filter, int addressMode)
+		public StaticBuffer(int bufferType, int sizeInBytes, void* data)
 		{
-			_state = Allocate(glGenSamplers, nameof(SamplerState));
+			_buffer = Allocate(glGenBuffers, nameof(StaticBuffer));
+			SizeInBytes = sizeInBytes;
+			_type = bufferType;
 
-			glSamplerParameteri(_state, GL_TEXTURE_MIN_FILTER, filter);
-			glSamplerParameteri(_state, GL_TEXTURE_MAG_FILTER, filter);
-			glSamplerParameteri(_state, GL_TEXTURE_WRAP_S, addressMode);
-			glSamplerParameteri(_state, GL_TEXTURE_WRAP_T, addressMode);
-			glSamplerParameteri(_state, GL_TEXTURE_WRAP_R, addressMode);
-
+			glBindBuffer(_type, _buffer);
+			glBufferData(_type, (void*)SizeInBytes, data, GL_STATIC_DRAW);
 			CheckErrors();
 		}
 
 		/// <summary>
-		///   Gets a sampler state with point-filtering and clamp address mode.
+		///   Gets the size of the buffer in bytes.
 		/// </summary>
-		public static SamplerState Point { get; private set; }
+		public int SizeInBytes { get; }
 
 		/// <summary>
-		///   Gets a sampler state with bilinear filtering and clamp address mode.
+		///   Casts the buffer to its underlying OpenGL handle.
 		/// </summary>
-		public static SamplerState Bilinear { get; private set; }
-
-		/// <summary>
-		///   Initializes the sampler states.
-		/// </summary>
-		public static void Initialize()
+		public static implicit operator int(StaticBuffer obj)
 		{
-			Point = new SamplerState(GL_NEAREST, GL_CLAMP_TO_EDGE);
-			Bilinear = new SamplerState(GL_LINEAR, GL_CLAMP_TO_EDGE);
-
-			Bilinear.Bind(0);
+			Assert.ArgumentNotNull(obj, nameof(obj));
+			return obj._buffer;
 		}
 
 		/// <summary>
-		///   Disposes the sampler states.
+		///   Copies the given data to the buffer, overwriting all previous data.
 		/// </summary>
-		public static void Dispose()
+		/// <param name="data">The data that should be copied.</param>
+		public void Copy(void* data)
 		{
-			Point.SafeDispose();
-			Bilinear.SafeDispose();
-		}
+			Assert.NotDisposed(this);
+			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
-		/// <summary>
-		///   Binds the sampler state for rendering.
-		/// </summary>
-		public void Bind(int slot)
-		{
-			if (Change(State.SamplerStates, slot, this))
-				glBindSampler(slot, _state);
+			glBindBuffer(_type, _buffer);
+			glBufferSubData(_type, (void*)0, (void*)SizeInBytes, data);
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -93,8 +83,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Unset(State.SamplerStates, this);
-			Deallocate(glDeleteSamplers, _state);
+			Deallocate(glDeleteBuffers, _buffer);
 		}
 	}
 }

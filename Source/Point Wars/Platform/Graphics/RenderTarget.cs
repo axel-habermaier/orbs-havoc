@@ -27,12 +27,14 @@ namespace PointWars.Platform.Graphics
 	using Rendering;
 	using Utilities;
 	using static OpenGL3;
+	using static GraphicsHelpers;
 
 	/// <summary>
 	///   Represents the target of a rendering operation.
 	/// </summary>
-	public sealed unsafe class RenderTarget : GraphicsObject
+	public sealed unsafe class RenderTarget : DisposableObject
 	{
+		private readonly int _renderTarget;
 		private readonly Size _size;
 		private readonly Texture _texture;
 		private readonly Window _window;
@@ -63,9 +65,9 @@ namespace PointWars.Platform.Graphics
 			_texture = new Texture(size, GL_RGBA, null);
 
 			Viewport = new Rectangle(0, 0, _size);
-			Handle = Allocate(glGenFramebuffers, nameof(RenderTarget));
+			_renderTarget = Allocate(glGenFramebuffers, nameof(RenderTarget));
 
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _renderTarget);
 			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
 			CheckErrors();
 
@@ -167,7 +169,7 @@ namespace PointWars.Platform.Graphics
 				_window.GraphicsDevice.MakeCurrent(_window);
 
 			if (Change(ref State.RenderTarget, this))
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _renderTarget);
 		}
 
 		/// <summary>
@@ -186,21 +188,37 @@ namespace PointWars.Platform.Graphics
 		}
 
 		/// <summary>
-		///   Draws primitiveCount-many primitives, starting at the given offset into the currently bound vertex buffers.
+		///   Sets up and validates the required GPU state for a draw call.
 		/// </summary>
-		/// <param name="primitiveCount">The number of primitives that should be drawn.</param>
-		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
-		public void Draw(int primitiveCount, int vertexOffset)
+		private void BeforeDraw()
 		{
 			Bind();
 			SetViewport();
 			State.Validate();
 
 			glBindVertexArray(State.VertexLayout);
-			glDrawArrays(GL_TRIANGLES, vertexOffset, 3 * primitiveCount);
-			glBindVertexArray(0);
+		}
 
+		/// <summary>
+		///   Sets up and validates the GPU state after a draw call.
+		/// </summary>
+		private static void AfterDraw()
+		{
+			glBindVertexArray(0);
 			CheckErrors();
+		}
+
+		/// <summary>
+		///   Draws primitiveCount-many primitives, starting at the given offset into the currently bound vertex buffers.
+		/// </summary>
+		/// <param name="vertexCount">The number of vertices that should be drawn.</param>
+		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
+		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
+		public void Draw(int vertexCount, int vertexOffset, int primitiveType = GL_TRIANGLES)
+		{
+			BeforeDraw();
+			glDrawArrays(primitiveType, vertexOffset, vertexCount);
+			AfterDraw();
 		}
 
 		/// <summary>
@@ -210,17 +228,47 @@ namespace PointWars.Platform.Graphics
 		/// <param name="indexCount">The number of indices to draw.</param>
 		/// <param name="indexOffset">The location of the first index read by the GPU from the index buffer.</param>
 		/// <param name="vertexOffset">The value that should be added to each index before reading a vertex from the vertex buffer.</param>
-		public void DrawIndexed(int indexCount, int indexOffset, int vertexOffset)
+		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
+		public void DrawIndexed(int indexCount, int indexOffset, int vertexOffset, int primitiveType = GL_TRIANGLES)
 		{
-			Bind();
-			SetViewport();
-			State.Validate();
+			BeforeDraw();
+			glDrawElementsBaseVertex(primitiveType, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
+			AfterDraw();
+		}
 
-			glBindVertexArray(State.VertexLayout);
-			glDrawElementsBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
-			glBindVertexArray(0);
+		/// <summary>
+		///   Draws primitiveCount-many instanced primitives, starting at the given offset into the currently bound vertex buffers.
+		/// </summary>
+		/// <param name="instanceCount">The number of instances that should be drawn.</param>
+		/// <param name="vertexCount">The number of vertices that should be drawn per instance.</param>
+		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
+		/// <param name="instanceOffset">The offset applied to the instanced vertex buffers.</param>
+		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
+		internal void DrawInstanced(int instanceCount, int vertexCount, int vertexOffset = 0, int instanceOffset = 0,
+									int primitiveType = GL_TRIANGLES)
+		{
+			BeforeDraw();
+			//Draw(vertexCount, vertexOffset, primitiveType);
+			glDrawArraysInstancedBaseInstance(primitiveType, vertexOffset, vertexCount, instanceCount, instanceOffset);
+			AfterDraw();
+		}
 
-			CheckErrors();
+		/// <summary>
+		///   Draws indexCount-many instanced indices, starting at the given index offset into the currently bound index buffer.
+		/// </summary>
+		/// <param name="instanceCount">The number of instances to draw.</param>
+		/// <param name="indexCount">The number of indices to draw per instance.</param>
+		/// <param name="indexOffset">The location of the first index read by the GPU from the index buffer.</param>
+		/// <param name="vertexOffset">The offset applied to the non-instanced vertex buffers.</param>
+		/// <param name="instanceOffset">The offset applied to the instanced vertex buffers.</param>
+		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
+		internal void DrawIndexedInstanced(int instanceCount, int indexCount, int indexOffset = 0, int vertexOffset = 0,
+										   int instanceOffset = 0, int primitiveType = GL_TRIANGLES)
+		{
+			BeforeDraw();
+			glDrawElementsInstancedBaseVertexBaseInstance(primitiveType, indexCount, GL_UNSIGNED_INT,
+				(void*)indexOffset, instanceCount, vertexOffset, instanceOffset);
+			AfterDraw();
 		}
 
 		/// <summary>
@@ -232,7 +280,7 @@ namespace PointWars.Platform.Graphics
 				_window.Resized -= ChangeViewport;
 
 			Unset(ref State.RenderTarget, this);
-			Deallocate(glDeleteFramebuffers, Handle);
+			Deallocate(glDeleteFramebuffers, _renderTarget);
 
 			if (!IsBackBuffer)
 				Texture.SafeDispose();

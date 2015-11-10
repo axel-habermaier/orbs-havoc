@@ -209,7 +209,13 @@ namespace PointWars.UserInterface
 				color = textColor.Value;
 
 			var glyph = GetGlyph(character);
-			quad = new Quad(new Rectangle(area.Left, area.Top, area.Width, area.Height), color, glyph.TextureArea);
+			quad = new Quad
+			{
+				Position = area.Center,
+				Color = color,
+				Size = area.Size,
+				TextureCoordinates = glyph.TextureArea
+			};
 
 			return true;
 		}

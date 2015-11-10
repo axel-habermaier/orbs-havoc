@@ -58,12 +58,12 @@ namespace PointWars.Gameplay.SceneNodes
 		}
 
 		/// <summary>
-		///   Draws the sprite using the given renderer.
+		///   Draws the sprite using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used for drawing.</param>
-		public void Draw(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
+		public void Draw(SpriteBatch spriteBatch)
 		{
-			_effect.Draw(renderer);
+			_effect.Draw(spriteBatch);
 		}
 
 		/// <summary>

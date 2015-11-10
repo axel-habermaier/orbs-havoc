@@ -24,11 +24,11 @@ namespace PointWars.Platform.Graphics
 {
 	using Utilities;
 	using static OpenGL3;
-
+	using static GraphicsHelpers;
 	/// <summary>
-	///   Describes a blend state of the output merger pipeline stage.
+	///   Describes a blend operation of the output merger pipeline stage.
 	/// </summary>
-	public enum BlendState
+	public enum BlendOperation
 	{
 		/// <summary>
 		///   Indicates that no blending should be used and all drawn objects are opaque.
@@ -52,36 +52,32 @@ namespace PointWars.Platform.Graphics
 	}
 
 	/// <summary>
-	///   Provides extension methods for blend states.
+	///   Provides extension methods for blend operations.
 	/// </summary>
-	public static class BlendStateExtensions
+	public static class BlendOperationExtensions
 	{
-		private static BlendState _current;
-
 		/// <summary>
 		///   Binds the blend state for rendering.
 		/// </summary>
-		public static void Bind(this BlendState blendState)
+		public static void Bind(this BlendOperation blendOperation)
 		{
-			if (_current == blendState)
+			if (!Change(ref State.BlendOperation, blendOperation))
 				return;
 
-			_current = blendState;
-
-			switch (blendState)
+			switch (blendOperation)
 			{
-				case BlendState.Opaque:
+				case BlendOperation.Opaque:
 					glDisable(GL_BLEND);
 					break;
-				case BlendState.Premultiplied:
+				case BlendOperation.Premultiplied:
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 					break;
-				case BlendState.Additive:
+				case BlendOperation.Additive:
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_ONE, GL_ONE);
 					break;
-				case BlendState.Alpha:
+				case BlendOperation.Alpha:
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					break;

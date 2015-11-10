@@ -105,15 +105,15 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Draws the child UI elements of the current UI element using the given renderer.
+		///   Draws the child UI elements of the current UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element's children.</param>
-		protected override void DrawChildren(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
+		protected override void DrawChildren(SpriteBatch spriteBatch)
 		{
 			if (ScollViewer != null)
 			{
 				// We draw the children on a higher layer to avoid draw ordering issues.
-				++renderer.Layer;
+				spriteBatch.RenderState.Layer += 1;
 
 				// Only draw the children that are actually visible
 				var area = ScollViewer.ScrollArea;
@@ -125,13 +125,13 @@ namespace PointWars.UserInterface.Controls
 					var rightIsInside = child.VisualOffset.X + child.ActualWidth >= area.Left;
 
 					if (topIsInside && bottomIsInside && leftIsInside && rightIsInside)
-						child.Draw(renderer);
+						child.Draw(spriteBatch);
 				}
 
-				--renderer.Layer;
+				spriteBatch.RenderState.Layer -= 1;
 			}
 			else
-				base.DrawChildren(renderer);
+				base.DrawChildren(spriteBatch);
 		}
 	}
 }

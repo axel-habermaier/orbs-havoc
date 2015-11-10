@@ -99,17 +99,17 @@ namespace PointWars.Rendering.Particles
 		/// <summary>
 		///   Draws the particle effect to the given render output.
 		/// </summary>
-		/// <param name="renderer">The renderer the particle effect should be drawn with.</param>
-		public void Draw(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch the particle effect should be drawn with.</param>
+		public void Draw(SpriteBatch spriteBatch)
 		{
 			Assert.NotPooled(this);
-			Assert.ArgumentNotNull(renderer, nameof(renderer));
+			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
 			if (Emitters == null)
 				return;
 
 			foreach (var emitter in Emitters)
-				emitter.Draw(renderer);
+				emitter.Draw(spriteBatch);
 		}
 
 		/// <summary>

@@ -24,20 +24,21 @@ namespace PointWars.Platform.Graphics
 {
 	using System;
 	using Logging;
+	using Memory;
 	using static OpenGL3;
 	using static SDL2;
+	using static GraphicsHelpers;
 
 	/// <summary>
 	///   Represents the GPU.
 	/// </summary>
-	public sealed unsafe class GraphicsDevice : GraphicsObject
+	public sealed unsafe class GraphicsDevice : DisposableObject
 	{
-		private const int MaxFrameLag = 3;
-		private readonly int[] _beginQueries = new int[MaxFrameLag];
+		private readonly int[] _beginQueries = new int[GraphicsState.MaxFrameLag];
 		private readonly void* _context;
 		private readonly void* _contextWindow;
-		private readonly int[] _endQueries = new int[MaxFrameLag];
-		private readonly void*[] _syncQueries = new void*[MaxFrameLag];
+		private readonly int[] _endQueries = new int[GraphicsState.MaxFrameLag];
+		private readonly void*[] _syncQueries = new void*[GraphicsState.MaxFrameLag];
 		private int _syncedIndex;
 
 		/// <summary>
@@ -79,7 +80,10 @@ namespace PointWars.Platform.Graphics
 			if (SDL_GL_ExtensionSupported("GL_ARB_buffer_storage") == 0)
 				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_buffer_storage' is not supported.");
 
-			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
+			if (SDL_GL_ExtensionSupported("GL_ARB_base_instance") == 0)
+				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_base_instance' is not supported.");
+
+			Log.Info("OpenGL sprite batch: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
 				new string((sbyte*)glGetString(GL_VENDOR)));
 			Log.Info("OpenGL version: {0}", new string((sbyte*)glGetString(GL_VERSION)));
 			Log.Info("OpenGL GLSL version: {0}", new string((sbyte*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
@@ -91,7 +95,7 @@ namespace PointWars.Platform.Graphics
 
 			CheckErrors();
 
-			for (var i = 0; i < MaxFrameLag; ++i)
+			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
 			{
 				_beginQueries[i] = Allocate(glGenQueries, "TimestampQuery");
 				_endQueries[i] = Allocate(glGenQueries, "TimestampQuery");
@@ -158,10 +162,11 @@ namespace PointWars.Platform.Graphics
 			// We've completed the frame, so issue the synced query for the current frame and update the synced index
 			glDeleteSync(_syncQueries[_syncedIndex]);
 			_syncQueries[_syncedIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-			_syncedIndex = (_syncedIndex + 1) % MaxFrameLag;
+			_syncedIndex = (_syncedIndex + 1) % GraphicsState.MaxFrameLag;
 
-			// Drawing is no longer allowed
+			// Drawing is no longer allowed, but all frame-dependant resources can now be updated again
 			State.CanDraw = false;
+			State.FrameNumber += 1;
 
 			CheckErrors();
 		}
@@ -173,7 +178,7 @@ namespace PointWars.Platform.Graphics
 		{
 			SamplerState.Dispose();
 
-			for (var i = 0; i < MaxFrameLag; ++i)
+			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
 			{
 				glDeleteSync(_syncQueries[i]);
 				Deallocate(glDeleteQueries, _beginQueries[i]);

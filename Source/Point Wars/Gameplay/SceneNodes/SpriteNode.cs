@@ -48,13 +48,13 @@ namespace PointWars.Gameplay.SceneNodes
 		public int Layer { get; set; }
 
 		/// <summary>
-		///   Draws the sprite using the given renderer.
+		///   Draws the sprite using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used for drawing.</param>
-		public void Draw(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
+		public void Draw(SpriteBatch spriteBatch)
 		{
-			renderer.Layer = Layer;
-			renderer.Draw(Texture, Color, WorldMatrix);
+			spriteBatch.RenderState.Layer = Layer;
+			spriteBatch.Draw(Texture, WorldPosition, Orientation, Color);
 		}
 
 		/// <summary>

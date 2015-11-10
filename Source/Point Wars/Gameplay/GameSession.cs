@@ -69,7 +69,7 @@ namespace PointWars.Gameplay
 		public PoolAllocator Allocator { get; }
 
 		/// <summary>
-		///   Gets the renderer for the game session's level.
+		///   Gets the sprite batch for the game session's level.
 		/// </summary>
 		public LevelRenderer LevelRenderer { get; private set; }
 

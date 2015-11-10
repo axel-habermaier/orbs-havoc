@@ -25,30 +25,38 @@ namespace PointWars.Platform.Graphics
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using Logging;
-	using Memory;
 	using Utilities;
 	using static OpenGL3;
 
 	/// <summary>
-	///   Base class for all objects belonging to a graphics device.
+	///   Provides OpenGL helper methods.
 	/// </summary>
-	public abstract unsafe class GraphicsObject : DisposableObject
+	public static unsafe class GraphicsHelpers
 	{
+		/// <summary>
+		///   Represents a pointer to an OpenGL allocation function.
+		/// </summary>
+		/// <param name="count">The number of objects that should be allocated.</param>
+		/// <param name="objects">A pointer to the allocated objects.</param>
+		public delegate void Allocator(int count, int* objects);
+
+		/// <summary>
+		///   Represents a pointer to an OpenGL deallocation function.
+		/// </summary>
+		/// <param name="count">The number of objects that should be deallocated.</param>
+		/// <param name="objects">A pointer to the objects that should be deallocated.</param>
+		public delegate void Deallocator(int count, int* objects);
+
 		/// <summary>
 		///   Gets the state of the graphics device.
 		/// </summary>
-		protected static GraphicsState State { get; } = new GraphicsState();
-
-		/// <summary>
-		///   Gets the graphics object's underlying OpenGL handle.
-		/// </summary>
-		protected int Handle { get; set; }
+		public static GraphicsState State { get; } = new GraphicsState();
 
 		/// <summary>
 		///   In debug builds, checks for OpenGL errors.
 		/// </summary>
 		[Conditional("DEBUG"), DebuggerHidden]
-		protected static void CheckErrors()
+		public static void CheckErrors()
 		{
 			var glErrorOccurred = false;
 			for (var glError = glGetError(); glError != GL_NO_ERROR; glError = glGetError())
@@ -86,7 +94,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate the object.</param>
 		/// <param name="type">A user-friendly name of the type of the allocated object.</param>
-		protected static int Allocate(Allocator allocator, string type)
+		public static int Allocate(Allocator allocator, string type)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNullOrWhitespace(type, nameof(type));
@@ -106,7 +114,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		/// <param name="deallocator">The deallocator that should be used to allocate the object.</param>
 		/// <param name="obj">The object that should be deallocated.</param>
-		protected static void Deallocate(Deallocator deallocator, int obj)
+		public static void Deallocate(Deallocator deallocator, int obj)
 		{
 			Assert.ArgumentNotNull(deallocator, nameof(deallocator));
 
@@ -121,7 +129,7 @@ namespace PointWars.Platform.Graphics
 		/// <typeparam name="T">The type of the state that should be changed.</typeparam>
 		/// <param name="stateValue">The current state value that will be updated, if necessary.</param>
 		/// <param name="value">The new state value.</param>
-		protected static bool Change<T>(ref T stateValue, T value)
+		public static bool Change<T>(ref T stateValue, T value)
 		{
 			if (EqualityComparer<T>.Default.Equals(stateValue, value))
 				return false;
@@ -138,7 +146,7 @@ namespace PointWars.Platform.Graphics
 		/// <param name="stateValues">The current state values that will be updated, if necessary.</param>
 		/// <param name="index">The index of the state value that should be updated.</param>
 		/// <param name="value">The new state value.</param>
-		protected static bool Change<T>(T[] stateValues, int index, T value)
+		public static bool Change<T>(T[] stateValues, int index, T value)
 			where T : class
 		{
 			Assert.ArgumentNotNull(stateValues, nameof(stateValues));
@@ -157,7 +165,7 @@ namespace PointWars.Platform.Graphics
 		/// <typeparam name="T">The type of the state that should be unset.</typeparam>
 		/// <param name="stateValue">The current state value that will be unset, if necessary.</param>
 		/// <param name="value">The state value that should be unset.</param>
-		protected static void Unset<T>(ref T stateValue, T value)
+		public static void Unset<T>(ref T stateValue, T value)
 			where T : class
 		{
 			if (stateValue == value)
@@ -170,7 +178,7 @@ namespace PointWars.Platform.Graphics
 		/// <typeparam name="T">The type of the state that should be unset.</typeparam>
 		/// <param name="stateValues">The current state values that will be unset, if necessary.</param>
 		/// <param name="value">The state value that should be unset.</param>
-		protected static void Unset<T>(T[] stateValues, T value)
+		public static void Unset<T>(T[] stateValues, T value)
 			where T : class
 		{
 			for (var i = 0; i < stateValues.Length; ++i)
@@ -179,28 +187,5 @@ namespace PointWars.Platform.Graphics
 					stateValues[i] = null;
 			}
 		}
-
-		/// <summary>
-		///   Casts the graphics object to its underlying OpenGL handle.
-		/// </summary>
-		public static implicit operator int(GraphicsObject obj)
-		{
-			Assert.ArgumentNotNull(obj, nameof(obj));
-			return obj.Handle;
-		}
-
-		/// <summary>
-		///   Represents a pointer to an OpenGL allocation function.
-		/// </summary>
-		/// <param name="count">The number of objects that should be allocated.</param>
-		/// <param name="objects">A pointer to the allocated objects.</param>
-		protected delegate void Allocator(int count, int* objects);
-
-		/// <summary>
-		///   Represents a pointer to an OpenGL deallocation function.
-		/// </summary>
-		/// <param name="count">The number of objects that should be deallocated.</param>
-		/// <param name="objects">A pointer to the objects that should be deallocated.</param>
-		protected delegate void Deallocator(int count, int* objects);
 	}
 }

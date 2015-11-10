@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -22,45 +22,21 @@
 
 namespace PointWars.Rendering
 {
-	using System.Diagnostics;
-	using Platform.Graphics;
-	using Utilities;
+	using Platform.Memory;
 
 	/// <summary>
-	///   Represents a fullscreen effect that applies a shader to an input texture originating from a render target, rendering the
-	///   result fullscreen to the output render target.
+	///   Represents an operation performed by a renderer.
 	/// </summary>
-	public abstract class FullscreenEffect : RenderOperation
+	public abstract class RenderOperation : PooledObject
 	{
 		/// <summary>
-		///   Gets or sets the input render target the effect should be applied to.
+		///   Gets the renderer that executes the operation.
 		/// </summary>
-		public RenderTarget Input { get; set; }
+		public Renderer Renderer { get; internal set; }
 
 		/// <summary>
-		///   Gets or sets the output render target that stores the rendered result.
+		///   Executes the render operation.
 		/// </summary>
-		public RenderTarget Output { get; set; }
-
-		/// <summary>
-		///   In debug builds, checks whether the assigned input and output render targets are valid.
-		/// </summary>
-		[Conditional("DEBUG")]
-		protected void ValidateRenderTargets()
-		{
-			Assert.NotNull(Input);
-			Assert.NotNull(Output);
-			Assert.That(Input != Output, "Input and output must differ.");
-		}
-
-		/// <summary>
-		///   Draws fullscreen into the given render target.
-		/// </summary>
-		protected void DrawFullscreen(RenderTarget renderTarget)
-		{
-			Assert.ArgumentNotNull(renderTarget, nameof(renderTarget));
-
-			// TODO
-		}
+		internal abstract void Execute();
 	}
 }

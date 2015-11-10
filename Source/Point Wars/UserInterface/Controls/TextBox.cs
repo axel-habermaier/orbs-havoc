@@ -244,17 +244,17 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Draws the UI element using the given renderer.
+		///   Draws the UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element.</param>
-		protected override void DrawCore(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
+		protected override void DrawCore(SpriteBatch spriteBatch)
 		{
-			base.DrawCore(renderer);
+			base.DrawCore(spriteBatch);
 
 			if (_label == null || !IsFocused)
 				return;
 
-			_caret.Draw(renderer, _label.ComputeCaretPosition(_caret.Position), _label.Font.LineHeight, Foreground);
+			_caret.Draw(spriteBatch, _label.ComputeCaretPosition(_caret.Position), _label.Font.LineHeight, Foreground);
 			Keyboard.ChangeTextInputArea(VisualArea);
 		}
 	}

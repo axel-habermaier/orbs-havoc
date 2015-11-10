@@ -23,10 +23,13 @@
 namespace PointWars.Views
 {
 	using System.Net;
+	using System.Numerics;
 	using Gameplay;
 	using Gameplay.Client;
+	using Gameplay.SceneNodes;
 	using Network;
 	using Network.Messages;
+	using Platform.Graphics;
 	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
@@ -42,8 +45,8 @@ namespace PointWars.Views
 	internal sealed class GameView : View
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
+		private Camera _camera = new Camera();
 
-		private Camera _camera;
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
 		private InputManager _inputManager;
@@ -189,13 +192,34 @@ namespace PointWars.Views
 		/// <summary>
 		///   Draws the game session.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the view.</param>
-		public void Draw(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
+		public void Draw(SpriteBatch spriteBatch)
 		{
 			if (_clientLogic == null || !_clientLogic.IsSynced)
 				return;
 
-			_camera.Draw(renderer);
+			// The avatar, if alive, should always be at the center of the screen
+			var avatar = GameSession.Players?.LocalPlayer?.Avatar;
+			if (avatar != null)
+			{
+				var windowCenter = new Vector2(MathUtils.Round(Window.Size.Width / 2), MathUtils.Round(Window.Size.Height / 2));
+				_camera.Position = windowCenter - avatar.WorldPosition;
+			}
+
+			// Draw the level first; everything else is drawn above
+			GameSession.LevelRenderer.Draw(spriteBatch);
+
+			// Draw the entity sprites next, using layers to control draw order
+			foreach (var spriteNode in GameSession.SceneGraph.EnumeratePostOrder<SpriteNode>())
+				spriteNode.Draw(spriteBatch);
+
+			// Draw the particles last, on top of everything, using additive blending
+			spriteBatch.RenderState.BlendOperation = BlendOperation.Additive;
+			spriteBatch.RenderState.Layer = 10000;
+			foreach (var particleNode in GameSession.SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
+				particleNode.Draw(spriteBatch);
+
+			spriteBatch.RenderState.BlendOperation = BlendOperation.Premultiplied;
 		}
 
 		/// <summary>
@@ -211,7 +235,6 @@ namespace PointWars.Views
 			Connection = Connection.Create(_allocator, ServerEndPoint);
 
 			_clientLogic = new ClientLogic(_allocator, GameSession, Views);
-			_camera = new Camera(GameSession, Window);
 
 			GameSession.InitializeClient();
 			Connection.EnqueueMessage(ClientConnectMessage.Create(_allocator, Cvars.PlayerName));
@@ -247,7 +270,6 @@ namespace PointWars.Views
 			Connection = null;
 
 			_clientLogic = null;
-			_camera = null;
 		}
 
 		/// <summary>
@@ -263,6 +285,7 @@ namespace PointWars.Views
 			Disconnect();
 			_allocator.SafeDispose();
 			_inputManager.SafeDispose();
+			_camera.SafeDispose();
 
 			InputDevice.Remove(_showScoreboard);
 		}

@@ -40,10 +40,10 @@ namespace PointWars.Gameplay.Client
 						Capacity = 200,
 						Duration = 0.5f,
 						EmissionRate = 500,
-						InitialColor = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
-						InitialLifetime = new Range<float>(0.1f, 0.5f),
-						InitialScale = new Range<float>(1),
-						InitialSpeed = new Range<float>(200, 400),
+						EmitColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
+						EmitLiftetimeRange = new Range<float>(0.1f, 0.5f),
+						EmitScaleRange = 1,
+						EmitSpeedRange = new Range<float>(200, 400),
 						Texture = AssetBundle.Bullet,
 						Modifiers =
 						{

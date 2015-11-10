@@ -27,14 +27,16 @@ namespace PointWars.Platform.Graphics
 	using Memory;
 	using Utilities;
 	using static OpenGL3;
+	using static GraphicsHelpers;
 
 	/// <summary>
 	///   Represents a combination of vertex and fragment shaders that control the various pipeline stages of the GPU.
 	/// </summary>
-	public sealed unsafe class Shader : GraphicsObject
+	public sealed unsafe class Shader : DisposableObject
 	{
 		private const int LogBufferLength = 4096;
 		private int _fragmentShader;
+		private int _program;
 		private int _vertexShader;
 
 		/// <summary>
@@ -60,10 +62,10 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		public void Bind()
 		{
-			Assert.That(Handle != 0, "The shader has not been initialized.");
+			Assert.That(_program != 0, "The shader has not been initialized.");
 
 			if (Change(ref State.Shader, this))
-				glUseProgram(Handle);
+				glUseProgram(_program);
 
 			CheckErrors();
 		}
@@ -77,7 +79,7 @@ namespace PointWars.Platform.Graphics
 
 			glDeleteShader(_vertexShader);
 			glDeleteShader(_fragmentShader);
-			glDeleteProgram(Handle);
+			glDeleteProgram(_program);
 		}
 
 		/// <summary>
@@ -91,20 +93,20 @@ namespace PointWars.Platform.Graphics
 			_vertexShader = LoadShader(GL_VERTEX_SHADER, buffer.ReadString());
 			_fragmentShader = LoadShader(GL_FRAGMENT_SHADER, buffer.ReadString());
 
-			Handle = glCreateProgram();
-			if (Handle == 0)
+			_program = glCreateProgram();
+			if (_program == 0)
 				Log.Die("Failed to create OpenGL program object.");
 
-			glAttachShader(Handle, _vertexShader);
-			glAttachShader(Handle, _fragmentShader);
-			glLinkProgram(Handle);
+			glAttachShader(_program, _vertexShader);
+			glAttachShader(_program, _fragmentShader);
+			glLinkProgram(_program);
 			CheckErrors();
 
 			int success, logLength;
 			byte* log = stackalloc byte[LogBufferLength];
 
-			glGetProgramiv(Handle, GL_LINK_STATUS, &success);
-			glGetProgramInfoLog(Handle, LogBufferLength, &logLength, log);
+			glGetProgramiv(_program, GL_LINK_STATUS, &success);
+			glGetProgramInfoLog(_program, LogBufferLength, &logLength, log);
 			CheckErrors();
 
 			if (success == GL_FALSE)

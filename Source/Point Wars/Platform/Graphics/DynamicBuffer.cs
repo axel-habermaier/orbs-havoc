@@ -22,9 +22,12 @@
 
 namespace PointWars.Platform.Graphics
 {
+	using System;
+	using Logging;
 	using Memory;
 	using Utilities;
 	using static OpenGL3;
+	using static GraphicsHelpers;
 
 	/// <summary>
 	///   Represents a dynamic buffer that is split into several chunks. Each chunk is of the requested size; therefore,
@@ -36,7 +39,7 @@ namespace PointWars.Platform.Graphics
 	public unsafe class DynamicBuffer : DisposableObject
 	{
 		private const int MapMode = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-		private const int ChunkCount = 3;
+		private const int ChunkCount = GraphicsState.MaxFrameLag;
 
 		/// <summary>
 		///   The persistently mapped pointer to the OpenGL buffer contents.
@@ -44,9 +47,29 @@ namespace PointWars.Platform.Graphics
 		private readonly void* _pointer;
 
 		/// <summary>
+		///   The size in bytes of each element, disregarding possible alignment requirements.
+		/// </summary>
+		private readonly int _sizeInBytes;
+
+		/// <summary>
+		///   The OpenGL type of the buffer.
+		/// </summary>
+		private readonly int _type;
+
+		/// <summary>
+		///   The underlying OpenGL handle of the buffer.
+		/// </summary>
+		private readonly int _buffer;
+
+		/// <summary>
 		///   The index of the current chunk that the dynamic vertex buffer uses for mapping and drawing operations.
 		/// </summary>
 		private int _currentChunk;
+
+		/// <summary>
+		///   The GPU frame number when the buffer was last changed.
+		/// </summary>
+		private uint _lastChanged;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -56,12 +79,37 @@ namespace PointWars.Platform.Graphics
 		/// <param name="elementSize">The size of each element in the buffer.</param>
 		public DynamicBuffer(int bufferType, int elementCount, int elementSize)
 		{
-			var bufferSize = ChunkCount * elementCount * elementSize;
-			Buffer = new Buffer(bufferType, bufferSize);
+			Assert.That(bufferType != GL_UNIFORM_BUFFER || elementCount == 1, "Uniform buffers can only have a single element.");
 
+			_buffer = Allocate(glGenBuffers, nameof(DynamicBuffer));
+			_sizeInBytes = elementSize;
+			_type = bufferType;
+
+			// For uniform buffers, we have to respect the OpenGL uniform buffer alignment requirements
+			if (bufferType == GL_UNIFORM_BUFFER)
+			{
+				int alignment;
+				glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &alignment);
+				CheckErrors();
+
+				var remainder = elementSize % alignment;
+				if (remainder != 0)
+					elementSize += alignment - remainder;
+			}
+
+			var size = ChunkCount * elementCount * elementSize;
 			ElementCount = elementCount;
 			ElementSize = elementSize;
-			_pointer = Buffer.MapRange(MapMode, 0, bufferSize);
+
+			glBindBuffer(bufferType, _buffer);
+			glBufferStorage(bufferType, (void*)size, null, GL_MAP_WRITE_BIT | GL_MAP_COHERENT_BIT | GL_MAP_PERSISTENT_BIT);
+			CheckErrors();
+
+			_pointer = glMapBufferRange(_type, (void*)0, (void*)size, MapMode);
+			CheckErrors();
+
+			if (_pointer == null)
+				Log.Die("Failed to map buffer.");
 		}
 
 		/// <summary>
@@ -75,35 +123,45 @@ namespace PointWars.Platform.Graphics
 		public int ElementSize { get; }
 
 		/// <summary>
-		///   Gets the underlying vertex buffer. The returned buffer should only be used to initialize vertex layouts;
-		///   mapping the buffer will most likely result in some unexpected behavior.
+		///   Gets the element offset that must be applied to all drawing operations.
 		/// </summary>
-		public Buffer Buffer { get; }
+		public int ElementOffset => _currentChunk * ElementCount;
 
 		/// <summary>
-		///   Gets the vertex offset that must be applied to a drawing operation when the data of the last buffer mapping operation
-		///   should be drawn.
+		///   Casts the buffer to its underlying OpenGL handle.
 		/// </summary>
-		public int VertexOffset => _currentChunk * ElementCount;
+		public static implicit operator int(DynamicBuffer obj)
+		{
+			Assert.ArgumentNotNull(obj, nameof(obj));
+			return obj._buffer;
+		}
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Buffer.Unmap();
-			Buffer.SafeDispose();
+			glBindBuffer(_type, _buffer);
+			if (!glUnmapBuffer(_type))
+				Log.Error("Failed to unmap buffer.");
+
+			CheckErrors();
+
+			Deallocate(glDeleteBuffers, _buffer);
+			Unset(State.ConstantBuffers, this);
 		}
 
 		/// <summary>
-		///   Maps the next chunk of the buffer and returns a pointer to the first byte of the chunk.
+		///   Gets a pointer to the first byte of the next chunk of the buffer that should be used by the current frame.
 		/// </summary>
-		/// <param name="offset">A zero-based index denoting the first byte of the next chunk that should be mapped.</param>
-		public void* Map(int offset = 0)
+		/// <param name="offset">A zero-based index denoting the first byte of the next chunk that should be used.</param>
+		public void* GetChunkPointer(int offset = 0)
 		{
 			Assert.ArgumentSatisfies(offset < ElementSize * ElementCount, nameof(offset), "Offset is out-of-bounds.");
+			Assert.That(_lastChanged < State.FrameNumber, "The buffer cannot be changed multiple times per frame.");
 
-			_currentChunk = (_currentChunk + 1) % ChunkCount;
+			_lastChanged = State.FrameNumber;
+			//_currentChunk = (_currentChunk + 1) % ChunkCount;
 			return (byte*)_pointer + _currentChunk * ElementSize * ElementCount + offset;
 		}
 
@@ -112,20 +170,30 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		public void Bind(int slot)
 		{
-			Bind(slot, 0, ElementSize * ElementCount);
+			Assert.NotDisposed(this);
+			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
+			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
+
+			if (!Change(State.ConstantBuffers, slot, this))
+				return;
+
+			var offset = ElementOffset * ElementSize;
+			var size = ElementCount * ElementSize;
+			glBindBufferRange(GL_UNIFORM_BUFFER, slot, _buffer, (void*)offset, (void*)size);
+
+			CheckErrors();
 		}
 
 		/// <summary>
-		///   Binds the uniform buffer to the given slot.
+		///   Copies the given data to the buffer, overwriting all previous data.
 		/// </summary>
-		public void Bind(int slot, int elementOffset, int elementCount)
+		/// <param name="data">The data that should be copied.</param>
+		public void Copy(void* data)
 		{
 			Assert.NotDisposed(this);
-			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
-			Assert.InRange(elementOffset, 0, ElementCount);
-			Assert.InRange(elementCount, 0, ElementCount);
+			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
-			Buffer.Bind(slot, _currentChunk * ElementSize * ElementCount + elementOffset * ElementSize, elementCount * ElementSize);
+			MemCopy.Copy(GetChunkPointer(), data, _sizeInBytes);
 		}
 	}
 }

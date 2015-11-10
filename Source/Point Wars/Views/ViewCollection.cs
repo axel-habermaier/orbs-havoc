@@ -44,8 +44,7 @@ namespace PointWars.Views
 	internal class ViewCollection : DisposableObject
 	{
 		private readonly View[] _views;
-		private BloomEffect _bloomEffect;
-		private RenderTarget _blurredRenderTarget;
+		private RenderTarget _bloomRenderTarget;
 		private bool _exitMessageBoxOpen;
 
 		/// <summary>
@@ -209,23 +208,14 @@ namespace PointWars.Views
 		{
 			Assert.ArgumentNotNull(renderer, nameof(renderer));
 
-			renderer.Layer = 0;
-
 			if (Game.IsRunning)
 			{
-				_blurredRenderTarget.Clear(Colors.Black);
-
-				renderer.PositionOffset = Vector2.Zero;
-				renderer.RenderTarget = _blurredRenderTarget;
-				Game.Draw(renderer);
-
-				renderer.Layer = 1000000;
-				renderer.DrawFullscreenEffect(_bloomEffect);
-				++renderer.Layer;
+				renderer.ClearRenderTarget(_bloomRenderTarget, Colors.Black);
+				Game.Draw(renderer.BatchSprites(_bloomRenderTarget));
+				renderer.Bloom(_bloomRenderTarget, Application.Window.BackBuffer);
 			}
 
-			renderer.RenderTarget = Application.Window.BackBuffer;
-			RootElement.Draw(renderer);
+			RootElement.Draw(renderer.BatchSprites(Application.Window.BackBuffer));
 			DrawCursor();
 		}
 
@@ -256,12 +246,15 @@ namespace PointWars.Views
 			Commands.OnStartServer -= StartHost;
 			Commands.OnStopServer -= Host.Stop;
 
+			// Remove all views from the root element so that they can execute cleanup logic
+			foreach (var view in _views)
+				RootElement.Remove(view.RootElement);
+
 			Application.Window.Closing -= Exit;
 			Application.Window.Resized -= OnResized;
 			Host.SafeDispose();
 
-			_blurredRenderTarget.SafeDispose();
-			_bloomEffect.SafeDispose();
+			_bloomRenderTarget.SafeDispose();
 			_views.SafeDisposeAll();
 		}
 
@@ -270,11 +263,8 @@ namespace PointWars.Views
 		/// </summary>
 		private void OnResized(Size size)
 		{
-			_blurredRenderTarget.SafeDispose();
-			_bloomEffect.SafeDispose();
-
-			_blurredRenderTarget = new RenderTarget(size);
-			_bloomEffect = new BloomEffect(_blurredRenderTarget, Application.Window.BackBuffer);
+			_bloomRenderTarget.SafeDispose();
+			_bloomRenderTarget = new RenderTarget(size);
 		}
 
 		/// <summary>

@@ -63,7 +63,6 @@
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\ColliderBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\WeaponBehavior.cs" />
-    <Compile Include="Gameplay\Client\Camera.cs" />
     <Compile Include="Gameplay\Client\InputManager.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>
@@ -140,9 +139,12 @@
     <Compile Include="Network\ServerFullException.cs" />
     <Compile Include="Network\ServerQuitException.cs" />
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
+    <Compile Include="Platform\Graphics\GraphicsHelpers.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
     <Compile Include="Platform\Memory\BufferOverflowException.cs" />
     <Compile Include="Rendering\BloomEffect.cs" />
+    <Compile Include="Rendering\Camera.cs" />
+    <Compile Include="Rendering\ClearRenderTarget.cs" />
     <Compile Include="Rendering\FullscreenEffect.cs" />
     <Compile Include="Rendering\Particles\Emitter.cs" />
     <Compile Include="Rendering\Particles\FadeOutModifier.cs" />
@@ -151,6 +153,13 @@
     <Compile Include="Rendering\Particles\ScaleModifier.cs" />
     <Compile Include="Rendering\Particles\ParticleCollection.cs" />
     <Compile Include="Rendering\Particles\ParticleEffect.cs" />
+    <Compile Include="Rendering\Quad.cs" />
+    <Compile Include="Rendering\QuadCollection.cs" />
+    <Compile Include="Rendering\QuadPartition.cs" />
+    <Compile Include="Rendering\RenderBuffer.cs" />
+    <Compile Include="Rendering\Renderer.cs" />
+    <Compile Include="Rendering\RenderOperation.cs" />
+    <Compile Include="Rendering\RenderState.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
     <Compile Include="UserInterface\Controls\Button.cs" />
@@ -222,18 +231,15 @@
     <Compile Include="Views\MessageBoxes.cs" />
     <Compile Include="Views\View.cs" />
     <Compile Include="Network\NetworkProtocol.cs" />
-    <Compile Include="Platform\Graphics\BlendState.cs" />
-    <Compile Include="Platform\Graphics\Buffer.cs" />
+    <Compile Include="Platform\Graphics\BlendOperation.cs" />
+    <Compile Include="Platform\Graphics\StaticBuffer.cs" />
     <Compile Include="Platform\Graphics\DynamicBuffer.cs" />
     <Compile Include="Platform\Graphics\GraphicsDevice.cs" />
-    <Compile Include="Platform\Graphics\GraphicsObject.cs" />
     <Compile Include="Platform\Graphics\RenderTarget.cs" />
     <Compile Include="Platform\Graphics\GraphicsState.cs" />
     <Compile Include="Platform\Graphics\SamplerState.cs" />
     <Compile Include="Platform\Graphics\Shader.cs" />
     <Compile Include="Platform\Graphics\Texture.cs" />
-    <Compile Include="Platform\Graphics\Vertex.cs" />
-    <Compile Include="Platform\Graphics\VertexLayout.cs" />
     <Compile Include="Platform\Input\BinaryInputTrigger.cs" />
     <Compile Include="Platform\Input\BinaryInputTriggerType.cs" />
     <Compile Include="Platform\Input\ConfigurableInput.cs" />
@@ -293,8 +299,7 @@
     <Compile Include="Rendering\Color.cs" />
     <Compile Include="Rendering\Colors.cs" />
     <Compile Include="UserInterface\Font.cs" />
-    <Compile Include="Rendering\Quad.cs" />
-    <Compile Include="Rendering\Renderer.cs" />
+    <Compile Include="Rendering\SpriteBatch.cs" />
     <Compile Include="Scripting\Binding.cs" />
     <Compile Include="Scripting\BindingCollection.cs" />
     <Compile Include="Scripting\CommandLine.cs" />

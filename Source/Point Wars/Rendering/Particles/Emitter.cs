@@ -115,22 +115,22 @@ namespace PointWars.Rendering.Particles
 		/// <summary>
 		///   Gets or sets the range of the initial particle colors.
 		/// </summary>
-		public Range<Color> InitialColor { get; set; }
+		public Range<Color> EmitColorRange { get; set; }
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle scales.
 		/// </summary>
-		public Range<float> InitialScale { get; set; } = new Range<float>(1);
+		public Range<float> EmitScaleRange { get; set; } = new Range<float>(1);
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle life time.
 		/// </summary>
-		public Range<float> InitialLifetime { get; set; }
+		public Range<float> EmitLiftetimeRange { get; set; }
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle speeds.
 		/// </summary>
-		public Range<float> InitialSpeed { get; set; }
+		public Range<float> EmitSpeedRange { get; set; }
 
 		/// <summary>
 		///   Gets or sets the texture that is used to draw the emitter's particles.
@@ -186,15 +186,15 @@ namespace PointWars.Rendering.Particles
 		/// <summary>
 		///   Draws the particles of the emitter to the given render output.
 		/// </summary>
-		/// <param name="renderer">The renderer the particles should be drawn with.</param>
-		internal unsafe void Draw(Renderer renderer)
+		/// <param name="spriteBatch">The SpriteBatch the particles should be drawn with.</param>
+		internal unsafe void Draw(SpriteBatch spriteBatch)
 		{
 			Validate();
 
 			if (_particleCount == 0)
 				return;
 
-			var quads = renderer.AddQuads(_particleCount, Texture);
+			var quads = spriteBatch.AddQuads(_particleCount, Texture);
 			var positions = _particles.Positions;
 			var velocities = _particles.Velocities;
 			var scales = _particles.Scales;
@@ -204,12 +204,14 @@ namespace PointWars.Rendering.Particles
 
 			while (count-- > 0)
 			{
-				var rectangle = new Rectangle(*positions, size * *scales);
-				var matrix = Matrix3x2.CreateRotation(-MathUtils.ToAngle(*velocities), rectangle.Center);
-				var quad = new Quad(rectangle, *colors);
-
-				Quad.Transform(ref quad, ref matrix);
-				*quads = quad;
+				*quads = new Quad
+				{
+					Color = *colors,
+					Orientation = -MathUtils.ToAngle(*velocities),
+					Position = *positions,
+					Size = *scales * size,
+					TextureCoordinates = Rectangle.Unit
+				};
 
 				++quads;
 				++positions;
@@ -272,15 +274,15 @@ namespace PointWars.Rendering.Particles
 
 			while (count-- > 0)
 			{
-				*initialLifetimes = RandomNumberGenerator.NextSingle(InitialLifetime.LowerBound, InitialLifetime.UpperBound);
+				*initialLifetimes = RandomNumberGenerator.NextSingle(EmitLiftetimeRange.LowerBound, EmitLiftetimeRange.UpperBound);
 				*lifetimes = *initialLifetimes;
 				*age = 1;
-				*scales = RandomNumberGenerator.NextSingle(InitialScale.LowerBound, InitialScale.UpperBound);
+				*scales = RandomNumberGenerator.NextSingle(EmitScaleRange.LowerBound, EmitScaleRange.UpperBound);
 				*colors = new Color(
-					RandomNumberGenerator.NextByte(InitialColor.LowerBound.Red, InitialColor.UpperBound.Red),
-					RandomNumberGenerator.NextByte(InitialColor.LowerBound.Green, InitialColor.UpperBound.Green),
-					RandomNumberGenerator.NextByte(InitialColor.LowerBound.Blue, InitialColor.UpperBound.Blue),
-					RandomNumberGenerator.NextByte(InitialColor.LowerBound.Alpha, InitialColor.UpperBound.Alpha));
+					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Red, EmitColorRange.UpperBound.Red),
+					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Green, EmitColorRange.UpperBound.Green),
+					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Blue, EmitColorRange.UpperBound.Blue),
+					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Alpha, EmitColorRange.UpperBound.Alpha));
 
 				++lifetimes;
 				++initialLifetimes;
@@ -328,11 +330,11 @@ namespace PointWars.Rendering.Particles
 		{
 			Assert.InRange(EmissionRate, 1, Int32.MaxValue);
 			Assert.InRange(Capacity, 1, Int32.MaxValue);
-			Assert.That(InitialLifetime.LowerBound >= 0, "Invalid particle life time.");
-			Assert.That(InitialLifetime.UpperBound >= 0, "Invalid particle life time.");
+			Assert.That(EmitLiftetimeRange.LowerBound >= 0, "Invalid particle life time.");
+			Assert.That(EmitLiftetimeRange.UpperBound >= 0, "Invalid particle life time.");
 			Assert.That(Duration > 0 || Single.IsPositiveInfinity(Duration), "Invalid duration.");
-			Assert.That(InitialSpeed.LowerBound >= 0, "Invalid particle speed.");
-			Assert.That(InitialSpeed.UpperBound >= 0, "Invalid particle speed.");
+			Assert.That(EmitSpeedRange.LowerBound >= 0, "Invalid particle speed.");
+			Assert.That(EmitSpeedRange.UpperBound >= 0, "Invalid particle speed.");
 			Assert.NotNull(Texture, "No texture has been specified.");
 		}
 
@@ -357,7 +359,7 @@ namespace PointWars.Rendering.Particles
 				RandomNumberGenerator.NextUnitVector(velocities);
 
 				*positions = _spawnPosition;
-				*velocities *= RandomNumberGenerator.NextSingle(InitialSpeed.LowerBound, InitialSpeed.UpperBound);
+				*velocities *= RandomNumberGenerator.NextSingle(EmitSpeedRange.LowerBound, EmitSpeedRange.UpperBound);
 
 				++positions;
 				++velocities;

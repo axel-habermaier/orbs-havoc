@@ -26,7 +26,6 @@ namespace PointWars.Views
 	using Platform.Input;
 	using Platform.Memory;
 	using UserInterface;
-	using Utilities;
 
 	/// <summary>
 	///   Represents a view of the application.

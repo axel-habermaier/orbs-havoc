@@ -22,183 +22,83 @@
 
 namespace PointWars.Rendering
 {
+	using System;
 	using System.Numerics;
 	using System.Runtime.InteropServices;
-	using Platform.Graphics;
 	using Utilities;
 
 	/// <summary>
 	///   Represents a rectangle with possibly non-axis aligned edges.
 	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack = 1, Size = SizeInBytes)]
 	public struct Quad
 	{
 		/// <summary>
-		///   The vertex that conceptually represents the bottom left corner of the quad.
+		///   The size of a quad in bytes.
 		/// </summary>
-		public Vertex BottomLeft;
+		public const int SizeInBytes = 28;
 
 		/// <summary>
-		///   The vertex that conceptually represents the bottom right corner of the quad.
+		///   Gets or sets the position of the quad's center.
 		/// </summary>
-		public Vertex BottomRight;
+		public Vector2 Position { get; set; }
 
 		/// <summary>
-		///   The vertex that conceptually represents the top left corner of the quad.
+		///   Gets or sets the quad's orientation in radians.
 		/// </summary>
-		public Vertex TopLeft;
+		public float Orientation { get; set; }
 
 		/// <summary>
-		///   The vertex that conceptually represents the top right corner of the quad.
+		///   Gets or sets the quad's color.
 		/// </summary>
-		public Vertex TopRight;
+		public Color Color { get; set; }
+
+		private ushort _width;
+		private ushort _height;
+		private ushort _texOffsetX;
+		private ushort _texOffsetY;
+		private ushort _texWidth;
+		private ushort _texHeight;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///   Gets or sets the quad's size.
 		/// </summary>
-		/// <param name="rectangle">The position and size of the rectangular quad.</param>
-		/// <param name="color">The color of the quad.</param>
-		/// <param name="textureArea">
-		///   The area of the texture that contains the quad's image data. If not given, the whole texture
-		///   is drawn onto the quad.
-		/// </param>
-		public Quad(Rectangle rectangle, Color color, Rectangle? textureArea = null)
-			: this()
+		public Size Size
 		{
-			BottomLeft.Position = new Vector2(rectangle.Left, rectangle.Bottom);
-			BottomRight.Position = new Vector2(rectangle.Right, rectangle.Bottom);
-			TopLeft.Position = new Vector2(rectangle.Left, rectangle.Top);
-			TopRight.Position = new Vector2(rectangle.Right, rectangle.Top);
+			get { return new Size(_width, _height); }
+			set
+			{
+				Assert.InRange(value.Width, 0, UInt16.MaxValue);
+				Assert.InRange(value.Height, 0, UInt16.MaxValue);
 
-			BottomLeft.Color = color;
-			BottomRight.Color = color;
-			TopLeft.Color = color;
-			TopRight.Color = color;
-
-			var texture = textureArea ?? new Rectangle(0, 0, 1, 1);
-			BottomLeft.TextureCoordinates = new Vector2(texture.Left, texture.Bottom);
-			BottomRight.TextureCoordinates = new Vector2(texture.Right, texture.Bottom);
-			TopLeft.TextureCoordinates = new Vector2(texture.Left, texture.Top);
-			TopRight.TextureCoordinates = new Vector2(texture.Right, texture.Top);
+				_width = (ushort)value.Width;
+				_height = (ushort)value.Height;
+			}
 		}
 
 		/// <summary>
-		///   Initializes a new instance.
+		///   Gets or sets the quad's texture coordinates.
 		/// </summary>
-		/// <param name="rectangle">The position and size of the rectangular quad.</param>
-		/// <param name="color">The color of the quad.</param>
-		/// <param name="texLeft">The texture coordinates on the left-hand side of the quad.</param>
-		/// <param name="texTop">The texture coordinates at the top of the quad.</param>
-		/// <param name="texRight">The texture coordinates on the right-hand side of the quad.</param>
-		/// <param name="texBottom">The texture coordinates at the bottom of the quad.</param>
-		public Quad(Rectangle rectangle, Color color, float texLeft, float texTop, float texRight, float texBottom)
-			: this()
+		public Rectangle TextureCoordinates
 		{
-			BottomLeft.Position = new Vector2(rectangle.Left, rectangle.Bottom);
-			BottomRight.Position = new Vector2(rectangle.Right, rectangle.Bottom);
-			TopLeft.Position = new Vector2(rectangle.Left, rectangle.Top);
-			TopRight.Position = new Vector2(rectangle.Right, rectangle.Top);
+			get
+			{
+				return new Rectangle(
+					_texOffsetX / (float)UInt16.MaxValue, _texOffsetY / (float)UInt16.MaxValue,
+					_texWidth / (float)UInt16.MaxValue, _texHeight / (float)UInt16.MaxValue);
+			}
+			set
+			{
+				Assert.InRange(value.Left, 0, UInt16.MaxValue);
+				Assert.InRange(value.Top, 0, UInt16.MaxValue);
+				Assert.InRange(value.Width, 0, UInt16.MaxValue);
+				Assert.InRange(value.Height, 0, UInt16.MaxValue);
 
-			BottomLeft.Color = color;
-			BottomRight.Color = color;
-			TopLeft.Color = color;
-			TopRight.Color = color;
-
-			BottomLeft.TextureCoordinates = new Vector2(texLeft, texBottom);
-			BottomRight.TextureCoordinates = new Vector2(texRight, texBottom);
-			TopLeft.TextureCoordinates = new Vector2(texLeft, texTop);
-			TopRight.TextureCoordinates = new Vector2(texRight, texTop);
-		}
-
-		/// <summary>
-		///   Changes the color of the quad.
-		/// </summary>
-		/// <param name="color">The new color of the quad.</param>
-		public void ChangeColor(Color color)
-		{
-			BottomLeft.Color = color;
-			BottomRight.Color = color;
-			TopLeft.Color = color;
-			TopRight.Color = color;
-		}
-
-		/// <summary>
-		///   Applies the given transformation matrix to the quad's vertices.
-		/// </summary>
-		/// <param name="quad">The quad that should be transformed.</param>
-		/// <param name="matrix">The transformation matrix that should be applied.</param>
-		public static void Transform(ref Quad quad, ref Matrix3x2 matrix)
-		{
-			quad.BottomLeft.Position = Vector2.Transform(quad.BottomLeft.Position, matrix);
-			quad.BottomRight.Position = Vector2.Transform(quad.BottomRight.Position, matrix);
-			quad.TopLeft.Position = Vector2.Transform(quad.TopLeft.Position, matrix);
-			quad.TopRight.Position = Vector2.Transform(quad.TopRight.Position, matrix);
-		}
-
-		/// <summary>
-		///   Applies the given position offset to the quad's vertices.
-		/// </summary>
-		/// <param name="quad">The quad that should be transformed.</param>
-		/// <param name="positionOffset">The position offset that should be applied.</param>
-		public static void Offset(ref Quad quad, ref Vector2 positionOffset)
-		{
-			quad.BottomLeft.Position = quad.BottomLeft.Position + positionOffset;
-			quad.BottomRight.Position = quad.BottomRight.Position + positionOffset;
-			quad.TopLeft.Position = quad.TopLeft.Position + positionOffset;
-			quad.TopRight.Position = quad.TopRight.Position + positionOffset;
-		}
-
-		/// <summary>
-		///   Creates a quad that represents a line between the given start and end points.
-		/// </summary>
-		/// <param name="start">The start of the line.</param>
-		/// <param name="end">The end of the line.</param>
-		/// <param name="color">The color of the line.</param>
-		/// <param name="width">The width of the line.</param>
-		/// <param name="textureArea">
-		///   The area of the texture that contains the quad's image data. If not given, the whole texture
-		///   is drawn onto the quad.
-		/// </param>
-		public static Quad FromLine(Vector2 start, Vector2 end, Color color, float width, Rectangle? textureArea = null)
-		{
-			if (MathUtils.Equals(width, 0) || MathUtils.Equals((start - end).LengthSquared(), 0))
-				return new Quad();
-
-			var length = (end - start).Length();
-			var rotation = MathUtils.ComputeAngle(start, end, new Vector2(1, 0));
-
-			return FromLine(start, length, rotation, color, width, textureArea);
-		}
-
-		/// <summary>
-		///   Creates a quad that represents a line.
-		/// </summary>
-		/// <param name="position">The position of the line's start.</param>
-		/// <param name="length">The length of the line.</param>
-		/// <param name="rotation">The rotation of the line.</param>
-		/// <param name="color">The color of the line.</param>
-		/// <param name="width">The width of the line.</param>
-		/// <param name="textureArea">
-		///   The area of the texture that contains the quad's image data. If not given, the whole texture
-		///   is drawn onto the quad.
-		/// </param>
-		public static Quad FromLine(Vector2 position, float length, float rotation, Color color, float width, Rectangle? textureArea = null)
-		{
-			Assert.ArgumentSatisfies(width >= 0, nameof(width), "Invalid width.");
-
-			if (MathUtils.Equals(width, 0) || MathUtils.Equals(length, 0))
-				return new Quad();
-
-			// We first define a default quad to draw a line that goes from left to right. The center of the 
-			// rectangle lies on the start point of the line.
-			var rectangle = new Rectangle(0, -width / 2.0f, length, width);
-			var quad = new Quad(rectangle, color, textureArea);
-			
-			// Construct the transformation matrix and draw the transformed quad
-			var transformMatrix = Matrix3x2.CreateRotation(rotation) * Matrix3x2.CreateTranslation(position);
-
-			Transform(ref quad, ref transformMatrix);
-			return quad;
+				_texOffsetX = (ushort)(value.Left * UInt16.MaxValue);
+				_texOffsetY = (ushort)(value.Top * UInt16.MaxValue);
+				_texWidth = (ushort)(value.Width * UInt16.MaxValue);
+				_texHeight = (ushort)(value.Height * UInt16.MaxValue);
+			}
 		}
 	}
 }

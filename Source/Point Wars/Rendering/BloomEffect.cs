@@ -30,16 +30,15 @@ namespace PointWars.Rendering
 	using Platform.Memory;
 	using Utilities;
 	using static Platform.Graphics.OpenGL3;
-	using Buffer = Platform.Graphics.Buffer;
 
 	/// <summary>
 	///   Represents a effect that blooms the input render target.
 	/// </summary>
 	public class BloomEffect : FullscreenEffect
 	{
-		private readonly Buffer _bloomSettingsBuffer;
-		private readonly Buffer _horizontalBlurBuffer;
-		private readonly Buffer _verticalBlurBuffer;
+		private readonly DynamicBuffer _bloomSettingsBuffer;
+		private readonly DynamicBuffer _horizontalBlurBuffer;
+		private readonly DynamicBuffer _verticalBlurBuffer;
 
 		private BloomSettings _bloomSettings = new BloomSettings
 		{
@@ -60,14 +59,11 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="inputRenderTarget">The input render target the effect should be applied to.</param>
-		/// <param name="outputRenderTarget">The output render target that stores the rendered result.</param>
-		public unsafe BloomEffect(RenderTarget inputRenderTarget, RenderTarget outputRenderTarget)
-			: base(inputRenderTarget, outputRenderTarget)
+		public unsafe BloomEffect()
 		{
-			_bloomSettingsBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STATIC_DRAW, sizeof(BloomSettings), null);
-			_horizontalBlurBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STATIC_DRAW, sizeof(BlurSettings), null);
-			_verticalBlurBuffer = new Buffer(GL_UNIFORM_BUFFER, GL_STATIC_DRAW, sizeof(BlurSettings), null);
+			_bloomSettingsBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BloomSettings));
+			_horizontalBlurBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BlurSettings));
+			_verticalBlurBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BlurSettings));
 		}
 
 		/// <summary>
@@ -152,11 +148,11 @@ namespace PointWars.Rendering
 		}
 
 		/// <summary>
-		///   Prepares the effect for rendering and returns the number of required rendering passes..
+		///   Executes the render operation.
 		/// </summary>
-		/// <param name="size">The size of the effect's render area.</param>
-		public override unsafe int PrepareForRendering(Size size)
+		internal override unsafe void Execute()
 		{
+			var size = Renderer.Window.Size;
 			if (_temporaryTarget1 == null || _temporaryTarget1.Size != size)
 			{
 				_temporaryTarget1.SafeDispose();
@@ -183,56 +179,35 @@ namespace PointWars.Rendering
 				_dirty = false;
 			}
 
-			return 4;
-		}
+			// Extract the brightness from the scene render target to temporary render target 1
+			_bloomSettingsBuffer.Bind(2);
+			Input.Texture.Bind(0);
+			SamplerState.Bilinear.Bind(0);
+			SamplerState.Bilinear.Bind(1);
+			BlendOperation.Opaque.Bind();
+			AssetBundle.ExtractBloomShader.Bind();
 
-		/// <summary>
-		///   Prepares the effect for rendering the given pass.
-		/// </summary>
-		/// <param name="pass">The zero-based index of the pass that should be prepared.</param>
-		public override RenderTarget PreparePass(int pass)
-		{
-			Assert.ArgumentInRange(pass, 0, 3, nameof(pass));
+			DrawFullscreen(_temporaryTarget1);
 
-			switch (pass)
-			{
-				// Extract the brightness from the scene render target to temporary render target 1
-				case 0:
-					_bloomSettingsBuffer.Bind(2);
-					InputRenderTarget.Texture.Bind(0);
-					SamplerState.Bilinear.Bind(0);
-					SamplerState.Bilinear.Bind(1);
-					BlendState.Opaque.Bind();
-					AssetBundle.ExtractBloomShader.Bind();
+			// Blur temporary render target 1 horizontally into temporary render target 2
+			_temporaryTarget1.Texture.Bind(0);
+			_horizontalBlurBuffer.Bind(3);
+			AssetBundle.BlurShader.Bind();
 
-					return _temporaryTarget1;
+			DrawFullscreen(_temporaryTarget2);
 
-				// Blur temporary render target 1 horizontally into temporary render target 2
-				case 1:
-					_temporaryTarget1.Texture.Bind(0);
-					_horizontalBlurBuffer.Bind(3);
-					AssetBundle.BlurShader.Bind();
+			// Blur temporary render target 2 vertically into temporary render target 1
+			_temporaryTarget2.Texture.Bind(0);
+			_verticalBlurBuffer.Bind(3);
 
-					return _temporaryTarget2;
+			DrawFullscreen(_temporaryTarget1);
 
-				// Blur temporary render target 2 vertically into temporary render target 1
-				case 2:
-					_temporaryTarget2.Texture.Bind(0);
-					_verticalBlurBuffer.Bind(3);
+			// Combine scene render target and blurred image into the final render output
+			Input.Texture.Bind(0);
+			_temporaryTarget1.Texture.Bind(1);
+			AssetBundle.CombineBloomShader.Bind();
 
-					return _temporaryTarget1;
-
-				// Combine scene render target and blurred image into the final render output
-				case 3:
-					InputRenderTarget.Texture.Bind(0);
-					_temporaryTarget1.Texture.Bind(1);
-					AssetBundle.CombineBloomShader.Bind();
-
-					return OutputRenderTarget;
-
-				default:
-					return null;
-			}
+			DrawFullscreen(Output);
 		}
 
 		/// <summary>

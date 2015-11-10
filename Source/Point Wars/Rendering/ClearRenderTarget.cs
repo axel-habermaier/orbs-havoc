@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2015, Axel Habermaier
 // 
@@ -20,39 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace PointWars.Platform.Graphics
+namespace PointWars.Rendering
 {
-	using System.Numerics;
-	using System.Runtime.InteropServices;
-	using Rendering;
+	using Platform.Graphics;
+	using Utilities;
 
 	/// <summary>
-	///   Holds position, texture coordinates, and color data for a vertex.
+	///   Represents a render operation that clears a render target.
 	/// </summary>
-	[StructLayout(LayoutKind.Explicit, Pack = 1)]
-	public struct Vertex
+	public sealed class ClearRenderTarget : RenderOperation
 	{
 		/// <summary>
-		///   The size in bytes of the structure.
+		///   Gets or sets the render target cleared by the operation.
 		/// </summary>
-		public const int Size = 20;
+		public RenderTarget RenderTarget { get; set; }
 
 		/// <summary>
-		///   Gets or sets the vertex' position.
+		///   Gets or sets the color that should be used to clear the render target.
 		/// </summary>
-		[FieldOffset(0)]
-		public Vector2 Position;
+		public Color ClearColor { get; set; }
 
 		/// <summary>
-		///   Gets or sets the vertex' texture coordinates.
+		///   Executes the render operation.
 		/// </summary>
-		[FieldOffset(8)]
-		public Vector2 TextureCoordinates;
-
-		/// <summary>
-		///   Gets or sets the vertex' color.
-		/// </summary>
-		[FieldOffset(16)]
-		public Color Color;
+		internal override void Execute()
+		{
+			Assert.NotNull(RenderTarget, "No render target has been set.");
+			RenderTarget.Clear(ClearColor);
+		}
 	}
 }

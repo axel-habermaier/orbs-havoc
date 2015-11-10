@@ -25,12 +25,15 @@ namespace PointWars.Platform.Graphics
 	using Memory;
 	using Utilities;
 	using static OpenGL3;
+	using static GraphicsHelpers;
 
 	/// <summary>
 	///   Represents a 2-dimensional texture.
 	/// </summary>
-	public sealed unsafe class Texture : GraphicsObject
+	public sealed unsafe class Texture : DisposableObject
 	{
+		private int _texture;
+
 		/// <summary>
 		///   Initializes a new instance that is initialized later.
 		/// </summary>
@@ -60,6 +63,15 @@ namespace PointWars.Platform.Graphics
 		///   Gets the height of the texture.
 		/// </summary>
 		public float Height => Size.Height;
+
+		/// <summary>
+		///   Casts the texture to its underlying OpenGL handle.
+		/// </summary>
+		public static implicit operator int(Texture obj)
+		{
+			Assert.ArgumentNotNull(obj, nameof(obj));
+			return obj._texture;
+		}
 
 		/// <summary>
 		///   Loads a texture from the given buffer.
@@ -97,9 +109,9 @@ namespace PointWars.Platform.Graphics
 
 			OnDisposing();
 			Size = size;
-			Handle = Allocate(glGenTextures, nameof(Texture));
+			_texture = Allocate(glGenTextures, nameof(Texture));
 
-			glBindTexture(GL_TEXTURE_2D, Handle);
+			glBindTexture(GL_TEXTURE_2D, _texture);
 			glTexImage2D(GL_TEXTURE_2D, 0, format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
 			CheckErrors();
 
@@ -112,7 +124,7 @@ namespace PointWars.Platform.Graphics
 		/// </summary>
 		public void Bind(int slot)
 		{
-			Assert.That(Handle != 0, "The texture has not been initialized.");
+			Assert.That(_texture != 0, "The texture has not been initialized.");
 
 			if (!Change(State.Textures, slot, this))
 				return;
@@ -120,7 +132,7 @@ namespace PointWars.Platform.Graphics
 			if (Change(ref State.ActiveTextureSlot, slot))
 				glActiveTexture(GL_TEXTURE0 + slot);
 
-			glBindTexture(GL_TEXTURE_2D, Handle);
+			glBindTexture(GL_TEXTURE_2D, _texture);
 			CheckErrors();
 		}
 
@@ -130,7 +142,7 @@ namespace PointWars.Platform.Graphics
 		protected override void OnDisposing()
 		{
 			Unset(State.Textures, this);
-			Deallocate(glDeleteTextures, Handle);
+			Deallocate(glDeleteTextures, _texture);
 		}
 	}
 }

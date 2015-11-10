@@ -24,6 +24,7 @@ namespace PointWars.UserInterface.Controls
 {
 	using System;
 	using System.Numerics;
+	using Platform.Memory;
 	using Rendering;
 	using Utilities;
 
@@ -33,6 +34,7 @@ namespace PointWars.UserInterface.Controls
 	public class ScrollViewer : Control
 	{
 		private Size _arrangedContentSize;
+		private Camera _camera;
 		private Size _measuredContentSize;
 		private Panel _panel;
 		private UIElement _scrolledChild;
@@ -159,26 +161,45 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Draws the child UI elements of the current UI element using the given renderer.
+		///   Draws the child UI elements of the current UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element's children.</param>
-		protected override void DrawChildren(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
+		protected override void DrawChildren(SpriteBatch spriteBatch)
 		{
 			var width = MathUtils.RoundIntegral(ActualWidth);
 			var height = MathUtils.RoundIntegral(ActualHeight);
 			var x = MathUtils.RoundIntegral(VisualOffset.X);
 			var y = MathUtils.RoundIntegral(VisualOffset.Y);
 
-			var scissorArea = renderer.ScissorArea;
-			var positionOffset = renderer.PositionOffset;
+			var scissorArea = spriteBatch.RenderState.ScissorArea;
+			var camera = spriteBatch.RenderState.Camera;
 
-			renderer.ScissorArea = new Rectangle(x, y, width, height);
-			renderer.PositionOffset = new Vector2(-MathUtils.RoundIntegral(ScrollOffset.X), -MathUtils.RoundIntegral(ScrollOffset.Y));
+			spriteBatch.RenderState.ScissorArea = new Rectangle(x, y, width, height);
+			spriteBatch.RenderState.Camera = _camera;
 
-			base.DrawChildren(renderer);
+			_camera.Position = new Vector2(-MathUtils.RoundIntegral(ScrollOffset.X), -MathUtils.RoundIntegral(ScrollOffset.Y));
 
-			renderer.ScissorArea = scissorArea;
-			renderer.PositionOffset = positionOffset;
+			base.DrawChildren(spriteBatch);
+
+			spriteBatch.RenderState.ScissorArea = scissorArea;
+			spriteBatch.RenderState.Camera = camera;
+		}
+
+		/// <summary>
+		///   Invoked when the UI element is now (transitively) attached to the root of a tree.
+		/// </summary>
+		protected override void OnAttached()
+		{
+			_camera = new Camera();
+		}
+
+		/// <summary>
+		///   Invoked when the UI element is no longer (transitively) attached to the root of a tree.
+		/// </summary>
+		protected override void OnDetached()
+		{
+			_camera.SafeDispose();
+			_camera = null;
 		}
 
 		/// <summary>

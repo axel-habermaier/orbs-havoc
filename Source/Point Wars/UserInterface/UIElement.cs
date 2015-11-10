@@ -557,45 +557,45 @@ namespace PointWars.UserInterface
 		}
 
 		/// <summary>
-		///   Draws the UI element using the given renderer.
+		///   Draws the UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element.</param>
-		internal void Draw(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
+		internal void Draw(SpriteBatch spriteBatch)
 		{
-			Assert.ArgumentNotNull(renderer, nameof(renderer));
+			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
 			if (Visibility != Visibility.Visible)
 				return;
 
-			DrawCore(renderer);
-			DrawChildren(renderer);
+			DrawCore(spriteBatch);
+			DrawChildren(spriteBatch);
 		}
 
 		/// <summary>
-		///   Draws the UI element using the given renderer.
+		///   Draws the UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element.</param>
-		protected virtual void DrawCore(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
+		protected virtual void DrawCore(SpriteBatch spriteBatch)
 		{
 			if (Background != Colors.Transparent)
-				renderer.Draw(VisualArea, Background);
+				spriteBatch.Draw(VisualArea, Background);
 		}
 
 		/// <summary>
-		///   Draws the child UI elements of the current UI element using the given renderer.
+		///   Draws the child UI elements of the current UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element's children.</param>
-		protected virtual void DrawChildren(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
+		protected virtual void DrawChildren(SpriteBatch spriteBatch)
 		{
-			Assert.ArgumentNotNull(renderer, nameof(renderer));
+			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
 			// We draw the children on a higher layer to avoid draw ordering issues.
-			++renderer.Layer;
+			spriteBatch.RenderState.Layer += 1;
 
 			foreach (var child in GetChildren())
-				child.Draw(renderer);
+				child.Draw(spriteBatch);
 
-			--renderer.Layer;
+			spriteBatch.RenderState.Layer -= 1;
 		}
 
 		/// <summary>

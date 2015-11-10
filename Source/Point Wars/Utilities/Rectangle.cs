@@ -40,6 +40,11 @@ namespace PointWars.Utilities
 		public static readonly Rectangle Empty;
 
 		/// <summary>
+		///   Represents the unit rectangle at location (0, 0) with a width and height of 1.
+		/// </summary>
+		public static readonly Rectangle Unit = new Rectangle(0, 0, 1, 1);
+
+		/// <summary>
 		///   The X-coordinate of the left edge of the rectangle.
 		/// </summary>
 		public float Left;

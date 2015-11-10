@@ -65,17 +65,17 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Draws the child UI elements of the current UI element using the given renderer.
+		///   Draws the child UI elements of the current UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element's children.</param>
-		protected override void DrawChildren(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
+		protected override void DrawChildren(SpriteBatch spriteBatch)
 		{
 			foreach (var child in GetChildren())
 			{
 				// We draw each child on its own range of layers, as the children of an area panel are typically stacked
 				// along the Z axis and therefore overlap each other.
-				renderer.Layer += 100;
-				child.Draw(renderer);
+				spriteBatch.RenderState.Layer += 100;
+				child.Draw(spriteBatch);
 			}
 		}
 	}

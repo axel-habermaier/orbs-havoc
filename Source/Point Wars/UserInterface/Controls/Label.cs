@@ -167,19 +167,19 @@ namespace PointWars.UserInterface.Controls
 		}
 
 		/// <summary>
-		///   Draws the UI element using the given renderer.
+		///   Draws the UI element using the given sprite batch.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used to draw the UI element.</param>
-		protected override void DrawCore(Renderer renderer)
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
+		protected override void DrawCore(SpriteBatch spriteBatch)
 		{
-			base.DrawCore(renderer);
+			base.DrawCore(spriteBatch);
 
 			var x = (int)Math.Round(VisualOffset.X);
 			var y = (int)Math.Round(VisualOffset.Y);
 
-			++renderer.Layer;
-			_textLayout.Draw(renderer, new Vector2(x, y), Foreground);
-			--renderer.Layer;
+			spriteBatch.RenderState.Layer += 1;
+			_textLayout.Draw(spriteBatch, new Vector2(x, y), Foreground);
+			spriteBatch.RenderState.Layer -= 1;
 		}
 	}
 }

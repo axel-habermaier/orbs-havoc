@@ -41,9 +41,19 @@ namespace PointWars.Platform.Graphics
 		public const int TextureSlotCount = 8;
 
 		/// <summary>
+		///   The maximum number of frames the GPU is allowed to be behind the CPU.
+		/// </summary>
+		public const int MaxFrameLag = 3;
+
+		/// <summary>
+		/// The monotonically increasing GPU frame number.
+		/// </summary>
+		public uint FrameNumber = 1;
+
+		/// <summary>
 		///   The constant buffers that are currently bound.
 		/// </summary>
-		public readonly Buffer[] ConstantBuffers = new Buffer[ConstantBufferSlotCount];
+		public readonly DynamicBuffer[] ConstantBuffers = new DynamicBuffer[ConstantBufferSlotCount];
 
 		/// <summary>
 		///   The currently bound sampler states.
@@ -59,6 +69,11 @@ namespace PointWars.Platform.Graphics
 		///   The currently active texture slot.
 		/// </summary>
 		public int ActiveTextureSlot = -1;
+
+		/// <summary>
+		///   The currently bound blend operation.
+		/// </summary>
+		public BlendOperation BlendOperation;
 
 		/// <summary>
 		///   Indicates whether drawing operations are currently allowed.
@@ -78,7 +93,7 @@ namespace PointWars.Platform.Graphics
 		/// <summary>
 		///   The currently bound vertex layout.
 		/// </summary>
-		public VertexLayout VertexLayout;
+		public int VertexLayout = -1;
 
 		/// <summary>
 		///   The currently bound viewport.
@@ -99,8 +114,9 @@ namespace PointWars.Platform.Graphics
 			Assert.That(CanDraw, "Drawing commands can only be issued between a call to BeginFrame() and EndFrame().");
 			Assert.NotNull(RenderTarget);
 			Assert.NotNull(Shader);
-			Assert.NotNull(VertexLayout);
 			Assert.NotNull(RenderTarget);
+			Assert.InRange(BlendOperation);
+			Assert.That(VertexLayout >= 0, "Invalid vertex layout.");
 			Assert.That(Viewport.Size.Width * Viewport.Size.Height > 0, "Viewport has an area of 0.");
 		}
 	}

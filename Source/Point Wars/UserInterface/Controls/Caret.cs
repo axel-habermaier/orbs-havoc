@@ -253,13 +253,13 @@ namespace PointWars.UserInterface.Controls
 		/// <summary>
 		///   Draws the caret.
 		/// </summary>
-		/// <param name="renderer">The renderer that should be used for drawing the caret.</param>
+		/// <param name="spriteBatch">The sprite batch that should be used for drawing the caret.</param>
 		/// <param name="position">The position of the caret's top left corner.</param>
 		/// <param name="lineHeight">The height of a line.</param>
 		/// <param name="color">The color the caret should be drawn in.</param>
-		public void Draw(Renderer renderer, Vector2 position, int lineHeight, Color color)
+		public void Draw(SpriteBatch spriteBatch, Vector2 position, int lineHeight, Color color)
 		{
-			Assert.ArgumentNotNull(renderer, nameof(renderer));
+			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
 			// Show and hide the caret depending on the frequency and offset
 			if (((int)Math.Round(_clock.Seconds * BlinkingFrequency)) % 2 != 0)
@@ -268,9 +268,9 @@ namespace PointWars.UserInterface.Controls
 			var top = new Vector2(position.X, position.Y - 1);
 			var bottom = new Vector2(0, lineHeight) + top;
 
-			++renderer.Layer;
-			renderer.DrawLine(top, bottom, color, 1);
-			--renderer.Layer;
+			spriteBatch.RenderState.Layer += 1;
+			spriteBatch.DrawLine(top, bottom, color, 1);
+			spriteBatch.RenderState.Layer -= 1;
 		}
 	}
 }

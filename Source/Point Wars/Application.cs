@@ -44,7 +44,6 @@ namespace PointWars
 		public const string Name = "Point Wars";
 
 		private Renderer _renderer;
-
 		private bool _running;
 		private ViewCollection _views;
 
@@ -121,10 +120,10 @@ namespace PointWars
 					using (TimeMeasurement.Measure(&drawTime))
 					{
 						GraphicsDevice.BeginFrame();
-						Window.BackBuffer.Clear(Colors.Black);
 
+						_renderer.ClearRenderTarget(Window.BackBuffer, Colors.Black);
 						_views.Draw(_renderer);
-						_renderer.DrawFrame();
+						_renderer.Render();
 
 						GraphicsDevice.EndFrame();
 					}
