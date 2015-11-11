@@ -22,7 +22,6 @@
 
 namespace PointWars.Gameplay.Behaviors
 {
-	using System.Numerics;
 	using Platform.Memory;
 	using SceneNodes.Entities;
 	using Utilities;
@@ -67,120 +66,12 @@ namespace PointWars.Gameplay.Behaviors
 		{
 			Assert.ArgumentNotNull(level, nameof(level));
 
-			int x, y;
-			level.GetBlock(Circle.Position, out x, out y);
-
-			var blockType = level[x, y];
-			var isInverse = false;
-			Vector2 position;
-			Size size;
-
-			switch (blockType)
-			{
-				case EntityType.TopWall:
-					position = level.GetBlockArea(x, y).TopLeft;
-					size = new Size(Level.BlockSize, Level.BlockSize / 2 + Level.WallThickness / 2);
-					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
-					break;
-				case EntityType.LeftWall:
-					position = level.GetBlockArea(x, y).TopLeft;
-					size = new Size(Level.BlockSize / 2 + Level.WallThickness / 2, Level.BlockSize);
-					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
-					break;
-				case EntityType.BottomWall:
-					position = level.GetBlockArea(x, y).TopLeft + new Vector2(0, Level.BlockSize / 2 - Level.WallThickness / 2);
-					size = new Size(Level.BlockSize, Level.BlockSize / 2 + Level.WallThickness);
-					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
-					break;
-				case EntityType.RightWall:
-					position = level.GetBlockArea(x, y).TopLeft + new Vector2(Level.BlockSize / 2 - Level.WallThickness / 2, 0);
-					size = new Size(Level.BlockSize / 2 + Level.WallThickness, Level.BlockSize);
-					HandleWallCollision(Circle, new Rectangle(position, size), blockType);
-					break;
-				case EntityType.LeftTopWall:
-					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).BottomRight, isInverse);
-					break;
-				case EntityType.RightTopWall:
-					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).BottomLeft, isInverse);
-					break;
-				case EntityType.LeftBottomWall:
-					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).TopRight, isInverse);
-					break;
-				case EntityType.RightBottomWall:
-					HandleCollisionWithCurvedWall(Circle, level.GetBlockArea(x, y).TopLeft, isInverse);
-					break;
-				case EntityType.InverseLeftTopWall:
-					isInverse = true;
-					goto case EntityType.LeftTopWall;
-				case EntityType.InverseRightTopWall:
-					isInverse = true;
-					goto case EntityType.RightTopWall;
-				case EntityType.InverseLeftBottomWall:
-					isInverse = true;
-					goto case EntityType.LeftBottomWall;
-				case EntityType.InverseRightBottomWall:
-					isInverse = true;
-					goto case EntityType.RightBottomWall;
-				case EntityType.Wall:
-					SceneNode.HandleWallCollision();
-					break;
-			}
-		}
-
-		/// <summary>
-		///   Handles an entity collision with a horizontal or vertical wall.
-		/// </summary>
-		private void HandleWallCollision(Circle circle, Rectangle wall, EntityType wallType)
-		{
-			if (!wall.Intersects(circle))
+			var collisionInfo = level.CheckWallCollision(Circle);
+			if (collisionInfo == null)
 				return;
 
-			switch (wallType)
-			{
-				case EntityType.LeftWall:
-					SceneNode.Position += new Vector2(wall.Right - circle.Position.X + circle.Radius, 0);
-					break;
-				case EntityType.RightWall:
-					SceneNode.Position += new Vector2(wall.Left - circle.Position.X - circle.Radius, 0);
-					break;
-				case EntityType.TopWall:
-					SceneNode.Position += new Vector2(0, wall.Bottom - circle.Position.Y + circle.Radius);
-					break;
-				case EntityType.BottomWall:
-					SceneNode.Position += new Vector2(0, wall.Top - circle.Position.Y - circle.Radius);
-					break;
-			}
-
+			SceneNode.Position += collisionInfo.Value.Offset;
 			SceneNode.HandleWallCollision();
-		}
-
-		/// <summary>
-		///   Handles an entity collision with a curved wall.
-		/// </summary>
-		private void HandleCollisionWithCurvedWall(Circle entityCircle, Vector2 wallPosition, bool isInverse)
-		{
-			var wallCircle = new Circle(wallPosition, Level.BlockSize / 2 + Level.WallThickness / 2);
-			if (!entityCircle.Intersects(wallCircle))
-				return;
-
-			var distance = Vector2.Distance(entityCircle.Position, wallCircle.Position);
-			if (isInverse)
-			{
-				var overlap = distance + entityCircle.Radius - wallCircle.Radius + Level.WallThickness;
-				if (!(overlap > 0))
-					return;
-
-				SceneNode.Position -= Vector2.Normalize(entityCircle.Position - wallCircle.Position) * overlap;
-				SceneNode.HandleWallCollision();
-			}
-			else
-			{
-				var radius = entityCircle.Radius + wallCircle.Radius;
-				var overlap = MathUtils.Abs(distance - radius);
-
-				SceneNode.Position -= Vector2.Normalize(wallCircle.Position - entityCircle.Position) * overlap;
-				SceneNode.HandleWallCollision();
-			}
 		}
 
 		/// <summary>

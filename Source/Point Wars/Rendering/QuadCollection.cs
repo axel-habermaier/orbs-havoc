@@ -37,7 +37,7 @@ namespace PointWars.Rendering
 		/// <summary>
 		///   The maximum number of quads that can be drawn.
 		/// </summary>
-		public const int MaxQuads = UInt16.MaxValue * 4;
+		public const int MaxQuads = UInt16.MaxValue;
 
 		private readonly List<QuadPartition> _partitions = new List<QuadPartition>();
 		private readonly ObjectPool<QuadPartition> _pooledPartitions = new ObjectPool<QuadPartition>();

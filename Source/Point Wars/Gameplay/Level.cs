@@ -34,7 +34,7 @@ namespace PointWars.Gameplay
 	public class Level : DisposableObject
 	{
 		/// <summary>
-		///   The size of a block within the level.
+		///   The size of a block within the
 		/// </summary>
 		public const float BlockSize = 128;
 
@@ -66,7 +66,7 @@ namespace PointWars.Gameplay
 		public int Height { get; private set; }
 
 		/// <summary>
-		///   Gets the player start positions within the level.
+		///   Gets the player start positions within the
 		/// </summary>
 		public List<BlockIndex> PlayerStarts { get; } = new List<BlockIndex>();
 
@@ -181,6 +181,135 @@ namespace PointWars.Gameplay
 			Assert.InRange(y, 0, Height - 1);
 
 			return new Rectangle(x * BlockSize + PositionOffset.X, y * BlockSize + PositionOffset.Y, BlockSize, BlockSize);
+		}
+
+		/// <summary>
+		///   Checks whether the given collider collides with a wall.
+		/// </summary>
+		/// <param name="collider">The collider that should be checked for wall collisions.</param>
+		public CollisionInfo? CheckWallCollision(Circle collider)
+		{
+			int x, y;
+			GetBlock(collider.Position, out x, out y);
+
+			var blockType = this[x, y];
+			var isInverse = false;
+			Vector2 position;
+			Size size;
+
+			switch (blockType)
+			{
+				case EntityType.TopWall:
+					position = GetBlockArea(x, y).TopLeft;
+					size = new Size(BlockSize, BlockSize / 2 + WallThickness / 2);
+					return HandleWallCollision(collider, new Rectangle(position, size), blockType);
+				case EntityType.LeftWall:
+					position = GetBlockArea(x, y).TopLeft;
+					size = new Size(BlockSize / 2 + WallThickness / 2, BlockSize);
+					return HandleWallCollision(collider, new Rectangle(position, size), blockType);
+				case EntityType.BottomWall:
+					position = GetBlockArea(x, y).TopLeft + new Vector2(0, BlockSize / 2 - WallThickness / 2);
+					size = new Size(BlockSize, BlockSize / 2 + WallThickness);
+					return HandleWallCollision(collider, new Rectangle(position, size), blockType);
+				case EntityType.RightWall:
+					position = GetBlockArea(x, y).TopLeft + new Vector2(BlockSize / 2 - WallThickness / 2, 0);
+					size = new Size(BlockSize / 2 + WallThickness, BlockSize);
+					return HandleWallCollision(collider, new Rectangle(position, size), blockType);
+				case EntityType.LeftTopWall:
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).BottomRight, isInverse);
+				case EntityType.RightTopWall:
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).BottomLeft, isInverse);
+				case EntityType.LeftBottomWall:
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).TopRight, isInverse);
+				case EntityType.RightBottomWall:
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).TopLeft, isInverse);
+				case EntityType.InverseLeftTopWall:
+					isInverse = true;
+					goto case EntityType.LeftTopWall;
+				case EntityType.InverseRightTopWall:
+					isInverse = true;
+					goto case EntityType.RightTopWall;
+				case EntityType.InverseLeftBottomWall:
+					isInverse = true;
+					goto case EntityType.LeftBottomWall;
+				case EntityType.InverseRightBottomWall:
+					isInverse = true;
+					goto case EntityType.RightBottomWall;
+				case EntityType.Wall:
+					// That should be impossible, but, well...
+					return new CollisionInfo { Offset = Vector2.Zero, Normal = Vector2.Zero };
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		///   Handles an entity collision with a horizontal or vertical wall.
+		/// </summary>
+		private static CollisionInfo? HandleWallCollision(Circle circle, Rectangle wall, EntityType wallType)
+		{
+			if (!wall.Intersects(circle))
+				return null;
+
+			switch (wallType)
+			{
+				case EntityType.LeftWall:
+					return new CollisionInfo { Offset = new Vector2(wall.Right - circle.Position.X + circle.Radius, 0), Normal = Vector2.UnitX };
+				case EntityType.RightWall:
+					return new CollisionInfo { Offset = new Vector2(wall.Left - circle.Position.X - circle.Radius, 0), Normal = -Vector2.UnitX };
+				case EntityType.TopWall:
+					return new CollisionInfo { Offset = new Vector2(0, wall.Bottom - circle.Position.Y + circle.Radius), Normal = Vector2.UnitY };
+				case EntityType.BottomWall:
+					return new CollisionInfo { Offset = new Vector2(0, wall.Top - circle.Position.Y - circle.Radius), Normal = -Vector2.UnitY };
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		///   Handles an entity collision with a curved wall.
+		/// </summary>
+		private static CollisionInfo? HandleCollisionWithCurvedWall(Circle entityCircle, Vector2 wallPosition, bool isInverse)
+		{
+			var wallCircle = new Circle(wallPosition, BlockSize / 2 + WallThickness / 2);
+			if (!entityCircle.Intersects(wallCircle))
+				return null;
+
+			var normal = entityCircle.Position - wallCircle.Position;
+			var distance = normal.Length();
+			normal /= distance;
+
+			if (isInverse)
+			{
+				var overlap = distance + entityCircle.Radius - wallCircle.Radius + WallThickness;
+				if (!(overlap > 0))
+					return null;
+
+				return new CollisionInfo { Offset = -Vector2.Normalize(entityCircle.Position - wallCircle.Position) * overlap, Normal = normal };
+			}
+			else
+			{
+				var radius = entityCircle.Radius + wallCircle.Radius;
+				var overlap = MathUtils.Abs(distance - radius);
+
+				return new CollisionInfo { Offset = -Vector2.Normalize(wallCircle.Position - entityCircle.Position) * overlap, Normal = normal };
+			}
+		}
+
+		/// <summary>
+		///   Provides information about a collision with a wall.
+		/// </summary>
+		public struct CollisionInfo
+		{
+			/// <summary>
+			///   The wall normal at the impact position.
+			/// </summary>
+			public Vector2 Normal;
+
+			/// <summary>
+			///   The offset that must be applied to the collider to resolve the collision.
+			/// </summary>
+			public Vector2 Offset;
 		}
 
 		/// <summary>

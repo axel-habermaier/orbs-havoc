@@ -46,9 +46,13 @@ namespace PointWars.Rendering.Particles
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="emitter">The emitter the particles belong to.</param>
 		/// <param name="capacity">The maximum number of particles that the collection should be able to contain.</param>
-		internal ParticleCollection(int capacity)
+		internal ParticleCollection(Emitter emitter, int capacity)
 		{
+			Assert.ArgumentNotNull(emitter, nameof(emitter));
+
+			Emitter = emitter;
 			Capacity = capacity;
 
 			var particleSize = sizeof(Vector2) + // positions
@@ -89,6 +93,11 @@ namespace PointWars.Rendering.Particles
 
 			Scales = (float*)pointer;
 		}
+
+		/// <summary>
+		///   Gets the emitter the particles belong to.
+		/// </summary>
+		public Emitter Emitter { get; }
 
 		/// <summary>
 		///   Gets the maximum number of particles that can be stored in the collection.

@@ -68,6 +68,7 @@
       <DependentUpon>ClientLogic.cs</DependentUpon>
     </Compile>
     <Compile Include="Gameplay\Client\LevelRenderer.cs" />
+    <Compile Include="Gameplay\Client\ParticleReflectionModifier.cs" />
     <Compile Include="Gameplay\Game.cs" />
     <Compile Include="Gameplay\Level.cs" />
     <Compile Include="Gameplay\PlayerKind.cs" />

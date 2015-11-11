@@ -168,7 +168,7 @@ namespace PointWars.Gameplay
 		{
 			ServerMode = false;
 			Players = new PlayerCollection(Allocator, serverMode: false);
-			Effects = new ParticleEffects();
+			Effects = new ParticleEffects(this);
 		}
 
 		/// <summary>

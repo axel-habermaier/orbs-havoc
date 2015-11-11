@@ -96,7 +96,7 @@ namespace PointWars.Rendering.Particles
 
 				_capacity = value;
 				_particles.SafeDispose();
-				_particles = new ParticleCollection(_capacity);
+				_particles = new ParticleCollection(this, _capacity);
 				_particleCount = Math.Min(_particleCount, _capacity);
 			}
 		}
