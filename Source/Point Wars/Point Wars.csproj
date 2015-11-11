@@ -263,7 +263,7 @@
     <Compile Include="Platform\WindowMode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Views\ViewCollection.cs" />
-    <Shader Include="Assets\Shaders\SpriteBatchShader.glsl" />
+    <Shader Include="Assets\Shaders\Sprites\SpriteShader.glsl" />
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\Rectangle.cs" />
     <Compile Include="Utilities\Size.cs" />
@@ -404,13 +404,18 @@
     <Texture Include="Assets\Textures\Health.png" />
   </ItemGroup>
   <ItemGroup>
-    <Shader Include="Assets\Shaders\ExtractBloomShader.glsl" />
+    <Shader Include="Assets\Shaders\Effects\ExtractBloomShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\BloomSettings.glsl" />
-    <Shader Include="Assets\Shaders\BlurShader.glsl" />
-    <Shader Include="Assets\Shaders\CombineBloomShader.glsl" />
-    <None Include="Assets\Shaders\FullscreenVertexShader.glsl" />
+    <None Include="Assets\Shaders\Effects\BloomSettings.glsl" />
+    <Shader Include="Assets\Shaders\Sprites\AdditiveSpriteShader.glsl" />
+    <None Include="Assets\Shaders\Sprites\VertexShader.glsl" />
+    <Shader Include="Assets\Shaders\Effects\BlurShader.glsl" />
+    <Shader Include="Assets\Shaders\Effects\CombineBloomShader.glsl" />
+    <None Include="Assets\Shaders\Effects\VertexShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\RoundParticle.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

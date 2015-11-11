@@ -1,4 +1,4 @@
-﻿#include "FullscreenVertexShader.glsl"
+﻿#include "VertexShader.glsl"
 
 Fragment
 {

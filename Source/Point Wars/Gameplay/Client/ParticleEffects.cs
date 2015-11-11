@@ -22,6 +22,7 @@
 
 namespace PointWars.Gameplay.Client
 {
+	using System;
 	using Assets;
 	using Platform.Memory;
 	using Rendering;
@@ -36,12 +37,32 @@ namespace PointWars.Gameplay.Client
 				{
 					Capacity = 200,
 					Duration = 0.5f,
-					EmissionRate = 500,
+					EmissionRate = 1000,
 					EmitColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
-					EmitLiftetimeRange = new Range<float>(0.1f, 0.5f),
-					EmitScaleRange = 1,
-					EmitSpeedRange = new Range<float>(200, 400),
-					Texture = AssetBundle.Bullet,
+					EmitLiftetimeRange = new Range<float>(0.1f, 0.7f),
+					EmitScaleRange = new Range<float>(.5f, 2),
+					EmitSpeedRange = new Range<float>(100, 300),
+					Texture = AssetBundle.RoundParticle,
+					Modifiers =
+					{
+						new ScaleModifier(1),
+						new FadeOutModifier()
+					}
+				})
+			);
+
+		public readonly ParticleEffectTemplate AvatarTrail = new ParticleEffectTemplate(effect =>
+			effect.Emitters.Add(
+				new Emitter
+				{
+					Capacity = 1000,
+					Duration = Single.PositiveInfinity,
+					EmissionRate = 60,
+					EmitColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
+					EmitLiftetimeRange = 0.3f,
+					EmitScaleRange = new Range<float>(.5f, 1),
+					EmitSpeedRange = 0,
+					Texture = AssetBundle.RoundParticle,
 					Modifiers =
 					{
 						new FadeOutModifier()
@@ -55,6 +76,7 @@ namespace PointWars.Gameplay.Client
 		protected override void OnDisposing()
 		{
 			AvatarExplosion.SafeDispose();
+			AvatarTrail.SafeDispose();
 		}
 	}
 }

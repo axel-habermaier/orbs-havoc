@@ -26,7 +26,6 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	using System.Numerics;
 	using Assets;
 	using Behaviors;
-	using Client;
 	using Network.Messages;
 	using Rendering;
 	using Utilities;
@@ -196,7 +195,10 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 					avatar.AddBehavior(avatar.PlayerInput = PlayerInputBehavior.Create(gameSession.Allocator));
 			}
 			else
+			{
 				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, new Color(0xFFFFD800), 200);
+				ParticleEffectNode.Create(gameSession.Allocator, gameSession.Effects.AvatarTrail, Vector2.Zero).AttachTo(avatar);
+			}
 
 			return avatar;
 		}

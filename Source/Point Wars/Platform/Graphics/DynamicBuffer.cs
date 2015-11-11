@@ -179,7 +179,6 @@ namespace PointWars.Platform.Graphics
 		{
 			Assert.NotDisposed(this);
 			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
-			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
 
 			// Rebind the constant buffer if currently isn't bound at all or when it has been changed since it was last bound
 			var isBound = !Change(State.ConstantBuffers, slot, this);

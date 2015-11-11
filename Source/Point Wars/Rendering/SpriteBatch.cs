@@ -74,7 +74,11 @@ namespace PointWars.Rendering
 				state.SamplerState.Bind(0);
 				state.BlendOperation.Bind();
 				(state.Camera ?? Renderer.DefaultCamera).Bind();
-				AssetBundle.SpriteBatchShader.Bind();
+
+				if (state.BlendOperation == BlendOperation.Additive)
+					AssetBundle.AdditiveSpriteShader.Bind();
+				else
+					AssetBundle.SpriteShader.Bind();
 
 				// Enable or disable the scissor test
 				if (state.ScissorArea == null)

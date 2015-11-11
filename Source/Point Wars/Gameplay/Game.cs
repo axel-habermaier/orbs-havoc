@@ -49,7 +49,7 @@ namespace PointWars.Gameplay
 			BaseSpeed = 1300,
 			WeaponType = EntityType.MiniGun,
 			MaxEnergy = 1,
-			Damage = 50
+			Damage = 5
 		};
 
 		public static WeaponTemplate LightingGunTemplate = new WeaponTemplate
