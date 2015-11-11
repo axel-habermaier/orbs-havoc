@@ -95,12 +95,12 @@ namespace PointWars.Rendering
 		///   Converts the color into a packed integer.
 		/// </summary>
 		/// <returns>A packed integer containing all four color components.</returns>
-		public int ToArgb()
+		public uint ToArgb()
 		{
-			int value = Blue;
-			value |= Green << 8;
-			value |= Red << 16;
-			value |= Alpha << 24;
+			uint value = Blue;
+			value |= (uint)(Green << 8);
+			value |= (uint)(Red << 16);
+			value |= (uint)(Alpha << 24);
 
 			return value;
 		}

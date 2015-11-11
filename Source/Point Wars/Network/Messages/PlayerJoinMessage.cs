@@ -24,8 +24,8 @@ namespace PointWars.Network.Messages
 {
 	using System.Text;
 	using Gameplay;
-	using Network;
 	using Platform.Memory;
+	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -45,6 +45,11 @@ namespace PointWars.Network.Messages
 		public PlayerKind PlayerKind { get; set; }
 
 		/// <summary>
+		///   Gets or sets the player's color.
+		/// </summary>
+		public Color Color { get; set; }
+
+		/// <summary>
 		///   Gets the identifier of the player that joined the game session.
 		/// </summary>
 		public NetworkIdentity Player { get; private set; }
@@ -58,6 +63,7 @@ namespace PointWars.Network.Messages
 			WriteIdentifier(ref writer, Player);
 			writer.WriteByte((byte)PlayerKind);
 			writer.WriteString(PlayerName, NetworkProtocol.MessagePlayerNameLength);
+			writer.WriteUInt32(Color.ToArgb());
 		}
 
 		/// <summary>
@@ -69,6 +75,7 @@ namespace PointWars.Network.Messages
 			Player = ReadIdentifier(ref reader);
 			PlayerKind = (PlayerKind)reader.ReadByte();
 			PlayerName = reader.ReadString(NetworkProtocol.MessagePlayerNameLength);
+			Color = new Color(reader.ReadUInt32());
 		}
 
 		/// <summary>
@@ -98,6 +105,7 @@ namespace PointWars.Network.Messages
 			message.Player = player.Identity;
 			message.PlayerKind = player.Kind;
 			message.PlayerName = player.Name;
+			message.Color = player.Color;
 			return message;
 		}
 

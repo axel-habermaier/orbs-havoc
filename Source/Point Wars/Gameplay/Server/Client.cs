@@ -248,9 +248,7 @@ namespace PointWars.Gameplay.Server
 				return;
 
 			_player.RemainingRespawnDelay -= elapsedSeconds;
-
-			if (_player.RemainingRespawnDelay <= 0)
-				_serverLogic.RespawnPlayer(_player);
+			_serverLogic.RespawnPlayer(_player);
 		}
 
 		/// <summary>

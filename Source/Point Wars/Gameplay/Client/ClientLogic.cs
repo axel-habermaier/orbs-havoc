@@ -173,6 +173,7 @@ namespace PointWars.Gameplay.Client
 		void IMessageHandler.OnPlayerJoin(PlayerJoinMessage message)
 		{
 			var player = Player.Create(_allocator, message.PlayerName, message.PlayerKind, message.Player);
+			player.Color = message.Color;
 
 			_gameSession.Players.Add(player);
 			_views.EventMessages.AddJoinMessage(player);

@@ -24,6 +24,7 @@ namespace PointWars.Gameplay
 {
 	using Network;
 	using Platform.Memory;
+	using Rendering;
 	using SceneNodes.Entities;
 	using Utilities;
 
@@ -71,6 +72,11 @@ namespace PointWars.Gameplay
 		///   Gets or sets the number of deaths.
 		/// </summary>
 		public int Deaths { get; set; }
+
+		/// <summary>
+		///   Gets or sets the player's color.
+		/// </summary>
+		public Color Color { get; set; }
 
 		/// <summary>
 		///   Gets or sets a value indicating whether this player is the server player.

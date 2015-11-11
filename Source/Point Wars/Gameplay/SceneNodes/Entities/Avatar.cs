@@ -27,7 +27,6 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	using Assets;
 	using Behaviors;
 	using Network.Messages;
-	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -120,8 +119,13 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			Player.RemainingRespawnDelay = Game.RespawnDelay;
 			Player.Avatar = null;
 
-			if (!GameSession.ServerMode)
-				SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, GameSession.Effects.AvatarExplosion, WorldPosition));
+			if (GameSession.ServerMode)
+				return;
+
+			var explosion = GameSession.Effects.AvatarExplosion.Allocate();
+			explosion.Emitters[0].EmitColorRange = Player.Color;
+
+			SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition));
 		}
 
 		/// <summary>
@@ -196,8 +200,11 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			}
 			else
 			{
-				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, new Color(0xFFFFD800), 200);
-				ParticleEffectNode.Create(gameSession.Allocator, gameSession.Effects.AvatarTrail, Vector2.Zero).AttachTo(avatar);
+				var trailEffect = gameSession.Effects.AvatarTrail.Allocate();
+				trailEffect.Emitters[0].EmitColorRange = player.Color;
+
+				ParticleEffectNode.Create(gameSession.Allocator, trailEffect, Vector2.Zero).AttachTo(avatar);
+				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, player.Color, 200);
 			}
 
 			return avatar;

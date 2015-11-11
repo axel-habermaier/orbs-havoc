@@ -74,11 +74,22 @@ namespace PointWars.Gameplay.SceneNodes
 		/// <param name="position">The node's initial position.</param>
 		public static ParticleEffectNode Create(PoolAllocator allocator, ParticleEffectTemplate effectTemplate, Vector2 position)
 		{
+			return Create(allocator, effectTemplate.Allocate(), position);
+		}
+
+		/// <summary>
+		///   Creates a new instance.
+		/// </summary>
+		/// <param name="allocator">The allocator that should be used to allocate the sprite.</param>
+		/// <param name="effect">The particle effect that should be added to the scene graph.</param>
+		/// <param name="position">The node's initial position.</param>
+		public static ParticleEffectNode Create(PoolAllocator allocator, ParticleEffect effect, Vector2 position)
+		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 
 			var sprite = allocator.Allocate<ParticleEffectNode>();
 			sprite.Position = position;
-			sprite._effect = effectTemplate.Allocate();
+			sprite._effect = effect;
 
 			return sprite;
 		}

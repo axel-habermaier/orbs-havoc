@@ -276,8 +276,11 @@ namespace PointWars.Gameplay.Server
 
 			foreach (var bot in _bots)
 			{
-				if (bot.Avatar == null)
-					_serverLogic.RespawnPlayer(bot);
+				if (bot.Avatar != null)
+					continue;
+
+				bot.RemainingRespawnDelay -= (float)elapsedSeconds;
+				_serverLogic.RespawnPlayer(bot);
 			}
 		}
 

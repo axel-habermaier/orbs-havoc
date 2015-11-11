@@ -218,6 +218,9 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(player, nameof(player));
 			Assert.ArgumentSatisfies(player.Avatar == null, nameof(player), "The player cannot be respawned.");
 
+			if (player.RemainingRespawnDelay > 0)
+				return;
+
 			// Try to find a player start location that is currently not occupied by any other player; if there
 			// is none, don't spawn the player and try again in a later frame (that shouldn't happen at all
 			// or at least not often anyway); we'll give up after a couple of retries for this reason...

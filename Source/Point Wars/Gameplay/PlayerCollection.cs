@@ -26,6 +26,7 @@ namespace PointWars.Gameplay
 	using System.Collections.Generic;
 	using Network;
 	using Platform.Memory;
+	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -42,6 +43,23 @@ namespace PointWars.Gameplay
 		///   Indicates whether players are managed in server mode.
 		/// </summary>
 		private readonly bool _serverMode;
+
+		/// <summary>
+		///   The currently available player colors.
+		/// </summary>
+		private readonly List<Color> _availableColors = new List<Color>
+		{
+			new Color(0xFFFFD800),
+			new Color(0xFFFF1000),
+			new Color(0xFFFF00CB),
+			new Color(0xFF00AEFF),
+			new Color(0xFF00FF2E),
+			new Color(0xFFFFFA00),
+			new Color(0xFF43FF00),
+			new Color(0xFF6E00FF),
+			new Color(0xFF00FFB6),
+			new Color(0xFFB2FF00)
+		};
 
 		/// <summary>
 		///   The allocator that is used to allocate network identities for the players.
@@ -141,7 +159,16 @@ namespace PointWars.Gameplay
 			Assert.That(!_players.Contains(player), "The player has already been added.");
 
 			if (_serverMode)
+			{
 				player.Identity = _identityAllocator.Allocate();
+
+				if (!player.IsServerPlayer)
+				{
+					var index = RandomNumberGenerator.NextIndex(_availableColors);
+					player.Color = _availableColors[index];
+					_availableColors.RemoveAt(index);
+				}
+			}
 			else
 				_identityMap.Add(player.Identity, player);
 
@@ -160,7 +187,10 @@ namespace PointWars.Gameplay
 			_players.Remove(player);
 
 			if (_serverMode)
+			{
 				_identityAllocator.Free(player.Identity);
+				_availableColors.Add(player.Color);
+			}
 			else
 				_identityMap.Remove(player.Identity);
 
