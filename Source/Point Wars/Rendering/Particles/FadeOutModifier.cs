@@ -42,8 +42,8 @@ namespace PointWars.Rendering.Particles
 			{
 				color->Alpha = (byte)(*age * 255);
 
-				++color;
-				++age;
+				color += 1;
+				age += 1;
 			}
 		}
 	}

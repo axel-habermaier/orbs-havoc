@@ -36,17 +36,18 @@ namespace PointWars.Gameplay.Client
 				new Emitter
 				{
 					Capacity = 200,
-					Duration = 0.5f,
-					EmissionRate = 1000,
-					EmitColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
-					EmitLiftetimeRange = new Range<float>(0.1f, 0.7f),
-					EmitScaleRange = new Range<float>(.5f, 2),
-					EmitSpeedRange = new Range<float>(100, 300),
-					Texture = AssetBundle.RoundParticle,
+					Duration = 1,
+					EmissionRate = Int32.MaxValue,
+					EmitLiftetimeRange = new Range<float>(1.5f, 2f),
+					EmitScaleRange = 1,
+					EmitSpeedRange = new Range<float>(500, 900),
+					Texture = AssetBundle.LineParticle,
 					Modifiers =
 					{
-						new ScaleModifier(1),
-						new FadeOutModifier()
+						new FadeOutModifier(),
+						new VelocityOrientationModifier(),
+						new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
+						new SpeedModifier(0.97f)
 					}
 				})
 			);

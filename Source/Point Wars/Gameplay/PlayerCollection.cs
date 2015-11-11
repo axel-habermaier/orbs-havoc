@@ -49,16 +49,15 @@ namespace PointWars.Gameplay
 		/// </summary>
 		private readonly List<Color> _availableColors = new List<Color>
 		{
-			new Color(0xFFFFD800),
-			new Color(0xFFFF1000),
-			new Color(0xFFFF00CB),
-			new Color(0xFF00AEFF),
-			new Color(0xFF00FF2E),
-			new Color(0xFFFFFA00),
-			new Color(0xFF43FF00),
-			new Color(0xFF6E00FF),
-			new Color(0xFF00FFB6),
-			new Color(0xFFB2FF00)
+			new Color(0xFF6E00FF), // violet
+			new Color(0xFF43FF00), // green
+			new Color(0xFFFF00CB), // pink
+			new Color(0xFFFFA100), // orange
+			new Color(0xFF00AEFF), // blue
+			new Color(0xFFFF2A00), // red
+			new Color(0xFF00FFBB), // teal
+			new Color(0xFFFFFF00), // yellow
+			new Color(0xFF0050FF), // dark blue
 		};
 
 		/// <summary>

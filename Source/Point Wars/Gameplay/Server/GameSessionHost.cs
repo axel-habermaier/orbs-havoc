@@ -23,6 +23,7 @@
 namespace PointWars.Gameplay.Server
 {
 	using System;
+	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
@@ -70,6 +71,10 @@ namespace PointWars.Gameplay.Server
 		///   The step timer that is used to update the server at a fixed rate.
 		/// </summary>
 		private readonly StepTimer _timer = new StepTimer { UseFixedTimeStep = true };
+		/// <summary>
+		/// The bot commands generated on the main thread.
+		/// </summary>
+		private readonly ConcurrentQueue<BotCommand> _botCommands = new ConcurrentQueue<BotCommand>();
 
 		/// <summary>
 		///   Allows the cancellation of the server task.
@@ -92,6 +97,11 @@ namespace PointWars.Gameplay.Server
 		private Socket _listener;
 
 		/// <summary>
+		///   The timer that is used to schedule player stats updates.
+		/// </summary>
+		private Timer _playerStatsTimer = new Timer(1000.0f / NetworkProtocol.PlayerStatsUpdateFrequency);
+
+		/// <summary>
 		///   Periodically sends server discovery messages.
 		/// </summary>
 		private ServerDiscovery _serverDiscovery;
@@ -106,12 +116,6 @@ namespace PointWars.Gameplay.Server
 		/// </summary>
 		private Task _task;
 
-
-		/// <summary>
-		/// The timer that is used to schedule player stats updates.
-		/// </summary>
-		Timer _playerStatsTimer= new Timer(1000.0f / NetworkProtocol.PlayerStatsUpdateFrequency);
-
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
@@ -121,8 +125,8 @@ namespace PointWars.Gameplay.Server
 			_timer.UpdateRequired += () => Update(_timer.ElapsedSeconds);
 			_allocator = new PoolAllocator();
 
-			Commands.OnAddBot += AddBot;
-			Commands.OnRemoveBot += RemoveBot;
+			Commands.OnAddBot += AddBotDeferred;
+			Commands.OnRemoveBot += RemoveBotDeferred;
 		}
 
 		/// <summary>
@@ -232,6 +236,24 @@ namespace PointWars.Gameplay.Server
 		/// <summary>
 		///   Adds a bot to the currently active game session.
 		/// </summary>
+		private void AddBotDeferred()
+		{
+			if (_gameSession != null && _gameSession.Players.Count < NetworkProtocol.MaxPlayers)
+				_botCommands.Enqueue(BotCommand.Add);
+		}
+
+		/// <summary>
+		///   Removes a bot from the currently active game session.
+		/// </summary>
+		private void RemoveBotDeferred()
+		{
+			if (_gameSession != null && _bots.Count != 0)
+				_botCommands.Enqueue(BotCommand.Remove);
+		}
+
+		/// <summary>
+		///   Adds a bot to the currently active game session.
+		/// </summary>
 		private void AddBot()
 		{
 			if (_gameSession == null || _gameSession.Players.Count >= NetworkProtocol.MaxPlayers)
@@ -274,6 +296,17 @@ namespace PointWars.Gameplay.Server
 			_serverLogic.BroadcastEntityUpdates();
 			_clients.SendQueuedMessages();
 
+			// Handle all bot commands, which come from the main thread
+			BotCommand command;
+			while (_botCommands.TryDequeue(out command))
+			{
+				if (command == BotCommand.Add)
+					AddBot();
+				else
+					RemoveBot();
+			}
+
+			// Make sure we respawn the bot when it is dead
 			foreach (var bot in _bots)
 			{
 				if (bot.Avatar != null)
@@ -283,7 +316,6 @@ namespace PointWars.Gameplay.Server
 				_serverLogic.RespawnPlayer(bot);
 			}
 		}
-
 
 		/// <summary>
 		///   Checks whether any server errors occurred. If so, stops the server and raises an exception.
@@ -302,8 +334,14 @@ namespace PointWars.Gameplay.Server
 			Stop();
 			_allocator.SafeDispose();
 
-			Commands.OnAddBot -= AddBot;
-			Commands.OnRemoveBot -= RemoveBot;
+			Commands.OnAddBot -= AddBotDeferred;
+			Commands.OnRemoveBot -= RemoveBotDeferred;
+		}
+
+		private enum BotCommand
+		{
+			Add,
+			Remove
 		}
 	}
 }

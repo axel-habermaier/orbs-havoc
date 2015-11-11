@@ -23,6 +23,7 @@
 namespace PointWars.Rendering
 {
 	using System;
+	using System.Numerics;
 	using System.Runtime.InteropServices;
 	using Utilities;
 
@@ -211,6 +212,103 @@ namespace PointWars.Rendering
 		{
 			var value = (int)(component * 255.0f);
 			return (byte)(value < 0 ? 0 : value > 255 ? 255 : value);
+		}
+
+		/// <summary>
+		///   Creates a color from hue, saturation, and value.
+		/// </summary>
+		/// <param name="color">The HSV color.</param>
+		public static Color FromHsv(Vector4 color)
+		{
+			var hue = color.X * 360.0f;
+			var saturation = color.Y;
+			var value = color.Z;
+
+			var c = value * saturation;
+			var h = hue / 60.0f;
+			var x = c * (1.0f - Math.Abs(h % 2.0f - 1.0f));
+
+			float r, g, b;
+			if (0.0f <= h && h < 1.0f)
+			{
+				r = c;
+				g = x;
+				b = 0.0f;
+			}
+			else if (1.0f <= h && h < 2.0f)
+			{
+				r = x;
+				g = c;
+				b = 0.0f;
+			}
+			else if (2.0f <= h && h < 3.0f)
+			{
+				r = 0.0f;
+				g = c;
+				b = x;
+			}
+			else if (3.0f <= h && h < 4.0f)
+			{
+				r = 0.0f;
+				g = x;
+				b = c;
+			}
+			else if (4.0f <= h && h < 5.0f)
+			{
+				r = x;
+				g = 0.0f;
+				b = c;
+			}
+			else if (5.0f <= h && h < 6.0f)
+			{
+				r = c;
+				g = 0.0f;
+				b = x;
+			}
+			else
+			{
+				r = 0.0f;
+				g = 0.0f;
+				b = 0.0f;
+			}
+
+			var m = value - c;
+
+			return new Color(r + m, g + m, b + m, color.W);
+		}
+
+		/// <summary>
+		///   Converts RGB color values to HSV color values.
+		/// </summary>
+		public Vector4 ToHsv()
+		{
+			var red = ToFloat(Red);
+			var green = ToFloat(Green);
+			var blue = ToFloat(Blue);
+			var alpha = ToFloat(Alpha);
+
+			var max = Math.Max(red, Math.Max(green, blue));
+			var min = Math.Min(red, Math.Min(green, blue));
+			var c = max - min;
+
+			var h = 0.0f;
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+			if (max == red)
+
+				h = (green - blue) / c % 6.0f;
+			else if (max == green)
+				h = (blue - red) / c + 2.0f;
+			else if (max == blue)
+				h = (red - green) / c + 4.0f;
+
+			var hue = h * 60.0f / 360.0f;
+
+			var saturation = 0.0f;
+			if (max != 0)
+				saturation = c / max;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
+
+			return new Vector4(hue, saturation, max, alpha);
 		}
 	}
 }

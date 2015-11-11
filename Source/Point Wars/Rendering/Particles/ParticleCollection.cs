@@ -57,6 +57,7 @@ namespace PointWars.Rendering.Particles
 							   sizeof(float) + // remaining lifetimes
 							   sizeof(float) + // initial lifetimes
 							   sizeof(float) + // age
+							   sizeof(float) + // orientation
 							   sizeof(float); // scales
 
 			_size = particleSize * Capacity;
@@ -83,6 +84,9 @@ namespace PointWars.Rendering.Particles
 			Age = (float*)pointer;
 			pointer += sizeof(float) * Capacity;
 
+			Orientations = (float*)pointer;
+			pointer += sizeof(float) * Capacity;
+
 			Scales = (float*)pointer;
 		}
 
@@ -98,9 +102,14 @@ namespace PointWars.Rendering.Particles
 		public float* Age { get; }
 
 		/// <summary>
-		///   Stores the scale of each particles as a floating-point value.
+		///   Stores the scale of each particle as a floating-point value.
 		/// </summary>
 		public float* Scales { get; }
+
+		/// <summary>
+		///   Stores the orientation of each particle as a floating-point value.
+		/// </summary>
+		public float* Orientations { get; }
 
 		/// <summary>
 		///   Stores the remaining life time time of each particle as a floating-point value in seconds.
@@ -146,6 +155,7 @@ namespace PointWars.Rendering.Particles
 			Lifetimes[target] = Lifetimes[source];
 			InitialLifetimes[target] = InitialLifetimes[source];
 			Age[target] = Age[source];
+			Orientations[target] = Orientations[source];
 			Scales[target] = Scales[source];
 		}
 

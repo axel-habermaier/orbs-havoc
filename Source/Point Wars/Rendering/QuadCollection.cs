@@ -62,8 +62,8 @@ namespace PointWars.Rendering
 			Marshal.FreeHGlobal(new IntPtr(_quads));
 			GC.RemoveMemoryPressure(_sizeInBytes);
 
-			_pooledPartitions.SafeDispose();
 			_partitions.SafeDisposeAll();
+			_pooledPartitions.SafeDispose();
 		}
 
 		/// <summary>

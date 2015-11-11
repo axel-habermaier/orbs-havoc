@@ -102,13 +102,14 @@ namespace PointWars.Rendering.Particles
 		}
 
 		/// <summary>
-		///   Gets or sets the amount of time in seconds that the emitter emits new particles. Single.PositiveInfinity means that
-		///   emitting never stops.
+		///   Gets or sets the amount of time in seconds that the emitter emits new particles. A value of Single.PositiveInfinity means
+		///   that emitting never stops.
 		/// </summary>
 		public float Duration { get; set; } = Single.PositiveInfinity;
 
 		/// <summary>
-		///   Gets or sets the number of particles that are emitted per second.
+		///   Gets or sets the number of particles that are emitted per second. A value of Int32.MaxValue means that all
+		///   unallocated particles are emitted at once.
 		/// </summary>
 		public int EmissionRate { get; set; }
 
@@ -116,6 +117,11 @@ namespace PointWars.Rendering.Particles
 		///   Gets or sets the range of the initial particle colors.
 		/// </summary>
 		public Range<Color> EmitColorRange { get; set; }
+
+		/// <summary>
+		///   Gets or sets the range of the initial particle orientations.
+		/// </summary>
+		public Range<float> EmitOrientationRange { get; set; }
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle scales.
@@ -196,7 +202,7 @@ namespace PointWars.Rendering.Particles
 
 			var quads = spriteBatch.AddQuads(_particleCount, Texture);
 			var positions = _particles.Positions;
-			var velocities = _particles.Velocities;
+			var orientations = _particles.Orientations;
 			var scales = _particles.Scales;
 			var colors = _particles.Colors;
 			var size = Texture.Size;
@@ -207,7 +213,7 @@ namespace PointWars.Rendering.Particles
 				*quads = new Quad
 				{
 					Color = *colors,
-					Orientation = -MathUtils.ToAngle(*velocities),
+					Orientation = *orientations,
 					Position = *positions,
 					Size = *scales * size,
 					TextureCoordinates = Rectangle.Unit
@@ -215,7 +221,7 @@ namespace PointWars.Rendering.Particles
 
 				++quads;
 				++positions;
-				++velocities;
+				++orientations;
 				++scales;
 				++colors;
 			}
@@ -265,25 +271,31 @@ namespace PointWars.Rendering.Particles
 			var positions = _particles.Positions + _particleCount;
 			var velocities = _particles.Velocities + _particleCount;
 			var colors = _particles.Colors + _particleCount;
+			var orientations = _particles.Orientations + _particleCount;
 			var scales = _particles.Scales + _particleCount;
 
 			_secondsSinceLastEmit = 0;
 			_particleCount += count;
 
-			InitializeParticles(positions, velocities, count);
-
 			while (count-- > 0)
 			{
+				RandomNumberGenerator.NextUnitVector(velocities);
+
+				*positions = _spawnPosition;
+				*velocities *= RandomNumberGenerator.NextSingle(EmitSpeedRange.LowerBound, EmitSpeedRange.UpperBound);
 				*initialLifetimes = RandomNumberGenerator.NextSingle(EmitLiftetimeRange.LowerBound, EmitLiftetimeRange.UpperBound);
 				*lifetimes = *initialLifetimes;
 				*age = 1;
 				*scales = RandomNumberGenerator.NextSingle(EmitScaleRange.LowerBound, EmitScaleRange.UpperBound);
+				*orientations = RandomNumberGenerator.NextSingle(EmitOrientationRange.LowerBound, EmitOrientationRange.UpperBound);
 				*colors = new Color(
 					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Red, EmitColorRange.UpperBound.Red),
 					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Green, EmitColorRange.UpperBound.Green),
 					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Blue, EmitColorRange.UpperBound.Blue),
 					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Alpha, EmitColorRange.UpperBound.Alpha));
 
+				++positions;
+				++velocities;
 				++lifetimes;
 				++initialLifetimes;
 				++age;
@@ -344,26 +356,6 @@ namespace PointWars.Rendering.Particles
 		protected override void OnDisposing()
 		{
 			_particles.SafeDispose();
-		}
-
-		/// <summary>
-		///   Initializes the position and velocity of the given number of newly emitted particles.
-		/// </summary>
-		/// <param name="positions">The positions of the particles.</param>
-		/// <param name="velocities">The velocities of the particles.</param>
-		/// <param name="count">The number of particles that should be initialized.</param>
-		private unsafe void InitializeParticles(Vector2* positions, Vector2* velocities, int count)
-		{
-			while (count-- > 0)
-			{
-				RandomNumberGenerator.NextUnitVector(velocities);
-
-				*positions = _spawnPosition;
-				*velocities *= RandomNumberGenerator.NextSingle(EmitSpeedRange.LowerBound, EmitSpeedRange.UpperBound);
-
-				++positions;
-				++velocities;
-			}
 		}
 	}
 }

@@ -22,25 +22,13 @@
 
 namespace PointWars.Rendering.Particles
 {
+	using Utilities;
+
 	/// <summary>
-	///   Changes the scales of the particles.
+	///   Sets the orientation of particles in accordance with their velocities.
 	/// </summary>
-	public sealed class ScaleModifier : Modifier
+	public class VelocityOrientationModifier : Modifier
 	{
-		/// <summary>
-		///   The scale delta per second.
-		/// </summary>
-		public float Delta;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="delta">The scale delta per second.</param>
-		public ScaleModifier(float delta = 0)
-		{
-			Delta = delta;
-		}
-
 		/// <summary>
 		///   Executes the modifier, updating the given number of particles contained in the particles collection.
 		/// </summary>
@@ -49,24 +37,15 @@ namespace PointWars.Rendering.Particles
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
 		public override unsafe void Execute(ParticleCollection particles, int count, float elapsedSeconds)
 		{
-			var scales = particles.Scales;
+			var orientations = particles.Orientations;
+			var velocities = particles.Velocities;
 
-			if (Delta < 0)
+			while (count-- > 0)
 			{
-				while (count-- > 0)
-				{
-					var scale = *scales + Delta * elapsedSeconds;
-					*scales = scale < 0 ? 0 : scale;
-					scales += 1;
-				}
-			}
-			else
-			{
-				while (count-- > 0)
-				{
-					*scales += Delta * elapsedSeconds;
-					scales += 1;
-				}
+				*orientations = -MathUtils.ToAngle(*velocities);
+
+				orientations += 1;
+				velocities += 1;
 			}
 		}
 	}

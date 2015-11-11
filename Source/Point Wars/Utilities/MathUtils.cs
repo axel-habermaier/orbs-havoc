@@ -385,5 +385,27 @@ namespace PointWars.Utilities
 		{
 			return new Vector2(Cos(angle), -Sin(angle));
 		}
+
+		/// <summary>
+		///   Interpolates between two values using a linear function by a given amount.
+		/// </summary>
+		/// <param name="from">The value to interpolate from.</param>
+		/// <param name="to">The value to interpolate to.</param>
+		/// <param name="amount">The interpolation amount.</param>
+		public static float Lerp(float from, float to, float amount)
+		{
+			return (1 - amount) * from + amount * to;
+		}
+
+		/// <summary>
+		///   Interpolates between two values using a linear function by a given amount.
+		/// </summary>
+		/// <param name="from">The value to interpolate from.</param>
+		/// <param name="to">The value to interpolate to.</param>
+		/// <param name="amount">The interpolation amount.</param>
+		public static byte Lerp(byte from, byte to, float amount)
+		{
+			return (byte)Lerp((float)from, to, amount);
+		}
 	}
 }
