@@ -116,27 +116,33 @@ namespace PointWars.Rendering.Particles
 		/// <summary>
 		///   Gets or sets the range of the initial particle colors.
 		/// </summary>
-		public Range<Color> EmitColorRange { get; set; }
+		public Range<Color> ColorRange { get; set; }
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle orientations.
 		/// </summary>
-		public Range<float> EmitOrientationRange { get; set; }
+		public Range<float> OrientationRange { get; set; }
+
+		/// <summary>
+		///   Gets or sets the range of the initial particle directions. A range of [0; 2 * Pi] means that the particles are
+		///   emitted in every direction.
+		/// </summary>
+		public Range<float> Direction { get; set; } = new Range<float>(0, MathUtils.TwoPi);
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle scales.
 		/// </summary>
-		public Range<float> EmitScaleRange { get; set; } = new Range<float>(1);
+		public Range<float> ScaleRange { get; set; } = new Range<float>(1);
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle life time.
 		/// </summary>
-		public Range<float> EmitLiftetimeRange { get; set; }
+		public Range<float> LiftetimeRange { get; set; }
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle speeds.
 		/// </summary>
-		public Range<float> EmitSpeedRange { get; set; }
+		public Range<float> SpeedRange { get; set; }
 
 		/// <summary>
 		///   Gets or sets the texture that is used to draw the emitter's particles.
@@ -190,6 +196,114 @@ namespace PointWars.Rendering.Particles
 		}
 
 		/// <summary>
+		///   Emits new particles, if necessary and appropriate.
+		/// </summary>
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		private unsafe void EmitParticles(float elapsedSeconds)
+		{
+			if (_totalSeconds > Duration)
+				return;
+
+			_secondsSinceLastEmit += elapsedSeconds;
+			var count = (int)(EmissionRate * _secondsSinceLastEmit);
+			count = Math.Min(count, _particles.Capacity - _particleCount);
+
+			if (count <= 0)
+				return;
+
+			var lifetimes = _particles.Lifetimes + _particleCount;
+			var initialLifetimes = _particles.InitialLifetimes + _particleCount;
+			var age = _particles.Age + _particleCount;
+			var positions = _particles.Positions + _particleCount;
+			var velocities = _particles.Velocities + _particleCount;
+			var colors = _particles.Colors + _particleCount;
+			var orientations = _particles.Orientations + _particleCount;
+			var scales = _particles.Scales + _particleCount;
+
+			_secondsSinceLastEmit = 0;
+			_particleCount += count;
+
+			while (count-- > 0)
+			{
+				*positions = _spawnPosition;
+				*velocities =
+					MathUtils.Rotate(Vector2.UnitX, RandomNumberGenerator.NextSingle(Direction.LowerBound, Direction.UpperBound)) *
+					RandomNumberGenerator.NextSingle(SpeedRange.LowerBound, SpeedRange.UpperBound);
+				*initialLifetimes = RandomNumberGenerator.NextSingle(LiftetimeRange.LowerBound, LiftetimeRange.UpperBound);
+				*lifetimes = *initialLifetimes;
+				*age = 1;
+				*scales = RandomNumberGenerator.NextSingle(ScaleRange.LowerBound, ScaleRange.UpperBound);
+				*orientations = RandomNumberGenerator.NextSingle(OrientationRange.LowerBound, OrientationRange.UpperBound);
+				*colors = new Color(
+					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Red, ColorRange.UpperBound.Red),
+					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Green, ColorRange.UpperBound.Green),
+					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Blue, ColorRange.UpperBound.Blue),
+					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Alpha, ColorRange.UpperBound.Alpha));
+
+				++positions;
+				++velocities;
+				++lifetimes;
+				++initialLifetimes;
+				++age;
+				++colors;
+				++orientations;
+				++scales;
+			}
+		}
+
+		/// <summary>
+		///   Updates the life times and the positions of the particles.
+		/// </summary>
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		private unsafe void UpdateParticles(float elapsedSeconds)
+		{
+			var lifetimes = _particles.Lifetimes;
+			var initialLifetime = _particles.InitialLifetimes;
+			var age = _particles.Age;
+			var positions = _particles.Positions;
+			var velocities = _particles.Velocities;
+			var count = _particleCount;
+
+			while (count-- > 0)
+			{
+				var lifetime = *lifetimes - elapsedSeconds;
+				lifetime = lifetime < 0 ? 0 : lifetime;
+
+				*lifetimes = lifetime;
+				*age = lifetime / *initialLifetime;
+				*positions += *velocities * elapsedSeconds;
+
+				++lifetimes;
+				++initialLifetime;
+				++age;
+				++positions;
+				++velocities;
+			}
+		}
+
+		/// <summary>
+		///   Removes all dead particles.
+		/// </summary>
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		private unsafe void RemoveParticles(float elapsedSeconds)
+		{
+			// We don't want to search for dead particles during each update for performance reasons.
+			_secondsSinceLastRemoval += elapsedSeconds;
+			if (_secondsSinceLastRemoval < 1.0f / RemovalRate)
+				return;
+
+			_secondsSinceLastRemoval = 0;
+			for (var i = 0; i < _particleCount; ++i)
+			{
+				if (_particles.Lifetimes[i] > 0)
+					continue;
+
+				_particles.Copy(source: _particleCount - 1, target: i);
+				--_particleCount;
+			}
+		}
+
+		/// <summary>
 		///   Draws the particles of the emitter to the given render output.
 		/// </summary>
 		/// <param name="spriteBatch">The SpriteBatch the particles should be drawn with.</param>
@@ -228,113 +342,6 @@ namespace PointWars.Rendering.Particles
 		}
 
 		/// <summary>
-		///   Removes all dead particles.
-		/// </summary>
-		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
-		private unsafe void RemoveParticles(float elapsedSeconds)
-		{
-			// We don't want to search for dead particles during each update for performance reasons.
-			_secondsSinceLastRemoval += elapsedSeconds;
-			if (_secondsSinceLastRemoval < 1.0f / RemovalRate)
-				return;
-
-			_secondsSinceLastRemoval = 0;
-			for (var i = 0; i < _particleCount; ++i)
-			{
-				if (_particles.Lifetimes[i] > 0)
-					continue;
-
-				_particles.Copy(source: _particleCount - 1, target: i);
-				--_particleCount;
-			}
-		}
-
-		/// <summary>
-		///   Emits new particles, if necessary and appropriate.
-		/// </summary>
-		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
-		private unsafe void EmitParticles(float elapsedSeconds)
-		{
-			if (_totalSeconds > Duration)
-				return;
-
-			_secondsSinceLastEmit += elapsedSeconds;
-			var count = (int)(EmissionRate * _secondsSinceLastEmit);
-			count = Math.Min(count, _particles.Capacity - _particleCount);
-
-			if (count <= 0)
-				return;
-
-			var lifetimes = _particles.Lifetimes + _particleCount;
-			var initialLifetimes = _particles.InitialLifetimes + _particleCount;
-			var age = _particles.Age + _particleCount;
-			var positions = _particles.Positions + _particleCount;
-			var velocities = _particles.Velocities + _particleCount;
-			var colors = _particles.Colors + _particleCount;
-			var orientations = _particles.Orientations + _particleCount;
-			var scales = _particles.Scales + _particleCount;
-
-			_secondsSinceLastEmit = 0;
-			_particleCount += count;
-
-			while (count-- > 0)
-			{
-				RandomNumberGenerator.NextUnitVector(velocities);
-
-				*positions = _spawnPosition;
-				*velocities *= RandomNumberGenerator.NextSingle(EmitSpeedRange.LowerBound, EmitSpeedRange.UpperBound);
-				*initialLifetimes = RandomNumberGenerator.NextSingle(EmitLiftetimeRange.LowerBound, EmitLiftetimeRange.UpperBound);
-				*lifetimes = *initialLifetimes;
-				*age = 1;
-				*scales = RandomNumberGenerator.NextSingle(EmitScaleRange.LowerBound, EmitScaleRange.UpperBound);
-				*orientations = RandomNumberGenerator.NextSingle(EmitOrientationRange.LowerBound, EmitOrientationRange.UpperBound);
-				*colors = new Color(
-					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Red, EmitColorRange.UpperBound.Red),
-					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Green, EmitColorRange.UpperBound.Green),
-					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Blue, EmitColorRange.UpperBound.Blue),
-					RandomNumberGenerator.NextByte(EmitColorRange.LowerBound.Alpha, EmitColorRange.UpperBound.Alpha));
-
-				++positions;
-				++velocities;
-				++lifetimes;
-				++initialLifetimes;
-				++age;
-				++colors;
-				++scales;
-			}
-		}
-
-		/// <summary>
-		///   Updates the life times and the positions of the particles.
-		/// </summary>
-		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
-		private unsafe void UpdateParticles(float elapsedSeconds)
-		{
-			var lifetimes = _particles.Lifetimes;
-			var initialLifetime = _particles.InitialLifetimes;
-			var age = _particles.Age;
-			var positions = _particles.Positions;
-			var velocities = _particles.Velocities;
-			var count = _particleCount;
-
-			while (count-- > 0)
-			{
-				var lifetime = *lifetimes - elapsedSeconds;
-				lifetime = lifetime < 0 ? 0 : lifetime;
-
-				*lifetimes = lifetime;
-				*age = lifetime / *initialLifetime;
-				*positions += *velocities * elapsedSeconds;
-
-				++lifetimes;
-				++initialLifetime;
-				++age;
-				++positions;
-				++velocities;
-			}
-		}
-
-		/// <summary>
 		///   In debug builds, validates the configuration of the emitter.
 		/// </summary>
 		[Conditional("DEBUG"), DebuggerHidden]
@@ -342,11 +349,11 @@ namespace PointWars.Rendering.Particles
 		{
 			Assert.InRange(EmissionRate, 1, Int32.MaxValue);
 			Assert.InRange(Capacity, 1, Int32.MaxValue);
-			Assert.That(EmitLiftetimeRange.LowerBound >= 0, "Invalid particle life time.");
-			Assert.That(EmitLiftetimeRange.UpperBound >= 0, "Invalid particle life time.");
+			Assert.That(LiftetimeRange.LowerBound >= 0, "Invalid particle life time.");
+			Assert.That(LiftetimeRange.UpperBound >= 0, "Invalid particle life time.");
 			Assert.That(Duration > 0 || Single.IsPositiveInfinity(Duration), "Invalid duration.");
-			Assert.That(EmitSpeedRange.LowerBound >= 0, "Invalid particle speed.");
-			Assert.That(EmitSpeedRange.UpperBound >= 0, "Invalid particle speed.");
+			Assert.That(SpeedRange.LowerBound >= 0, "Invalid particle speed.");
+			Assert.That(SpeedRange.UpperBound >= 0, "Invalid particle speed.");
 			Assert.NotNull(Texture, "No texture has been specified.");
 		}
 

@@ -44,9 +44,9 @@ namespace PointWars.Gameplay
 
 		public static WeaponTemplate MiniGunTemplate = new WeaponTemplate
 		{
-			Cooldown = 0.1f,
+			Cooldown = 0.2f,
 			DepleteSpeed = 0,
-			BaseSpeed = 1300,
+			Speed = 1300,
 			WeaponType = EntityType.MiniGun,
 			MaxEnergy = 1,
 			Damage = 5
@@ -63,7 +63,7 @@ namespace PointWars.Gameplay
 
 		internal struct WeaponTemplate
 		{
-			public float BaseSpeed;
+			public float Speed;
 			public float Cooldown;
 			public byte DepleteSpeed;
 			public EntityType WeaponType;

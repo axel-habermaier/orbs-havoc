@@ -128,7 +128,7 @@ namespace PointWars.Gameplay.Client
 						entity = Avatar.Create(_gameSession, player, message.Position, message.Orientation);
 						break;
 					case EntityType.Bullet:
-						entity = Bullet.Create(_gameSession, player, message.Position, Vector2.Zero, message.Orientation);
+						entity = Bullet.Create(_gameSession, player, message.Position, message.Velocity, message.Orientation);
 						break;
 					default:
 						Assert.NotReached("Unknown entity type.");

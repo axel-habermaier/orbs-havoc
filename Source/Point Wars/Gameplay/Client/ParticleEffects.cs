@@ -31,6 +31,25 @@ namespace PointWars.Gameplay.Client
 
 	public sealed class ParticleEffects : DisposableObject
 	{
+		public readonly ParticleEffectTemplate AvatarCore = new ParticleEffectTemplate(effect =>
+			effect.Emitters.Add(
+				new Emitter
+				{
+					Capacity = 100,
+					Duration = Single.PositiveInfinity,
+					EmissionRate = 100,
+					ColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
+					LiftetimeRange = 0.04f,
+					ScaleRange = new Range<float>(0.6f, 1.1f),
+					SpeedRange = 0,
+					Texture = AssetBundle.RoundParticle,
+					Modifiers =
+					{
+						new FadeOutModifier()
+					}
+				})
+			);
+
 		public readonly ParticleEffectTemplate AvatarExplosion = new ParticleEffectTemplate(effect =>
 			effect.Emitters.Add(
 				new Emitter
@@ -38,9 +57,9 @@ namespace PointWars.Gameplay.Client
 					Capacity = 200,
 					Duration = 1,
 					EmissionRate = Int32.MaxValue,
-					EmitLiftetimeRange = new Range<float>(1.5f, 2f),
-					EmitScaleRange = 1,
-					EmitSpeedRange = new Range<float>(500, 900),
+					LiftetimeRange = new Range<float>(1.5f, 2f),
+					ScaleRange = 1,
+					SpeedRange = new Range<float>(500, 900),
 					Texture = AssetBundle.LineParticle,
 					Modifiers =
 					{
@@ -52,21 +71,43 @@ namespace PointWars.Gameplay.Client
 				})
 			);
 
-		public readonly ParticleEffectTemplate AvatarTrail = new ParticleEffectTemplate(effect =>
+		public readonly ParticleEffectTemplate Bullet = new ParticleEffectTemplate(effect =>
 			effect.Emitters.Add(
 				new Emitter
 				{
-					Capacity = 1000,
+					Capacity = 100,
 					Duration = Single.PositiveInfinity,
-					EmissionRate = 60,
-					EmitColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
-					EmitLiftetimeRange = 0.3f,
-					EmitScaleRange = new Range<float>(.5f, 1),
-					EmitSpeedRange = 0,
-					Texture = AssetBundle.RoundParticle,
+					EmissionRate = 200,
+					LiftetimeRange = new Range<float>(0.2f, 0.4f),
+					ScaleRange = new Range<float>(1.3f, 1.7f),
+					SpeedRange = Game.MiniGunTemplate.Speed,
+					Texture = AssetBundle.LineParticle,
 					Modifiers =
 					{
-						new FadeOutModifier()
+						new FadeOutModifier(),
+						new SpeedModifier(0.97f),
+						new ScaleModifier(-2)
+					}
+				})
+			);
+
+		public readonly ParticleEffectTemplate BulletExplosion = new ParticleEffectTemplate(effect =>
+			effect.Emitters.Add(
+				new Emitter
+				{
+					Capacity = 25,
+					Duration = 0.1f,
+					EmissionRate = 200,
+					LiftetimeRange = new Range<float>(0.2f, 0.5f),
+					ScaleRange = 1,
+					SpeedRange = new Range<float>(300, 500),
+					Texture = AssetBundle.LineParticle,
+					Modifiers =
+					{
+						new FadeOutModifier(),
+						new VelocityOrientationModifier(),
+						new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
+						new SpeedModifier(0.97f)
 					}
 				})
 			);
@@ -77,7 +118,9 @@ namespace PointWars.Gameplay.Client
 		protected override void OnDisposing()
 		{
 			AvatarExplosion.SafeDispose();
-			AvatarTrail.SafeDispose();
+			AvatarCore.SafeDispose();
+			BulletExplosion.SafeDispose();
+			Bullet.SafeDispose();
 		}
 	}
 }

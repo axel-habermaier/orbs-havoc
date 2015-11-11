@@ -54,7 +54,7 @@ namespace PointWars.Gameplay
 			new Color(0xFFFF00CB), // pink
 			new Color(0xFFFFA100), // orange
 			new Color(0xFF00AEFF), // blue
-			new Color(0xFFFF2A00), // red
+			new Color(0xFFFF3200), // red
 			new Color(0xFF00FFBB), // teal
 			new Color(0xFFFFFF00), // yellow
 			new Color(0xFF0050FF), // dark blue

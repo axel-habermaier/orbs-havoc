@@ -23,7 +23,6 @@
 namespace PointWars.Gameplay.SceneNodes.Entities
 {
 	using System.Numerics;
-	using Assets;
 	using Behaviors;
 	using Utilities;
 
@@ -64,14 +63,29 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		}
 
 		/// <summary>
+		///   Invoked when the entity is removed from a game session.
+		/// </summary>
+		/// <remarks>This method is not called when the game session is disposed.</remarks>
+		public override void OnRemoved()
+		{
+			if (GameSession.ServerMode)
+				return;
+
+			var explosion = GameSession.Effects.BulletExplosion.Allocate();
+			explosion.Emitters[0].ColorRange = Player.ColorRange;
+
+			SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition));
+		}
+
+		/// <summary>
 		///   Creates a new instance.
 		/// </summary>
 		/// <param name="gameSession">The game session the entity belongs to.</param>
 		/// <param name="player">The player the bullet belongs to.</param>
-		/// <param name="initialPosition">The initial position of the bullet.</param>
-		/// <param name="initialVelocity">The initial velocity of the bullet.</param>
+		/// <param name="position">The initial position of the bullet.</param>
+		/// <param name="velocity">The initial velocity of the bullet.</param>
 		/// <param name="orientation">The bullet's orientation.</param>
-		public static Bullet Create(GameSession gameSession, Player player, Vector2 initialPosition, Vector2 initialVelocity, float orientation)
+		public static Bullet Create(GameSession gameSession, Player player, Vector2 position, Vector2 velocity, float orientation)
 		{
 			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
 			Assert.ArgumentNotNull(player, nameof(player));
@@ -79,8 +93,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			var bullet = gameSession.Allocate<Bullet>();
 			bullet.GameSession = gameSession;
 			bullet.Player = player;
-			bullet.Position = initialPosition;
-			bullet.Velocity = initialVelocity;
+			bullet.Position = position;
+			bullet.Velocity = velocity;
 			bullet.Orientation = orientation;
 
 			gameSession.SceneGraph.Add(bullet);
@@ -88,7 +102,15 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			if (gameSession.ServerMode)
 				bullet.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, 8));
 			else
-				SpriteNode.Create(gameSession.Allocator, bullet, AssetBundle.Bullet, player.Color, 500);
+			{
+				var effect = gameSession.Effects.Bullet.Allocate();
+
+				effect.Emitters[0].ColorRange = player.ColorRange;
+				effect.Emitters[0].OrientationRange = -orientation;
+				effect.Emitters[0].Direction = MathUtils.ToAngle(velocity);
+
+				ParticleEffectNode.Create(gameSession.Allocator, effect, Vector2.Zero).AttachTo(bullet);
+			}
 
 			return bullet;
 		}

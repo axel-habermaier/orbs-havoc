@@ -55,6 +55,11 @@ namespace PointWars.Network.Messages
 		public Vector2 Position { get; private set; }
 
 		/// <summary>
+		///   Gets the entity's initial velocity.
+		/// </summary>
+		public Vector2 Velocity { get; private set; }
+
+		/// <summary>
 		///   Gets the entity's initial orientation.
 		/// </summary>
 		public float Orientation { get; private set; }
@@ -74,6 +79,7 @@ namespace PointWars.Network.Messages
 			WriteIdentifier(ref writer, Player);
 			WriteIdentifier(ref writer, ParentEntity);
 			WriteVector2(ref writer, Position);
+			WriteVector2(ref writer, Velocity);
 			WriteOrientation(ref writer, Orientation);
 			writer.WriteByte((byte)EntityType);
 		}
@@ -88,6 +94,7 @@ namespace PointWars.Network.Messages
 			Player = ReadIdentifier(ref reader);
 			ParentEntity = ReadIdentifier(ref reader);
 			Position = ReadVector2(ref reader);
+			Velocity = ReadVector2(ref reader);
 			Orientation = ReadOrientation(ref reader);
 			EntityType = (EntityType)reader.ReadByte();
 		}
@@ -107,11 +114,6 @@ namespace PointWars.Network.Messages
 		/// </summary>
 		/// <param name="poolAllocator">The pool allocator that should be used to allocate the message.</param>
 		/// <param name="entity">The entity that has been added.</param>
-		/// <param name="player">The player the entity belongs to.</param>
-		/// <param name="parentEntity">The parent entity of the entity that is added.</param>
-		/// <param name="entityType">The type of the entity.</param>
-		/// <param name="position">The entity's initial position.</param>
-		/// <param name="orientation">The entity's initial orientation.</param>
 		public static EntityAddMessage Create(PoolAllocator poolAllocator, Entity entity)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
@@ -129,6 +131,7 @@ namespace PointWars.Network.Messages
 			message.Player = entity.Player.Identity;
 			message.EntityType = entity.Type;
 			message.Position = entity.Position;
+			message.Velocity = entity.Velocity;
 			message.Orientation = entity.Orientation;
 			return message;
 		}

@@ -124,7 +124,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				return;
 
 			var explosion = GameSession.Effects.AvatarExplosion.Allocate();
-			explosion.Emitters[0].EmitColorRange = Player.ColorRange;
+			explosion.Emitters[0].ColorRange = Player.ColorRange;
 
 			SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition));
 		}
@@ -201,8 +201,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			}
 			else
 			{
-				var trailEffect = gameSession.Effects.AvatarTrail.Allocate();
-				trailEffect.Emitters[0].EmitColorRange = player.Color;
+				var trailEffect = gameSession.Effects.AvatarCore.Allocate();
+				trailEffect.Emitters[0].ColorRange = player.ColorRange;
 
 				ParticleEffectNode.Create(gameSession.Allocator, trailEffect, Vector2.Zero).AttachTo(avatar);
 				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, player.Color, 200);

@@ -46,7 +46,7 @@ namespace PointWars.Gameplay.Behaviors
 		protected override void Fire()
 		{
 			var direction = MathUtils.FromAngle(SceneNode.Orientation);
-			var velocity = Vector2.Normalize(direction) * Template.BaseSpeed;
+			var velocity = Vector2.Normalize(direction) * Template.Speed;
 
 			Bullet.Create(SceneNode.GameSession, SceneNode.Player, SceneNode.WorldPosition, velocity, SceneNode.Orientation);
 		}
