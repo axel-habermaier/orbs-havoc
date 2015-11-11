@@ -38,7 +38,7 @@ namespace PointWars.Platform.Memory
 	/// <typeparam name="T">The type of the pooled objects.</typeparam>
 	[DebuggerDisplay("{_pooledObjects.Count} of {_allocationCount} available ({typeof(T)})")]
 	public sealed class ObjectPool<T> : ObjectPool
-		where T : class
+		where T : class, new()
 	{
 #if DEBUG
 		/// <summary>
@@ -46,6 +46,11 @@ namespace PointWars.Platform.Memory
 		/// </summary>
 		private readonly List<T> _allocatedObjects = new List<T>();
 #endif
+
+		/// <summary>
+		///   The function that should be invoked for each newly allocated instance
+		/// </summary>
+		private readonly Action<T> _initializationCallback;
 
 		/// <summary>
 		///   The pooled objects that are currently not in use.
@@ -58,24 +63,19 @@ namespace PointWars.Platform.Memory
 		private int _allocationCount;
 
 		/// <summary>
-		///   The function that is used by the pool to allocate a new instance.
-		/// </summary>
-		private readonly Func<T> _instanceCreator;
-
-		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="instanceCreator">The function that should be used by the pool to allocate a new instance.</param>
+		/// <param name="initializationCallback">The function that should be invoked for each newly allocated instance.</param>
 		/// <param name="hasGlobalLifetime">
 		///   Indicates whether the object pool should have global lifetime and should be
 		///   disposed automatically during application shutdown.
 		/// </param>
-		public ObjectPool(Func<T> instanceCreator = null, bool hasGlobalLifetime = false)
+		public ObjectPool(Action<T> initializationCallback = null, bool hasGlobalLifetime = false)
 		{
 			if (hasGlobalLifetime)
 				AddGlobalPool(this);
 
-			_instanceCreator = instanceCreator ?? Activator.CreateInstance<T>;
+			_initializationCallback = initializationCallback;
 		}
 
 		/// <summary>
@@ -89,7 +89,9 @@ namespace PointWars.Platform.Memory
 			if (_pooledObjects.Count == 0)
 			{
 				++_allocationCount;
-				obj = _instanceCreator();
+				obj = new T();
+				_initializationCallback?.Invoke(obj);
+
 #if DEBUG
 				_allocatedObjects.Add(obj);
 #endif

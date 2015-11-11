@@ -45,7 +45,7 @@ namespace PointWars.Views
 	internal sealed class GameView : View
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
-		private Camera _camera = new Camera();
+		private readonly Camera _camera = new Camera();
 
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
@@ -207,6 +207,7 @@ namespace PointWars.Views
 			}
 
 			// Draw the level first; everything else is drawn above
+			spriteBatch.RenderState.Camera = _camera;
 			GameSession.LevelRenderer.Draw(spriteBatch);
 
 			// Draw the entity sprites next, using layers to control draw order

@@ -127,7 +127,7 @@ namespace PointWars.Gameplay.Client
 					{
 						Color = new Color(0xFF130C49),
 						Position = level.GetBlockArea(x, y).Center,
-						Orientation = rotation,
+						Orientation = MathUtils.DegToRad(rotation),
 						Size = new Size(Level.BlockSize, Level.BlockSize),
 						TextureCoordinates = texCoords
 					};

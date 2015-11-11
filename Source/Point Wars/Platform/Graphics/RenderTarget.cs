@@ -197,6 +197,7 @@ namespace PointWars.Platform.Graphics
 			State.Validate();
 
 			glBindVertexArray(State.VertexLayout);
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -217,7 +218,7 @@ namespace PointWars.Platform.Graphics
 		public void Draw(int vertexCount, int vertexOffset, int primitiveType = GL_TRIANGLES)
 		{
 			BeforeDraw();
-			glDrawArrays(primitiveType, vertexOffset, vertexCount);
+			glDrawArrays(primitiveType, vertexOffset, vertexCount); 
 			AfterDraw();
 		}
 
@@ -248,7 +249,6 @@ namespace PointWars.Platform.Graphics
 									int primitiveType = GL_TRIANGLES)
 		{
 			BeforeDraw();
-			//Draw(vertexCount, vertexOffset, primitiveType);
 			glDrawArraysInstancedBaseInstance(primitiveType, vertexOffset, vertexCount, instanceCount, instanceOffset);
 			AfterDraw();
 		}

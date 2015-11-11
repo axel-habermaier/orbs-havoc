@@ -48,8 +48,7 @@ namespace PointWars.Rendering
 		/// </summary>
 		public SpriteBatch()
 		{
-			RenderState.BlendOperation = BlendOperation.Premultiplied;
-			RenderState.SamplerState = SamplerState.Bilinear;
+			RenderState.Reset();
 		}
 
 		/// <summary>
@@ -92,7 +91,7 @@ namespace PointWars.Rendering
 						MathUtils.RoundIntegral(state.ScissorArea.Value.Height));
 				}
 
-				state.RenderTarget.DrawInstanced(partition.Count, 4, 0, partition.Offset, GL_TRIANGLE_STRIP);
+				state.RenderTarget.DrawInstanced(partition.Count, 4, 0, Renderer.RenderBuffer.ElementOffset + partition.Offset, GL_TRIANGLE_STRIP);
 			}
 
 			// Make sure we don't "leak out" the scissor rasterizer state
@@ -326,6 +325,7 @@ namespace PointWars.Rendering
 		protected override void OnReturning()
 		{
 			_partitions.Clear();
+			RenderState.Reset();
 		}
 
 		/// <summary>

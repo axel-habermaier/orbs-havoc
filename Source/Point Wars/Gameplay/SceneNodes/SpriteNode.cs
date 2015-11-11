@@ -54,7 +54,7 @@ namespace PointWars.Gameplay.SceneNodes
 		public void Draw(SpriteBatch spriteBatch)
 		{
 			spriteBatch.RenderState.Layer = Layer;
-			spriteBatch.Draw(Texture, WorldPosition, Orientation, Color);
+			spriteBatch.Draw(Texture, WorldPosition, -Parent.Orientation, Color);
 		}
 
 		/// <summary>

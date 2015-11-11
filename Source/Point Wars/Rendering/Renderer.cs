@@ -117,10 +117,10 @@ namespace PointWars.Rendering
 		}
 
 		/// <summary>
-		///   Adds an operation that efficiently draws a large number of sprites.
+		///   Creates a sprite batch that efficiently draws a large number of sprites.
 		/// </summary>
 		/// <param name="renderTarget">The render target the sprites should be rendered to.</param>
-		public SpriteBatch BatchSprites(RenderTarget renderTarget)
+		public SpriteBatch CreateSpriteBatch(RenderTarget renderTarget)
 		{
 			var spriteBatch = AddOperation<SpriteBatch>();
 			spriteBatch.RenderState.RenderTarget = renderTarget;

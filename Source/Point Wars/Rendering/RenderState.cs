@@ -92,5 +92,19 @@ namespace PointWars.Rendering
 				RenderTarget == renderState.RenderTarget &&
 				Camera == renderState.Camera;
 		}
+
+		/// <summary>
+		///   Resets the render state to its default values.
+		/// </summary>
+		public void Reset()
+		{
+			BlendOperation = BlendOperation.Premultiplied;
+			SamplerState = SamplerState.Bilinear;
+			Layer = 0;
+			ScissorArea = null;
+			Texture = null;
+			RenderTarget = null;
+			Camera = null;
+		}
 	}
 }

@@ -142,6 +142,9 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MousePressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
+			if (_hoveredElement == null)
+				return;
+
 			var modifiers = _inputDevice.Keyboard.GetModifiers();
 			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, doubleClicked, modifiers, InputEventKind.Down);
 
@@ -153,6 +156,9 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MouseReleased(MouseButton button, Vector2 position)
 		{
+			if (_hoveredElement == null)
+				return;
+
 			var modifiers = _inputDevice.Keyboard.GetModifiers();
 			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, false, modifiers, InputEventKind.Up);
 
@@ -164,6 +170,9 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void MouseWheel(MouseWheelDirection direction)
 		{
+			if (_hoveredElement == null)
+				return;
+
 			var args = MouseWheelEventArgs.Create(_inputDevice.Mouse, direction, _inputDevice.Keyboard.GetModifiers());
 			OnMouseWheel(_hoveredElement, args);
 		}
@@ -173,6 +182,9 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
+			if (FocusedElement == null)
+				return;
+
 			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode, InputEventKind.Down);
 			OnKeyDown(FocusedElement, args);
 		}
@@ -182,6 +194,9 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
+			if (FocusedElement == null)
+				return;
+
 			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode, InputEventKind.Up);
 			OnKeyUp(FocusedElement, args);
 		}
@@ -191,6 +206,9 @@ namespace PointWars.UserInterface.Controls
 		/// </summary>
 		private void TextEntered(string text)
 		{
+			if (FocusedElement == null)
+				return;
+
 			var args = TextInputEventArgs.Create(text);
 			OnTextEntered(FocusedElement, args);
 		}
@@ -209,15 +227,15 @@ namespace PointWars.UserInterface.Controls
 				return;
 
 			var args = MouseEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard.GetModifiers());
-			OnMouseLeave(_hoveredElement, args);
+
+			if (_hoveredElement != null)
+				OnMouseLeave(_hoveredElement, args);
 
 			_hoveredElement = hoveredElement;
 			Log.DebugIf(false, "Hovered element: {0}", _hoveredElement?.GetType().Name);
 
-			if (_hoveredElement == null)
-				return;
-
-			OnMouseEnter(_hoveredElement, args);
+			if (_hoveredElement != null)
+				OnMouseEnter(_hoveredElement, args);
 		}
 
 		/// <summary>

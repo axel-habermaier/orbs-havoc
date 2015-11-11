@@ -23,6 +23,7 @@
 namespace PointWars.UserInterface
 {
 	using Input;
+	using Utilities;
 
 	// Contains input handling method that would better fir into RootUIElement; however, that would require making
 	// certain methods and properties public, which we don't want to do. The reason is that RootUIElement is not
@@ -34,6 +35,8 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnMouseEnter(UIElement hoveredElement, MouseEventArgs e)
 		{
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			while (hoveredElement != null)
 			{
 				if (!hoveredElement.IsMouseOver)
@@ -52,6 +55,8 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnMouseLeave(UIElement unhoveredElement, MouseEventArgs e)
 		{
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			while (unhoveredElement != null)
 			{
 				if (unhoveredElement.IsMouseOver)
@@ -69,8 +74,11 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse pressed event.
 		/// </summary>
-		protected static void OnPreviewMouseDown(UIElement element, MouseButtonEventArgs e)
+		private static void OnPreviewMouseDown(UIElement element, MouseButtonEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			if (element.Parent != null)
 				OnPreviewMouseDown(element.Parent, e);
 
@@ -86,6 +94,9 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnMouseDown(UIElement element, MouseButtonEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			OnPreviewMouseDown(element, e);
 
 			while (element != null && !e.Handled)
@@ -107,8 +118,11 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse released event.
 		/// </summary>
-		protected static void OnPreviewMouseUp(UIElement element, MouseButtonEventArgs e)
+		private static void OnPreviewMouseUp(UIElement element, MouseButtonEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			if (element.Parent != null)
 				OnPreviewMouseUp(element.Parent, e);
 
@@ -124,6 +138,9 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnMouseUp(UIElement element, MouseButtonEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			OnPreviewMouseUp(element, e);
 
 			while (element != null && !e.Handled)
@@ -139,8 +156,11 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse released event.
 		/// </summary>
-		protected static void OnPreviewMouseWheel(UIElement element, MouseWheelEventArgs e)
+		private static void OnPreviewMouseWheel(UIElement element, MouseWheelEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			if (element.Parent != null)
 				OnPreviewMouseWheel(element.Parent, e);
 
@@ -156,6 +176,9 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnMouseWheel(UIElement element, MouseWheelEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			OnPreviewMouseWheel(element, e);
 
 			while (element != null && !e.Handled)
@@ -170,8 +193,11 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse released event.
 		/// </summary>
-		protected static void OnPreviewKeyDown(UIElement element, KeyEventArgs e)
+		private static void OnPreviewKeyDown(UIElement element, KeyEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			if (element.Parent != null)
 				OnPreviewKeyDown(element.Parent, e);
 
@@ -187,6 +213,9 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnKeyDown(UIElement element, KeyEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			OnPreviewKeyDown(element, e);
 
 			while (element != null && !e.Handled)
@@ -201,8 +230,11 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse released event.
 		/// </summary>
-		protected static void OnPreviewKeyUp(UIElement element, KeyEventArgs e)
+		private static void OnPreviewKeyUp(UIElement element, KeyEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			if (element.Parent != null)
 				OnPreviewKeyUp(element.Parent, e);
 
@@ -218,6 +250,9 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnKeyUp(UIElement element, KeyEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			OnPreviewKeyUp(element, e);
 
 			while (element != null && !e.Handled)
@@ -232,8 +267,11 @@ namespace PointWars.UserInterface
 		/// <summary>
 		///   Handles a mouse released event.
 		/// </summary>
-		protected static void OnPreviewTextEntered(UIElement element, TextInputEventArgs e)
+		private static void OnPreviewTextEntered(UIElement element, TextInputEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			if (element.Parent != null)
 				OnPreviewTextEntered(element.Parent, e);
 
@@ -246,6 +284,9 @@ namespace PointWars.UserInterface
 		/// </summary>
 		protected static void OnTextEntered(UIElement element, TextInputEventArgs e)
 		{
+			Assert.ArgumentNotNull(element, nameof(element));
+			Assert.ArgumentNotNull(e, nameof(e));
+
 			OnPreviewTextEntered(element, e);
 
 			while (element != null && !e.Handled)

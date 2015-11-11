@@ -46,11 +46,6 @@ namespace PointWars.Platform.Graphics
 		public const int MaxFrameLag = 3;
 
 		/// <summary>
-		/// The monotonically increasing GPU frame number.
-		/// </summary>
-		public uint FrameNumber = 1;
-
-		/// <summary>
 		///   The constant buffers that are currently bound.
 		/// </summary>
 		public readonly DynamicBuffer[] ConstantBuffers = new DynamicBuffer[ConstantBufferSlotCount];
@@ -79,6 +74,11 @@ namespace PointWars.Platform.Graphics
 		///   Indicates whether drawing operations are currently allowed.
 		/// </summary>
 		public bool CanDraw;
+
+		/// <summary>
+		///   The monotonically increasing GPU frame number.
+		/// </summary>
+		public uint FrameNumber = 1;
 
 		/// <summary>
 		///   The currently bound render target.

@@ -34,11 +34,8 @@ namespace PointWars.Rendering
 	/// </summary>
 	public sealed unsafe class Camera : DisposableObject
 	{
-		private readonly DynamicBuffer _buffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(Matrix4x4));
-		private bool _dirty = true;
-		private float _distance;
+		private readonly DynamicBuffer _buffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(Vector2));
 		private uint _lastChanged;
-		private float _orientation;
 		private Vector2 _position;
 
 		/// <summary>
@@ -54,47 +51,9 @@ namespace PointWars.Rendering
 				if (_position == value)
 					return;
 
+				_lastChanged = State.FrameNumber;
 				_position = value;
-				_dirty = true;
-				_lastChanged = State.FrameNumber;
-			}
-		}
-
-		/// <summary>
-		///   Gets or sets the camera's orientation within the scene.
-		/// </summary>
-		public float Orientation
-		{
-			get { return _orientation; }
-			set
-			{
-				Assert.That(_lastChanged < State.FrameNumber, "The buffer cannot be changed multiple times per frame.");
-
-				if (MathUtils.Equals(_orientation, value))
-					return;
-
-				_orientation = value;
-				_dirty = true;
-				_lastChanged = State.FrameNumber;
-			}
-		}
-
-		/// <summary>
-		///   Gets or sets the camera's distance to the scene.
-		/// </summary>
-		public float Distance
-		{
-			get { return _distance; }
-			set
-			{
-				Assert.That(_lastChanged < State.FrameNumber, "The buffer cannot be changed multiple times per frame.");
-
-				if (MathUtils.Equals(_distance, value))
-					return;
-
-				_distance = value;
-				_dirty = true;
-				_lastChanged = State.FrameNumber;
+				_buffer.Copy(&value);
 			}
 		}
 
@@ -103,17 +62,6 @@ namespace PointWars.Rendering
 		/// </summary>
 		internal void Bind()
 		{
-			if (_dirty)
-			{
-				var viewMatrix = Matrix4x4.CreateLookAt(
-					new Vector3(Position.X, Position.Y, Distance),
-					new Vector3(Position.X, Position.Y, -1),
-					new Vector3(0, 1, 0));
-
-				_buffer.Copy(&viewMatrix);
-				_dirty = false;
-			}
-
 			_buffer.Bind(1);
 		}
 

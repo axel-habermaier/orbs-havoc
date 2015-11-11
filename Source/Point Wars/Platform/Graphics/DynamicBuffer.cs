@@ -42,6 +42,11 @@ namespace PointWars.Platform.Graphics
 		private const int ChunkCount = GraphicsState.MaxFrameLag;
 
 		/// <summary>
+		///   The underlying OpenGL handle of the buffer.
+		/// </summary>
+		private readonly int _buffer;
+
+		/// <summary>
 		///   The persistently mapped pointer to the OpenGL buffer contents.
 		/// </summary>
 		private readonly void* _pointer;
@@ -57,11 +62,6 @@ namespace PointWars.Platform.Graphics
 		private readonly int _type;
 
 		/// <summary>
-		///   The underlying OpenGL handle of the buffer.
-		/// </summary>
-		private readonly int _buffer;
-
-		/// <summary>
 		///   The index of the current chunk that the dynamic vertex buffer uses for mapping and drawing operations.
 		/// </summary>
 		private int _currentChunk;
@@ -70,6 +70,11 @@ namespace PointWars.Platform.Graphics
 		///   The GPU frame number when the buffer was last changed.
 		/// </summary>
 		private uint _lastChanged;
+
+		/// <summary>
+		///   Indicates whether the uniform buffer must be bound again after a change.
+		/// </summary>
+		private bool _requiresRebind;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -161,7 +166,9 @@ namespace PointWars.Platform.Graphics
 			Assert.That(_lastChanged < State.FrameNumber, "The buffer cannot be changed multiple times per frame.");
 
 			_lastChanged = State.FrameNumber;
-			//_currentChunk = (_currentChunk + 1) % ChunkCount;
+			_currentChunk = (_currentChunk + 1) % ChunkCount;
+			_requiresRebind = true;
+
 			return (byte*)_pointer + _currentChunk * ElementSize * ElementCount + offset;
 		}
 
@@ -174,9 +181,12 @@ namespace PointWars.Platform.Graphics
 			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
 			Assert.InRange(slot, 0, GraphicsState.ConstantBufferSlotCount);
 
-			if (!Change(State.ConstantBuffers, slot, this))
+			// Rebind the constant buffer if currently isn't bound at all or when it has been changed since it was last bound
+			var isBound = !Change(State.ConstantBuffers, slot, this);
+			if (isBound && !_requiresRebind)
 				return;
 
+			_requiresRebind = false;
 			var offset = ElementOffset * ElementSize;
 			var size = ElementCount * ElementSize;
 			glBindBufferRange(GL_UNIFORM_BUFFER, slot, _buffer, (void*)offset, (void*)size);

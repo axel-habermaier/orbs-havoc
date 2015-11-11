@@ -145,6 +145,7 @@
     <Compile Include="Rendering\BloomEffect.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\ClearRenderTarget.cs" />
+    <Compile Include="Rendering\QualityLevel.cs" />
     <Compile Include="Rendering\FullscreenEffect.cs" />
     <Compile Include="Rendering\Particles\Emitter.cs" />
     <Compile Include="Rendering\Particles\FadeOutModifier.cs" />
@@ -158,7 +159,7 @@
     <Compile Include="Rendering\QuadPartition.cs" />
     <Compile Include="Rendering\RenderBuffer.cs" />
     <Compile Include="Rendering\Renderer.cs" />
-    <Compile Include="Rendering\RenderOperation.cs" />
+    <Compile Include="Rendering\IRenderOperation.cs" />
     <Compile Include="Rendering\RenderState.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
@@ -409,7 +410,7 @@
     <None Include="Assets\Shaders\BloomSettings.glsl" />
     <Shader Include="Assets\Shaders\BlurShader.glsl" />
     <Shader Include="Assets\Shaders\CombineBloomShader.glsl" />
-    <None Include="Assets\Shaders\VertexShader.glsl" />
+    <None Include="Assets\Shaders\FullscreenVertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

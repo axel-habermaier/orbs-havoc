@@ -53,7 +53,7 @@ namespace AssetsCompiler
 			using (var writer = new BinaryWriter(stream))
 			{
 				var shader = File.ReadAllText(InFile);
-				var includesMatch = Regex.Match(shader, @"#include (.*)");
+				var includesMatch = Regex.Match(shader, @"#include ""(.*)""");
 
 				while (includesMatch.Success)
 				{

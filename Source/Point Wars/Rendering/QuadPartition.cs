@@ -24,7 +24,6 @@ namespace PointWars.Rendering
 {
 	using System;
 	using System.Collections.Generic;
-	using Platform.Logging;
 	using Platform.Memory;
 
 	/// <summary>

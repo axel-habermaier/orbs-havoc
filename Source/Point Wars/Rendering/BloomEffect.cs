@@ -28,6 +28,7 @@ namespace PointWars.Rendering
 	using Assets;
 	using Platform.Graphics;
 	using Platform.Memory;
+	using Scripting;
 	using Utilities;
 	using static Platform.Graphics.OpenGL3;
 
@@ -64,6 +65,8 @@ namespace PointWars.Rendering
 			_bloomSettingsBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BloomSettings));
 			_horizontalBlurBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BlurSettings));
 			_verticalBlurBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BlurSettings));
+
+			Cvars.BloomQualityChanged += BloomQualityChanged;
 		}
 
 		/// <summary>
@@ -158,8 +161,15 @@ namespace PointWars.Rendering
 				_temporaryTarget1.SafeDispose();
 				_temporaryTarget2.SafeDispose();
 
-				_temporaryTarget1 = new RenderTarget(size);
-				_temporaryTarget2 = new RenderTarget(size);
+				var qualityFactor = 1.0f;
+				if (Cvars.BloomQuality == QualityLevel.Low)
+					qualityFactor = 4;
+				if (Cvars.BloomQuality == QualityLevel.Medium)
+					qualityFactor = 2;
+
+				_temporaryTarget1 = new RenderTarget(size / qualityFactor);
+				_temporaryTarget2 = new RenderTarget(size / qualityFactor);
+				_dirty = true;
 			}
 
 			if (_dirty)
@@ -220,6 +230,20 @@ namespace PointWars.Rendering
 			_horizontalBlurBuffer.SafeDispose();
 			_temporaryTarget1.SafeDispose();
 			_temporaryTarget2.SafeDispose();
+
+			Cvars.BloomQualityChanged -= BloomQualityChanged;
+		}
+
+		/// <summary>
+		///   Disposes the temporary render targets to cause a reinitialization of the effect with the new quality level.
+		/// </summary>
+		private void BloomQualityChanged()
+		{
+			_temporaryTarget1.SafeDispose();
+			_temporaryTarget2.SafeDispose();
+
+			_temporaryTarget1 = null;
+			_temporaryTarget2 = null;
 		}
 
 		/// <summary>

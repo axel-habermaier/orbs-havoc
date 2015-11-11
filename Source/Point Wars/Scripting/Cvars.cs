@@ -27,6 +27,7 @@ namespace PointWars.Scripting
 	using Network;
 	using Platform;
 	using Platform.Input;
+	using Rendering;
 	using Utilities;
 	using Validators;
 
@@ -90,51 +91,63 @@ namespace PointWars.Scripting
 		double ChatMessageDisplayTime { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, shows the scoreboard.
+		///   While the input is triggered in an active game session, shows the scoreboard.
 		/// </summary>
 		[DefaultValue(Key.Tab), Persistent]
 		ConfigurableInput InputShowScoreboard { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, moves the player in the up direction.
+		///   When the input is triggered in an active game session, moves the player in the up direction.
 		/// </summary>
 		[DefaultValue(Key.W), Persistent]
 		ConfigurableInput InputMoveUp { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, moves the player in the down direction.
+		///   When the input is triggered in an active game session, moves the player in the down direction.
 		/// </summary>
 		[DefaultValue(Key.S), Persistent]
 		ConfigurableInput InputMoveDown { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, moves the player to the left.
+		///   When the input is triggered in an active game session, moves the player to the left.
 		/// </summary>
 		[DefaultValue(Key.A), Persistent]
 		ConfigurableInput InputMoveLeft { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, moves the player to the right.
+		///   When the input is triggered in an active game session, moves the player to the right.
 		/// </summary>
 		[DefaultValue(Key.D), Persistent]
 		ConfigurableInput InputMoveRight { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, fires the player's primary weapon.
+		///   When the input is triggered in an active game session, fires the player's primary weapon.
 		/// </summary>
 		[DefaultValue(MouseButton.Left), Persistent]
 		ConfigurableInput InputFirePrimary { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, fires the player's secondary weapon.
+		///   When the input is triggered in an active game session, fires the player's secondary weapon.
 		/// </summary>
 		[DefaultValue(MouseButton.Right), Persistent]
 		ConfigurableInput InputFireSecondary { get; set; }
 
 		/// <summary>
-		///   When triggered in an active game session, opens the chat input.
+		///   When the input is triggered in an active game session, opens the chat input.
 		/// </summary>
 		[DefaultValue(Key.Enter), Persistent]
 		ConfigurableInput InputChat { get; set; }
+
+		/// <summary>
+		///   Indicates whether the bloom effect is enabled.
+		/// </summary>
+		[DefaultValue(true), Persistent]
+		bool BloomEnabled { get; set; }
+
+		/// <summary>
+		///   Determines the quality of the bloom effect, if enabled.
+		/// </summary>
+		[DefaultValue(QualityLevel.High), Persistent]
+		QualityLevel BloomQuality { get; set; }
 	}
 }

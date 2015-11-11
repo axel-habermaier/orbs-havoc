@@ -30,28 +30,24 @@ namespace PointWars.Gameplay.Client
 
 	public sealed class ParticleEffects : DisposableObject
 	{
-		public readonly ParticleEffectTemplate AvatarExplosion = new ParticleEffectTemplate(() =>
-			new ParticleEffect
-			{
-				Emitters =
+		public readonly ParticleEffectTemplate AvatarExplosion = new ParticleEffectTemplate(effect =>
+			effect.Emitters.Add(
+				new Emitter
 				{
-					new Emitter
+					Capacity = 200,
+					Duration = 0.5f,
+					EmissionRate = 500,
+					EmitColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
+					EmitLiftetimeRange = new Range<float>(0.1f, 0.5f),
+					EmitScaleRange = 1,
+					EmitSpeedRange = new Range<float>(200, 400),
+					Texture = AssetBundle.Bullet,
+					Modifiers =
 					{
-						Capacity = 200,
-						Duration = 0.5f,
-						EmissionRate = 500,
-						EmitColorRange = new Range<Color>(new Color(0xFFFFF202), new Color(0xFFFF9900)),
-						EmitLiftetimeRange = new Range<float>(0.1f, 0.5f),
-						EmitScaleRange = 1,
-						EmitSpeedRange = new Range<float>(200, 400),
-						Texture = AssetBundle.Bullet,
-						Modifiers =
-						{
-							new FadeOutModifier()
-						}
+						new FadeOutModifier()
 					}
-				}
-			});
+				})
+			);
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.

@@ -210,12 +210,17 @@ namespace PointWars.Views
 
 			if (Game.IsRunning)
 			{
-				renderer.ClearRenderTarget(_bloomRenderTarget, Colors.Black);
-				Game.Draw(renderer.BatchSprites(_bloomRenderTarget));
-				renderer.Bloom(_bloomRenderTarget, Application.Window.BackBuffer);
+				if (Cvars.BloomEnabled)
+				{
+					renderer.ClearRenderTarget(_bloomRenderTarget, Colors.Black);
+					Game.Draw(renderer.CreateSpriteBatch(_bloomRenderTarget));
+					renderer.Bloom(_bloomRenderTarget, Application.Window.BackBuffer);
+				}
+				else
+					Game.Draw(renderer.CreateSpriteBatch(Application.Window.BackBuffer));
 			}
 
-			RootElement.Draw(renderer.BatchSprites(Application.Window.BackBuffer));
+			RootElement.Draw(renderer.CreateSpriteBatch(Application.Window.BackBuffer));
 			DrawCursor();
 		}
 
@@ -247,8 +252,7 @@ namespace PointWars.Views
 			Commands.OnStopServer -= Host.Stop;
 
 			// Remove all views from the root element so that they can execute cleanup logic
-			foreach (var view in _views)
-				RootElement.Remove(view.RootElement);
+			RootElement.Clear();
 
 			Application.Window.Closing -= Exit;
 			Application.Window.Resized -= OnResized;

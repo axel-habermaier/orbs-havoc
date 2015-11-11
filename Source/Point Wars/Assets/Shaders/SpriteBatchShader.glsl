@@ -5,9 +5,9 @@
 		mat4 ProjectionMatrix;
 	};
 
-	layout(std140, binding = 1) uniform ViewMatrixBuffer
+	layout(std140, binding = 1) uniform CameraPositionBuffer
 	{
-		mat4 ViewMatrix;
+		vec2 CameraPosition;
 	};
 
 	layout(location = 0) in vec2 Position;
@@ -25,20 +25,12 @@
 		float cosAngle = cos( Orientation);
 		float sinAngle = -sin(Orientation);
 
-		mat3 t = mat3(1,0,0,
-			0,1,0,
-			PositionOffset.x, PositionOffset.y, 1);
+		vec2 offset = PositionOffset + CameraPosition;
+		vec2 position = Position * Size;
+		position = vec2(position.x * cosAngle + position.y * sinAngle, -position.x * sinAngle + position.y * cosAngle);
+		position = position + offset;
 
-		mat3 r = mat3(cosAngle,- sinAngle, 0,
-			sinAngle, cosAngle, 0,
-			0,0, 1);
-
-		//vec2 position = Position * Size+ PositionOffset;
-		//position = vec2(position.x * cosAngle - position.y * sinAngle, position.x * sinAngle + position.y * cosAngle);
-
-		vec2 position = (t*(r  * vec3(Position * Size, 1))).xy;
-
-		gl_Position =  ProjectionMatrix * vec4(position , 0, 1);
+		gl_Position = ProjectionMatrix * vec4(position, 0, 1);
 
 		OutTexCoords.x = (gl_VertexID < 2) ? TexCoords.x : TexCoords.x + TexCoords.z;
 		OutTexCoords.y = (gl_VertexID == 0 || gl_VertexID == 2) ? TexCoords.y : TexCoords.y + TexCoords.w;
