@@ -123,17 +123,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			if (GameSession.ServerMode)
 				return;
 
-			var hsv = Player.Color.ToHsv();
-			const float delta = 0.02f;
-
-			hsv.X += delta;
-			var color1 = Color.FromHsv(hsv);
-
-			hsv.X -= 2* delta;
-			var color2 = Color.FromHsv(hsv);
-
 			var explosion = GameSession.Effects.AvatarExplosion.Allocate();
-			explosion.Emitters[0].EmitColorRange = new Range<Color>(color1, color2);
+			explosion.Emitters[0].EmitColorRange = Player.ColorRange;
 
 			SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition));
 		}

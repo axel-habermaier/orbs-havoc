@@ -122,8 +122,6 @@ namespace PointWars.Utilities
 		/// </param>
 		public static TextString Create(string textString)
 		{
-			Assert.ArgumentNotNull(textString, nameof(textString));
-
 			var text = TextStringPool.Allocate();
 			text._text.Clear();
 			text._colorRanges.Clear();
@@ -352,30 +350,28 @@ namespace PointWars.Utilities
 			Assert.ArgumentNotNull(s1, nameof(s1));
 			Assert.ArgumentNotNull(s2, nameof(s2));
 
-			using (var t1 = Create(s1))
-			using (var t2 = Create(s2))
-				return DisplayEqual(t1, t2);
-		}
-
-		/// <summary>
-		///   Checks whether the two strings are equal when displayed.
-		/// </summary>
-		public static bool DisplayEqual(TextString s1, TextString s2)
-		{
 			if (s1.Length != s2.Length)
 				return false;
 
 			for (var i = 0; i < s1.Length; ++i)
 			{
-				if (s1[i] != s2[i])
+				ColorSpecifier color1;
+				ColorSpecifier color2;
+
+				var match1 = TryMatch(s1, i, out color1);
+				var match2 = TryMatch(s2, i, out color2);
+
+				if (match1 != match2)
 					return false;
 
-				Color? c1, c2;
-				s1.GetColor(i, out c1);
-				s2.GetColor(i, out c2);
-
-				if (c1 != c2)
+				if (match1 && color1.Color != color2.Color)
 					return false;
+
+				if (!match1 && s1[i] != s2[i])
+					return false;
+
+				if (match1)
+					i += color1.Specifier.Length - 1;
 			}
 
 			return true;

@@ -79,6 +79,26 @@ namespace PointWars.Gameplay
 		public Color Color { get; set; }
 
 		/// <summary>
+		///   Gets a range of colors similar to the player's color.
+		/// </summary>
+		public Range<Color> ColorRange
+		{
+			get
+			{
+				var hsv = Color.ToHsv();
+				const float delta = 0.025f;
+
+				hsv.X += delta;
+				var color1 = Color.FromHsv(hsv);
+
+				hsv.X -= 2 * delta;
+				var color2 = Color.FromHsv(hsv);
+
+				return new Range<Color>(color1, color2);
+			}
+		}
+
+		/// <summary>
 		///   Gets or sets a value indicating whether this player is the server player.
 		/// </summary>
 		public bool IsServerPlayer => Identity == NetworkProtocol.ServerPlayerIdentity;

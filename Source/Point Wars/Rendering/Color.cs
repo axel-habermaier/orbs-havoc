@@ -294,21 +294,22 @@ namespace PointWars.Rendering
 			var h = 0.0f;
 			// ReSharper disable CompareOfFloatsByEqualityOperator
 			if (max == red)
-
 				h = (green - blue) / c % 6.0f;
 			else if (max == green)
 				h = (blue - red) / c + 2.0f;
 			else if (max == blue)
 				h = (red - green) / c + 4.0f;
-
-			var hue = h * 60.0f / 360.0f;
+			
+			var hue = h * 60.0f;
+			if (hue < 0.0f)
+				hue += 360.0f;
 
 			var saturation = 0.0f;
 			if (max != 0)
 				saturation = c / max;
 			// ReSharper restore CompareOfFloatsByEqualityOperator
 
-			return new Vector4(hue, saturation, max, alpha);
+			return new Vector4(hue / 360.0f, saturation, max, alpha);
 		}
 	}
 }

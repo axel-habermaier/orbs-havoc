@@ -25,7 +25,6 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	using System.Numerics;
 	using Assets;
 	using Behaviors;
-	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -89,7 +88,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			if (gameSession.ServerMode)
 				bullet.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, 8));
 			else
-				SpriteNode.Create(gameSession.Allocator, bullet, AssetBundle.Bullet, new Color(0xFF00EDFF), 500);
+				SpriteNode.Create(gameSession.Allocator, bullet, AssetBundle.Bullet, player.Color, 500);
 
 			return bullet;
 		}

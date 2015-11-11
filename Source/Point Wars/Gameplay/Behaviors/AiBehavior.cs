@@ -70,7 +70,7 @@ namespace PointWars.Gameplay.Behaviors
 				target = enemy.WorldPosition - SceneNode.WorldPosition;
 			}
 
-			//_inputBehavior.HandleInput(target, up, down, left, right, target != Vector2.Zero, false);
+			_inputBehavior.HandleInput(target, up, down, left, right, target != Vector2.Zero, false);
 		}
 
 		/// <summary>
