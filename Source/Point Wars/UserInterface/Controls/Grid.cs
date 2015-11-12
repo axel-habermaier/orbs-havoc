@@ -24,6 +24,7 @@ namespace PointWars.UserInterface.Controls
 {
 	using System;
 	using System.Collections.Generic;
+	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -139,6 +140,42 @@ namespace PointWars.UserInterface.Controls
 			}
 
 			return finalSize;
+		}
+
+		/// <summary>
+		///   Draws the UI element using the given sprite batch.
+		/// </summary>
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
+		protected override void DrawCore(SpriteBatch spriteBatch)
+		{
+			base.DrawCore(spriteBatch);
+
+			spriteBatch.RenderState.Layer += 1;
+
+			foreach (var column in Columns)
+			{
+				if (column.Background != Colors.Transparent)
+					spriteBatch.Draw(new Rectangle(VisualOffset.X + column.Offset, VisualOffset.Y, column.ActualWidth, ActualHeight), column.Background);
+			}
+
+			foreach (var row in Rows)
+			{
+				if (row.Background != Colors.Transparent)
+					spriteBatch.Draw(new Rectangle(VisualOffset.X, VisualOffset.Y + row.Offset, ActualWidth, row.ActualHeight), row.Background);
+			}
+
+			spriteBatch.RenderState.Layer -= 1;
+		}
+
+		/// <summary>
+		///   Draws the child UI elements of the current UI element using the given sprite batch.
+		/// </summary>
+		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
+		protected override void DrawChildren(SpriteBatch spriteBatch)
+		{
+			spriteBatch.RenderState.Layer += 1;
+			base.DrawChildren(spriteBatch);
+			spriteBatch.RenderState.Layer -= 1;
 		}
 	}
 }

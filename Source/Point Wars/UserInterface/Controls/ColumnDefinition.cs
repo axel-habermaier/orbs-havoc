@@ -23,6 +23,7 @@
 namespace PointWars.UserInterface.Controls
 {
 	using System;
+	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -64,6 +65,11 @@ namespace PointWars.UserInterface.Controls
 				return Width;
 			}
 		}
+
+		/// <summary>
+		///   Gets or sets the column's background color.
+		/// </summary>
+		public Color Background { get; set; } = Colors.Transparent;
 
 		/// <summary>
 		///   Gets or sets the horizontal offset of the column.

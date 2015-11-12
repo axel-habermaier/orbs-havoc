@@ -22,6 +22,7 @@
 
 namespace PointWars.Views
 {
+	using System.Collections.Generic;
 	using Assets;
 	using Network;
 	using Rendering;
@@ -34,8 +35,9 @@ namespace PointWars.Views
 	/// </summary>
 	internal class Scoreboard : View
 	{
-		private readonly PlayerRow[] _rows = new PlayerRow[NetworkProtocol.MaxPlayers];
+		private readonly PlayerRow[] _playerRows = new PlayerRow[NetworkProtocol.MaxPlayers];
 		private bool _dirty = true;
+		private List<RowDefinition> _gridRows;
 
 		/// <summary>
 		///   Initializes the view.
@@ -52,9 +54,9 @@ namespace PointWars.Views
 					CreateHeader("Ping", 3, TextAlignment.Right, minWidth: 35)
 				}
 			};
-
+			
 			for (var i = 0; i < NetworkProtocol.MaxPlayers; ++i)
-				_rows[i] = new PlayerRow(grid, i + 1);
+				_playerRows[i] = new PlayerRow(grid, i + 1);
 
 			RootElement = new Border
 			{
@@ -66,6 +68,8 @@ namespace PointWars.Views
 				Padding = new Thickness(4),
 				Child = grid
 			};
+
+			_gridRows = grid.Rows;
 		}
 
 		/// <summary>
@@ -81,19 +85,25 @@ namespace PointWars.Views
 
 			Assert.NotNull(Views.Game.GameSession);
 
-			foreach (var row in _rows)
+			foreach (var row in _playerRows)
 				row.Hide();
+
+			foreach (var row in _gridRows)
+				row.Background = Colors.Transparent;
 
 			foreach (var player in Views.Game.GameSession.Players)
 			{
 				if (player.IsServerPlayer || player.Rank == 0)
 					continue;
 
-				_rows[player.Rank - 1].Show();
-				_rows[player.Rank - 1].PlayerName.Text = player.Name;
-				_rows[player.Rank - 1].Kills.Text = player.Kills.ToString();
-				_rows[player.Rank - 1].Deaths.Text = player.Deaths.ToString();
-				_rows[player.Rank - 1].Ping.Text = player.Ping.ToString();
+				_playerRows[player.Rank - 1].Show();
+				_playerRows[player.Rank - 1].PlayerName.Text = player.Name;
+				_playerRows[player.Rank - 1].Kills.Text = player.Kills.ToString();
+				_playerRows[player.Rank - 1].Deaths.Text = player.Deaths.ToString();
+				_playerRows[player.Rank - 1].Ping.Text = player.Ping.ToString();
+
+				if (player.IsLocalPlayer)
+					_gridRows[player.Rank].Background = new Color(0x33A1DDFF);
 			}
 
 			_dirty = false;

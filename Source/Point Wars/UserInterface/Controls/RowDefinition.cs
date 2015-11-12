@@ -23,6 +23,7 @@
 namespace PointWars.UserInterface.Controls
 {
 	using System;
+	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -30,6 +31,11 @@ namespace PointWars.UserInterface.Controls
 	/// </summary>
 	public class RowDefinition
 	{
+		/// <summary>
+		///   Gets or sets the row's background color.
+		/// </summary>
+		public Color Background { get; set; } = Colors.Transparent;
+
 		/// <summary>
 		///   Gets or sets the vertical offset of the row.
 		/// </summary>
