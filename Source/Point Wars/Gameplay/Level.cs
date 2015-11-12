@@ -80,16 +80,7 @@ namespace PointWars.Gameplay
 		/// </summary>
 		/// <param name="x">The zero-based index in x-direction.</param>
 		/// <param name="y">The zero-based index in y-direction.</param>
-		public EntityType this[int x, int y]
-		{
-			get
-			{
-				Assert.InRange(x, 0, Width - 1);
-				Assert.InRange(y, 0, Height - 1);
-
-				return Blocks[x * Height + y];
-			}
-		}
+		public EntityType this[int x, int y] => x < 0 || y < 0 || x >= Width || y >= Height ? EntityType.Wall : Blocks[x * Height + y];
 
 		/// <summary>
 		///   Creates a new instance.

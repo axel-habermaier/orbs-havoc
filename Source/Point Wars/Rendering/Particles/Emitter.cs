@@ -213,7 +213,7 @@ namespace PointWars.Rendering.Particles
 
 			var lifetimes = _particles.Lifetimes + _particleCount;
 			var initialLifetimes = _particles.InitialLifetimes + _particleCount;
-			var age = _particles.Age + _particleCount;
+			var age = _particles.Ages + _particleCount;
 			var positions = _particles.Positions + _particleCount;
 			var velocities = _particles.Velocities + _particleCount;
 			var colors = _particles.Colors + _particleCount;
@@ -259,7 +259,7 @@ namespace PointWars.Rendering.Particles
 		{
 			var lifetimes = _particles.Lifetimes;
 			var initialLifetime = _particles.InitialLifetimes;
-			var age = _particles.Age;
+			var age = _particles.Ages;
 			var positions = _particles.Positions;
 			var velocities = _particles.Velocities;
 			var count = _particleCount;

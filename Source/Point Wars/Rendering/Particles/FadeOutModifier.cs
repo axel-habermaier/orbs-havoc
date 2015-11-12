@@ -36,7 +36,7 @@ namespace PointWars.Rendering.Particles
 		public override unsafe void Execute(ParticleCollection particles, int count, float elapsedSeconds)
 		{
 			var color = particles.Colors;
-			var age = particles.Age;
+			var age = particles.Ages;
 
 			while (count-- > 0)
 			{

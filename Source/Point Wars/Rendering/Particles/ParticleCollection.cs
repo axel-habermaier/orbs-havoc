@@ -85,7 +85,7 @@ namespace PointWars.Rendering.Particles
 			InitialLifetimes = (float*)pointer;
 			pointer += sizeof(float) * Capacity;
 
-			Age = (float*)pointer;
+			Ages = (float*)pointer;
 			pointer += sizeof(float) * Capacity;
 
 			Orientations = (float*)pointer;
@@ -108,7 +108,7 @@ namespace PointWars.Rendering.Particles
 		///   Stores the age of each particle as a floating-point value in the range [0,1], starting at 1 and decreasing to 0 at the
 		///   end of the particle's life.
 		/// </summary>
-		public float* Age { get; }
+		public float* Ages { get; }
 
 		/// <summary>
 		///   Stores the scale of each particle as a floating-point value.
@@ -163,7 +163,7 @@ namespace PointWars.Rendering.Particles
 			Colors[target] = Colors[source];
 			Lifetimes[target] = Lifetimes[source];
 			InitialLifetimes[target] = InitialLifetimes[source];
-			Age[target] = Age[source];
+			Ages[target] = Ages[source];
 			Orientations[target] = Orientations[source];
 			Scales[target] = Scales[source];
 		}

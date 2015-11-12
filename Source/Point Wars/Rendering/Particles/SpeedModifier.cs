@@ -28,14 +28,14 @@ namespace PointWars.Rendering.Particles
 	public sealed class SpeedModifier : Modifier
 	{
 		/// <summary>
-		///   The speed delta per second.
+		///   The speed percentagedelta per second.
 		/// </summary>
 		public float Delta;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="delta">The speed delta per second.</param>
+		/// <param name="delta">The speed percentage delta per second.</param>
 		public SpeedModifier(float delta = 0)
 		{
 			Delta = delta;
