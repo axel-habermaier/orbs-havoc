@@ -338,6 +338,18 @@ namespace PointWars.Gameplay.SceneNodes
 		}
 
 		/// <summary>
+		///   Attaches the scene node to the given scene graph's root.
+		/// </summary>
+		/// <param name="sceneGraph">The scene graph the scene node should be added to.</param>
+		public void AttachTo(SceneGraph sceneGraph)
+		{
+			Assert.NotPooled(this);
+			Assert.ArgumentNotNull(sceneGraph, nameof(sceneGraph));
+
+			AttachTo(sceneGraph.Root);
+		}
+
+		/// <summary>
 		///   Attaches the given scene node as a child of the current node.
 		/// </summary>
 		/// <param name="childNode">The child node that should be attached.</param>

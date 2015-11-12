@@ -51,7 +51,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				return;
 
 			var avatar = (Avatar)entity;
-			avatar.ApplyDamage(Player, Game.MiniGunTemplate.Damage);
+			var damageMultiplier = Player.Avatar != null && Player.Avatar.PowerUp == EntityType.QuadDamage ? Game.QuadDamageMultiplier : 1;
+			avatar.ApplyDamage(Player, Game.MiniGunTemplate.Damage * damageMultiplier);
 
 			Remove();
 		}

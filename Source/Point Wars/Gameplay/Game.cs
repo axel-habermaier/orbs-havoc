@@ -31,15 +31,23 @@ namespace PointWars.Gameplay
 	{
 		public const int WeaponCount = 8;
 		public const float HealthCollectibleHealthIncrease = 20;
-		public const float ArmorRespawenDelay = 3 * 60;
+		public const float ArmorRespawnDelay = 60;
 		public const float ArmorDamageFactor = 0.5f;
-		public const float RegenerationRespawenDelay = 3 * 60;
-		public const float QuadDamageRespawenDelay = 3 * 60;
-		public const float SpeedRespawenDelay = 3 * 60;
-		public const float InvisibilityRespawenDelay = 3 * 60;
-		public const float HealthRespawenDelay = 10;
+		public const float ArmorTime = 30;
+		public const float RegenerationRespawnDelay = 60;
+		public const float RegenerationTime = 30;
+		public const float RegenerationHealthIncrease = 10;
+		public const float QuadDamageRespawnDelay = 60;
+		public const float QuadDamageTime = 30;
+		public const float QuadDamageMultiplier = 4;
+		public const float SpeedRespawnDelay = 60;
+		public const float SpeedTime = 30;
+		public const float InvisibilityRespawnDelay = 60;
+		public const float InvisibilityTime = 30;
+		public const float HealthRespawnDelay = 10;
 		public const float MaxAvatarHealth = 100;
 		public const float MaxAvatarRegenerationHealth = 200;
+		public const float MaxHealthLimitExceededDecrease = 5;
 		public const float RespawnDelay = 2;
 
 		public static WeaponTemplate MiniGunTemplate = new WeaponTemplate

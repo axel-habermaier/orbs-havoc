@@ -23,7 +23,6 @@
 namespace PointWars.Gameplay.Client
 {
 	using System;
-	using System.Numerics;
 	using Assets;
 	using Network;
 	using Network.Messages;
@@ -57,6 +56,8 @@ namespace PointWars.Gameplay.Client
 			_allocator = allocator;
 			_gameSession = gameSession;
 			_views = views;
+
+			_gameSession.ChangeLevel(AssetBundle.TestLevel);
 		}
 
 		/// <summary>
@@ -103,9 +104,6 @@ namespace PointWars.Gameplay.Client
 
 			player.IsLocalPlayer = true;
 			IsSynced = true;
-
-			// TODO: Server should send level in Sync message
-			_gameSession.ChangeLevel(AssetBundle.TestLevel);
 		}
 
 		/// <summary>

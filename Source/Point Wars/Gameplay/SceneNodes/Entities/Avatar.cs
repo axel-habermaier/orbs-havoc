@@ -27,7 +27,6 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	using Assets;
 	using Behaviors;
 	using Network.Messages;
-	using Rendering;
 	using Utilities;
 
 	/// <summary>
@@ -35,6 +34,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	/// </summary>
 	internal class Avatar : Entity
 	{
+		private float _nextHealthUpdate;
+
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
@@ -91,6 +92,19 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				if (RemainingPowerUpTime < 0)
 					PowerUp = EntityType.None;
 			}
+
+			_nextHealthUpdate -= elapsedSeconds;
+			if (PowerUp == EntityType.Regeneration && _nextHealthUpdate <= 0)
+			{
+				Health = Math.Min(Game.MaxAvatarRegenerationHealth, Health + Game.RegenerationHealthIncrease);
+				_nextHealthUpdate = 1;
+			}
+
+			if (PowerUp != EntityType.Regeneration && Health > Game.MaxAvatarHealth && _nextHealthUpdate <= 0)
+			{
+				Health = Math.Max(Game.MaxAvatarHealth, Health - Game.MaxHealthLimitExceededDecrease);
+				_nextHealthUpdate = 1;
+			}
 		}
 
 		/// <summary>
@@ -105,6 +119,22 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 					if (Health < 100)
 					{
 						Health = Math.Min(100, Health + Game.HealthCollectibleHealthIncrease);
+						entity.Remove();
+					}
+					break;
+				case EntityType.Regeneration:
+					if (PowerUp == EntityType.None)
+					{
+						PowerUp = EntityType.Regeneration;
+						RemainingPowerUpTime = Game.RegenerationTime;
+						entity.Remove();
+					}
+					break;
+				case EntityType.QuadDamage:
+					if (PowerUp == EntityType.None)
+					{
+						PowerUp = EntityType.QuadDamage;
+						RemainingPowerUpTime = Game.QuadDamageTime;
 						entity.Remove();
 					}
 					break;
@@ -182,6 +212,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			avatar.Health = Game.MaxAvatarHealth;
 			avatar.Position = position;
 			avatar.Orientation = orientation;
+			avatar._nextHealthUpdate = 0;
 
 			// Reset the weapon energy levels, skipping the mini gun which can always be used
 			for (var i = 1; i < Game.WeaponCount; ++i)

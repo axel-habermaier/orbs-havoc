@@ -163,6 +163,12 @@ namespace AssetsCompiler
 				if (color == (int)0xFF00FF00)
 					return EntityType.Health;
 
+				if (color == (int)0xFF0094FF)
+					return EntityType.QuadDamage;
+
+				if (color == (int)0xFF007F0E)
+					return EntityType.Regeneration;
+
 				return null;
 			}
 		}

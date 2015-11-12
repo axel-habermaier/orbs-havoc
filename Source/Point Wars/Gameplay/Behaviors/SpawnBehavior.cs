@@ -75,17 +75,17 @@ namespace PointWars.Gameplay.Behaviors
 			switch (_collectibleType)
 			{
 				case EntityType.Armor:
-					return Game.ArmorRespawenDelay;
+					return Game.ArmorRespawnDelay;
 				case EntityType.Regeneration:
-					return Game.RegenerationRespawenDelay;
+					return Game.RegenerationRespawnDelay;
 				case EntityType.QuadDamage:
-					return Game.QuadDamageRespawenDelay;
+					return Game.QuadDamageRespawnDelay;
 				case EntityType.Speed:
-					return Game.SpeedRespawenDelay;
+					return Game.SpeedRespawnDelay;
 				case EntityType.Invisibility:
-					return Game.InvisibilityRespawenDelay;
+					return Game.InvisibilityRespawnDelay;
 				case EntityType.Health:
-					return Game.HealthRespawenDelay;
+					return Game.HealthRespawnDelay;
 				default:
 					throw new InvalidOperationException("Unsupported collectible type.");
 			}

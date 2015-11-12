@@ -38,6 +38,7 @@ namespace PointWars.Gameplay.Client
 		public readonly ParticleEffectTemplate AvatarExplosion;
 		public readonly ParticleEffectTemplate Bullet;
 		public readonly ParticleEffectTemplate BulletExplosion;
+		public readonly ParticleEffectTemplate Collectible;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -76,16 +77,16 @@ namespace PointWars.Gameplay.Client
 						Capacity = 400,
 						Duration = 1,
 						EmissionRate = Int32.MaxValue,
-						LiftetimeRange = new Range<float>(1.8f, 2.3f),
+						LiftetimeRange = new Range<float>(1.8f, 2.1f),
 						ScaleRange = 1,
-						SpeedRange = new Range<float>(600, 1000),
+						SpeedRange = new Range<float>(1000, 1500),
 						Texture = AssetBundle.LineParticle,
 						Modifiers =
 						{
 							fadeOutModifier,
 							velocityOrientationModifier,
 							new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
-							new SpeedModifier(0.97f),
+							new SpeedModifier(0.98f),
 							new ParticleReflectionModifier(gameSession.Level)
 						}
 					})
@@ -132,6 +133,28 @@ namespace PointWars.Gameplay.Client
 						}
 					})
 				);
+
+			Collectible = new ParticleEffectTemplate(effect =>
+				effect.Emitters.Add(
+					new Emitter
+					{
+						Capacity = 200,
+						Duration = 0.1f,
+						EmissionRate = Int32.MaxValue,
+						LiftetimeRange = new Range<float>(0.2f, 0.5f),
+						ScaleRange = 1,
+                        SpeedRange = new Range<float>(300, 600),
+						Texture = AssetBundle.LineParticle,
+						Modifiers =
+						{
+							fadeOutModifier,
+							velocityOrientationModifier,
+							new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
+							new SpeedModifier(0.97f),
+							new ParticleReflectionModifier(gameSession.Level)
+						}
+					})
+				);
 		}
 
 		/// <summary>
@@ -143,6 +166,7 @@ namespace PointWars.Gameplay.Client
 			AvatarCore.SafeDispose();
 			BulletExplosion.SafeDispose();
 			Bullet.SafeDispose();
+			Collectible.SafeDispose();
 		}
 	}
 }
