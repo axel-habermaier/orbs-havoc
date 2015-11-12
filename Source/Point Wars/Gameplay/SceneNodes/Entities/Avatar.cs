@@ -217,10 +217,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		public override void BroadcastUpdates()
 		{
 			base.BroadcastUpdates();
-
-			// TODO: PowerUpMessage
-			// TODO: WeaponMessage
-			return;
+			GameSession.Broadcast(UpdateAvatarMessage.Create(GameSession.Allocator, this));
 		}
 
 		/// <summary>
@@ -245,6 +242,9 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			avatar.Position = position;
 			avatar.Orientation = orientation;
 			avatar._nextHealthUpdate = 0;
+			avatar._coreEffect = null;
+			avatar._regeneration = null;
+			avatar._sprite = null;
 
 			// Reset the weapon energy levels, skipping the mini gun which can always be used
 			for (var i = 1; i < Game.WeaponCount; ++i)

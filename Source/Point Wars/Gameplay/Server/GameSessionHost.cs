@@ -264,6 +264,8 @@ namespace PointWars.Gameplay.Server
 
 			_botNames.RemoveAt(nameIndex);
 			_bots.Add(bot);
+
+			Log.Info("Bot '{0}' was added to the game session.", bot.Name);
 		}
 
 		/// <summary>
@@ -275,10 +277,14 @@ namespace PointWars.Gameplay.Server
 				return;
 
 			var index = RandomNumberGenerator.NextIndex(_bots);
+			var name = _bots[index].Name;
+
 			_bots[index].LeaveReason = LeaveReason.Disconnect;
 			_botNames.Add(_bots[index].Name);
 			_serverLogic.RemovePlayer(_bots[index]);
 			_bots.RemoveAt(index);
+
+			Log.Info("Bot '{0}' was removed from the game session.", name);
 		}
 
 		/// <summary>

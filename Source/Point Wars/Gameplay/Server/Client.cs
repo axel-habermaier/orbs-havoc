@@ -204,7 +204,8 @@ namespace PointWars.Gameplay.Server
 				_connection.DispatchReceivedMessages(this);
 
 				// Update the player's ping
-				_player.Ping = _connection.Ping;
+				if (_player != null)
+					_player.Ping = _connection.Ping;
 			}
 			catch (ConnectionDroppedException)
 			{
@@ -238,11 +239,6 @@ namespace PointWars.Gameplay.Server
 		{
 			if (IsDisconnected || _player == null || !IsSynced)
 				return;
-
-			// Send an avatar update message if the player is not dead, to keep the client up-to-date; these updates
-			// are not broadcasted, as they are irrelevant for other clients
-			if (_player.Avatar != null)
-				_connection.EnqueueMessage(UpdateAvatarMessage.Create(_allocator, _player.Avatar));
 
 			if (_player.Avatar != null)
 				return;
