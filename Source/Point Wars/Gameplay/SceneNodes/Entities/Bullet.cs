@@ -31,6 +31,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	/// </summary>
 	internal class Bullet : Entity
 	{
+		private Vector2 _visualOffset;
+
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
@@ -74,7 +76,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			var explosion = GameSession.Effects.BulletExplosion.Allocate();
 			explosion.Emitters[0].ColorRange = Player.ColorRange;
 
-			SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition));
+			SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition + _visualOffset));
 		}
 
 		/// <summary>
@@ -96,6 +98,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			bullet.Position = position;
 			bullet.Velocity = velocity;
 			bullet.Orientation = orientation;
+			bullet._visualOffset = Vector2.Normalize(velocity) * 15;
 
 			gameSession.SceneGraph.Add(bullet);
 
@@ -109,7 +112,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 				effect.Emitters[0].OrientationRange = -orientation;
 				effect.Emitters[0].Direction = MathUtils.ToAngle(velocity);
 
-				ParticleEffectNode.Create(gameSession.Allocator, effect, Vector2.Zero).AttachTo(bullet);
+				ParticleEffectNode.Create(gameSession.Allocator, effect, bullet._visualOffset).AttachTo(bullet);
 			}
 
 			return bullet;

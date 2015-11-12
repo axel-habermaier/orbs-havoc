@@ -57,16 +57,16 @@ namespace PointWars.Gameplay.Client
 			var size = particles.Emitter.Texture.Size;
 			var radius = size.Width < size.Height ? size.Height : size.Width;
 
-			while (--count > 0)
+			while (count-- > 0)
 			{
 				var circle = new Circle(*positions, *scales * radius);
 				var collisionInfo = _level.CheckWallCollision(circle);
 
-				if (collisionInfo != null)
+				// Reflect particles that move into the direction of the wall
+				if (collisionInfo != null && Vector2.Dot(collisionInfo.Value.Normal, *velocities) < 0)
 				{
-					var v = *velocities;
-					var vn = Vector2.Reflect(v, collisionInfo.Value.Normal);
-					*velocities = vn;
+					var reflectedVelocity = Vector2.Reflect(*velocities, collisionInfo.Value.Normal);
+					*velocities = reflectedVelocity;
 				}
 
 				positions += 1;

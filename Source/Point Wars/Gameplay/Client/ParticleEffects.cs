@@ -73,12 +73,12 @@ namespace PointWars.Gameplay.Client
 				effect.Emitters.Add(
 					new Emitter
 					{
-						Capacity = 200,
+						Capacity = 400,
 						Duration = 1,
 						EmissionRate = Int32.MaxValue,
-						LiftetimeRange = new Range<float>(1.5f, 2f),
+						LiftetimeRange = new Range<float>(1.8f, 2.3f),
 						ScaleRange = 1,
-						SpeedRange = new Range<float>(500, 900),
+						SpeedRange = new Range<float>(600, 1000),
 						Texture = AssetBundle.LineParticle,
 						Modifiers =
 						{
@@ -127,7 +127,8 @@ namespace PointWars.Gameplay.Client
 							fadeOutModifier,
 							velocityOrientationModifier,
 							new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
-							new SpeedModifier(0.97f)
+							new SpeedModifier(0.97f),
+							new ParticleReflectionModifier(gameSession.Level)
 						}
 					})
 				);

@@ -41,7 +41,7 @@ namespace PointWars.Gameplay
 		/// <summary>
 		///   The thickness of the walls.
 		/// </summary>
-		public const float WallThickness = 20.0f;
+		public const float WallThickness = 5.0f;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -193,7 +193,6 @@ namespace PointWars.Gameplay
 			GetBlock(collider.Position, out x, out y);
 
 			var blockType = this[x, y];
-			var isInverse = false;
 			Vector2 position;
 			Size size;
 
@@ -216,28 +215,24 @@ namespace PointWars.Gameplay
 					size = new Size(BlockSize / 2 + WallThickness, BlockSize);
 					return HandleWallCollision(collider, new Rectangle(position, size), blockType);
 				case EntityType.LeftTopWall:
-					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).BottomRight, isInverse);
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).BottomRight);
 				case EntityType.RightTopWall:
-					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).BottomLeft, isInverse);
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).BottomLeft);
 				case EntityType.LeftBottomWall:
-					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).TopRight, isInverse);
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).TopRight);
 				case EntityType.RightBottomWall:
-					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).TopLeft, isInverse);
+					return HandleCollisionWithCurvedWall(collider, GetBlockArea(x, y).TopLeft);
 				case EntityType.InverseLeftTopWall:
-					isInverse = true;
-					goto case EntityType.LeftTopWall;
+					return HandleCollisionWithInverseCurvedWall(collider, GetBlockArea(x, y).BottomRight);
 				case EntityType.InverseRightTopWall:
-					isInverse = true;
-					goto case EntityType.RightTopWall;
+					return HandleCollisionWithInverseCurvedWall(collider, GetBlockArea(x, y).BottomLeft);
 				case EntityType.InverseLeftBottomWall:
-					isInverse = true;
-					goto case EntityType.LeftBottomWall;
+					return HandleCollisionWithInverseCurvedWall(collider, GetBlockArea(x, y).TopRight);
 				case EntityType.InverseRightBottomWall:
-					isInverse = true;
-					goto case EntityType.RightBottomWall;
+					return HandleCollisionWithInverseCurvedWall(collider, GetBlockArea(x, y).TopLeft);
 				case EntityType.Wall:
 					// That should be impossible, but, well...
-					return new CollisionInfo { Offset = Vector2.Zero, Normal = Vector2.Zero };
+					return new CollisionInfo(Vector2.Zero, Vector2.Zero, true);
 			}
 
 			return null;
@@ -254,13 +249,17 @@ namespace PointWars.Gameplay
 			switch (wallType)
 			{
 				case EntityType.LeftWall:
-					return new CollisionInfo { Offset = new Vector2(wall.Right - circle.Position.X + circle.Radius, 0), Normal = Vector2.UnitX };
+					return new CollisionInfo(new Vector2(wall.Right - circle.Position.X + circle.Radius, 0), Vector2.UnitX,
+						circle.Position.X + circle.Radius < wall.Right);
 				case EntityType.RightWall:
-					return new CollisionInfo { Offset = new Vector2(wall.Left - circle.Position.X - circle.Radius, 0), Normal = -Vector2.UnitX };
+					return new CollisionInfo(new Vector2(wall.Left - circle.Position.X - circle.Radius, 0), -Vector2.UnitX,
+						circle.Position.X - circle.Radius > wall.Left);
 				case EntityType.TopWall:
-					return new CollisionInfo { Offset = new Vector2(0, wall.Bottom - circle.Position.Y + circle.Radius), Normal = Vector2.UnitY };
+					return new CollisionInfo(new Vector2(0, wall.Bottom - circle.Position.Y + circle.Radius), Vector2.UnitY,
+						circle.Position.Y + circle.Radius < wall.Bottom);
 				case EntityType.BottomWall:
-					return new CollisionInfo { Offset = new Vector2(0, wall.Top - circle.Position.Y - circle.Radius), Normal = -Vector2.UnitY };
+					return new CollisionInfo(new Vector2(0, wall.Top - circle.Position.Y - circle.Radius), -Vector2.UnitY,
+						circle.Position.Y - circle.Radius > wall.Top);
 			}
 
 			return null;
@@ -269,31 +268,37 @@ namespace PointWars.Gameplay
 		/// <summary>
 		///   Handles an entity collision with a curved wall.
 		/// </summary>
-		private static CollisionInfo? HandleCollisionWithCurvedWall(Circle entityCircle, Vector2 wallPosition, bool isInverse)
+		private static CollisionInfo? HandleCollisionWithCurvedWall(Circle circle, Vector2 wallPosition)
 		{
 			var wallCircle = new Circle(wallPosition, BlockSize / 2 + WallThickness / 2);
-			if (!entityCircle.Intersects(wallCircle))
+			if (!circle.Intersects(wallCircle))
 				return null;
 
-			var normal = entityCircle.Position - wallCircle.Position;
+			var normal = circle.Position - wallCircle.Position;
 			var distance = normal.Length();
 			normal /= distance;
 
-			if (isInverse)
-			{
-				var overlap = distance + entityCircle.Radius - wallCircle.Radius + WallThickness;
-				if (!(overlap > 0))
-					return null;
+			var radius = circle.Radius + wallCircle.Radius;
+			var overlap = MathUtils.Abs(distance - radius);
 
-				return new CollisionInfo { Offset = -Vector2.Normalize(entityCircle.Position - wallCircle.Position) * overlap, Normal = normal };
-			}
-			else
-			{
-				var radius = entityCircle.Radius + wallCircle.Radius;
-				var overlap = MathUtils.Abs(distance - radius);
+			return new CollisionInfo(normal * overlap, normal, distance + circle.Radius < wallCircle.Radius);
+		}
 
-				return new CollisionInfo { Offset = -Vector2.Normalize(wallCircle.Position - entityCircle.Position) * overlap, Normal = normal };
-			}
+		/// <summary>
+		///   Handles an entity collision with a curved wall.
+		/// </summary>
+		private static CollisionInfo? HandleCollisionWithInverseCurvedWall(Circle circle, Vector2 wallPosition)
+		{
+			var wallCircle = new Circle(wallPosition, BlockSize / 2 - WallThickness / 2);
+			var normal = wallCircle.Position - circle.Position;
+			var distance = normal.Length();
+			var overlap = distance + circle.Radius - wallCircle.Radius + WallThickness;
+
+			if (overlap < 0)
+				return null;
+
+			normal /= distance;
+			return new CollisionInfo(normal * overlap, normal, distance > circle.Radius + wallCircle.Radius);
 		}
 
 		/// <summary>
@@ -302,14 +307,29 @@ namespace PointWars.Gameplay
 		public struct CollisionInfo
 		{
 			/// <summary>
-			///   The wall normal at the impact position.
+			///   Gets the wall normal at the impact position.
 			/// </summary>
-			public Vector2 Normal;
+			public Vector2 Normal { get; }
 
 			/// <summary>
-			///   The offset that must be applied to the collider to resolve the collision.
+			///   Gets the offset that must be applied to the collider to resolve the collision.
 			/// </summary>
-			public Vector2 Offset;
+			public Vector2 Offset { get; }
+
+			/// <summary>
+			///   Gets a value indicating whether the collider is fully submerged into the wall.
+			/// </summary>
+			public bool IsSubmerged { get; }
+
+			/// <summary>
+			///   Initializes a new instance.
+			/// </summary>
+			public CollisionInfo(Vector2 offset, Vector2 normal, bool isSubmerged)
+			{
+				Offset = offset;
+				Normal = normal;
+				IsSubmerged = isSubmerged;
+			}
 		}
 
 		/// <summary>

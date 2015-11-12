@@ -123,6 +123,23 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		}
 
 		/// <summary>
+		///   Indicates whether the given entity type represents an inverse curved wall.
+		/// </summary>
+		public static bool IsInverseCurvedWall(this EntityType type)
+		{
+			switch (type)
+			{
+				case EntityType.InverseLeftTopWall:
+				case EntityType.InverseRightTopWall:
+				case EntityType.InverseLeftBottomWall:
+				case EntityType.InverseRightBottomWall:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		/// <summary>
 		///   Indicates whether the given entity type represents a weapon.
 		/// </summary>
 		public static bool IsWeapon(this EntityType type)

@@ -70,8 +70,13 @@ namespace PointWars.Gameplay.Behaviors
 			if (collisionInfo == null)
 				return;
 
-			SceneNode.Position += collisionInfo.Value.Offset;
-			SceneNode.HandleWallCollision();
+			if (collisionInfo.Value.IsSubmerged)
+				SceneNode.Remove();
+			else
+			{
+				SceneNode.Position += collisionInfo.Value.Offset;
+				SceneNode.HandleWallCollision();
+			}
 		}
 
 		/// <summary>
