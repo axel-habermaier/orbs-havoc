@@ -429,6 +429,12 @@
     <Texture Include="Assets\Textures\Regeneration.png" />
     <Texture Include="Assets\Textures\QuadDamage.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\Invisibility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\HealthParticle.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />
   <Import Project="Assets.targets" />

@@ -132,7 +132,7 @@ namespace PointWars.Rendering.Particles
 		/// <summary>
 		///   Gets or sets the range of the initial particle scales.
 		/// </summary>
-		public Range<float> ScaleRange { get; set; } = new Range<float>(1);
+		public Range<float> ScaleRange { get; set; } = 1;
 
 		/// <summary>
 		///   Gets or sets the range of the initial particle life time.

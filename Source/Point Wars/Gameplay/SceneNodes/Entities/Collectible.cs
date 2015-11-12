@@ -71,6 +71,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 					return new Color(0, 255, 0, 255);
 				case EntityType.QuadDamage:
 					return new Color(0xFF0083FF);
+					case EntityType.Invisibility:
+						return new Color(0xFF4800FF);
 				default:
 					throw new InvalidOperationException("Unexpected entity type.");
 			}
@@ -89,6 +91,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 					return AssetBundle.Regeneration;
 				case EntityType.QuadDamage:
 					return AssetBundle.QuadDamage;
+				case EntityType.Invisibility:
+					return AssetBundle.Invisibility;
 				default:
 					throw new InvalidOperationException("Unexpected entity type.");
 			}

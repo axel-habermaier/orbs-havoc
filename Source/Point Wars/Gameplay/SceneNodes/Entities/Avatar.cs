@@ -27,6 +27,8 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	using Assets;
 	using Behaviors;
 	using Network.Messages;
+	using Rendering;
+	using Rendering.Particles;
 	using Utilities;
 
 	/// <summary>
@@ -34,7 +36,10 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 	/// </summary>
 	internal class Avatar : Entity
 	{
+		private ParticleEffect _coreEffect;
 		private float _nextHealthUpdate;
+		private ParticleEffectNode _regeneration;
+		private SpriteNode _sprite;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -108,6 +113,39 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		}
 
 		/// <summary>
+		///   Updates the state of the client-side entity.
+		/// </summary>
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		public override void ClientUpdate(float elapsedSeconds)
+		{
+			switch (PowerUp)
+			{
+				case EntityType.Invisibility:
+					_sprite.Color = new Color(0xFF121212);
+					_coreEffect.Emitters[0].ColorRange = new Color(0xFF0D0D0D);
+					break;
+				case EntityType.Regeneration:
+					if (_regeneration == null)
+					{
+						_regeneration = ParticleEffectNode.Create(GameSession.Allocator, GameSession.Effects.Regeneration, Vector2.Zero);
+						_regeneration.AttachTo(this);
+					}
+					break;
+				default:
+					_sprite.Color = Player.Color;
+					_coreEffect.Emitters[0].ColorRange = Player.ColorRange;
+
+					if (_regeneration != null)
+					{
+						_regeneration.Remove();
+						_regeneration = null;
+					}
+
+					break;
+			}
+		}
+
+		/// <summary>
 		///   Handles the collision with the given entity.
 		/// </summary>
 		/// <param name="entity">The entity this entity collided with.</param>
@@ -123,18 +161,12 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 					}
 					break;
 				case EntityType.Regeneration:
-					if (PowerUp == EntityType.None)
-					{
-						PowerUp = EntityType.Regeneration;
-						RemainingPowerUpTime = Game.RegenerationTime;
-						entity.Remove();
-					}
-					break;
 				case EntityType.QuadDamage:
+				case EntityType.Invisibility:
 					if (PowerUp == EntityType.None)
 					{
-						PowerUp = EntityType.QuadDamage;
-						RemainingPowerUpTime = Game.QuadDamageTime;
+						PowerUp = entity.Type;
+						RemainingPowerUpTime = Game.RegenerationTime;
 						entity.Remove();
 					}
 					break;
@@ -232,11 +264,11 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			}
 			else
 			{
-				var trailEffect = gameSession.Effects.AvatarCore.Allocate();
-				trailEffect.Emitters[0].ColorRange = player.ColorRange;
+				avatar._coreEffect = gameSession.Effects.AvatarCore.Allocate();
+				avatar._coreEffect.Emitters[0].ColorRange = player.ColorRange;
 
-				ParticleEffectNode.Create(gameSession.Allocator, trailEffect, Vector2.Zero).AttachTo(avatar);
-				SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, player.Color, 200);
+				ParticleEffectNode.Create(gameSession.Allocator, avatar._coreEffect, Vector2.Zero).AttachTo(avatar);
+				avatar._sprite = SpriteNode.Create(gameSession.Allocator, avatar, AssetBundle.Avatar, player.Color, 200);
 			}
 
 			return avatar;

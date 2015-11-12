@@ -83,7 +83,7 @@ namespace PointWars.Gameplay.Behaviors
 
 			foreach (var avatar in SceneNode.SceneGraph.EnumeratePostOrder<Avatar>())
 			{
-				if (avatar == SceneNode)
+				if (avatar == SceneNode || avatar.PowerUp == EntityType.Invisibility)
 					continue;
 
 				var distance = Vector2.DistanceSquared(avatar.WorldPosition, SceneNode.WorldPosition);

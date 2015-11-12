@@ -169,6 +169,9 @@ namespace AssetsCompiler
 				if (color == (int)0xFF007F0E)
 					return EntityType.Regeneration;
 
+				if (color == (int)0xFF4800FF)
+					return EntityType.Invisibility;
+
 				return null;
 			}
 		}
