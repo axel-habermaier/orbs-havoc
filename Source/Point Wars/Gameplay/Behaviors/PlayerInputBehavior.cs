@@ -111,7 +111,7 @@ namespace PointWars.Gameplay.Behaviors
 			input._weapons[EntityType.MiniGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator);
 			input._weapons[EntityType.PlasmaGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[EntityType.LightingGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[EntityType.RocketLauncher.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.RocketLauncher.GetWeaponSlot()] = RocketLauncherBehavior.Create(allocator);
 			input._weapons[EntityType.Bfg.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[EntityType.Bomb.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[EntityType.Mine.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO

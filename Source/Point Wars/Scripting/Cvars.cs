@@ -139,6 +139,18 @@ namespace PointWars.Scripting
 		ConfigurableInput InputChat { get; set; }
 
 		/// <summary>
+		///   When the input is triggered in an active game session, selects the minigun.
+		/// </summary>
+		[DefaultValue(Key.Num1), Persistent]
+		ConfigurableInput InputSelectMiniGun { get; set; }
+
+		/// <summary>
+		///   When the input is triggered in an active game session, selects the rocket launcher.
+		/// </summary>
+		[DefaultValue(Key.Num2), Persistent]
+		ConfigurableInput InputSelectRocketLauncher { get; set; }
+
+		/// <summary>
 		///   Indicates whether the bloom effect is enabled.
 		/// </summary>
 		[DefaultValue(true), Persistent]

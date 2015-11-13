@@ -62,6 +62,19 @@ namespace PointWars.Gameplay
             MaxSpread = 0.07f
 		};
 
+		public static WeaponTemplate RocketLauncherTemplate = new WeaponTemplate
+		{
+			Cooldown = 0.8f,
+			DepleteSpeed = 1,
+			Speed = 500,
+			WeaponType = EntityType.RocketLauncher,
+			MaxEnergy = 20,
+			Damage = 50,
+			Range = 200,
+			MinSpread = 0.01f,
+			MaxSpread = 0.07f
+		};
+
 		public static WeaponTemplate LightingGunTemplate = new WeaponTemplate
 		{
 			Cooldown = -1,

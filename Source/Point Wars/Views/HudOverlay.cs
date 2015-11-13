@@ -23,6 +23,7 @@
 namespace PointWars.Views
 {
 	using Assets;
+	using Gameplay.SceneNodes.Entities;
 	using UserInterface;
 	using UserInterface.Controls;
 	using Utilities;
@@ -34,6 +35,8 @@ namespace PointWars.Views
 	{
 		private Label _healthLabel;
 		private Grid _layoutRoot;
+		private Label _weaponEnergyLabel;
+		private Label _weaponTypeLabel;
 
 		/// <summary>
 		///   Initializes the view.
@@ -48,8 +51,12 @@ namespace PointWars.Views
 				HorizontalAlignment = HorizontalAlignment.Center
 			};
 
-			_layoutRoot.Columns[0].Width = 100;
+			_layoutRoot.Columns[0].Width = 150;
+			_layoutRoot.Columns[1].Width = 300;
+
 			CreateRow(0, "Health", out _healthLabel);
+			CreateRow(1, "Weapon", out _weaponTypeLabel);
+			CreateRow(2, "Ammo", out _weaponEnergyLabel);
 		}
 
 		/// <summary>
@@ -62,6 +69,8 @@ namespace PointWars.Views
 				return;
 
 			_healthLabel.Text = StringCache.GetString(MathUtils.RoundIntegral(avatar.Health));
+			_weaponTypeLabel.Text = avatar.PrimaryWeapon.ToString(); // TODO: Friendly names, no string alloc, retrieve from weapon template array
+			_weaponEnergyLabel.Text = StringCache.GetString(avatar.WeaponEnergyLevels[avatar.PrimaryWeapon.GetWeaponSlot()]);
 		}
 
 		private void CreateRow(int row, string label, out Label value)

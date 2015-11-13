@@ -41,6 +41,8 @@ namespace PointWars.Gameplay.Client
 		public readonly ParticleEffectTemplate Collectible;
 		public readonly ParticleEffectTemplate Cursor;
 		public readonly ParticleEffectTemplate Regeneration;
+		public readonly ParticleEffectTemplate Rocket;
+		public readonly ParticleEffectTemplate RocketExplosion;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -197,6 +199,66 @@ namespace PointWars.Gameplay.Client
 						}
 					})
 				);
+
+			Rocket = new ParticleEffectTemplate(effect =>
+				effect.Emitters.AddRange(new[]
+				{
+					new Emitter
+					{
+						Capacity = 100,
+						Duration = Single.PositiveInfinity,
+						EmissionRate = 200,
+						LiftetimeRange = new Range<float>(0.1f, 0.2f),
+						ScaleRange = new Range<float>(1.3f, 1.6f),
+						SpeedRange = Game.RocketLauncherTemplate.Speed,
+						Texture = AssetBundle.RoundParticle,
+						Modifiers =
+						{
+							fadeOutModifier,
+							speedModifier,
+							new ScaleModifier(-2)
+						}
+					},
+					new Emitter
+					{
+						Capacity = 100,
+						Duration = Single.PositiveInfinity,
+						EmissionRate = 100,
+						LiftetimeRange = new Range<float>(0.1f, 0.2f),
+						ScaleRange = new Range<float>(0.7f, 1.0f),
+						ColorRange = Colors.White,
+						SpeedRange = Game.RocketLauncherTemplate.Speed,
+						Texture = AssetBundle.RoundParticle,
+						Modifiers =
+						{
+							fadeOutModifier,
+							speedModifier,
+							new ScaleModifier(-2)
+						}
+					}
+				}));
+
+			RocketExplosion = new ParticleEffectTemplate(effect =>
+				effect.Emitters.Add(
+					new Emitter
+					{
+						Capacity = 400,
+						Duration = .1f,
+						EmissionRate = Int32.MaxValue,
+						LiftetimeRange = new Range<float>(0.6f, 0.9f),
+						ScaleRange = 1,
+						SpeedRange = new Range<float>(700, 1200),
+						Texture = AssetBundle.LineParticle,
+						Modifiers =
+						{
+							fadeOutModifier,
+							velocityOrientationModifier,
+							speedModifier,
+							new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
+							new ParticleReflectionModifier(gameSession.Level)
+						}
+					})
+				);
 		}
 
 		/// <summary>
@@ -211,6 +273,8 @@ namespace PointWars.Gameplay.Client
 			Collectible.SafeDispose();
 			Cursor.SafeDispose();
 			Regeneration.SafeDispose();
+			RocketExplosion.SafeDispose();
+			Rocket.SafeDispose();
 		}
 	}
 }

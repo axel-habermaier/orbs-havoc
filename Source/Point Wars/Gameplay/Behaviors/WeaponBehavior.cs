@@ -109,8 +109,9 @@ namespace PointWars.Gameplay.Behaviors
 			{
 				_remainingCooldown = Template.Cooldown;
 
-				Fire();
 				Energy -= Template.DepleteSpeed;
+				if (Energy > 0)
+					Fire();
 			}
 
 			if (Energy == 0 && Template.FiresContinuously)

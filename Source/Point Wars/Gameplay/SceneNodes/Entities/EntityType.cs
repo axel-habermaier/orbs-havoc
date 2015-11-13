@@ -33,6 +33,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 		None = Unknown,
 		Avatar,
 		Bullet,
+		Rocket,
 		Armor,
 		Regeneration,
 		QuadDamage,

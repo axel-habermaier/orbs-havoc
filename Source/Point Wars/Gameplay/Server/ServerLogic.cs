@@ -199,14 +199,23 @@ namespace PointWars.Gameplay.Server
 			Assert.ArgumentNotNull(player, nameof(player));
 			Assert.ArgumentNotNull(inputMessage, nameof(inputMessage));
 
-			player.Avatar?.PlayerInput.HandleInput(
+			if (player.Avatar == null)
+				return;
+
+			var primaryWeapon = player.Avatar.WeaponEnergyLevels[inputMessage.PrimaryWeapon.GetWeaponSlot()] == 0
+				? player.Avatar.PrimaryWeapon
+				: inputMessage.PrimaryWeapon;
+
+			player.Avatar.PlayerInput.HandleInput(
 				inputMessage.Target,
 				(inputMask & inputMessage.MoveUp) != 0,
 				(inputMask & inputMessage.MoveDown) != 0,
 				(inputMask & inputMessage.MoveLeft) != 0,
 				(inputMask & inputMessage.MoveRight) != 0,
-				(inputMask & inputMessage.FirePrimary) != 0,
+				(inputMask & inputMessage.FirePrimary) != 0 && player.Avatar.PrimaryWeapon == primaryWeapon,
 				(inputMask & inputMessage.FireSecondary) != 0);
+
+			player.Avatar.PrimaryWeapon = primaryWeapon;
 		}
 
 		/// <summary>

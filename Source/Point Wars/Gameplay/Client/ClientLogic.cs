@@ -140,6 +140,9 @@ namespace PointWars.Gameplay.Client
 					case EntityType.Bullet:
 						entity = Bullet.Create(_gameSession, player, message.Position, message.Velocity, message.Orientation);
 						break;
+					case EntityType.Rocket:
+						entity = Rocket.Create(_gameSession, player, message.Position, message.Velocity, message.Orientation);
+						break;
 					default:
 						Assert.NotReached("Unknown entity type.");
 						break;

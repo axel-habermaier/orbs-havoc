@@ -27,6 +27,7 @@ namespace PointWars.Gameplay.Client
 	using Network.Messages;
 	using Platform.Input;
 	using Platform.Memory;
+	using SceneNodes.Entities;
 	using Scripting;
 	using Utilities;
 
@@ -36,6 +37,9 @@ namespace PointWars.Gameplay.Client
 	internal class InputManager : DisposableObject
 	{
 		private readonly LogicalInputDevice _inputDevice;
+		private readonly LogicalInput _minigun;
+		private readonly Player _player;
+		private readonly LogicalInput _rocketLauncher;
 		private Clock _clock = new Clock();
 		private InputState _firePrimary;
 		private InputState _fireSecondary;
@@ -48,12 +52,19 @@ namespace PointWars.Gameplay.Client
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="player">The local player whose input is managed.</param>
 		/// <param name="inputDevice">The input device that should be used to obtain the player input.</param>
-		public InputManager(LogicalInputDevice inputDevice)
+		public InputManager(Player player, LogicalInputDevice inputDevice)
 		{
+			Assert.ArgumentNotNull(player, nameof(player));
+			Assert.ArgumentSatisfies(player.IsLocalPlayer, nameof(player), "Expected the local player.");
 			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
 
 			_inputDevice = inputDevice;
+			_player = player;
+
+			_minigun = new LogicalInput(Cvars.InputSelectMiniGunCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+			_rocketLauncher = new LogicalInput(Cvars.InputSelectRocketLauncherCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 
 			_moveUp.Input = new LogicalInput(Cvars.InputMoveUpCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 			_moveDown.Input = new LogicalInput(Cvars.InputMoveDownCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
@@ -68,6 +79,9 @@ namespace PointWars.Gameplay.Client
 			_inputDevice.Add(_moveRight.Input);
 			_inputDevice.Add(_firePrimary.Input);
 			_inputDevice.Add(_fireSecondary.Input);
+
+			_inputDevice.Add(_minigun);
+			_inputDevice.Add(_rocketLauncher);
 		}
 
 		/// <summary>
@@ -107,13 +121,20 @@ namespace PointWars.Gameplay.Client
 			_firePrimary.Update();
 			_fireSecondary.Update();
 
+			var primaryWeapon = _player.Avatar?.PrimaryWeapon ?? EntityType.MiniGun;
+			if (_minigun.IsTriggered)
+				primaryWeapon = EntityType.MiniGun;
+			if (_rocketLauncher.IsTriggered)
+				primaryWeapon = EntityType.RocketLauncher;
+
 			// Get the coordinates the player currently targets and end the input message to the server
 			var target = _inputDevice.Mouse.Position - new Vector2(_inputDevice.Window.Size.Width / 2, _inputDevice.Window.Size.Height / 2);
 			connection.EnqueueMessage(PlayerInputMessage.Create(
 				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, target,
 				_moveUp.State, _moveDown.State,
 				_moveLeft.State, _moveRight.State,
-				_firePrimary.State, _fireSecondary.State));
+				_firePrimary.State, _fireSecondary.State,
+				primaryWeapon));
 		}
 
 		/// <summary>
@@ -132,8 +153,11 @@ namespace PointWars.Gameplay.Client
 
 			_clock.Reset();
 
+			var primaryWeapon = _player.Avatar?.PrimaryWeapon ?? EntityType.MiniGun;
+
 			connection.EnqueueMessage(PlayerInputMessage.Create(
-				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, Vector2.Zero, 0, 0, 0, 0, 0, 0));
+				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, Vector2.Zero,
+				0, 0, 0, 0, 0, 0, primaryWeapon));
 		}
 
 		/// <summary>
@@ -147,6 +171,9 @@ namespace PointWars.Gameplay.Client
 			_inputDevice.Remove(_moveRight.Input);
 			_inputDevice.Remove(_firePrimary.Input);
 			_inputDevice.Remove(_fireSecondary.Input);
+
+			_inputDevice.Remove(_minigun);
+			_inputDevice.Remove(_rocketLauncher);
 		}
 
 		/// <summary>

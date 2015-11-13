@@ -23,6 +23,7 @@
 namespace PointWars.Network.Messages
 {
 	using System.Numerics;
+	using Gameplay.SceneNodes.Entities;
 	using Platform.Memory;
 	using Utilities;
 
@@ -78,6 +79,11 @@ namespace PointWars.Network.Messages
 		public byte FireSecondary { get; private set; }
 
 		/// <summary>
+		///   Gets the primary weapon selected by the player.
+		/// </summary>
+		public EntityType PrimaryWeapon { get; private set; }
+
+		/// <summary>
 		///   Serializes the message using the given writer.
 		/// </summary>
 		/// <param name="writer">The writer that should be used to serialize the message.</param>
@@ -91,6 +97,7 @@ namespace PointWars.Network.Messages
 			writer.WriteByte(MoveRight);
 			writer.WriteByte(FirePrimary);
 			writer.WriteByte(FireSecondary);
+			writer.WriteByte((byte)PrimaryWeapon);
 			WriteVector2(ref writer, Target);
 		}
 
@@ -108,6 +115,7 @@ namespace PointWars.Network.Messages
 			MoveRight = reader.ReadByte();
 			FirePrimary = reader.ReadByte();
 			FireSecondary = reader.ReadByte();
+			PrimaryWeapon = (EntityType)reader.ReadByte();
 			Target = ReadVector2(ref reader);
 		}
 
@@ -136,12 +144,15 @@ namespace PointWars.Network.Messages
 		/// <param name="fireSecondary">
 		///   The boolean state value for the secondary weapon firing input, including the seven previous states.
 		/// </param>
+		/// <param name="primaryWeapon">The primary weapon selected by the player.</param>
 		public static PlayerInputMessage Create(PoolAllocator poolAllocator, NetworkIdentity player, uint frameNumber, Vector2 target,
 												byte moveUp, byte moveDown,
 												byte moveLeft, byte moveRight,
-												byte firePrimary, byte fireSecondary)
+												byte firePrimary, byte fireSecondary,
+												EntityType primaryWeapon)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
+			Assert.ArgumentInRange(primaryWeapon, nameof(primaryWeapon));
 
 			var message = poolAllocator.Allocate<PlayerInputMessage>();
 			message.Player = player;
@@ -153,6 +164,7 @@ namespace PointWars.Network.Messages
 			message.MoveRight = moveRight;
 			message.FirePrimary = firePrimary;
 			message.FireSecondary = fireSecondary;
+			message.PrimaryWeapon = primaryWeapon;
 
 			return message;
 		}

@@ -87,7 +87,6 @@ namespace PointWars.Views
 			Commands.OnSay += OnSay;
 			Cvars.PlayerNameChanged += OnPlayerNameChanged;
 
-			_inputManager = new InputManager(InputDevice);
 			_showScoreboard = new LogicalInput(Cvars.InputShowScoreboardCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 
 			InputDevice.Add(_showScoreboard);
@@ -127,6 +126,7 @@ namespace PointWars.Views
 					OnPlayerNameChanged();
 
 					_clock.Reset();
+					_inputManager = new InputManager(GameSession.Players.LocalPlayer, InputDevice);
 
 					// Remove all event messages that have been added, e.g., for player joins
 					Views.EventMessages.Clear();
@@ -267,6 +267,7 @@ namespace PointWars.Views
 			Views.RespawnOverlay.Hide();
 			Hide();
 
+			_inputManager.SafeDispose();
 			GameSession.SafeDispose();
 			Connection.SafeDispose();
 
@@ -276,6 +277,7 @@ namespace PointWars.Views
 			GameSession = null;
 			Connection = null;
 
+			_inputManager = null;
 			_clientLogic = null;
 		}
 

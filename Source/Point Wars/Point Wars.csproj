@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="Gameplay\Behaviors\Behavior`1.cs" />
     <Compile Include="Gameplay\Behaviors\Behavior.cs" />
+    <Compile Include="Gameplay\Behaviors\RocketLauncherBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\MiniGunBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\AiBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\InterpolateTransformBehavior.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Gameplay\Game.cs" />
     <Compile Include="Gameplay\Level.cs" />
     <Compile Include="Gameplay\PlayerKind.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\Rocket.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Collectible.cs" />
     <Compile Include="Gameplay\Behaviors\SpawnBehavior.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Bullet.cs" />

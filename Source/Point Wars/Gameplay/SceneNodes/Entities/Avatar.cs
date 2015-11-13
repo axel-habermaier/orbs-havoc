@@ -252,7 +252,7 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 
 			// Reset the weapon energy levels, skipping the mini gun which can always be used
 			for (var i = 1; i < Game.WeaponCount; ++i)
-				avatar.WeaponEnergyLevels[i] = 0;
+				avatar.WeaponEnergyLevels[i] = 100; // TODO: Retrieve from weapon template array
 
 			player.Avatar = avatar;
 			gameSession.SceneGraph.Add(avatar);
