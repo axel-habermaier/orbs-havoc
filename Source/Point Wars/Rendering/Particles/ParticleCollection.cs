@@ -57,6 +57,7 @@ namespace PointWars.Rendering.Particles
 
 			var particleSize = sizeof(Vector2) + // positions
 							   sizeof(Vector2) + // velocities
+							   sizeof(float) + // initial speed
 							   sizeof(Color) + // colors
 							   sizeof(float) + // remaining lifetimes
 							   sizeof(float) + // initial lifetimes
@@ -75,6 +76,9 @@ namespace PointWars.Rendering.Particles
 
 			Velocities = (Vector2*)pointer;
 			pointer += sizeof(Vector2) * Capacity;
+
+			InitialSpeeds = (float*)pointer;
+			pointer += sizeof(float) * Capacity;
 
 			Colors = (Color*)pointer;
 			pointer += sizeof(Color) * Capacity;
@@ -146,6 +150,11 @@ namespace PointWars.Rendering.Particles
 		public Vector2* Velocities { get; }
 
 		/// <summary>
+		///   Stores the initial speed of each particle.
+		/// </summary>
+		public float* InitialSpeeds { get; }
+
+		/// <summary>
 		///   Copies the particle at the source index to the target index.
 		/// </summary>
 		/// <param name="source">The index of the source particle.</param>
@@ -160,6 +169,7 @@ namespace PointWars.Rendering.Particles
 
 			Positions[target] = Positions[source];
 			Velocities[target] = Velocities[source];
+			InitialSpeeds[target] = InitialSpeeds[source];
 			Colors[target] = Colors[source];
 			Lifetimes[target] = Lifetimes[source];
 			InitialLifetimes[target] = InitialLifetimes[source];

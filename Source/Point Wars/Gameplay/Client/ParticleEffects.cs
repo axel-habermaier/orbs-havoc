@@ -51,6 +51,7 @@ namespace PointWars.Gameplay.Client
 
 			var fadeOutModifier = new FadeOutModifier();
 			var velocityOrientationModifier = new VelocityOrientationModifier();
+			var speedModifier = new SpeedModifier();
 
 			AvatarCore = new ParticleEffectTemplate(effect =>
 				effect.Emitters.Add(
@@ -80,14 +81,14 @@ namespace PointWars.Gameplay.Client
 						EmissionRate = Int32.MaxValue,
 						LiftetimeRange = new Range<float>(1.8f, 2.1f),
 						ScaleRange = 1,
-						SpeedRange = new Range<float>(1000, 1500),
+						SpeedRange = new Range<float>(600, 1000),
 						Texture = AssetBundle.LineParticle,
 						Modifiers =
 						{
 							fadeOutModifier,
 							velocityOrientationModifier,
+							speedModifier,
 							new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
-							new SpeedModifier(0.98f),
 							new ParticleReflectionModifier(gameSession.Level)
 						}
 					})
@@ -107,7 +108,7 @@ namespace PointWars.Gameplay.Client
 						Modifiers =
 						{
 							fadeOutModifier,
-							new SpeedModifier(0.97f),
+							speedModifier,
 							new ScaleModifier(-2)
 						}
 					})
@@ -122,14 +123,14 @@ namespace PointWars.Gameplay.Client
 						EmissionRate = 200,
 						LiftetimeRange = new Range<float>(0.2f, 0.5f),
 						ScaleRange = 1,
-						SpeedRange = new Range<float>(300, 500),
+						SpeedRange = new Range<float>(500, 700),
 						Texture = AssetBundle.LineParticle,
 						Modifiers =
 						{
 							fadeOutModifier,
 							velocityOrientationModifier,
+							speedModifier,
 							new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
-							new SpeedModifier(0.97f),
 							new ParticleReflectionModifier(gameSession.Level)
 						}
 					})
@@ -144,14 +145,14 @@ namespace PointWars.Gameplay.Client
 						EmissionRate = Int32.MaxValue,
 						LiftetimeRange = new Range<float>(0.2f, 0.5f),
 						ScaleRange = 1,
-						SpeedRange = new Range<float>(300, 600),
+						SpeedRange = new Range<float>(600, 800),
 						Texture = AssetBundle.LineParticle,
 						Modifiers =
 						{
 							fadeOutModifier,
 							velocityOrientationModifier,
+							speedModifier,
 							new VelocityScaleModifier(0.4f, 1, 150, -1f, 0),
-							new SpeedModifier(0.97f),
 							new ParticleReflectionModifier(gameSession.Level)
 						}
 					})

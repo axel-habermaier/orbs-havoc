@@ -216,6 +216,7 @@ namespace PointWars.Rendering.Particles
 			var age = _particles.Ages + _particleCount;
 			var positions = _particles.Positions + _particleCount;
 			var velocities = _particles.Velocities + _particleCount;
+			var initialSpeeds = _particles.InitialSpeeds + _particleCount;
 			var colors = _particles.Colors + _particleCount;
 			var orientations = _particles.Orientations + _particleCount;
 			var scales = _particles.Scales + _particleCount;
@@ -226,9 +227,9 @@ namespace PointWars.Rendering.Particles
 			while (count-- > 0)
 			{
 				*positions = _spawnPosition;
+				*initialSpeeds = RandomNumberGenerator.NextSingle(SpeedRange.LowerBound, SpeedRange.UpperBound);
 				*velocities =
-					MathUtils.Rotate(Vector2.UnitX, RandomNumberGenerator.NextSingle(Direction.LowerBound, Direction.UpperBound)) *
-					RandomNumberGenerator.NextSingle(SpeedRange.LowerBound, SpeedRange.UpperBound);
+					MathUtils.Rotate(Vector2.UnitX, RandomNumberGenerator.NextSingle(Direction.LowerBound, Direction.UpperBound)) * *initialSpeeds;
 				*initialLifetimes = RandomNumberGenerator.NextSingle(LiftetimeRange.LowerBound, LiftetimeRange.UpperBound);
 				*lifetimes = *initialLifetimes;
 				*age = 1;
@@ -240,14 +241,15 @@ namespace PointWars.Rendering.Particles
 					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Blue, ColorRange.UpperBound.Blue),
 					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Alpha, ColorRange.UpperBound.Alpha));
 
-				++positions;
-				++velocities;
-				++lifetimes;
-				++initialLifetimes;
-				++age;
-				++colors;
-				++orientations;
-				++scales;
+				positions += 1;
+				velocities += 1;
+				initialSpeeds += 1;
+				lifetimes += 1;
+				initialLifetimes += 1;
+				age += 1;
+				colors += 1;
+				orientations += 1;
+				scales += 1;
 			}
 		}
 

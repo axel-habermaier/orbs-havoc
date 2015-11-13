@@ -22,24 +22,18 @@
 
 namespace PointWars.Rendering.Particles
 {
+	using System;
+	using System.Numerics;
+
 	/// <summary>
 	///   Changes the speed of the particles.
 	/// </summary>
 	public sealed class SpeedModifier : Modifier
 	{
 		/// <summary>
-		///   The speed percentagedelta per second.
+		///   The minimum speed in percent of the initial speed.
 		/// </summary>
-		public float Delta;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="delta">The speed percentage delta per second.</param>
-		public SpeedModifier(float delta = 0)
-		{
-			Delta = delta;
-		}
+		public float MinimumSpeedPercentage = 5;
 
 		/// <summary>
 		///   Executes the modifier, updating the given number of particles contained in the particles collection.
@@ -49,12 +43,19 @@ namespace PointWars.Rendering.Particles
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
 		public override unsafe void Execute(ParticleCollection particles, int count, float elapsedSeconds)
 		{
+			var initialSpeeds = particles.InitialSpeeds;
 			var velocities = particles.Velocities;
+			var ages = particles.Ages;
 
 			while (count-- > 0)
 			{
-				*velocities *= Delta;
+				var age = *ages;
+				var speed = Math.Max(*initialSpeeds * MinimumSpeedPercentage / 100, *initialSpeeds * (age * age * age));
+				*velocities = Vector2.Normalize(*velocities) * speed;
+
 				velocities += 1;
+				initialSpeeds += 1;
+				ages += 1;
 			}
 		}
 	}
