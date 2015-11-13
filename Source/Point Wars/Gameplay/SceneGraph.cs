@@ -37,7 +37,7 @@ namespace PointWars.Gameplay
 		/// <summary>
 		///   The updates that should be applied to the scene graph.
 		/// </summary>
-		private readonly Queue<Update> _deferredUpdates = new Queue<Update>();
+		private readonly Queue<UpdateInfo> _deferredUpdates = new Queue<UpdateInfo>();
 
 		/// <summary>
 		///   The number of enumerators that are currently enumerating the scene graph.
@@ -110,7 +110,7 @@ namespace PointWars.Gameplay
 			sceneNode.SceneGraph = this;
 
 			if (IsEnumerated)
-				_deferredUpdates.Enqueue(new Update { UpdateType = UpdateType.AddNode, SceneNode = sceneNode, ParentNode = parentNode });
+				_deferredUpdates.Enqueue(new UpdateInfo { UpdateType = UpdateType.AddNode, SceneNode = sceneNode, ParentNode = parentNode });
 			else
 				AddImmediately(sceneNode, parentNode);
 		}
@@ -138,7 +138,7 @@ namespace PointWars.Gameplay
 				node.IsRemoved = true;
 
 				if (IsEnumerated)
-					_deferredUpdates.Enqueue(new Update { UpdateType = UpdateType.RemoveNode, SceneNode = node });
+					_deferredUpdates.Enqueue(new UpdateInfo { UpdateType = UpdateType.RemoveNode, SceneNode = node });
 				else
 					RemoveImmediately(node);
 			}
@@ -162,7 +162,7 @@ namespace PointWars.Gameplay
 			Assert.ArgumentSatisfies(sceneNode != parentNode, nameof(sceneNode), "The scene node cannot be its own parent.");
 
 			if (IsEnumerated)
-				_deferredUpdates.Enqueue(new Update { UpdateType = UpdateType.ReparentNode, SceneNode = sceneNode, ParentNode = parentNode });
+				_deferredUpdates.Enqueue(new UpdateInfo { UpdateType = UpdateType.ReparentNode, SceneNode = sceneNode, ParentNode = parentNode });
 			else
 				ReparentImmediately(sceneNode, parentNode);
 		}
@@ -240,7 +240,7 @@ namespace PointWars.Gameplay
 			Assert.ArgumentSatisfies(behavior.GetSceneNode() == null, nameof(behavior), "The behavior is already attached to a scene node.");
 
 			if (IsEnumerated)
-				_deferredUpdates.Enqueue(new Update { UpdateType = UpdateType.AddBehavior, SceneNode = sceneNode, Behavior = behavior });
+				_deferredUpdates.Enqueue(new UpdateInfo { UpdateType = UpdateType.AddBehavior, SceneNode = sceneNode, Behavior = behavior });
 			else
 				AddBehaviorImmediately(sceneNode, behavior);
 		}
@@ -255,7 +255,7 @@ namespace PointWars.Gameplay
 			Assert.ArgumentNotNull(behavior, nameof(behavior));
 
 			if (IsEnumerated)
-				_deferredUpdates.Enqueue(new Update { UpdateType = UpdateType.RemoveBehavior, Behavior = behavior });
+				_deferredUpdates.Enqueue(new UpdateInfo { UpdateType = UpdateType.RemoveBehavior, Behavior = behavior });
 			else
 				RemoveBehaviorImmediately(behavior);
 		}
@@ -267,6 +267,12 @@ namespace PointWars.Gameplay
 		/// <param name="parentNode">The parent the scene node should be added to.</param>
 		private void AddImmediately(SceneNode sceneNode, SceneNode parentNode)
 		{
+			if (IsDisposing)
+			{
+				sceneNode.SafeDispose();
+				return;
+			}
+
 			sceneNode.Attach(this, parentNode);
 			NodeAdded?.Invoke(sceneNode);
 			++Version;
@@ -284,7 +290,9 @@ namespace PointWars.Gameplay
 				behavior.SafeDispose();
 			}
 
-			NodeRemoved?.Invoke(sceneNode);
+			if (!IsDisposing)
+				NodeRemoved?.Invoke(sceneNode);
+
 			sceneNode.Detach();
 
 			++Version;
@@ -298,6 +306,9 @@ namespace PointWars.Gameplay
 		/// <param name="parentNode">The new parent of the scene node.</param>
 		private void ReparentImmediately(SceneNode sceneNode, SceneNode parentNode)
 		{
+			if (IsDisposing)
+				return;
+
 			sceneNode.Detach();
 			sceneNode.Attach(this, parentNode);
 			++Version;
@@ -310,6 +321,12 @@ namespace PointWars.Gameplay
 		/// <param name="behavior">The behavior that should be attached.</param>
 		private void AddBehaviorImmediately(SceneNode sceneNode, Behavior behavior)
 		{
+			if (IsDisposing)
+			{
+				behavior.SafeDispose();
+				return;
+			}
+
 			behavior.Attach(sceneNode);
 			++Version;
 		}
@@ -327,12 +344,10 @@ namespace PointWars.Gameplay
 		/// <summary>
 		///   Applies all deferred scene graph updates.
 		/// </summary>
-		internal void ApplyDeferredUpdates()
+		public void Update()
 		{
 			Assert.NotDisposed(this);
-
-			if (IsEnumerated)
-				return;
+			Assert.That(!IsEnumerated, "Cannot update the scene graph while it is being enumerated.");
 
 			while (_deferredUpdates.Count > 0)
 			{
@@ -366,12 +381,13 @@ namespace PointWars.Gameplay
 		protected override void OnDisposing()
 		{
 			Root.SafeDispose();
+			Update();
 		}
 
 		/// <summary>
 		///   Represents an update of a scene graph.
 		/// </summary>
-		private struct Update
+		private struct UpdateInfo
 		{
 			/// <summary>
 			///   The behavior that should be updated.
@@ -486,7 +502,6 @@ namespace PointWars.Gameplay
 			public void Dispose()
 			{
 				--_sceneGraph.EnumeratorCount;
-				_sceneGraph.ApplyDeferredUpdates();
 			}
 
 			/// <summary>
@@ -623,7 +638,6 @@ namespace PointWars.Gameplay
 			public void Dispose()
 			{
 				--_sceneGraph.EnumeratorCount;
-				_sceneGraph.ApplyDeferredUpdates();
 			}
 
 			/// <summary>

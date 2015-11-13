@@ -45,10 +45,19 @@ namespace PointWars.Gameplay.Behaviors
 		/// </summary>
 		protected override void Fire()
 		{
-			var direction = MathUtils.FromAngle(SceneNode.Orientation);
-			var velocity = Vector2.Normalize(direction) * Template.Speed;
+			SpawnBullet(SceneNode.Orientation - RandomNumberGenerator.NextSingle(Game.MiniGunTemplate.MinSpread, Game.MiniGunTemplate.MaxSpread));
+			SpawnBullet(SceneNode.Orientation + RandomNumberGenerator.NextSingle(Game.MiniGunTemplate.MinSpread, Game.MiniGunTemplate.MaxSpread));
+		}
 
-			Bullet.Create(SceneNode.GameSession, SceneNode.Player, SceneNode.WorldPosition, velocity, SceneNode.Orientation);
+		/// <summary>
+		///   Spawns a bullet with the given direction.
+		/// </summary>
+		private void SpawnBullet(float direction)
+		{
+			var directionVector = MathUtils.FromAngle(direction);
+			var velocity = Vector2.Normalize(directionVector) * Template.Speed;
+
+			Bullet.Create(SceneNode.GameSession, SceneNode.Player, SceneNode.WorldPosition, velocity, direction);
 		}
 
 		/// <summary>

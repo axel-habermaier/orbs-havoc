@@ -151,13 +151,15 @@ namespace PointWars.Gameplay.Client
 			for (var y = 1; y < _level.Height * 2 - 2; ++y)
 			{
 				var position = _level.PositionOffset + new Vector2(Level.BlockSize / 2, (y + 1) * Level.BlockSize / 2);
-				spriteBatch.DrawLine(position, position + new Vector2((_level.Width - 1) * Level.BlockSize, 0), new Color(0xFF130C49), 1);
+				var width = y % 2 == 1 ? 3 : 1;
+                spriteBatch.DrawLine(position, position + new Vector2((_level.Width - 1) * Level.BlockSize, 0), new Color(0xFF130C49), width);
 			}
 
 			for (var x = 1; x < _level.Width * 2 - 2; ++x)
 			{
 				var position = _level.PositionOffset + new Vector2((x + 1) * Level.BlockSize / 2, Level.BlockSize / 2);
-				spriteBatch.DrawLine(position, position + new Vector2(0, (_level.Height - 1) * Level.BlockSize), new Color(0xFF130C49), 1);
+				var width = x % 2 == 1 ? 3 : 1;
+				spriteBatch.DrawLine(position, position + new Vector2(0, (_level.Height - 1) * Level.BlockSize), new Color(0xFF130C49), width);
 			}
 #endif
 

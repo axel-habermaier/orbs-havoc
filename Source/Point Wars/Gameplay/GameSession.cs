@@ -192,6 +192,8 @@ namespace PointWars.Gameplay
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
 		public void Update(float elapsedSeconds)
 		{
+			SceneGraph.Update();
+
 			if (ServerMode)
 			{
 				PhysicsSimulation.Update(elapsedSeconds);
@@ -214,6 +216,8 @@ namespace PointWars.Gameplay
 				foreach (var particleNode in SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
 					particleNode.Update(elapsedSeconds);
 			}
+
+			SceneGraph.Update();
 		}
 
 		/// <summary>

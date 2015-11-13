@@ -57,7 +57,9 @@ namespace PointWars.Gameplay
 			Speed = 1300,
 			WeaponType = EntityType.MiniGun,
 			MaxEnergy = 1,
-			Damage = 5
+			Damage = 5,
+			MinSpread = 0.01f,
+            MaxSpread = 0.07f
 		};
 
 		public static WeaponTemplate LightingGunTemplate = new WeaponTemplate
@@ -79,6 +81,8 @@ namespace PointWars.Gameplay
 			public byte MaxEnergy;
 			public bool FiresContinuously => Cooldown < 0;
 			public float Damage;
+			public float MinSpread;
+			public float MaxSpread;
 		}
 	}
 }

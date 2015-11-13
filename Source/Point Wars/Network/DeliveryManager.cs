@@ -101,7 +101,7 @@ namespace PointWars.Network
 			if (_pingProbeSequenceNumber > ackedSequenceNumber || _pingProbeTime < 0)
 				return;
 
-			Ping = MathUtils.RoundIntegral((float)(Clock.GetTime() - _pingProbeTime) * 1000);
+			Ping = MathUtils.Clamp(MathUtils.RoundIntegral((float)(Clock.GetTime() - _pingProbeTime) * 1000), 0, 10000);
 			_pingProbeTime = -1;
 		}
 
