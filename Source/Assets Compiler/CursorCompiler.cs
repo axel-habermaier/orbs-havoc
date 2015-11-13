@@ -66,8 +66,19 @@ namespace AssetsCompiler
 				writer.Write((uint)bitmap.Height);
 				writer.Write(length);
 
-				for (var i = 0; i < length; ++i)
-					writer.Write(sourceData[i]);
+				// Switch from BGRA to RGBA
+				for (var i = 0; i < length; i += 4)
+				{
+					var b = sourceData[i];
+					var g = sourceData[i + 1];
+					var r = sourceData[i + 2];
+					var a = sourceData[i + 3];
+
+					writer.Write(r);
+					writer.Write(g);
+					writer.Write(b);
+					writer.Write(a);
+				}
 
 				bitmap.UnlockBits(imageData);
 			}

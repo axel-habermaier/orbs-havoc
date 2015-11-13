@@ -23,10 +23,13 @@
 namespace PointWars.Gameplay.Client
 {
 	using System;
+	using System.Numerics;
 	using Assets;
+	using Behaviors;
 	using Network;
 	using Network.Messages;
 	using Platform.Memory;
+	using SceneNodes;
 	using SceneNodes.Entities;
 	using Utilities;
 	using Views;
@@ -104,6 +107,15 @@ namespace PointWars.Gameplay.Client
 
 			player.IsLocalPlayer = true;
 			IsSynced = true;
+
+			AssetBundle.Crosshair.ChangeColor(player.Color);
+
+			var effect = _gameSession.Effects.Cursor.Allocate();
+			effect.Emitters[0].ColorRange = player.ColorRange;
+
+			var effectNode = ParticleEffectNode.Create(_allocator, effect, Vector2.Zero);
+			effectNode.AddBehavior(TrailMouseBehavior.Create(_allocator, _views.Application.InputDevice.Mouse, _views.Game.Camera));
+			effectNode.AttachTo(_gameSession.SceneGraph);
 		}
 
 		/// <summary>

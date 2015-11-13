@@ -24,6 +24,7 @@ namespace PointWars.UserInterface
 {
 	using Platform.Logging;
 	using Platform.Memory;
+	using Rendering;
 	using static Platform.SDL2;
 
 	/// <summary>
@@ -31,10 +32,12 @@ namespace PointWars.UserInterface
 	/// </summary>
 	public unsafe class Cursor : DisposableObject
 	{
-		/// <summary>
-		///   The underlying hardware cursor instance.
-		/// </summary>
 		private void* _cursor;
+		private byte[] _data;
+		private int _height;
+		private int _width;
+		private int _x;
+		private int _y;
 
 		/// <summary>
 		///   Initializes a cursor.
@@ -53,28 +56,53 @@ namespace PointWars.UserInterface
 		/// <param name="buffer">The buffer the cursor should be created from.</param>
 		public void Load(ref BufferReader buffer)
 		{
-			var x = buffer.ReadInt32();
-			var y = buffer.ReadInt32();
-			var width = buffer.ReadInt32();
-			var height = buffer.ReadInt32();
-			var length = buffer.ReadInt32();
+			_x = buffer.ReadInt32();
+			_y = buffer.ReadInt32();
+			_width = buffer.ReadInt32();
+			_height = buffer.ReadInt32();
+			_data = buffer.ReadByteArray();
 
-			using (var data = buffer.Pointer)
+			fixed (byte* data = _data)
+				Initialize(data);
+		}
+
+		/// <summary>
+		///   Initializes the cursor.
+		/// </summary>
+		private void Initialize(byte* data)
+		{
+			SDL_FreeCursor(_cursor);
+
+			var sdlSurface = SDL_CreateRGBSurfaceFrom(data, _width, _height, 32, _width * 4,
+				0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+
+			if (sdlSurface == null)
+				Log.Die("Failed to create surface for hardware cursor: {0}", SDL_GetError());
+
+			_cursor = SDL_CreateColorCursor(sdlSurface, _x, _y);
+			if (_cursor == null)
+				Log.Die("Failed to create hardware cursor: {0}", SDL_GetError());
+
+			SDL_FreeSurface(sdlSurface);
+		}
+
+		/// <summary>
+		///   Changes the cursor's color.
+		/// </summary>
+		/// <param name="color">The new cursor color.</param>
+		public void ChangeColor(Color color)
+		{
+			var data = stackalloc byte[_data.Length];
+
+			for (var i = 0; i < _data.Length; i += 4)
 			{
-				buffer.Skip(length);
-
-				var sdlSurface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * 4,
-					0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-
-				if (sdlSurface == null)
-					Log.Die("Failed to create surface for hardware cursor: {0}.", SDL_GetError());
-
-				_cursor = SDL_CreateColorCursor(sdlSurface, x, y);
-				if (_cursor == null)
-					Log.Die("Failed to create hardware cursor: {0}", SDL_GetError());
-
-				SDL_FreeSurface(sdlSurface);
+				data[i + 0] = (byte)(_data[i + 0] * color.Red / 255.0f);
+				data[i + 1] = (byte)(_data[i + 1] * color.Green / 255.0f);
+				data[i + 2] = (byte)(_data[i + 2] * color.Blue / 255.0f);
+				data[i + 3] = _data[i + 3];
 			}
+
+			Initialize(data);
 		}
 
 		/// <summary>

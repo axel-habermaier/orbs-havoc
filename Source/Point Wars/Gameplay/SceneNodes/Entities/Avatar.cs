@@ -121,8 +121,12 @@ namespace PointWars.Gameplay.SceneNodes.Entities
 			switch (PowerUp)
 			{
 				case EntityType.Invisibility:
-					_sprite.Color = new Color(0xFF121212);
-					_coreEffect.Emitters[0].ColorRange = new Color(0xFF0D0D0D);
+					var hsv = Player.Color.ToHsv();
+					hsv.Z /= Player.IsLocalPlayer ? 4 : 10;
+					var color = Color.FromHsv(hsv);
+
+					_sprite.Color = color;
+					_coreEffect.Emitters[0].ColorRange = color;
 					break;
 				case EntityType.Regeneration:
 					if (_regeneration == null)

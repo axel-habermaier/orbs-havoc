@@ -23,7 +23,6 @@
 namespace PointWars.Views
 {
 	using System.Net.Sockets;
-	using System.Numerics;
 	using Assets;
 	using Gameplay.Server;
 	using Network;

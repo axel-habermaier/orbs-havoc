@@ -142,7 +142,7 @@ namespace PointWars.Platform.Logging
 			if (PlatformInfo.Platform == PlatformType.Windows)
 				MessageBox(null, message, title, 0x10);
 			else if (SDL_WasInit(SDL_INIT_VIDEO) != 0 && SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, null) != 0)
-				Error("Failed to show message box: {0}.", SDL_GetError());
+				Error("Failed to show message box: {0}", SDL_GetError());
 		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]

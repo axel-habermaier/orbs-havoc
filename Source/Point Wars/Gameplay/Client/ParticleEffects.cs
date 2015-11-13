@@ -39,6 +39,7 @@ namespace PointWars.Gameplay.Client
 		public readonly ParticleEffectTemplate Bullet;
 		public readonly ParticleEffectTemplate BulletExplosion;
 		public readonly ParticleEffectTemplate Collectible;
+		public readonly ParticleEffectTemplate Cursor;
 		public readonly ParticleEffectTemplate Regeneration;
 
 		/// <summary>
@@ -158,6 +159,25 @@ namespace PointWars.Gameplay.Client
 					})
 				);
 
+			Cursor = new ParticleEffectTemplate(effect =>
+				effect.Emitters.Add(
+					new Emitter
+					{
+						Capacity = 100,
+						Duration = Single.PositiveInfinity,
+						EmissionRate = 100,
+						ColorRange = new Range<Color>(new Color(0x66FFF202), new Color(0x77FF9900)),
+						LiftetimeRange = 0.3f,
+						ScaleRange = new Range<float>(.5f, 1f),
+						SpeedRange = new Range<float>(50, 70),
+						Texture = AssetBundle.RoundParticle,
+						Modifiers =
+						{
+							new FadeOutModifier()
+						}
+					})
+				);
+
 			Regeneration = new ParticleEffectTemplate(effect =>
 				effect.Emitters.Add(
 					new Emitter
@@ -189,6 +209,7 @@ namespace PointWars.Gameplay.Client
 			BulletExplosion.SafeDispose();
 			Bullet.SafeDispose();
 			Collectible.SafeDispose();
+			Cursor.SafeDispose();
 			Regeneration.SafeDispose();
 		}
 	}

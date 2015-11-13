@@ -24,6 +24,7 @@ namespace PointWars.Views
 {
 	using System.Net;
 	using System.Numerics;
+	using Assets;
 	using Gameplay;
 	using Gameplay.Client;
 	using Gameplay.SceneNodes;
@@ -45,12 +46,16 @@ namespace PointWars.Views
 	internal sealed class GameView : View
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
-		private readonly Camera _camera = new Camera();
 
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
 		private InputManager _inputManager;
 		private LogicalInput _showScoreboard;
+
+		/// <summary>
+		///   The camera that is used to draw the game session.
+		/// </summary>
+		public Camera Camera { get; } = new Camera();
 
 		/// <summary>
 		///   Gets the currently active server connection.
@@ -91,6 +96,7 @@ namespace PointWars.Views
 			{
 				CapturesInput = true,
 				AutoFocus = true,
+				Cursor = AssetBundle.Crosshair,
 				InputBindings =
 				{
 					new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar),
@@ -203,11 +209,11 @@ namespace PointWars.Views
 			if (avatar != null)
 			{
 				var windowCenter = new Vector2(MathUtils.Round(Window.Size.Width / 2), MathUtils.Round(Window.Size.Height / 2));
-				_camera.Position = windowCenter - avatar.WorldPosition;
+				Camera.Position = windowCenter - avatar.WorldPosition;
 			}
 
 			// Draw the level first; everything else is drawn above
-			spriteBatch.RenderState.Camera = _camera;
+			spriteBatch.RenderState.Camera = Camera;
 			GameSession.LevelRenderer.Draw(spriteBatch);
 
 			// Draw the entity sprites next, using layers to control draw order
@@ -286,7 +292,7 @@ namespace PointWars.Views
 			Disconnect();
 			_allocator.SafeDispose();
 			_inputManager.SafeDispose();
-			_camera.SafeDispose();
+			Camera.SafeDispose();
 
 			InputDevice.Remove(_showScoreboard);
 		}

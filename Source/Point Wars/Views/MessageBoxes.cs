@@ -118,6 +118,14 @@ namespace PointWars.Views
 		}
 
 		/// <summary>
+		///   Updates the view's state.
+		/// </summary>
+		public override void Update()
+		{
+			_areaPanel.Visibility = _areaPanel.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		/// <summary>
 		///   Creates a message box button.
 		/// </summary>
 		private static Button CreateButton(string label, Action clickHandler)

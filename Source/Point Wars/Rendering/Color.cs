@@ -299,7 +299,7 @@ namespace PointWars.Rendering
 				h = (blue - red) / c + 2.0f;
 			else if (max == blue)
 				h = (red - green) / c + 4.0f;
-			
+
 			var hue = h * 60.0f;
 			if (hue < 0.0f)
 				hue += 360.0f;

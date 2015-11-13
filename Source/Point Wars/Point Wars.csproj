@@ -63,6 +63,7 @@
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\ColliderBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\CircleMovementBehavior.cs" />
+    <Compile Include="Gameplay\Behaviors\TrailMouseBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\WeaponBehavior.cs" />
     <Compile Include="Gameplay\Client\InputManager.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
@@ -434,6 +435,12 @@
   </ItemGroup>
   <ItemGroup>
     <Texture Include="Assets\Textures\HealthParticle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Cursor Include="Assets\Textures\Crosshair.png">
+      <HotSpotX>32</HotSpotX>
+      <HotSpotY>38</HotSpotY>
+    </Cursor>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />
