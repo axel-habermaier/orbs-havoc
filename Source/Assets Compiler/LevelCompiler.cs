@@ -75,18 +75,18 @@ namespace AssetsCompiler
 				}
 
 				// Identify straight lines
-				for (var x = 0; x < bitmap.Width; ++x)
+				for (var x = 1; x < bitmap.Width - 1; ++x)
 				{
-					for (var y = 0; y < bitmap.Height; ++y)
+					for (var y = 1; y < bitmap.Height - 1; ++y)
 					{
 						if (originalBlocks[x][y] != EntityType.Wall)
 							continue;
 
 						// The type of the wall depends on how the block is surrounded with walls
-						var left = x > 0 && originalBlocks[x - 1][y] == EntityType.Wall;
-						var right = x < bitmap.Width - 1 && originalBlocks[x + 1][y] == EntityType.Wall;
-						var top = y > 0 && originalBlocks[x][y - 1] == EntityType.Wall;
-						var bottom = y < bitmap.Height - 1 && originalBlocks[x][y + 1] == EntityType.Wall;
+						var left = originalBlocks[x - 1][y] == EntityType.Wall;
+						var right = originalBlocks[x + 1][y] == EntityType.Wall;
+						var top = originalBlocks[x][y - 1] == EntityType.Wall;
+						var bottom = originalBlocks[x][y + 1] == EntityType.Wall;
 
 						if (!right && left)
 							lineBlocks[x][y] = EntityType.LeftWall;
@@ -102,22 +102,22 @@ namespace AssetsCompiler
 				}
 
 				// Identify edges
-				for (var x = 0; x < bitmap.Width; ++x)
+				for (var x = 1; x < bitmap.Width - 1; ++x)
 				{
-					for (var y = 0; y < bitmap.Height; ++y)
+					for (var y = 1; y < bitmap.Height - 1; ++y)
 					{
 						if (originalBlocks[x][y] != EntityType.Wall)
 							continue;
 
 						// The type of the wall depends on how the block is surrounded with walls
-						var left = x > 0 ? lineBlocks[x - 1][y] : EntityType.None;
-						var right = x < bitmap.Width - 1 ? lineBlocks[x + 1][y] : EntityType.None;
-						var top = y > 0 ? lineBlocks[x][y - 1] : EntityType.None;
-						var bottom = y < bitmap.Height - 1 ? lineBlocks[x][y + 1] : EntityType.None;
-						var topLeft = x > 0 && y > 0 ? lineBlocks[x - 1][y - 1] : EntityType.None;
-						var topRight = x < bitmap.Width - 1 && y > 0 ? lineBlocks[x + 1][y - 1] : EntityType.None;
-						var bottomLeft = x > 0 && y < bitmap.Height - 1 ? lineBlocks[x - 1][y + 1] : EntityType.None;
-						var bottomRight = x < bitmap.Width - 1 && y < bitmap.Height - 1 ? lineBlocks[x + 1][y + 1] : EntityType.None;
+						var left = lineBlocks[x - 1][y];
+						var right = lineBlocks[x + 1][y];
+						var top = lineBlocks[x][y - 1];
+						var bottom = lineBlocks[x][y + 1];
+						var topLeft = lineBlocks[x - 1][y - 1];
+						var topRight = lineBlocks[x + 1][y - 1];
+						var bottomLeft = lineBlocks[x - 1][y + 1];
+						var bottomRight = lineBlocks[x + 1][y + 1];
 
 						if (right.IsWall() && bottom.IsWall() && !left.IsWall() && !top.IsWall())
 							edgeBlocks[x][y] = EntityType.LeftTopWall;

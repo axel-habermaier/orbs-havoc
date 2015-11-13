@@ -80,9 +80,9 @@ namespace PointWars.Gameplay.Client
 						Capacity = 400,
 						Duration = 1,
 						EmissionRate = Int32.MaxValue,
-						LiftetimeRange = new Range<float>(1.8f, 2.1f),
+						LiftetimeRange = new Range<float>(1.3f, 1.8f),
 						ScaleRange = 1,
-						SpeedRange = new Range<float>(600, 1000),
+						SpeedRange = new Range<float>(900, 1400),
 						Texture = AssetBundle.LineParticle,
 						Modifiers =
 						{
