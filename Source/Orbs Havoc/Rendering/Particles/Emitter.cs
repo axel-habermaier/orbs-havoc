@@ -349,7 +349,7 @@ namespace OrbsHavoc.Rendering.Particles
 		[Conditional("DEBUG"), DebuggerHidden]
 		private void Validate()
 		{
-			Assert.InRange(EmissionRate, 1, Int32.MaxValue);
+			Assert.InRange(EmissionRate, 0, Int32.MaxValue);
 			Assert.InRange(Capacity, 1, Int32.MaxValue);
 			Assert.That(LiftetimeRange.LowerBound >= 0, "Invalid particle life time.");
 			Assert.That(LiftetimeRange.UpperBound >= 0, "Invalid particle life time.");

@@ -95,7 +95,7 @@ namespace OrbsHavoc.Views
 				Margin = new Thickness(5),
 				Background = new Color(0xAA000000),
 				Padding = new Thickness(10),
-				HorizontalAlignment = HorizontalAlignment.Left,
+				HorizontalAlignment = HorizontalAlignment.Right,
 				VerticalAlignment = VerticalAlignment.Bottom,
 				Child = new StackPanel
 				{

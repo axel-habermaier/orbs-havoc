@@ -75,17 +75,17 @@ namespace OrbsHavoc.Gameplay.Behaviors
 			switch (_collectibleType)
 			{
 				case EntityType.Armor:
-					return Game.ArmorRespawnDelay;
+					return Constants.PowerUps.Armor.ArmorRespawnDelay;
 				case EntityType.Regeneration:
-					return Game.RegenerationRespawnDelay;
+					return Constants.PowerUps.Regeneration.RegenerationRespawnDelay;
 				case EntityType.QuadDamage:
-					return Game.QuadDamageRespawnDelay;
+					return Constants.PowerUps.QuadDamage.QuadDamageRespawnDelay;
 				case EntityType.Speed:
-					return Game.SpeedRespawnDelay;
+					return Constants.PowerUps.Speed.SpeedRespawnDelay;
 				case EntityType.Invisibility:
-					return Game.InvisibilityRespawnDelay;
+					return Constants.PowerUps.Invisibility.RespawnDelay;
 				case EntityType.Health:
-					return Game.HealthRespawnDelay;
+					return Constants.HealthCollectible.HealthRespawnDelay;
 				default:
 					throw new InvalidOperationException("Unsupported collectible type.");
 			}

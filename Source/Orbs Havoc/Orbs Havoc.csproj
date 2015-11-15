@@ -66,13 +66,14 @@
     <Compile Include="Gameplay\Behaviors\CircleMovementBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\TrailMouseBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\WeaponBehavior.cs" />
+    <Compile Include="Gameplay\Client\EntityTypeRendering.cs" />
     <Compile Include="Gameplay\Client\InputManager.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>
     </Compile>
     <Compile Include="Gameplay\Client\LevelRenderer.cs" />
     <Compile Include="Gameplay\Client\ParticleReflectionModifier.cs" />
-    <Compile Include="Gameplay\Game.cs" />
+    <Compile Include="Gameplay\Constants.cs" />
     <Compile Include="Gameplay\Level.cs" />
     <Compile Include="Gameplay\PlayerKind.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Rocket.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Rendering\RenderOperation.cs" />
     <Compile Include="Rendering\RenderState.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
+    <Compile Include="UserInterface\Controls\Image.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
     <Compile Include="UserInterface\Controls\Button.cs" />
     <Compile Include="UserInterface\Controls\Canvas.cs" />
@@ -397,10 +399,7 @@
     </Cursor>
   </ItemGroup>
   <ItemGroup>
-    <Texture Include="Assets\Textures\Avatar.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Texture Include="Assets\Textures\Bullet.png" />
+    <Texture Include="Assets\Textures\Orb.png" />
   </ItemGroup>
   <ItemGroup>
     <Level Include="Assets\Levels\TestLevel.png" />
@@ -415,6 +414,7 @@
     <Shader Include="Assets\Shaders\Effects\ExtractBloomShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Font Include="Assets\Fonts\HudFont.font" />
     <None Include="Assets\Shaders\Effects\BloomSettings.glsl" />
     <Shader Include="Assets\Shaders\Sprites\AdditiveSpriteShader.glsl" />
     <None Include="Assets\Shaders\Sprites\VertexShader.glsl" />
@@ -443,6 +443,13 @@
       <HotSpotX>32</HotSpotX>
       <HotSpotY>38</HotSpotY>
     </Cursor>
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\HudHealthIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\MiniGun.png" />
+    <Texture Include="Assets\Textures\Rocket.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

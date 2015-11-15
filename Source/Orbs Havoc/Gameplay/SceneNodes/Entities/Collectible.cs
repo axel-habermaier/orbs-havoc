@@ -24,10 +24,8 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 {
 	using System;
 	using System.Numerics;
-	using Assets;
 	using Behaviors;
-	using Platform.Graphics;
-	using Rendering;
+	using Client;
 	using Utilities;
 
 	/// <summary>
@@ -53,49 +51,10 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		private void AddEffect()
 		{
 			var effect = GameSession.Effects.Collectible.Allocate();
-			effect.Emitters[0].ColorRange = GetColor();
-			effect.Emitters[0].ScaleRange = GetTexture().Height / 32;
+			effect.Emitters[0].ColorRange = Type.GetColor();
+			effect.Emitters[0].ScaleRange = Type.GetTexture().Height / 32;
 
 			ParticleEffectNode.Create(GameSession.Allocator, effect, WorldPosition).AttachTo(GameSession.SceneGraph);
-		}
-
-		/// <summary>
-		///   Gets the color for the given collectible.
-		/// </summary>
-		private Color GetColor()
-		{
-			switch (Type)
-			{
-				case EntityType.Health:
-				case EntityType.Regeneration:
-					return new Color(0, 255, 0, 255);
-				case EntityType.QuadDamage:
-					return new Color(0xFF0083FF);
-					case EntityType.Invisibility:
-						return new Color(0xFF4800FF);
-				default:
-					throw new InvalidOperationException("Unexpected entity type.");
-			}
-		}
-
-		/// <summary>
-		///   Gets the texture for the given collectible.
-		/// </summary>
-		private Texture GetTexture()
-		{
-			switch (Type)
-			{
-				case EntityType.Health:
-					return AssetBundle.Health;
-				case EntityType.Regeneration:
-					return AssetBundle.Regeneration;
-				case EntityType.QuadDamage:
-					return AssetBundle.QuadDamage;
-				case EntityType.Invisibility:
-					return AssetBundle.Invisibility;
-				default:
-					throw new InvalidOperationException("Unexpected entity type.");
-			}
 		}
 
 		/// <summary>
@@ -119,12 +78,12 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 
 			if (gameSession.ServerMode)
 			{
-				Assert.That(Math.Abs(collectible.GetTexture().Width - collectible.GetTexture().Height) <= 0, "Expected a square texture.");
-				collectible.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, collectible.GetTexture().Width / 2));
+				Assert.That(Math.Abs(collectibleType.GetTexture().Width - collectibleType.GetTexture().Height) <= 0, "Expected a square texture.");
+				collectible.AddBehavior(ColliderBehavior.Create(gameSession.Allocator, collectibleType.GetTexture().Width / 2));
 			}
 			else
 			{
-				var sprite = SpriteNode.Create(gameSession.Allocator, collectible, collectible.GetTexture(), collectible.GetColor(), 100);
+				var sprite = SpriteNode.Create(gameSession.Allocator, collectible, collectibleType.GetTexture(), collectibleType.GetColor(), 100);
 				sprite.AddBehavior(CircleMovementBehavior.Create(gameSession.Allocator, 2f, 4));
 
 				collectible.AddEffect();

@@ -51,8 +51,8 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 				return;
 
 			var orb = (Orb)entity;
-			var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage ? Game.QuadDamageMultiplier : 1;
-			orb.ApplyDamage(Player, Game.RocketLauncherTemplate.Damage * damageMultiplier);
+			var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage ? Constants.PowerUps.QuadDamage.QuadDamageMultiplier : 1;
+			orb.ApplyDamage(Player, Constants.RocketLauncher.Damage * damageMultiplier);
 
 			Remove();
 		}

@@ -23,7 +23,9 @@
 namespace OrbsHavoc.Views
 {
 	using Assets;
+	using Gameplay.Client;
 	using Gameplay.SceneNodes.Entities;
+	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;
 	using Utilities;
@@ -33,30 +35,42 @@ namespace OrbsHavoc.Views
 	/// </summary>
 	internal class HudOverlay : View
 	{
-		private Label _healthLabel;
-		private Grid _layoutRoot;
-		private Label _weaponEnergyLabel;
-		private Label _weaponTypeLabel;
+		private const int HealthBlinkingFrequency = 2;
+		private readonly Label _ammoLabel = new Label { MinWidth = 200 };
+		private readonly Image _healthIcon = new Image { Texture = AssetBundle.HudHealthIcon, Margin = new Thickness(0, 0, 20, 0) };
+		private readonly Label _healthLabel = new Label { MinWidth = 200 };
+		private readonly Image _powerUpIcon = new Image { Texture = AssetBundle.RoundParticle, Margin = new Thickness(0, 0, 20, 0) };
+		private readonly Label _powerUpLabel = new Label { MinWidth = 200 };
+		private readonly Image _weaponIcon = new Image { Texture = AssetBundle.RoundParticle, Margin = new Thickness(0, 0, 20, 0) };
+		private StackPanel _layoutRoot;
 
 		/// <summary>
 		///   Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
-			RootElement = _layoutRoot = new Grid(columns: 2, rows: 10)
+			RootElement = _layoutRoot = new StackPanel
 			{
 				IsHitTestVisible = false,
-				Font = AssetBundle.Moonhouse24,
+				Orientation = Orientation.Horizontal,
+				Font = AssetBundle.HudFont,
 				VerticalAlignment = VerticalAlignment.Bottom,
-				HorizontalAlignment = HorizontalAlignment.Center
+				HorizontalAlignment = HorizontalAlignment.Left,
+				MinHeight = 70,
+				Margin = new Thickness(30, 0, 0, 20)
 			};
 
-			_layoutRoot.Columns[0].Width = 150;
-			_layoutRoot.Columns[1].Width = 300;
+			_layoutRoot.Add(_healthIcon);
+			_layoutRoot.Add(_healthLabel);
 
-			CreateRow(0, "Health", out _healthLabel);
-			CreateRow(1, "Weapon", out _weaponTypeLabel);
-			CreateRow(2, "Ammo", out _weaponEnergyLabel);
+			_layoutRoot.Add(_weaponIcon);
+			_layoutRoot.Add(_ammoLabel);
+
+			_layoutRoot.Add(_powerUpIcon);
+			_layoutRoot.Add(_powerUpLabel);
+
+			foreach (var child in _layoutRoot.Children)
+				child.VerticalAlignment = VerticalAlignment.Center;
 		}
 
 		/// <summary>
@@ -69,14 +83,36 @@ namespace OrbsHavoc.Views
 				return;
 
 			_healthLabel.Text = StringCache.GetString(MathUtils.RoundIntegral(orb.Health));
-			_weaponTypeLabel.Text = orb.PrimaryWeapon.ToString(); // TODO: Friendly names, no string alloc, retrieve from weapon template array
-			_weaponEnergyLabel.Text = StringCache.GetString(orb.WeaponEnergyLevels[orb.PrimaryWeapon.GetWeaponSlot()]);
-		}
+			_ammoLabel.Text = StringCache.GetString(orb.WeaponEnergyLevels[orb.PrimaryWeapon.GetWeaponSlot()]);
+			_powerUpLabel.Text = StringCache.GetString(MathUtils.RoundIntegral(orb.RemainingPowerUpTime));
 
-		private void CreateRow(int row, string label, out Label value)
-		{
-			_layoutRoot.Add(new Label { Text = label, Row = row, Column = 0 });
-			_layoutRoot.Add(value = new Label { Row = row, Column = 1 });
+			_weaponIcon.Texture = orb.PrimaryWeapon.GetTexture();
+			_weaponIcon.Foreground = orb.PrimaryWeapon.GetColor();
+
+			var healthColor = new Color(0, 255, 0, 255);
+			if (orb.HasCriticalHealth)
+				healthColor = Colors.Red;
+
+			_healthIcon.Foreground = healthColor;
+			_healthLabel.Foreground = healthColor;
+
+			_healthIcon.Visibility = orb.HasCriticalHealth && MathUtils.RoundIntegral((float)Clock.GetTime() * HealthBlinkingFrequency) % 2 != 0
+				? Visibility.Hidden
+				: Visibility.Visible;
+
+			var powerUpVisibility = orb.PowerUp == EntityType.None ? Visibility.Hidden : Visibility.Visible;
+			_powerUpLabel.Visibility = powerUpVisibility;
+			_powerUpIcon.Visibility = powerUpVisibility;
+
+			var ammoVisibility = orb.PrimaryWeapon == EntityType.MiniGun ? Visibility.Hidden : Visibility.Visible;
+			_weaponIcon.Visibility = ammoVisibility;
+			_ammoLabel.Visibility = ammoVisibility;
+
+			if (orb.PowerUp != EntityType.None)
+			{
+				_powerUpIcon.Texture = orb.PowerUp.GetTexture();
+				_powerUpIcon.Foreground = orb.PowerUp.GetColor();
+			}
 		}
 	}
 }

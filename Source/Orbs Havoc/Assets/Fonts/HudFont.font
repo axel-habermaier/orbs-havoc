@@ -1,0 +1,5 @@
+File = moonhouse.ttf
+Size = 48
+Aliased = false
+Characters = 0-128
+InvalidChar = ?

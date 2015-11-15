@@ -337,7 +337,7 @@ namespace OrbsHavoc.Gameplay.Client
 			orb.PrimaryWeapon = message.PrimaryWeapon;
 			orb.SecondaryWeapon = message.SecondaryWeapon;
 
-			for (var i = 0; i < Game.WeaponCount; ++i)
+			for (var i = 0; i < Constants.Orb.WeaponCount; ++i)
 				orb.WeaponEnergyLevels[i] = message.WeaponEnergyLevels[i];
 		}
 

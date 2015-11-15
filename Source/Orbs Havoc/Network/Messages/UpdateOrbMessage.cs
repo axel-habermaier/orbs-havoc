@@ -41,7 +41,7 @@ namespace OrbsHavoc.Network.Messages
 		/// <summary>
 		///   Gets the energy levels of the orb's weapons.
 		/// </summary>
-		public int[] WeaponEnergyLevels { get; } = new int[Game.WeaponCount];
+		public int[] WeaponEnergyLevels { get; } = new int[Constants.Orb.WeaponCount];
 
 		/// <summary>
 		///   Gets or sets the orb's primary weapon.
@@ -98,7 +98,7 @@ namespace OrbsHavoc.Network.Messages
 			RemainingPowerUpTime = reader.ReadByte();
 			Health = reader.ReadByte();
 
-			for (var i = 0; i < Game.WeaponCount; ++i)
+			for (var i = 0; i < Constants.Orb.WeaponCount; ++i)
 				WeaponEnergyLevels[i] = reader.ReadByte();
 		}
 
@@ -130,7 +130,7 @@ namespace OrbsHavoc.Network.Messages
 			message.PrimaryWeapon = orb.PrimaryWeapon;
 			message.SecondaryWeapon = orb.SecondaryWeapon;
 
-			for (var i = 0; i < Game.WeaponCount; ++i)
+			for (var i = 0; i < Constants.Orb.WeaponCount; ++i)
 				message.WeaponEnergyLevels[i] = orb.WeaponEnergyLevels[i];
 
 			return message;

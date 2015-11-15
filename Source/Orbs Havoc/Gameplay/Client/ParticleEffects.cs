@@ -106,7 +106,7 @@ namespace OrbsHavoc.Gameplay.Client
 						EmissionRate = 200,
 						LiftetimeRange = new Range<float>(0.2f, 0.4f),
 						ScaleRange = new Range<float>(1.3f, 1.7f),
-						SpeedRange = Game.MiniGunTemplate.Speed,
+						SpeedRange = Constants.MiniGun.Speed,
 						Texture = AssetBundle.LineParticle,
 						Modifiers =
 						{
@@ -210,7 +210,7 @@ namespace OrbsHavoc.Gameplay.Client
 						EmissionRate = 200,
 						LiftetimeRange = new Range<float>(0.1f, 0.2f),
 						ScaleRange = new Range<float>(1.3f, 1.6f),
-						SpeedRange = Game.RocketLauncherTemplate.Speed,
+						SpeedRange = Constants.RocketLauncher.Speed,
 						Texture = AssetBundle.RoundParticle,
 						Modifiers =
 						{
@@ -227,7 +227,7 @@ namespace OrbsHavoc.Gameplay.Client
 						LiftetimeRange = new Range<float>(0.1f, 0.2f),
 						ScaleRange = new Range<float>(0.7f, 1.0f),
 						ColorRange = Colors.White,
-						SpeedRange = Game.RocketLauncherTemplate.Speed,
+						SpeedRange = Constants.RocketLauncher.Speed,
 						Texture = AssetBundle.RoundParticle,
 						Modifiers =
 						{

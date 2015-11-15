@@ -53,7 +53,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Gets the energy levels of the orb's weapons.
 		/// </summary>
-		public int[] WeaponEnergyLevels { get; } = new int[Game.WeaponCount];
+		public int[] WeaponEnergyLevels { get; } = new int[Constants.Orb.WeaponCount];
 
 		/// <summary>
 		///   Gets or sets the orb's primary weapon.
@@ -86,6 +86,11 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public float Health { get; set; }
 
 		/// <summary>
+		///   Gets a value indicating whether the orb's health has reached a critical level.
+		/// </summary>
+		public bool HasCriticalHealth => Health <= Constants.Orb.CriticalHealthThreshold;
+
+		/// <summary>
 		///   Updates the state of the server-side entity.
 		/// </summary>
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
@@ -101,13 +106,13 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			_nextHealthUpdate -= elapsedSeconds;
 			if (PowerUp == EntityType.Regeneration && _nextHealthUpdate <= 0)
 			{
-				Health = Math.Min(Game.MaxAvatarRegenerationHealth, Health + Game.RegenerationHealthIncrease);
+				Health = Math.Min(Constants.Orb.MaxRegenerationHealth, Health + Constants.PowerUps.Regeneration.RegenerationHealthIncrease);
 				_nextHealthUpdate = 1;
 			}
 
-			if (PowerUp != EntityType.Regeneration && Health > Game.MaxAvatarHealth && _nextHealthUpdate <= 0)
+			if (PowerUp != EntityType.Regeneration && Health > Constants.Orb.MaxHealth && _nextHealthUpdate <= 0)
 			{
-				Health = Math.Max(Game.MaxAvatarHealth, Health - Game.MaxHealthLimitExceededDecrease);
+				Health = Math.Max(Constants.Orb.MaxHealth, Health - Constants.Orb.MaxHealthLimitExceededDecrease);
 				_nextHealthUpdate = 1;
 			}
 		}
@@ -147,6 +152,8 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 
 					break;
 			}
+
+			_coreEffect.Emitters[0].ScaleRange = MathUtils.Clamp(Health / Constants.Orb.MaxHealth, 0.2f, 1.5f);
 		}
 
 		/// <summary>
@@ -160,7 +167,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 				case EntityType.Health:
 					if (Health < 100)
 					{
-						Health = Math.Min(100, Health + Game.HealthCollectibleHealthIncrease);
+						Health = Math.Min(100, Health + Constants.HealthCollectible.HealthCollectibleHealthIncrease);
 						entity.Remove();
 					}
 					break;
@@ -170,7 +177,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 					if (PowerUp == EntityType.None)
 					{
 						PowerUp = entity.Type;
-						RemainingPowerUpTime = Game.RegenerationTime;
+						RemainingPowerUpTime = Constants.PowerUps.Regeneration.RegenerationTime;
 						entity.Remove();
 					}
 					break;
@@ -183,7 +190,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <remarks>This method is not called when the game session is disposed.</remarks>
 		public override void OnRemoved()
 		{
-			Player.RemainingRespawnDelay = Game.RespawnDelay;
+			Player.RemainingRespawnDelay = Constants.Orb.RespawnDelay;
 			Player.Orb = null;
 
 			if (GameSession.ServerMode)
@@ -204,7 +211,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		{
 			Assert.ArgumentNotNull(player, nameof(player));
 
-			Health -= PowerUp == EntityType.Armor ? damage * Game.ArmorDamageFactor : damage;
+			Health -= PowerUp == EntityType.Armor ? damage * Constants.PowerUps.Armor.ArmorDamageFactor : damage;
 			if (Health > 0)
 				return;
 
@@ -242,7 +249,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			orb.PrimaryWeapon = EntityType.MiniGun;
 			orb.SecondaryWeapon = EntityType.None;
 			orb.RemainingPowerUpTime = 0;
-			orb.Health = Game.MaxAvatarHealth;
+			orb.Health = Constants.Orb.MaxHealth;
 			orb.Position = position;
 			orb.Orientation = orientation;
 			orb._nextHealthUpdate = 0;
@@ -251,8 +258,8 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			orb._sprite = null;
 
 			// Reset the weapon energy levels, skipping the mini gun which can always be used
-			for (var i = 1; i < Game.WeaponCount; ++i)
-				orb.WeaponEnergyLevels[i] = 100; // TODO: Retrieve from weapon template array
+			for (var i = 1; i < Constants.Orb.WeaponCount; ++i)
+				orb.WeaponEnergyLevels[i] = Constants.WeaponTemplates[i].MaxEnergy;
 
 			player.Orb = orb;
 			gameSession.SceneGraph.Add(orb);
@@ -270,9 +277,11 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			{
 				orb._coreEffect = gameSession.Effects.AvatarCore.Allocate();
 				orb._coreEffect.Emitters[0].ColorRange = player.ColorRange;
+				orb._coreEffect.Emitters[0].EmissionRate = (int)Constants.Orb.MaxHealth;
+				orb._coreEffect.Emitters[0].ScaleRange = new Range<float>(0.6f, 1.1f);
 
 				ParticleEffectNode.Create(gameSession.Allocator, orb._coreEffect, Vector2.Zero).AttachTo(orb);
-				orb._sprite = SpriteNode.Create(gameSession.Allocator, orb, AssetBundle.Avatar, player.Color, 200);
+				orb._sprite = SpriteNode.Create(gameSession.Allocator, orb, AssetBundle.Orb, player.Color, 200);
 			}
 
 			return orb;

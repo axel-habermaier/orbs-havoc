@@ -27,55 +27,34 @@ namespace OrbsHavoc.Gameplay
 	/// <summary>
 	///   Provides gameplay-specific constants.
 	/// </summary>
-	internal static class Game
+	internal static class Constants
 	{
-		public const int WeaponCount = 8;
-		public const float HealthCollectibleHealthIncrease = 20;
-		public const float ArmorRespawnDelay = 60;
-		public const float ArmorDamageFactor = 0.5f;
-		public const float ArmorTime = 30;
-		public const float RegenerationRespawnDelay = 60;
-		public const float RegenerationTime = 30;
-		public const float RegenerationHealthIncrease = 10;
-		public const float QuadDamageRespawnDelay = 60;
-		public const float QuadDamageTime = 30;
-		public const float QuadDamageMultiplier = 4;
-		public const float SpeedRespawnDelay = 60;
-		public const float SpeedTime = 30;
-		public const float InvisibilityRespawnDelay = 60;
-		public const float InvisibilityTime = 30;
-		public const float HealthRespawnDelay = 10;
-		public const float MaxAvatarHealth = 100;
-		public const float MaxAvatarRegenerationHealth = 200;
-		public const float MaxHealthLimitExceededDecrease = 5;
-		public const float RespawnDelay = 2;
-
-		public static WeaponTemplate MiniGunTemplate = new WeaponTemplate
+		public static WeaponTemplate MiniGun = new WeaponTemplate
 		{
 			Cooldown = 0.2f,
 			DepleteSpeed = 0,
 			Speed = 1300,
 			WeaponType = EntityType.MiniGun,
 			MaxEnergy = 1,
-			Damage = 5,
+			Damage = 2,
 			MinSpread = 0.01f,
-            MaxSpread = 0.07f
+			MaxSpread = 0.07f
 		};
 
-		public static WeaponTemplate RocketLauncherTemplate = new WeaponTemplate
+		public static WeaponTemplate RocketLauncher = new WeaponTemplate
 		{
 			Cooldown = 0.8f,
 			DepleteSpeed = 1,
 			Speed = 500,
 			WeaponType = EntityType.RocketLauncher,
 			MaxEnergy = 20,
-			Damage = 50,
+			Damage = 35,
 			Range = 200,
-			MinSpread = 0.01f,
-			MaxSpread = 0.07f
+			MinSpread = 0,
+			MaxSpread = 0
 		};
 
-		public static WeaponTemplate LightingGunTemplate = new WeaponTemplate
+		public static WeaponTemplate LightingGun = new WeaponTemplate
 		{
 			Cooldown = -1,
 			DepleteSpeed = 50,
@@ -83,6 +62,70 @@ namespace OrbsHavoc.Gameplay
 			WeaponType = EntityType.LightingGun,
 			MaxEnergy = 200
 		};
+
+		public static readonly WeaponTemplate[] WeaponTemplates =
+		{
+			MiniGun,
+			MiniGun, // TODO: Plasma
+			LightingGun,
+			RocketLauncher,
+			MiniGun, // TODO: BFG
+			MiniGun, // TODO: Bomb
+			MiniGun, // TODO: Mine
+			MiniGun, // TODO: ShockWave
+		};
+
+		public static class PowerUps
+		{
+			public static class Invisibility
+			{
+				public const float RespawnDelay = 60;
+				public const float Time = 30;
+			}
+
+			public static class Speed
+			{
+				public const float SpeedRespawnDelay = 60;
+				public const float SpeedTime = 30;
+			}
+
+			public static class Armor
+			{
+				public const float ArmorRespawnDelay = 60;
+				public const float ArmorDamageFactor = 0.5f;
+				public const float ArmorTime = 30;
+			}
+
+			public static class Regeneration
+			{
+				public const float RegenerationRespawnDelay = 60;
+				public const float RegenerationTime = 30;
+				public const float RegenerationHealthIncrease = 10;
+			}
+
+			public static class QuadDamage
+			{
+				public const float QuadDamageRespawnDelay = 60;
+				public const float QuadDamageTime = 30;
+				public const float QuadDamageMultiplier = 4;
+			}
+		}
+
+		public static class HealthCollectible
+		{
+			public const float HealthRespawnDelay = 10;
+			public const float HealthCollectibleHealthIncrease = 20;
+		}
+
+		public static class Orb
+		{
+			public const float CriticalHealthThreshold = 35;
+			public const float MaxHealth = 100;
+			public const float MaxRegenerationHealth = 200;
+			public const float MaxHealthLimitExceededDecrease = 5;
+			public const float RespawnDelay = 2;
+			public const int WeaponCount = 8;
+		}
 
 		internal struct WeaponTemplate
 		{

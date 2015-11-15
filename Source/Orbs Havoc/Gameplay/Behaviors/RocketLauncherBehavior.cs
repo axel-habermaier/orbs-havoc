@@ -37,7 +37,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// </summary>
 		public RocketLauncherBehavior()
 		{
-			Template = Game.RocketLauncherTemplate;
+			Template = Constants.RocketLauncher;
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// </summary>
 		protected override void Fire()
 		{
-			var spread = RandomNumberGenerator.NextSingle(Game.RocketLauncherTemplate.MinSpread, Game.RocketLauncherTemplate.MaxSpread);
+			var spread = RandomNumberGenerator.NextSingle(Constants.RocketLauncher.MinSpread, Constants.RocketLauncher.MaxSpread);
 			spread *= RandomNumberGenerator.NextInteger() % 2 == 0 ? 1 : -1;
 
 			var directionVector = MathUtils.FromAngle(SceneNode.Orientation + spread);
