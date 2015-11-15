@@ -157,7 +157,7 @@ namespace AssetsCompiler
 			var writer = new CodeWriter();
 			writer.WriterHeader();
 
-			writer.AppendLine(".class public auto ansi abstract sealed beforefieldinit PointWars.Platform.Graphics.OpenGL3 extends System.Object");
+			writer.AppendLine(".class public auto ansi abstract sealed beforefieldinit OrbsHavoc.Platform.Graphics.OpenGL3 extends System.Object");
 			writer.AppendBlockStatement(() =>
 			{
 				foreach (var e in gl.Enums)
@@ -185,7 +185,7 @@ namespace AssetsCompiler
 						for (var i = 0; i < func.Params.Length; ++i)
 							writer.AppendLine($"ldarg.s {i}");
 
-						writer.AppendLine($"ldsfld native int PointWars.Platform.Graphics.OpenGL3::_{func.Name}");
+						writer.AppendLine($"ldsfld native int OrbsHavoc.Platform.Graphics.OpenGL3::_{func.Name}");
 						var types = String.Join(", ", func.Params.Select(p => MapType(p.Type)));
 						writer.AppendLine($"calli unmanaged stdcall {MapType(func.ReturnType)}({types})");
 						writer.AppendLine("ret");
@@ -204,7 +204,7 @@ namespace AssetsCompiler
 						writer.AppendLine("ldarg.0");
 						writer.AppendLine($"ldstr \"{func.Name}\"");
 						writer.AppendLine("call instance !1 class [mscorlib]System.Func`2<string, native int>::Invoke(!0)");
-						writer.AppendLine($"stsfld native int PointWars.Platform.Graphics.OpenGL3::_{func.Name}");
+						writer.AppendLine($"stsfld native int OrbsHavoc.Platform.Graphics.OpenGL3::_{func.Name}");
 						writer.NewLine();
 					}
 					writer.AppendLine("ret");

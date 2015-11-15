@@ -80,7 +80,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Point Wars\Gameplay\SceneNodes\Entities\EntityType.cs">
+    <Compile Include="..\Orbs Havoc\Gameplay\SceneNodes\Entities\EntityType.cs">
       <Link>EntityType.cs</Link>
     </Compile>
     <Compile Include="BundleCompiler.cs" />

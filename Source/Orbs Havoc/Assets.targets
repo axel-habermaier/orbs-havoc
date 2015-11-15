@@ -1,0 +1,64 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<ItemGroup>
+		<AvailableItemName Include="Shader" />  
+		<AvailableItemName Include="Font" /> 
+		<AvailableItemName Include="Texture" /> 
+		<AvailableItemName Include="Cursor" /> 
+		<AvailableItemName Include="OpenGL" /> 
+		<AvailableItemName Include="Level" /> 
+	</ItemGroup>
+	
+	<PropertyGroup>
+		<AssetBundle>$(TargetDir)Assets.pak</AssetBundle>
+	</PropertyGroup>
+	
+	<ItemGroup> 
+		<CompiledShaders Include="@(Shader->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledFonts Include="@(Font->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledTextures Include="@(Texture->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledCursors Include="@(Cursor->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledLevels Include="@(Level->'$(TargetDir)obj\%(Identity)')" />
+	</ItemGroup>
+	
+	<Target Name="CompileShaders" BeforeTargets="BeforeBuild" Inputs="@(Shader);$(OutDir)pwc.exe" Outputs="@(Shader->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe shader --input &quot;%(Shader.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Shader.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled shader '%(Shader.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileFonts" BeforeTargets="BeforeBuild" Inputs="@(Font);$(OutDir)pwc.exe" Outputs="@(Font->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe font --input &quot;%(Font.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Font.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled font '%(Font.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileTextures" BeforeTargets="BeforeBuild" Inputs="@(Texture);$(OutDir)pwc.exe" Outputs="@(Texture->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe texture --input &quot;%(Texture.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Texture.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled texture '%(Texture.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileCursors" BeforeTargets="BeforeBuild" Inputs="@(Cursor);$(OutDir)pwc.exe" Outputs="@(Cursor->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe cursor --input &quot;%(Cursor.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Cursor.Identity)&quot; --hotspotX %(Cursor.HotSpotX) --hotspotY %(Cursor.HotSpotY)" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled cursor '%(Cursor.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileLevels" BeforeTargets="BeforeBuild" Inputs="@(Level);$(OutDir)pwc.exe" Outputs="@(Level->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(OutDir)pwc.exe level --input &quot;%(Level.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Level.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled level '%(Level.Identity)'." />
+	</Target>
+	
+	<Target Name="CompileBundle" BeforeTargets="BeforeBuild" Inputs="@(CompiledShaders);@(CompiledLevels);@(CompiledFonts);@(CompiledTextures);@(CompiledCursors);$(OutDir)pwc.exe" Outputs="$(AssetBundle)">
+		<Exec Command="$(OutDir)pwc.exe bundle --shaders &quot;@(CompiledShaders->'%(FullPath)')&quot; --fonts &quot;@(CompiledFonts->'%(FullPath)')&quot; --textures &quot;@(CompiledTextures->'%(FullPath)')&quot; --cursors &quot;@(CompiledCursors->'%(FullPath)')&quot; --levels &quot;@(CompiledLevels->'%(FullPath)')&quot; --output &quot;$(AssetBundle)&quot; --code &quot;../../Source/Orbs Havoc/Assets/AssetBundle.g.cs&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled asset bundle." />
+	</Target>
+	
+	<Target Name="GenerateRegistry" BeforeTargets="BeforeBuild" Inputs="%(Compile.FullPath);$(OutDir)pwc.exe" Outputs="$(ProjectDir)%(Compile.RelativeDir)%(Compile.Filename).g.cs">
+		<Exec Command="$(OutDir)pwc.exe registry --input &quot;%(Compile.FullPath)&quot; --output &quot;$(ProjectDir)%(Compile.RelativeDir)%(Compile.Filename).g.cs&quot;" Condition="%(Compile.Registry) == 'true'" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Generated code for '%(Compile.Identity)'." Condition="%(Compile.Registry) == 'true'" />
+	</Target>
+	
+	<Target Name="GenerateBindings" BeforeTargets="GenerateILAssembly" Inputs="%(OpenGL.FullPath);$(OutDir)pwc.exe" Outputs="$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.asm">
+		<Exec Command="$(OutDir)pwc.exe opengl --input &quot;%(OpenGL.FullPath)&quot; --output &quot;$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.asm&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Generated code for '%(OpenGL.Identity)'." />
+	</Target>
+	
+</Project>

@@ -26,7 +26,7 @@ namespace AssetsCompiler
 	using System.Drawing;
 	using System.IO;
 	using CommandLine;
-	using PointWars.Gameplay.SceneNodes.Entities;
+	using OrbsHavoc.Gameplay.SceneNodes.Entities;
 
 	public class LevelCompiler : CompilationTask
 	{

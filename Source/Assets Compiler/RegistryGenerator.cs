@@ -50,7 +50,7 @@ namespace AssetsCompiler
 			var writer = new CodeWriter();
 
 			writer.WriterHeader();
-			writer.AppendLine("namespace PointWars.Scripting");
+			writer.AppendLine("namespace OrbsHavoc.Scripting");
 
 			writer.AppendBlockStatement(() =>
 			{

@@ -104,7 +104,7 @@ namespace AssetsCompiler
 			var writer = new CodeWriter();
 			writer.WriterHeader();
 
-			writer.AppendLine("namespace PointWars.Assets");
+			writer.AppendLine("namespace OrbsHavoc.Assets");
 			writer.AppendBlockStatement(() =>
 			{
 				writer.AppendLine("using System;");
