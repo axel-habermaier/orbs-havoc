@@ -31,7 +31,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 	{
 		Unknown = 0,
 		None = Unknown,
-		Avatar,
+		Orb,
 		Bullet,
 		Rocket,
 		Armor,

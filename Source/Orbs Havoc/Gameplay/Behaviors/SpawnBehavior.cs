@@ -75,13 +75,13 @@ namespace OrbsHavoc.Gameplay.Behaviors
 			switch (_collectibleType)
 			{
 				case EntityType.Armor:
-					return Constants.PowerUps.Armor.ArmorRespawnDelay;
+					return Constants.PowerUps.Armor.RespawnDelay;
 				case EntityType.Regeneration:
-					return Constants.PowerUps.Regeneration.RegenerationRespawnDelay;
+					return Constants.PowerUps.Regeneration.RespawnDelay;
 				case EntityType.QuadDamage:
-					return Constants.PowerUps.QuadDamage.QuadDamageRespawnDelay;
+					return Constants.PowerUps.QuadDamage.RespawnDelay;
 				case EntityType.Speed:
-					return Constants.PowerUps.Speed.SpeedRespawnDelay;
+					return Constants.PowerUps.Speed.RespawnDelay;
 				case EntityType.Invisibility:
 					return Constants.PowerUps.Invisibility.RespawnDelay;
 				case EntityType.Health:

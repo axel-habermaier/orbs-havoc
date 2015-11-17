@@ -134,7 +134,7 @@ namespace OrbsHavoc.Gameplay.Client
 			{
 				switch (message.EntityType)
 				{
-					case EntityType.Avatar:
+					case EntityType.Orb:
 						entity = Orb.Create(_gameSession, player, message.Position, message.Orientation);
 						break;
 					case EntityType.Bullet:

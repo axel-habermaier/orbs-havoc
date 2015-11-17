@@ -47,12 +47,8 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <param name="entity">The entity this entity collided with.</param>
 		public override void HandleCollision(Entity entity)
 		{
-			if (entity.Type != EntityType.Avatar || Player == entity.Player)
+			if (Player == entity.Player)
 				return;
-
-			var orb = (Orb)entity;
-			var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage ? Constants.PowerUps.QuadDamage.QuadDamageMultiplier : 1;
-			orb.ApplyDamage(Player, Constants.RocketLauncher.Damage * damageMultiplier);
 
 			Remove();
 		}
@@ -72,12 +68,28 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public override void OnRemoved()
 		{
 			if (GameSession.ServerMode)
-				return;
+			{
+				foreach (var entity in GameSession.PhysicsSimulation.GetEntitiesInArea(new Circle(WorldPosition, Constants.RocketLauncher.Range / 2)))
+				{
+					var orb = entity as Orb;
+					if (orb == null)
+						continue;
 
-			var explosion = GameSession.Effects.RocketExplosion.Allocate();
-			explosion.Emitters[0].ColorRange = Player.ColorRange;
+					var distance = Vector2.Distance(WorldPosition, orb.WorldPosition);
+					var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage
+						? Constants.PowerUps.QuadDamage.DamageMultiplier
+						: 1;
 
-			SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition + _visualOffset));
+					orb.ApplyDamage(Player, Constants.RocketLauncher.Damage * damageMultiplier * Constants.RocketLauncher.Range / distance);
+				}
+			}
+			else
+			{
+				var explosion = GameSession.Effects.RocketExplosion.Allocate();
+				explosion.Emitters[0].ColorRange = Player.ColorRange;
+
+				SceneGraph.Add(ParticleEffectNode.Create(GameSession.Allocator, explosion, WorldPosition + _visualOffset));
+			}
 		}
 
 		/// <summary>

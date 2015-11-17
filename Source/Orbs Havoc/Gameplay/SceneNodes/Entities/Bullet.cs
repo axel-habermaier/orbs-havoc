@@ -47,11 +47,11 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <param name="entity">The entity this entity collided with.</param>
 		public override void HandleCollision(Entity entity)
 		{
-			if (entity.Type != EntityType.Avatar || Player == entity.Player)
+			if (entity.Type != EntityType.Orb || Player == entity.Player)
 				return;
 
 			var orb = (Orb)entity;
-			var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage ? Constants.PowerUps.QuadDamage.QuadDamageMultiplier : 1;
+			var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage ? Constants.PowerUps.QuadDamage.DamageMultiplier : 1;
 			orb.ApplyDamage(Player, Constants.MiniGun.Damage * damageMultiplier);
 
 			Remove();

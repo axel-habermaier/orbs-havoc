@@ -34,6 +34,7 @@ namespace OrbsHavoc.Gameplay.Server
 	{
 		private readonly List<ColliderBehavior> _colliders = new List<ColliderBehavior>();
 		private readonly GameSession _gameSession;
+		private readonly List<Entity> _cachedList = new List<Entity>();
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -58,7 +59,7 @@ namespace OrbsHavoc.Gameplay.Server
 		}
 
 		/// <summary>
-		///   Reooves the given collider, causing collisions to no longer be registered for its associated entity.
+		///   Removes the given collider, causing collisions to no longer be registered for its associated entity.
 		/// </summary>
 		/// <param name="collider">The collider that should be removed.</param>
 		public void RemoveCollider(ColliderBehavior collider)
@@ -101,6 +102,23 @@ namespace OrbsHavoc.Gameplay.Server
 					entity2.HandleCollision(entity1);
 				}
 			}
+		}
+
+		/// <summary>
+		///   Gets all entities contained in the given area.
+		/// </summary>
+		/// <param name="area">The area that should be checked.</param>
+		public List<Entity> GetEntitiesInArea(Circle area)
+		{
+			_cachedList.Clear();
+
+			foreach (var collider in _colliders)
+			{
+				if (collider.Circle.Intersects(area))
+					_cachedList.Add(collider.SceneNode);
+			}
+
+			return _cachedList;
 		}
 	}
 }

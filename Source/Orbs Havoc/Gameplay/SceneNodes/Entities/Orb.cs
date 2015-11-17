@@ -46,7 +46,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// </summary>
 		public Orb()
 		{
-			Type = EntityType.Avatar;
+			Type = EntityType.Orb;
 			WeaponEnergyLevels[EntityType.MiniGun.GetWeaponSlot()] = 1;
 		}
 
@@ -106,7 +106,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			_nextHealthUpdate -= elapsedSeconds;
 			if (PowerUp == EntityType.Regeneration && _nextHealthUpdate <= 0)
 			{
-				Health = Math.Min(Constants.Orb.MaxRegenerationHealth, Health + Constants.PowerUps.Regeneration.RegenerationHealthIncrease);
+				Health = Math.Min(Constants.Orb.MaxRegenerationHealth, Health + Constants.PowerUps.Regeneration.HealthIncrease);
 				_nextHealthUpdate = 1;
 			}
 
@@ -172,16 +172,28 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 					}
 					break;
 				case EntityType.Regeneration:
+					CollectPowerUp(entity, Constants.PowerUps.Regeneration.Time);
+					break;
 				case EntityType.QuadDamage:
+					CollectPowerUp(entity, Constants.PowerUps.QuadDamage.Time);
+					break;
 				case EntityType.Invisibility:
-					if (PowerUp == EntityType.None)
-					{
-						PowerUp = entity.Type;
-						RemainingPowerUpTime = Constants.PowerUps.Regeneration.RegenerationTime;
-						entity.Remove();
-					}
+					CollectPowerUp(entity, Constants.PowerUps.Invisibility.Time);
 					break;
 			}
+		}
+
+		/// <summary>
+		///   Collects the power up, if possible.
+		/// </summary>
+		private void CollectPowerUp(Entity powerUp, float powerUpTime)
+		{
+			if (PowerUp != EntityType.None)
+				return;
+
+			PowerUp = powerUp.Type;
+			RemainingPowerUpTime = powerUpTime;
+			powerUp.Remove();
 		}
 
 		/// <summary>
@@ -214,7 +226,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			if (Health <= 0)
 				return;
 
-			Health -= PowerUp == EntityType.Armor ? damage * Constants.PowerUps.Armor.ArmorDamageFactor : damage;
+			Health -= PowerUp == EntityType.Armor ? damage * Constants.PowerUps.Armor.DamageFactor : damage;
 			if (Health > 0)
 				return;
 

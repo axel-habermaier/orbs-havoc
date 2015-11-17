@@ -85,29 +85,29 @@ namespace OrbsHavoc.Gameplay
 
 			public static class Speed
 			{
-				public const float SpeedRespawnDelay = 60;
-				public const float SpeedTime = 30;
+				public const float RespawnDelay = 60;
+				public const float Time = 30;
 			}
 
 			public static class Armor
 			{
-				public const float ArmorRespawnDelay = 60;
-				public const float ArmorDamageFactor = 0.5f;
-				public const float ArmorTime = 30;
+				public const float RespawnDelay = 60;
+				public const float DamageFactor = 0.5f;
+				public const float Time = 30;
 			}
 
 			public static class Regeneration
 			{
-				public const float RegenerationRespawnDelay = 60;
-				public const float RegenerationTime = 30;
-				public const float RegenerationHealthIncrease = 10;
+				public const float RespawnDelay = 60;
+				public const float Time = 30;
+				public const float HealthIncrease = 10;
 			}
 
 			public static class QuadDamage
 			{
-				public const float QuadDamageRespawnDelay = 60;
-				public const float QuadDamageTime = 30;
-				public const float QuadDamageMultiplier = 4;
+				public const float RespawnDelay = 60;
+				public const float Time = 30;
+				public const float DamageMultiplier = 4;
 			}
 		}
 
