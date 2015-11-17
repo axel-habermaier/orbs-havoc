@@ -211,6 +211,9 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		{
 			Assert.ArgumentNotNull(player, nameof(player));
 
+			if (Health <= 0)
+				return;
+
 			Health -= PowerUp == EntityType.Armor ? damage * Constants.PowerUps.Armor.ArmorDamageFactor : damage;
 			if (Health > 0)
 				return;

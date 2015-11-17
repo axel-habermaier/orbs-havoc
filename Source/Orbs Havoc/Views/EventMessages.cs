@@ -39,7 +39,6 @@ namespace OrbsHavoc.Views
 		private const int MaxMessageCount = 16;
 		private readonly StackPanel _layoutRoot = new StackPanel { Font = AssetBundle.Roboto14, IsHitTestVisible = false };
 		private readonly double[] _removalTimes = new double[MaxMessageCount];
-		private Clock _clock = new Clock();
 		private int _messageCount;
 
 		/// <summary>
@@ -152,7 +151,7 @@ namespace OrbsHavoc.Views
 		{
 			for (var i = 0; i < _messageCount; ++i)
 			{
-				var timedOut = _removalTimes[i] <= _clock.Seconds;
+				var timedOut = _removalTimes[i] <= Clock.GetTime();
 				if (!timedOut)
 					continue;
 
@@ -165,7 +164,7 @@ namespace OrbsHavoc.Views
 
 				// Remove the removal time
 				if (i != _messageCount)
-					Array.Copy(_removalTimes, i + 1, _removalTimes, i, MaxMessageCount - i - 1);
+					Array.Copy(_removalTimes, i + 1, _removalTimes, i, _messageCount - i - 1);
 
 				--_messageCount;
 				--i;
@@ -206,7 +205,7 @@ namespace OrbsHavoc.Views
 
 			_layoutRoot.Children[_messageCount].Visibility = Visibility.Visible;
 			((Label)_layoutRoot.Children[_messageCount]).Text = message;
-			_removalTimes[_messageCount] = _clock.Seconds + (isChatMessage ? Cvars.ChatMessageDisplayTime : Cvars.EventMessageDisplayTime);
+			_removalTimes[_messageCount] = Clock.GetTime() + (isChatMessage ? Cvars.ChatMessageDisplayTime : Cvars.EventMessageDisplayTime);
 			++_messageCount;
 
 			Log.Info("{0}", message);
