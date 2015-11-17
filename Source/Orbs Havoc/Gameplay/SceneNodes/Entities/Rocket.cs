@@ -69,7 +69,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		{
 			if (GameSession.ServerMode)
 			{
-				foreach (var entity in GameSession.PhysicsSimulation.GetEntitiesInArea(new Circle(WorldPosition, Constants.RocketLauncher.Range / 2)))
+				foreach (var entity in GameSession.PhysicsSimulation.GetEntitiesInArea(new Circle(WorldPosition, Weapons.RocketLauncher.Range / 2)))
 				{
 					var orb = entity as Orb;
 					if (orb == null)
@@ -77,10 +77,10 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 
 					var distance = Vector2.Distance(WorldPosition, orb.WorldPosition);
 					var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage
-						? Constants.PowerUps.QuadDamage.DamageMultiplier
+						? PowerUps.QuadDamage.DamageMultiplier
 						: 1;
 
-					orb.ApplyDamage(Player, Constants.RocketLauncher.Damage * damageMultiplier * Constants.RocketLauncher.Range / distance);
+					orb.ApplyDamage(Player, Weapons.RocketLauncher.Damage * damageMultiplier * Weapons.RocketLauncher.Range / distance);
 				}
 			}
 			else

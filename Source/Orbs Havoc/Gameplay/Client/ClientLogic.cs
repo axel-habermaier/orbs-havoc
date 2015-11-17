@@ -327,7 +327,7 @@ namespace OrbsHavoc.Gameplay.Client
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			var orb = _entityMap[message.Orb] as Orb;
+			var orb = _entityMap[message.Entity] as Orb;
 			if (orb == null)
 				return;
 
@@ -337,7 +337,7 @@ namespace OrbsHavoc.Gameplay.Client
 			orb.PrimaryWeapon = message.PrimaryWeapon;
 			orb.SecondaryWeapon = message.SecondaryWeapon;
 
-			for (var i = 0; i < Constants.Orb.WeaponCount; ++i)
+			for (var i = 0; i < Orb.WeaponCount; ++i)
 				orb.WeaponEnergyLevels[i] = message.WeaponEnergyLevels[i];
 		}
 

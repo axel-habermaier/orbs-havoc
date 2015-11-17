@@ -48,7 +48,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// <summary>
 		///   Gets or sets the weapon's template.
 		/// </summary>
-		protected Constants.WeaponTemplate Template { get; set; }
+		protected Weapons.WeaponTemplate Template { get; set; }
 
 		/// <summary>
 		///   Gets or sets the weapon's energy level.

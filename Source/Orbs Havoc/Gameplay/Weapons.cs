@@ -24,10 +24,7 @@ namespace OrbsHavoc.Gameplay
 {
 	using SceneNodes.Entities;
 
-	/// <summary>
-	///   Provides gameplay-specific constants.
-	/// </summary>
-	internal static class Constants
+	internal static class Weapons
 	{
 		public static WeaponTemplate MiniGun = new WeaponTemplate
 		{
@@ -74,58 +71,6 @@ namespace OrbsHavoc.Gameplay
 			MiniGun, // TODO: Mine
 			MiniGun, // TODO: ShockWave
 		};
-
-		public static class PowerUps
-		{
-			public static class Invisibility
-			{
-				public const float RespawnDelay = 60;
-				public const float Time = 30;
-			}
-
-			public static class Speed
-			{
-				public const float RespawnDelay = 60;
-				public const float Time = 30;
-			}
-
-			public static class Armor
-			{
-				public const float RespawnDelay = 60;
-				public const float DamageFactor = 0.5f;
-				public const float Time = 30;
-			}
-
-			public static class Regeneration
-			{
-				public const float RespawnDelay = 60;
-				public const float Time = 30;
-				public const float HealthIncrease = 10;
-			}
-
-			public static class QuadDamage
-			{
-				public const float RespawnDelay = 60;
-				public const float Time = 30;
-				public const float DamageMultiplier = 4;
-			}
-		}
-
-		public static class HealthCollectible
-		{
-			public const float HealthRespawnDelay = 10;
-			public const float HealthCollectibleHealthIncrease = 20;
-		}
-
-		public static class Orb
-		{
-			public const float CriticalHealthThreshold = 35;
-			public const float MaxHealth = 100;
-			public const float MaxRegenerationHealth = 200;
-			public const float MaxHealthLimitExceededDecrease = 5;
-			public const float RespawnDelay = 2;
-			public const int WeaponCount = 8;
-		}
 
 		internal struct WeaponTemplate
 		{

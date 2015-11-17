@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Network.Messages
 {
-	using Gameplay;
 	using Gameplay.SceneNodes.Entities;
 	using Platform.Memory;
 	using Utilities;
@@ -36,12 +35,12 @@ namespace OrbsHavoc.Network.Messages
 		/// <summary>
 		///   Gets the orb that is updated.
 		/// </summary>
-		public NetworkIdentity Orb { get; private set; }
+		public NetworkIdentity Entity { get; private set; }
 
 		/// <summary>
 		///   Gets the energy levels of the orb's weapons.
 		/// </summary>
-		public int[] WeaponEnergyLevels { get; } = new int[Constants.Orb.WeaponCount];
+		public int[] WeaponEnergyLevels { get; } = new int[Orb.WeaponCount];
 
 		/// <summary>
 		///   Gets or sets the orb's primary weapon.
@@ -74,7 +73,7 @@ namespace OrbsHavoc.Network.Messages
 		/// <param name="writer">The writer that should be used to serialize the message.</param>
 		public override void Serialize(ref BufferWriter writer)
 		{
-			WriteIdentifier(ref writer, Orb);
+			WriteIdentifier(ref writer, Entity);
 			writer.WriteByte((byte)PrimaryWeapon);
 			writer.WriteByte((byte)SecondaryWeapon);
 			writer.WriteByte((byte)PowerUp);
@@ -91,14 +90,14 @@ namespace OrbsHavoc.Network.Messages
 		/// <param name="reader">The reader that should be used to deserialize the message.</param>
 		public override void Deserialize(ref BufferReader reader)
 		{
-			Orb = ReadIdentifier(ref reader);
+			Entity = ReadIdentifier(ref reader);
 			PrimaryWeapon = (EntityType)reader.ReadByte();
 			SecondaryWeapon = (EntityType)reader.ReadByte();
 			PowerUp = (EntityType)reader.ReadByte();
 			RemainingPowerUpTime = reader.ReadByte();
 			Health = reader.ReadByte();
 
-			for (var i = 0; i < Constants.Orb.WeaponCount; ++i)
+			for (var i = 0; i < Orb.WeaponCount; ++i)
 				WeaponEnergyLevels[i] = reader.ReadByte();
 		}
 
@@ -123,14 +122,14 @@ namespace OrbsHavoc.Network.Messages
 			Assert.ArgumentNotNull(orb, nameof(orb));
 
 			var message = poolAllocator.Allocate<UpdateOrbMessage>();
-			message.Orb = orb.NetworkIdentity;
+			message.Entity = orb.NetworkIdentity;
 			message.PowerUp = orb.PowerUp;
 			message.RemainingPowerUpTime = orb.RemainingPowerUpTime;
 			message.Health = orb.Health;
 			message.PrimaryWeapon = orb.PrimaryWeapon;
 			message.SecondaryWeapon = orb.SecondaryWeapon;
 
-			for (var i = 0; i < Constants.Orb.WeaponCount; ++i)
+			for (var i = 0; i < Orb.WeaponCount; ++i)
 				message.WeaponEnergyLevels[i] = orb.WeaponEnergyLevels[i];
 
 			return message;
@@ -141,7 +140,7 @@ namespace OrbsHavoc.Network.Messages
 		/// </summary>
 		public override string ToString()
 		{
-			return $"{MessageType}, Avatar={Orb}";
+			return $"{MessageType}, Avatar={Entity}";
 		}
 	}
 }
