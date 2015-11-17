@@ -230,8 +230,12 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			if (Health > 0)
 				return;
 
-			++player.Kills;
-			++Player.Deaths;
+			// Only increase the kill count if the player didn't commit suicide... otherwise, 
+			// constant self-killing might win a game!
+			if (player != Player)
+				player.Kills += 1;
+
+			Player.Deaths += 1;
 
 			GameSession.Broadcast(PlayerKillMessage.Create(GameSession.Allocator, player.Identity, Player.Identity));
 			Remove();
