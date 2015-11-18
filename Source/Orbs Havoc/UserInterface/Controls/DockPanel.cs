@@ -95,9 +95,7 @@ namespace OrbsHavoc.UserInterface.Controls
 				}
 			}
 
-			return new Size(
-				Math.Max(dockSize.Width, accumulatedSize.Width),
-				Math.Max(dockSize.Height, accumulatedSize.Height));
+			return new Size(Math.Max(dockSize.Width, accumulatedSize.Width), Math.Max(dockSize.Height, accumulatedSize.Height));
 		}
 
 		/// <summary>

@@ -43,7 +43,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			Speed = 500,
 			WeaponType = EntityType.RocketLauncher,
 			MaxEnergy = 20,
-			Damage = 35,
+			Damage = 45,
 			Range = 200,
 			MinSpread = 0,
 			MaxSpread = 0

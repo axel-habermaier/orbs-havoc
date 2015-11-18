@@ -61,7 +61,7 @@ namespace OrbsHavoc.UserInterface
 		private Vector2 _relativeVisualOffset;
 
 		/// <summary>
-		///   The state of the UI element;
+		///   The state of the UI element.
 		/// </summary>
 		private State _state;
 

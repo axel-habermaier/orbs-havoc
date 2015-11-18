@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.UserInterface.Controls
 {
+	using System.Numerics;
 	using Utilities;
 
 	/// <summary>
@@ -194,6 +195,14 @@ namespace OrbsHavoc.UserInterface.Controls
 			_templateRoot.Arrange(new Rectangle(0, 0, finalSize));
 
 			return new Size(_templateRoot.RenderSize.Width + Padding.Width, _templateRoot.RenderSize.Height + Padding.Height);
+		}
+
+		/// <summary>
+		///   Gets the additional offset that should be applied to the visual offset of the UI element's children.
+		/// </summary>
+		protected override Vector2 GetAdditionalChildrenOffset()
+		{
+			return new Vector2(_padding.Left, _padding.Top);
 		}
 	}
 }

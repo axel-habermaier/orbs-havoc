@@ -152,8 +152,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		protected override Vector2 GetAdditionalChildrenOffset()
 		{
-			var padding = Padding;
-			return new Vector2(padding.Left, padding.Top);
+			return new Vector2(_padding.Left, _padding.Top);
 		}
 
 		/// <summary>

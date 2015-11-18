@@ -166,10 +166,10 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element's children.</param>
 		protected override void DrawChildren(SpriteBatch spriteBatch)
 		{
-			var width = MathUtils.RoundIntegral(ActualWidth);
-			var height = MathUtils.RoundIntegral(ActualHeight);
-			var x = MathUtils.RoundIntegral(VisualOffset.X);
-			var y = MathUtils.RoundIntegral(VisualOffset.Y);
+			var width = MathUtils.Round(ActualWidth);
+			var height = MathUtils.Round(ActualHeight);
+			var x = MathUtils.Round(VisualOffset.X);
+			var y = MathUtils.Round(VisualOffset.Y);
 
 			var scissorArea = spriteBatch.RenderState.ScissorArea;
 			var camera = spriteBatch.RenderState.Camera;

@@ -24,6 +24,7 @@ namespace OrbsHavoc.Views
 {
 	using System.Net;
 	using System.Numerics;
+	using System.Threading;
 	using Assets;
 	using Gameplay;
 	using Gameplay.Client;
@@ -234,7 +235,14 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private void Connect(IPAddress serverAddress, ushort serverPort)
 		{
-			Disconnect();
+			if (_clientLogic != null)
+			{
+				// We're already connected, so disconnect first, then wait a bit for the server to actually remove
+				// the player; this prevents "server is full" situations when the player has not yet been removed
+				// before he connects again to the same server
+				Disconnect();
+				Thread.Sleep(75);
+			}
 
 			ServerEndPoint = new IPEndPoint(serverAddress, serverPort);
 

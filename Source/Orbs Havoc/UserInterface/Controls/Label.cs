@@ -126,8 +126,8 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </param>
 		protected override Size ArrangeCore(Size finalSize)
 		{
-			var width = Single.IsInfinity(finalSize.Width) ? Int32.MaxValue : (int)Math.Round(finalSize.Width);
-			var height = Single.IsInfinity(finalSize.Height) ? Int32.MaxValue : (int)Math.Round(finalSize.Height);
+			var width = Single.IsInfinity(finalSize.Width) ? Int32.MaxValue : MathUtils.Round(finalSize.Width);
+			var height = Single.IsInfinity(finalSize.Height) ? Int32.MaxValue : MathUtils.Round(finalSize.Height);
 
 			return _textLayout.Arrange(Font, Text, new Size(width, height), 0, TextAlignment, TextWrapping);
 		}
@@ -138,8 +138,8 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <param name="position">The logical position of the caret.</param>
 		internal Vector2 ComputeCaretPosition(int position)
 		{
-			var x = (int)Math.Round(VisualOffset.X);
-			var y = (int)Math.Round(VisualOffset.Y);
+			var x = MathUtils.Round(VisualOffset.X);
+			var y = MathUtils.Round(VisualOffset.Y);
 			return _textLayout.ComputeCaretPosition(position) + new Vector2(x, y);
 		}
 
@@ -149,8 +149,8 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <param name="position">The position the closest character should be returned for.</param>
 		internal int GetCharacterIndexAt(Vector2 position)
 		{
-			var x = (int)Math.Round(VisualOffset.X);
-			var y = (int)Math.Round(VisualOffset.Y);
+			var x = MathUtils.Round(VisualOffset.X);
+			var y = MathUtils.Round(VisualOffset.Y);
 			return _textLayout.GetCharacterIndexAt(position - new Vector2(x, y));
 		}
 
@@ -174,8 +174,8 @@ namespace OrbsHavoc.UserInterface.Controls
 		{
 			base.DrawCore(spriteBatch);
 
-			var x = (int)Math.Round(VisualOffset.X);
-			var y = (int)Math.Round(VisualOffset.Y);
+			var x = MathUtils.Round(VisualOffset.X);
+			var y = MathUtils.Round(VisualOffset.Y);
 
 			spriteBatch.RenderState.Layer += 1;
 			_textLayout.Draw(spriteBatch, new Vector2(x, y), Foreground);
