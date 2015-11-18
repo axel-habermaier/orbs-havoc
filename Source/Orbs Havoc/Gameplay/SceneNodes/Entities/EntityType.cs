@@ -22,8 +22,6 @@
 
 namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 {
-	using System;
-
 	/// <summary>
 	///   Identifies the type of an entity.
 	/// </summary>
@@ -72,29 +70,17 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Gets the weapon slot corresponding to the given entity type.
 		/// </summary>
-		public static int GetWeaponSlot(this EntityType type)
+		public static int GetWeaponSlot(this EntityType weapon)
 		{
-			switch (type)
-			{
-				case EntityType.MiniGun:
-					return 0;
-				case EntityType.PlasmaGun:
-					return 1;
-				case EntityType.LightingGun:
-					return 2;
-				case EntityType.RocketLauncher:
-					return 3;
-				case EntityType.Bfg:
-					return 4;
-				case EntityType.Bomb:
-					return 5;
-				case EntityType.Mine:
-					return 6;
-				case EntityType.ShockWave:
-					return 7;
-				default:
-					throw new InvalidOperationException("The given entity type is not a weapon.");
-			}
+			return (int)weapon - (int)EntityType.MiniGun;
+		}
+
+		/// <summary>
+		///   Gets the weapon slot corresponding to the given entity type.
+		/// </summary>
+		public static EntityType GetWeaponFromSlot(this int weaponSlot)
+		{
+			return (EntityType)(weaponSlot + (int)EntityType.MiniGun);
 		}
 
 		/// <summary>

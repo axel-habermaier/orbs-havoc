@@ -41,7 +41,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public const float MaxRegenerationHealth = 200;
 		public const float MaxHealthLimitExceededDecrease = 5;
 		public const float RespawnDelay = 2;
-		public const int WeaponCount = 8;
+		public const int WeaponsCount = 8;
 
 		private ParticleEffect _coreEffect;
 		private float _nextHealthUpdate;
@@ -60,7 +60,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <summary>
 		///   Gets the energy levels of the orb's weapons.
 		/// </summary>
-		public int[] WeaponEnergyLevels { get; } = new int[WeaponCount];
+		public int[] WeaponEnergyLevels { get; } = new int[WeaponsCount];
 
 		/// <summary>
 		///   Gets or sets the orb's primary weapon.
@@ -174,7 +174,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 				case EntityType.Health:
 					if (Health < 100)
 					{
-						Health = Math.Min(100, Health + HealthCollectible.HealthIncrease);
+						Health = Math.Min(100, Health + Collectible.Health.HealthIncrease);
 						entity.Remove();
 					}
 					break;
@@ -284,7 +284,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			orb._sprite = null;
 
 			// Reset the weapon energy levels, skipping the mini gun which can always be used
-			for (var i = 1; i < WeaponCount; ++i)
+			for (var i = 1; i < WeaponsCount; ++i)
 				orb.WeaponEnergyLevels[i] = Weapons.WeaponTemplates[i].MaxEnergy;
 
 			player.Orb = orb;

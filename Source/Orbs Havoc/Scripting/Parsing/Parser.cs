@@ -340,6 +340,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			var modifiers = KeyModifiers.None;
 			Key? key = null;
 			MouseButton? button = null;
+			MouseWheelDirection? direction = null;
 
 			while (true)
 			{
@@ -377,9 +378,20 @@ namespace OrbsHavoc.Scripting.Parsing
 						try
 						{
 							if (normalizedValue.StartsWith("key."))
-								key = (Key)Enum.Parse(typeof(Key), normalizedValue.Substring("key.".Length), ignoreCase: true);
+							{
+								var literal = normalizedValue.Substring("key.".Length);
+								key = (Key)Enum.Parse(typeof(Key), literal, ignoreCase: true);
+							}
 							else if (normalizedValue.StartsWith("mouse."))
-								button = (MouseButton)Enum.Parse(typeof(MouseButton), normalizedValue.Substring("mouse.".Length), ignoreCase: true);
+							{
+								var literal = normalizedValue.Substring("mouse.".Length);
+								button = (MouseButton)Enum.Parse(typeof(MouseButton), literal, ignoreCase: true);
+							}
+							else if (normalizedValue.StartsWith("mousewheel."))
+							{
+								var literal = normalizedValue.Substring("mousewheel.".Length);
+								direction = (MouseWheelDirection)Enum.Parse(typeof(MouseWheelDirection), literal, ignoreCase: true);
+							}
 							else
 							{
 								inputStream.State = begin;
@@ -408,6 +420,9 @@ namespace OrbsHavoc.Scripting.Parsing
 
 			if (button != null)
 				return new ConfigurableInput(button.Value, modifiers);
+
+			if (direction != null)
+				return new ConfigurableInput(direction.Value, modifiers);
 
 			inputStream.State = state;
 			throw new ParseException(inputStream, "Input must use a key or a mouse button.");

@@ -195,7 +195,7 @@ THE SOFTWARE.</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=065E0F48E7C10B4BA81D82F2DD6C492B/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=065E0F48E7C10B4BA81D82F2DD6C492B/Shortcut/@EntryValue">anw</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=065E0F48E7C10B4BA81D82F2DD6C492B/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=065E0F48E7C10B4BA81D82F2DD6C492B/Text/@EntryValue">PointWars.Utilities.Assert.ArgumentNotNullOrWhitespace($arg$, nameof($arg$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=065E0F48E7C10B4BA81D82F2DD6C492B/Text/@EntryValue">OrbsHavoc.Utilities.Assert.ArgumentNotNullOrWhitespace($arg$, nameof($arg$));</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/Field/=arg/@KeyIndexDefined">True</s:Boolean>
@@ -206,7 +206,7 @@ THE SOFTWARE.</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/Shortcut/@EntryValue">ann</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/Text/@EntryValue">PointWars.Utilities.Assert.ArgumentNotNull($arg$, nameof($arg$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C15E79DFD1ED044F8500A398FBB77D20/Text/@EntryValue">OrbsHavoc.Utilities.Assert.ArgumentNotNull($arg$, nameof($arg$));</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/Field/=arg/@KeyIndexDefined">True</s:Boolean>
@@ -217,4 +217,4 @@ THE SOFTWARE.</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/Shortcut/@EntryValue">air</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/Text/@EntryValue">PointWars.Utilities.Assert.ArgumentInRange($arg$, nameof($arg$));</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D84F0CD8C32F2C418D3484086A87BFED/Text/@EntryValue">OrbsHavoc.Utilities.Assert.ArgumentInRange($arg$, nameof($arg$));</s:String></wpf:ResourceDictionary>

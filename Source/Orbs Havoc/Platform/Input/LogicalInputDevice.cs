@@ -137,6 +137,9 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		protected override void OnDisposing()
 		{
+			while (_inputs.Count > 0)
+				Remove(_inputs[0]);
+
 			Keyboard.SafeDispose();
 			Mouse.SafeDispose();
 		}

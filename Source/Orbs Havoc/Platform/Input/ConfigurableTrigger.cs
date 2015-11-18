@@ -94,6 +94,7 @@ namespace OrbsHavoc.Platform.Input
 				_configurableInput.Changed -= OnConfigurableInputChanged;
 
 			_device = device;
+			_inputTrigger.SetLogicalDevice(device);
 		}
 
 		/// <summary>

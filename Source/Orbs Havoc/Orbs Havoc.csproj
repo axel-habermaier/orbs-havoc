@@ -27,6 +27,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\Build\Release\</OutputPath>
@@ -73,11 +74,10 @@
     </Compile>
     <Compile Include="Gameplay\Client\LevelRenderer.cs" />
     <Compile Include="Gameplay\Client\ParticleReflectionModifier.cs" />
-    <Compile Include="Gameplay\HealthCollectible.cs" />
-    <Compile Include="Gameplay\Weapons.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\Weapons.cs" />
     <Compile Include="Gameplay\Level.cs" />
     <Compile Include="Gameplay\PlayerKind.cs" />
-    <Compile Include="Gameplay\PowerUps.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\PowerUps.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Rocket.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Collectible.cs" />
     <Compile Include="Gameplay\Behaviors\SpawnBehavior.cs" />
@@ -148,6 +148,7 @@
     <Compile Include="Network\ServerQuitException.cs" />
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
     <Compile Include="Platform\Graphics\GraphicsHelpers.cs" />
+    <Compile Include="Platform\Input\MouseWheelTrigger.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
     <Compile Include="Platform\Memory\BufferOverflowException.cs" />
     <Compile Include="Rendering\BloomEffect.cs" />

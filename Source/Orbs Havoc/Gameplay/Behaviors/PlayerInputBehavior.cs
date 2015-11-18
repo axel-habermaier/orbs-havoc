@@ -35,7 +35,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		private const float MaxSpeed = 4000;
 		private const float MaxAcceleration = 4000;
 		private const float Drag = .85f;
-		private readonly WeaponBehavior[] _weapons = new WeaponBehavior[Orb.WeaponCount];
+		private readonly WeaponBehavior[] _weapons = new WeaponBehavior[Orb.WeaponsCount];
 		private Vector2 _acceleration;
 
 		/// <summary>

@@ -84,7 +84,7 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public override string ToString()
 		{
-			return String.Format("Key({1}, {0})", _triggerType, _key);
+			return $"Key({_key}, {_triggerType})";
 		}
 	}
 }

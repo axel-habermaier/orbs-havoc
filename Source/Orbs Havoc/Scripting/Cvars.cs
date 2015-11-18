@@ -139,6 +139,18 @@ namespace OrbsHavoc.Scripting
 		ConfigurableInput InputChat { get; set; }
 
 		/// <summary>
+		///   When the input is triggered in an active game session, the next available primary weapon is selected.
+		/// </summary>
+		[DefaultValue(MouseWheelDirection.Up), Persistent]
+		ConfigurableInput InputNextWeapon { get; set; }
+
+		/// <summary>
+		///   When the input is triggered in an active game session, the previous available primary weapon is selected.
+		/// </summary>
+		[DefaultValue(MouseWheelDirection.Down), Persistent]
+		ConfigurableInput InputPreviousWeapon { get; set; }
+
+		/// <summary>
 		///   When the input is triggered in an active game session, selects the minigun.
 		/// </summary>
 		[DefaultValue(Key.Num1), Persistent]

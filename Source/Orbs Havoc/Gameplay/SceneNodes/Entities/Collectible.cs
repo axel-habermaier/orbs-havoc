@@ -91,5 +91,11 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 
 			return collectible;
 		}
+
+		public static class Health
+		{
+			public const float RespawnDelay = 10;
+			public const float HealthIncrease = 20;
+		}
 	}
 }

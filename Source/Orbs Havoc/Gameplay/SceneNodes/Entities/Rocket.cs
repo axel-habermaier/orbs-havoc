@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 {
+	using System;
 	using System.Numerics;
 	using Behaviors;
 	using Utilities;
@@ -47,7 +48,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <param name="entity">The entity this entity collided with.</param>
 		public override void HandleCollision(Entity entity)
 		{
-			if (Player == entity.Player)
+			if (Player == entity.Player || entity.Type != EntityType.Orb)
 				return;
 
 			Remove();
@@ -69,18 +70,19 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		{
 			if (GameSession.ServerMode)
 			{
-				foreach (var entity in GameSession.PhysicsSimulation.GetEntitiesInArea(new Circle(WorldPosition, Weapons.RocketLauncher.Range / 2)))
+				var radius = Weapons.RocketLauncher.Range;
+				foreach (var entity in GameSession.PhysicsSimulation.GetEntitiesInArea(new Circle(WorldPosition, radius)))
 				{
 					var orb = entity as Orb;
 					if (orb == null)
 						continue;
 
-					var distance = Vector2.Distance(WorldPosition, orb.WorldPosition);
+					var distanceMultiplier = Math.Max(0, (radius - Vector2.Distance(WorldPosition, orb.WorldPosition)) / radius);
 					var damageMultiplier = Player.Orb != null && Player.Orb.PowerUp == EntityType.QuadDamage
 						? PowerUps.QuadDamage.DamageMultiplier
 						: 1;
 
-					orb.ApplyDamage(Player, Weapons.RocketLauncher.Damage * damageMultiplier * Weapons.RocketLauncher.Range / distance);
+					orb.ApplyDamage(Player, Weapons.RocketLauncher.Damage * damageMultiplier * distanceMultiplier);
 				}
 			}
 			else

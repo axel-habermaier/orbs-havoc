@@ -22,36 +22,29 @@
 
 namespace OrbsHavoc.Platform.Input
 {
-	using System;
 	using Utilities;
 
 	/// <summary>
-	///   Represents a trigger that triggers if a mouse button is in a certain state.
+	///   Represents a trigger that triggers if the mouse wheel is turned in a certain direction.
 	/// </summary>
-	internal class MouseTrigger : InputTrigger
+	internal class MouseWheelTrigger : InputTrigger
 	{
 		/// <summary>
-		///   The mouse button that is monitored by the trigger.
+		///   The direction the mouse wheel must be turned in order to trigger the trigger.
 		/// </summary>
-		private readonly MouseButton _button;
+		private readonly MouseWheelDirection _direction;
 
-		/// <summary>
-		///   Determines the type of the trigger.
-		/// </summary>
-		private readonly MouseTriggerType _triggerType;
+		private LogicalInputDevice _device;
+		private bool _isTriggered;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="triggerType"> Determines the type of the trigger.</param>
-		/// <param name="button">The mouse button that is monitored by the trigger.</param>
-		internal MouseTrigger(MouseTriggerType triggerType, MouseButton button)
+		/// <param name="direction">The direction the mouse wheel must be turned in order to trigger the trigger.</param>
+		internal MouseWheelTrigger(MouseWheelDirection direction)
 		{
-			Assert.ArgumentInRange(triggerType, nameof(triggerType));
-			Assert.ArgumentInRange(button, nameof(button));
-
-			_triggerType = triggerType;
-			_button = button;
+			Assert.ArgumentInRange(direction, nameof(direction));
+			_direction = direction;
 		}
 
 		/// <summary>
@@ -62,19 +55,38 @@ namespace OrbsHavoc.Platform.Input
 		{
 			Assert.ArgumentNotNull(device, nameof(device));
 
-			switch (_triggerType)
-			{
-				case MouseTriggerType.Released:
-					return !device.Mouse.IsPressed(_button);
-				case MouseTriggerType.WentDown:
-					return device.Mouse.WentDown(_button);
-				case MouseTriggerType.Pressed:
-					return device.Mouse.IsPressed(_button);
-				case MouseTriggerType.WentUp:
-					return device.Mouse.WentUp(_button);
-				default:
-					return false;
-			}
+			var isTriggered = _isTriggered;
+			_isTriggered = false;
+			return isTriggered;
+		}
+
+		/// <summary>
+		///   Sets the logical input device the logical input is currently registered on.
+		/// </summary>
+		/// <param name="device">
+		///   The logical input device the logical input is currently registered on. Null should be passed to
+		///   indicate that the logical input is currently not registered on any device.
+		/// </param>
+		internal override void SetLogicalDevice(LogicalInputDevice device)
+		{
+			if (device == _device)
+				return;
+
+			if (_device != null)
+				_device.Mouse.Wheel -= OnMouseWheel;
+
+			if (device != null)
+				device.Mouse.Wheel += OnMouseWheel;
+
+			_device = device;
+		}
+
+		/// <summary>
+		///   Handles mouse wheel inputs.
+		/// </summary>
+		private void OnMouseWheel(MouseWheelDirection direction)
+		{
+			_isTriggered = direction == _direction;
 		}
 
 		/// <summary>
@@ -82,7 +94,7 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public override string ToString()
 		{
-			return $"Mouse({_button}, {_triggerType})";
+			return $"MouseWheel.{_direction}";
 		}
 	}
 }

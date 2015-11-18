@@ -39,6 +39,8 @@ namespace OrbsHavoc.Platform.Input
 		public ConfigurableInput(Key key, KeyModifiers modifiers)
 			: this()
 		{
+			Assert.ArgumentInRange(key, nameof(key));
+
 			Key = key;
 			Modifiers = modifiers;
 		}
@@ -51,17 +53,33 @@ namespace OrbsHavoc.Platform.Input
 		public ConfigurableInput(MouseButton mouseButton, KeyModifiers modifiers)
 			: this()
 		{
+			Assert.ArgumentInRange(mouseButton, nameof(mouseButton));
+
 			MouseButton = mouseButton;
 			Modifiers = modifiers;
 		}
 
 		/// <summary>
-		///   Gets the key that triggers the input, or null if a mouse button triggers the input.
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="direction">The direction the mouse wheel must be turned in that triggers the input.</param>
+		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
+		public ConfigurableInput(MouseWheelDirection direction, KeyModifiers modifiers)
+			: this()
+		{
+			Assert.ArgumentInRange(direction, nameof(direction));
+
+			MouseWheelDirection = direction;
+			Modifiers = modifiers;
+		}
+
+		/// <summary>
+		///   Gets the key that triggers the input, or null if a mouse button or the mouse wheel triggers the input.
 		/// </summary>
 		public Key? Key { get; }
 
 		/// <summary>
-		///   Gets the mouse button that triggers the input, or null if a key triggers the input.
+		///   Gets the mouse button that triggers the input, or null if a key or the mouse wheel triggers the input.
 		/// </summary>
 		public MouseButton? MouseButton { get; }
 
@@ -71,12 +89,17 @@ namespace OrbsHavoc.Platform.Input
 		public KeyModifiers Modifiers { get; }
 
 		/// <summary>
+		///   Gets the direction the mouse wheel must be turned in that triggers the input, or null if a key or mouse button triggers
+		///   the input.
+		/// </summary>
+		public MouseWheelDirection? MouseWheelDirection { get; }
+
+		/// <summary>
 		///   Implicitly creates a configurable input for the given key.
 		/// </summary>
 		/// <param name="key">The key the configurable input should be created for.</param>
 		public static implicit operator ConfigurableInput(Key key)
 		{
-			Assert.ArgumentInRange(key, nameof(key));
 			return new ConfigurableInput(key, KeyModifiers.None);
 		}
 
@@ -86,8 +109,16 @@ namespace OrbsHavoc.Platform.Input
 		/// <param name="mouseButton">The mouse button the configurable input should be created for.</param>
 		public static implicit operator ConfigurableInput(MouseButton mouseButton)
 		{
-			Assert.ArgumentInRange(mouseButton, nameof(mouseButton));
 			return new ConfigurableInput(mouseButton, KeyModifiers.None);
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="direction">The direction the mouse wheel must be turned in that triggers the input.</param>
+		public static implicit operator ConfigurableInput(MouseWheelDirection direction)
+		{
+			return new ConfigurableInput(direction, KeyModifiers.None);
 		}
 
 		/// <summary>
@@ -97,8 +128,8 @@ namespace OrbsHavoc.Platform.Input
 		/// <param name="mouseTriggerType">Determines the type of a mouse input trigger.</param>
 		public InputTrigger ToInputTrigger(KeyTriggerType keyTriggerType, MouseTriggerType mouseTriggerType)
 		{
-			Assert.That(Key != null || MouseButton != null, "Invalid configurable input: Neither key nor mouse button required.");
-			Assert.That(Key == null || MouseButton == null, "Invalid configurable input: Either key or mouse button must be null.");
+			Assert.That(Key != null || MouseButton != null || MouseWheelDirection != null, 
+				"Invalid configurable input: Neither key nor mouse button nor mouse wheel is set.");
 
 			InputTrigger trigger = null;
 
@@ -107,6 +138,9 @@ namespace OrbsHavoc.Platform.Input
 
 			if (MouseButton != null)
 				trigger = new MouseTrigger(mouseTriggerType, MouseButton.Value);
+
+			if (MouseWheelDirection != null)
+				trigger = new MouseWheelTrigger(MouseWheelDirection.Value);
 
 			if ((Modifiers & KeyModifiers.Alt) != 0 && (Modifiers & KeyModifiers.Shift) != 0 && (Modifiers & KeyModifiers.Control) != 0)
 				trigger &= (Input.Key.LeftAlt.IsPressed() | Input.Key.RightAlt.IsPressed()) &
@@ -145,7 +179,9 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public bool Equals(ConfigurableInput other)
 		{
-			return Key == other.Key && MouseButton == other.MouseButton && Modifiers == other.Modifiers;
+			return Key == other.Key &&
+				   MouseButton == other.MouseButton && Modifiers == other.Modifiers &&
+				   MouseWheelDirection == other.MouseWheelDirection;
 		}
 
 		/// <summary>
@@ -195,6 +231,9 @@ namespace OrbsHavoc.Platform.Input
 		{
 			var builder = new StringBuilder();
 			builder.Append("[");
+
+			if (MouseWheelDirection != null)
+				builder.Append("MouseWheel." + MouseWheelDirection.Value);
 
 			if (Key != null)
 				builder.Append("Key." + Key.Value);

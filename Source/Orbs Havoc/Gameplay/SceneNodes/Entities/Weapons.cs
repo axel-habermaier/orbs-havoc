@@ -20,10 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Gameplay
+namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 {
-	using SceneNodes.Entities;
-
 	internal static class Weapons
 	{
 		public static WeaponTemplate MiniGun = new WeaponTemplate
@@ -57,19 +55,19 @@ namespace OrbsHavoc.Gameplay
 			DepleteSpeed = 50,
 			Range = 2000,
 			WeaponType = EntityType.LightingGun,
-			MaxEnergy = 200
+			MaxEnergy = 0
 		};
 
 		public static readonly WeaponTemplate[] WeaponTemplates =
 		{
 			MiniGun,
-			MiniGun, // TODO: Plasma
+			LightingGun, // TODO: Plasma
 			LightingGun,
 			RocketLauncher,
-			MiniGun, // TODO: BFG
-			MiniGun, // TODO: Bomb
-			MiniGun, // TODO: Mine
-			MiniGun, // TODO: ShockWave
+			LightingGun, // TODO: BFG
+			LightingGun, // TODO: Bomb
+			LightingGun, // TODO: Mine
+			LightingGun, // TODO: ShockWave
 		};
 
 		internal struct WeaponTemplate

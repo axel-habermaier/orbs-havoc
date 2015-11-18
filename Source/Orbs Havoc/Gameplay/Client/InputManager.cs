@@ -38,7 +38,9 @@ namespace OrbsHavoc.Gameplay.Client
 	{
 		private readonly LogicalInputDevice _inputDevice;
 		private readonly LogicalInput _minigun;
+		private readonly LogicalInput _nextWeapon;
 		private readonly Player _player;
+		private readonly LogicalInput _previousWeapon;
 		private readonly LogicalInput _rocketLauncher;
 		private Clock _clock = new Clock();
 		private InputState _firePrimary;
@@ -48,6 +50,7 @@ namespace OrbsHavoc.Gameplay.Client
 		private InputState _moveLeft;
 		private InputState _moveRight;
 		private InputState _moveUp;
+		private EntityType _primaryWeapon = EntityType.MiniGun;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -65,6 +68,8 @@ namespace OrbsHavoc.Gameplay.Client
 
 			_minigun = new LogicalInput(Cvars.InputSelectMiniGunCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 			_rocketLauncher = new LogicalInput(Cvars.InputSelectRocketLauncherCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+			_nextWeapon = new LogicalInput(Cvars.InputNextWeaponCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+			_previousWeapon = new LogicalInput(Cvars.InputPreviousWeaponCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 
 			_moveUp.Input = new LogicalInput(Cvars.InputMoveUpCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 			_moveDown.Input = new LogicalInput(Cvars.InputMoveDownCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
@@ -82,6 +87,8 @@ namespace OrbsHavoc.Gameplay.Client
 
 			_inputDevice.Add(_minigun);
 			_inputDevice.Add(_rocketLauncher);
+			_inputDevice.Add(_nextWeapon);
+			_inputDevice.Add(_previousWeapon);
 		}
 
 		/// <summary>
@@ -95,6 +102,54 @@ namespace OrbsHavoc.Gameplay.Client
 			_moveRight.Triggered |= _moveRight.Input.IsTriggered;
 			_firePrimary.Triggered |= _firePrimary.Input.IsTriggered;
 			_fireSecondary.Triggered |= _fireSecondary.Input.IsTriggered;
+
+			if (_minigun.IsTriggered)
+				_primaryWeapon = EntityType.MiniGun;
+			else if (_rocketLauncher.IsTriggered)
+				_primaryWeapon = EntityType.RocketLauncher;
+			else if (_nextWeapon.IsTriggered)
+				SelectPrimaryWeapon(1);
+			else if (_previousWeapon.IsTriggered)
+				SelectPrimaryWeapon(-1);
+
+			if (_player.Orb != null && _player.Orb.WeaponEnergyLevels[_primaryWeapon.GetWeaponSlot()] <= 0)
+				SelectBestPrimaryWeapon();
+		}
+
+		/// <summary>
+		///   Selects the bets available primary weapon.
+		/// </summary>
+		private void SelectBestPrimaryWeapon()
+		{
+			if (_player.Orb.WeaponEnergyLevels[EntityType.Bfg.GetWeaponSlot()] > 0)
+				_primaryWeapon = EntityType.Bfg;
+			else if (_player.Orb.WeaponEnergyLevels[EntityType.RocketLauncher.GetWeaponSlot()] > 0)
+				_primaryWeapon = EntityType.RocketLauncher;
+			else if (_player.Orb.WeaponEnergyLevels[EntityType.LightingGun.GetWeaponSlot()] > 0)
+				_primaryWeapon = EntityType.LightingGun;
+			else if (_player.Orb.WeaponEnergyLevels[EntityType.PlasmaGun.GetWeaponSlot()] > 0)
+				_primaryWeapon = EntityType.PlasmaGun;
+			else
+				_primaryWeapon = EntityType.MiniGun;
+		}
+
+		/// <summary>
+		///   Selects the next or previous available primary weapon.
+		/// </summary>
+		private void SelectPrimaryWeapon(int direction)
+		{
+			if (_player.Orb == null)
+				return;
+
+			while (true)
+			{
+				var slot = _primaryWeapon.GetWeaponSlot();
+				var selectedSlot = (slot + direction + Orb.WeaponsCount) % Orb.WeaponsCount;
+				_primaryWeapon = selectedSlot.GetWeaponFromSlot();
+
+				if (_player.Orb.WeaponEnergyLevels[_primaryWeapon.GetWeaponSlot()] > 0)
+					return;
+			}
 		}
 
 		/// <summary>
@@ -121,12 +176,6 @@ namespace OrbsHavoc.Gameplay.Client
 			_firePrimary.Update();
 			_fireSecondary.Update();
 
-			var primaryWeapon = _player.Orb?.PrimaryWeapon ?? EntityType.MiniGun;
-			if (_minigun.IsTriggered)
-				primaryWeapon = EntityType.MiniGun;
-			if (_rocketLauncher.IsTriggered)
-				primaryWeapon = EntityType.RocketLauncher;
-
 			// Get the coordinates the player currently targets and end the input message to the server
 			var target = _inputDevice.Mouse.Position - new Vector2(_inputDevice.Window.Size.Width / 2, _inputDevice.Window.Size.Height / 2);
 			connection.EnqueueMessage(PlayerInputMessage.Create(
@@ -134,7 +183,7 @@ namespace OrbsHavoc.Gameplay.Client
 				_moveUp.State, _moveDown.State,
 				_moveLeft.State, _moveRight.State,
 				_firePrimary.State, _fireSecondary.State,
-				primaryWeapon));
+				_primaryWeapon));
 		}
 
 		/// <summary>
@@ -174,6 +223,8 @@ namespace OrbsHavoc.Gameplay.Client
 
 			_inputDevice.Remove(_minigun);
 			_inputDevice.Remove(_rocketLauncher);
+			_inputDevice.Remove(_nextWeapon);
+			_inputDevice.Remove(_previousWeapon);
 		}
 
 		/// <summary>

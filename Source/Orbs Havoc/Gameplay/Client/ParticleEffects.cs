@@ -27,6 +27,7 @@ namespace OrbsHavoc.Gameplay.Client
 	using Platform.Memory;
 	using Rendering;
 	using Rendering.Particles;
+	using SceneNodes.Entities;
 	using Utilities;
 
 	/// <summary>

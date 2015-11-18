@@ -85,7 +85,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 				case EntityType.Invisibility:
 					return PowerUps.Invisibility.RespawnDelay;
 				case EntityType.Health:
-					return HealthCollectible.RespawnDelay;
+					return Collectible.Health.RespawnDelay;
 				default:
 					throw new InvalidOperationException("Unsupported collectible type.");
 			}
