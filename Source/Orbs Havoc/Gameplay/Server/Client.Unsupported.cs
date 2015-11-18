@@ -137,7 +137,7 @@ namespace OrbsHavoc.Gameplay.Server
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
-		void IMessageHandler.OnUpdateRay(UpdateRayMessage message, uint sequenceNumber)
+		void IMessageHandler.OnUpdateLightingBolt(UpdateLightingBoltMessage message, uint sequenceNumber)
 		{
 			HandleUnsupportedMessage(message);
 		}

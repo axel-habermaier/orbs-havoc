@@ -24,7 +24,6 @@ namespace OrbsHavoc.Gameplay.Behaviors
 {
 	using System.Numerics;
 	using Network;
-	using Network.Messages;
 	using Platform.Memory;
 	using SceneNodes.Entities;
 	using Utilities;
@@ -43,15 +42,16 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// <summary>
 		///   Updates the entity's transformation based on the data in the given message.
 		/// </summary>
-		/// <param name="message">The message that should be dispatched.</param>
+		/// <param name="position">The updated position.</param>
+		/// <param name="orientation">The updated orientation.</param>
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
-		public void UpdateTransform(UpdateTransformMessage message, uint sequenceNumber)
+		public void UpdateTransform(Vector2 position, float orientation, uint sequenceNumber)
 		{
 			if (!Entity.AcceptUpdate(ref _lastTransformUpdateSequenceNumber, sequenceNumber))
 				return;
 
-			_position = message.Position;
-			_orientation = message.Orientation;
+			_position = position;
+			_orientation = orientation;
 			_timeSinceLastUpdate = 0;
 
 			if (!_firstUpdate)

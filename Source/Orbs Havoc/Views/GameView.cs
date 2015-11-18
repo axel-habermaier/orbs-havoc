@@ -27,6 +27,7 @@ namespace OrbsHavoc.Views
 	using System.Threading;
 	using Assets;
 	using Gameplay;
+	using Gameplay.Behaviors;
 	using Gameplay.Client;
 	using Gameplay.SceneNodes;
 	using Network;
@@ -218,8 +219,7 @@ namespace OrbsHavoc.Views
 			GameSession.LevelRenderer.Draw(spriteBatch);
 
 			// Draw the entity sprites next, using layers to control draw order
-			foreach (var spriteNode in GameSession.SceneGraph.EnumeratePostOrder<SpriteNode>())
-				spriteNode.Draw(spriteBatch);
+			GameSession.EntityRenderer.Draw(spriteBatch);
 
 			// Draw the particles last, on top of everything, using additive blending
 			spriteBatch.RenderState.BlendOperation = BlendOperation.Additive;

@@ -52,22 +52,23 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public static WeaponTemplate LightingGun = new WeaponTemplate
 		{
 			Cooldown = -1,
-			DepleteSpeed = 50,
-			Range = 2000,
+			DepleteSpeed = 1,
+			Range = 900,
 			WeaponType = EntityType.LightingGun,
-			MaxEnergy = 0
+			MaxEnergy = 200,
+			Damage = 50
 		};
 
 		public static readonly WeaponTemplate[] WeaponTemplates =
 		{
 			MiniGun,
-			LightingGun, // TODO: Plasma
+			new WeaponTemplate(), // TODO: Plasma
 			LightingGun,
 			RocketLauncher,
-			LightingGun, // TODO: BFG
-			LightingGun, // TODO: Bomb
-			LightingGun, // TODO: Mine
-			LightingGun, // TODO: ShockWave
+			new WeaponTemplate(), // TODO: BFG
+			new WeaponTemplate(), // TODO: Bomb
+			new WeaponTemplate(), // TODO: Mine
+			new WeaponTemplate(), // TODO: ShockWave
 		};
 
 		internal struct WeaponTemplate

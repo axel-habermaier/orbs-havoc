@@ -44,9 +44,10 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public const int WeaponsCount = 8;
 
 		private ParticleEffect _coreEffect;
+		private uint _lastUpdateSequenceNumber;
 		private float _nextHealthUpdate;
 		private ParticleEffectNode _regeneration;
-		private SpriteNode _sprite;
+		private SpriteBehavior _sprite;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -258,6 +259,26 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		}
 
 		/// <summary>
+		///   Handles the given message.
+		/// </summary>
+		/// <param name="message">The message that should be dispatched.</param>
+		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
+		public void OnUpdate(UpdateOrbMessage message, uint sequenceNumber)
+		{
+			if (!AcceptUpdate(ref _lastUpdateSequenceNumber, sequenceNumber))
+				return;
+
+			PowerUp = message.PowerUp;
+			RemainingPowerUpTime = message.RemainingPowerUpTime;
+			Health = message.Health;
+			PrimaryWeapon = message.PrimaryWeapon;
+			SecondaryWeapon = message.SecondaryWeapon;
+
+			for (var i = 0; i < WeaponsCount; ++i)
+				WeaponEnergyLevels[i] = message.WeaponEnergyLevels[i];
+		}
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="gameSession">The game session the entity belongs to.</param>
@@ -282,6 +303,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			orb._coreEffect = null;
 			orb._regeneration = null;
 			orb._sprite = null;
+			orb._lastUpdateSequenceNumber = 0;
 
 			// Reset the weapon energy levels, skipping the mini gun which can always be used
 			for (var i = 1; i < WeaponsCount; ++i)
@@ -307,7 +329,8 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 				orb._coreEffect.Emitters[0].ScaleRange = new Range<float>(0.6f, 1.1f);
 
 				ParticleEffectNode.Create(gameSession.Allocator, orb._coreEffect, Vector2.Zero).AttachTo(orb);
-				orb._sprite = SpriteNode.Create(gameSession.Allocator, orb, AssetBundle.Orb, player.Color, 200);
+				orb._sprite = SpriteBehavior.Create(gameSession, AssetBundle.Orb, player.Color, 200);
+				orb.AddBehavior(orb._sprite);
 			}
 
 			return orb;

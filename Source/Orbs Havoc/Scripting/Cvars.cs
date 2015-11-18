@@ -163,6 +163,12 @@ namespace OrbsHavoc.Scripting
 		ConfigurableInput InputSelectRocketLauncher { get; set; }
 
 		/// <summary>
+		///   When the input is triggered in an active game session, selects the lighting gun.
+		/// </summary>
+		[DefaultValue(Key.Num3), Persistent]
+		ConfigurableInput InputSelectLightingGun { get; set; }
+
+		/// <summary>
 		///   Indicates whether the bloom effect is enabled.
 		/// </summary>
 		[DefaultValue(true), Persistent]

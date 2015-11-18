@@ -52,6 +52,8 @@ namespace OrbsHavoc.Gameplay.Client
 				case EntityType.Invisibility:
 				case EntityType.RocketLauncher:
 					return new Color(0xFF4800FF);
+				case EntityType.LightingGun:
+					return Colors.White;
 				default:
 					throw new InvalidOperationException("Unexpected entity type.");
 			}
@@ -70,6 +72,8 @@ namespace OrbsHavoc.Gameplay.Client
 					return AssetBundle.Health;
 				case EntityType.MiniGun:
 					return AssetBundle.MiniGun;
+				case EntityType.LightingGun:
+					return AssetBundle.LightingGun;
 				case EntityType.RocketLauncher:
 					return AssetBundle.Rocket;
 				case EntityType.Regeneration:

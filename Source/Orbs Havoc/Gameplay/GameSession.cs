@@ -69,9 +69,14 @@ namespace OrbsHavoc.Gameplay
 		public PoolAllocator Allocator { get; }
 
 		/// <summary>
-		///   Gets the sprite batch for the game session's level.
+		///   Gets the renderer that renders the game session's level.
 		/// </summary>
 		public LevelRenderer LevelRenderer { get; private set; }
+
+		/// <summary>
+		///   Gets the renderer that renders the game session's entities.
+		/// </summary>
+		public EntityRenderer EntityRenderer { get; private set; }
 
 		/// <summary>
 		///   Gets the particle effect templates.
@@ -169,6 +174,7 @@ namespace OrbsHavoc.Gameplay
 			ServerMode = false;
 			Players = new PlayerCollection(Allocator, serverMode: false);
 			Effects = new ParticleEffects(this);
+			EntityRenderer = new EntityRenderer();
 		}
 
 		/// <summary>

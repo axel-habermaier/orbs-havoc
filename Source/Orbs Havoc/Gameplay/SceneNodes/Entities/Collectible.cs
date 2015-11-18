@@ -83,10 +83,12 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			}
 			else
 			{
-				var sprite = SpriteNode.Create(gameSession.Allocator, collectible, collectibleType.GetTexture(), collectibleType.GetColor(), 100);
-				sprite.AddBehavior(CircleMovementBehavior.Create(gameSession.Allocator, 2f, 4));
-
+				var node = gameSession.Allocate<SceneNode>();
+				var sprite = SpriteBehavior.Create(gameSession, collectibleType.GetTexture(), collectibleType.GetColor(), 100);
+				node.AddBehavior(sprite);
+				node.AddBehavior(CircleMovementBehavior.Create(gameSession.Allocator, 2f, 4));
 				collectible.AddEffect();
+				collectible.AttachChild(node);
 			}
 
 			return collectible;

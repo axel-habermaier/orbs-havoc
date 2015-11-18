@@ -22,15 +22,14 @@
 
 namespace OrbsHavoc.Network.Messages
 {
-	using System.Numerics;
 	using Platform.Memory;
 	using Utilities;
 
 	/// <summary>
-	///   Informs a client about an update to a ray.
+	///   Informs a client about an update to a lighting bolt.
 	/// </summary>
 	[UnreliableTransmission(MessageType.UpdateRay, EnableBatching = true)]
-	internal sealed class UpdateRayMessage : Message
+	internal sealed class UpdateLightingBoltMessage : Message
 	{
 		/// <summary>
 		///   Gets the entity that is updated.
@@ -38,24 +37,9 @@ namespace OrbsHavoc.Network.Messages
 		public NetworkIdentity Entity { get; private set; }
 
 		/// <summary>
-		///   Gets the orientation of the ray.
-		/// </summary>
-		public float Orientation { get; private set; }
-
-		/// <summary>
-		///   Gets the new ray length.
+		///   Gets the new lighting bolt length.
 		/// </summary>
 		public float Length { get; private set; }
-
-		/// <summary>
-		///   Gets the new ray origin.
-		/// </summary>
-		public Vector2 Origin { get; private set; }
-
-		/// <summary>
-		///   Gets the target entity that is hit by the ray, if any.
-		/// </summary>
-		public NetworkIdentity Target { get; private set; }
 
 		/// <summary>
 		///   Serializes the message using the given writer.
@@ -64,10 +48,7 @@ namespace OrbsHavoc.Network.Messages
 		public override void Serialize(ref BufferWriter writer)
 		{
 			WriteIdentifier(ref writer, Entity);
-			WriteVector2(ref writer, Origin);
-			WriteOrientation(ref writer, Orientation);
 			writer.WriteUInt16((ushort)Length);
-			WriteIdentifier(ref writer, Target);
 		}
 
 		/// <summary>
@@ -77,10 +58,7 @@ namespace OrbsHavoc.Network.Messages
 		public override void Deserialize(ref BufferReader reader)
 		{
 			Entity = ReadIdentifier(ref reader);
-			Origin = ReadVector2(ref reader);
-			Orientation = ReadOrientation(ref reader);
 			Length = reader.ReadUInt16();
-			Target = ReadIdentifier(ref reader);
 		}
 
 		/// <summary>
@@ -90,7 +68,7 @@ namespace OrbsHavoc.Network.Messages
 		/// <param name="sequenceNumber">The sequence number of the message.</param>
 		public override void Dispatch(IMessageHandler handler, uint sequenceNumber)
 		{
-			handler.OnUpdateRay(this, sequenceNumber);
+			handler.OnUpdateLightingBolt(this, sequenceNumber);
 		}
 
 		/// <summary>
@@ -98,21 +76,14 @@ namespace OrbsHavoc.Network.Messages
 		/// </summary>
 		/// <param name="poolAllocator">The pool allocator that should be used to allocate the message.</param>
 		/// <param name="entity">The entity that is updated.</param>
-		/// <param name="target">The targeted entity of the ray.</param>
-		/// <param name="origin">The origin of the ray.</param>
-		/// <param name="length">The length of the ray.</param>
-		/// <param name="orientation">The orientation of the ray.</param>
-		public static Message Create(PoolAllocator poolAllocator, NetworkIdentity entity, NetworkIdentity target, Vector2 origin,
-									 float length, float orientation)
+		/// <param name="length">The length of the lighting bolt.</param>
+		public static Message Create(PoolAllocator poolAllocator, NetworkIdentity entity, float length)
 		{
 			Assert.ArgumentNotNull(poolAllocator, nameof(poolAllocator));
 
-			var message = poolAllocator.Allocate<UpdateRayMessage>();
+			var message = poolAllocator.Allocate<UpdateLightingBoltMessage>();
 			message.Entity = entity;
-			message.Target = target;
-			message.Origin = origin;
 			message.Length = length;
-			message.Orientation = orientation;
 			return message;
 		}
 
@@ -121,7 +92,7 @@ namespace OrbsHavoc.Network.Messages
 		/// </summary>
 		public override string ToString()
 		{
-			return $"{MessageType}, Entity={Entity}, Target={{{Target}}}, Origin={{{Origin}}}, Length={Length}, Orientation={Orientation}";
+			return $"{MessageType}, Entity={Entity}, Length={Length}";
 		}
 	}
 }

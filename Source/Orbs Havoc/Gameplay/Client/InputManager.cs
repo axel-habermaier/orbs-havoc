@@ -37,7 +37,8 @@ namespace OrbsHavoc.Gameplay.Client
 	internal class InputManager : DisposableObject
 	{
 		private readonly LogicalInputDevice _inputDevice;
-		private readonly LogicalInput _minigun;
+		private readonly LogicalInput _lightingGun;
+		private readonly LogicalInput _miniGun;
 		private readonly LogicalInput _nextWeapon;
 		private readonly Player _player;
 		private readonly LogicalInput _previousWeapon;
@@ -66,8 +67,9 @@ namespace OrbsHavoc.Gameplay.Client
 			_inputDevice = inputDevice;
 			_player = player;
 
-			_minigun = new LogicalInput(Cvars.InputSelectMiniGunCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+			_miniGun = new LogicalInput(Cvars.InputSelectMiniGunCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 			_rocketLauncher = new LogicalInput(Cvars.InputSelectRocketLauncherCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+			_lightingGun = new LogicalInput(Cvars.InputSelectLightingGunCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 			_nextWeapon = new LogicalInput(Cvars.InputNextWeaponCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 			_previousWeapon = new LogicalInput(Cvars.InputPreviousWeaponCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
 
@@ -85,8 +87,9 @@ namespace OrbsHavoc.Gameplay.Client
 			_inputDevice.Add(_firePrimary.Input);
 			_inputDevice.Add(_fireSecondary.Input);
 
-			_inputDevice.Add(_minigun);
+			_inputDevice.Add(_miniGun);
 			_inputDevice.Add(_rocketLauncher);
+			_inputDevice.Add(_lightingGun);
 			_inputDevice.Add(_nextWeapon);
 			_inputDevice.Add(_previousWeapon);
 		}
@@ -103,10 +106,12 @@ namespace OrbsHavoc.Gameplay.Client
 			_firePrimary.Triggered |= _firePrimary.Input.IsTriggered;
 			_fireSecondary.Triggered |= _fireSecondary.Input.IsTriggered;
 
-			if (_minigun.IsTriggered)
+			if (_miniGun.IsTriggered)
 				_primaryWeapon = EntityType.MiniGun;
 			else if (_rocketLauncher.IsTriggered)
 				_primaryWeapon = EntityType.RocketLauncher;
+			else if (_lightingGun.IsTriggered)
+				_primaryWeapon = EntityType.LightingGun;
 			else if (_nextWeapon.IsTriggered)
 				SelectPrimaryWeapon(1);
 			else if (_previousWeapon.IsTriggered)
@@ -221,8 +226,9 @@ namespace OrbsHavoc.Gameplay.Client
 			_inputDevice.Remove(_firePrimary.Input);
 			_inputDevice.Remove(_fireSecondary.Input);
 
-			_inputDevice.Remove(_minigun);
+			_inputDevice.Remove(_miniGun);
 			_inputDevice.Remove(_rocketLauncher);
+			_inputDevice.Remove(_lightingGun);
 			_inputDevice.Remove(_nextWeapon);
 			_inputDevice.Remove(_previousWeapon);
 		}

@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Gameplay\Behaviors\Behavior`1.cs" />
     <Compile Include="Gameplay\Behaviors\Behavior.cs" />
+    <Compile Include="Gameplay\Behaviors\LightingGunBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\RocketLauncherBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\MiniGunBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\AiBehavior.cs" />
@@ -72,8 +73,11 @@
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gameplay\Client\IRenderable.cs" />
     <Compile Include="Gameplay\Client\LevelRenderer.cs" />
     <Compile Include="Gameplay\Client\ParticleReflectionModifier.cs" />
+    <Compile Include="Gameplay\Client\EntityRenderer.cs" />
+    <Compile Include="Gameplay\SceneNodes\Entities\LightingBolt.cs" />
     <Compile Include="Gameplay\SceneNodes\Entities\Weapons.cs" />
     <Compile Include="Gameplay\Level.cs" />
     <Compile Include="Gameplay\PlayerKind.cs" />
@@ -94,7 +98,7 @@
     <Compile Include="Gameplay\Behaviors\TimeToLiveBehavior.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.cs" />
     <Compile Include="Gameplay\SceneNodes\ParticleEffectNode.cs" />
-    <Compile Include="Gameplay\SceneNodes\SpriteNode.cs" />
+    <Compile Include="Gameplay\Behaviors\SpriteBehavior.cs" />
     <Compile Include="Gameplay\Server\Client.cs" />
     <Compile Include="Gameplay\Server\Client.Unsupported.cs">
       <DependentUpon>Client.cs</DependentUpon>
@@ -131,7 +135,7 @@
     <Compile Include="Network\Messages\PlayerStatsMessage.cs" />
     <Compile Include="Network\Messages\UpdateCircleMessage.cs" />
     <Compile Include="Network\Messages\UpdateOrbMessage.cs" />
-    <Compile Include="Network\Messages\UpdateRayMessage.cs" />
+    <Compile Include="Network\Messages\UpdateLengthMessage.cs" />
     <Compile Include="Network\Messages\UpdateTransformMessage.cs" />
     <Compile Include="Network\NetworkException.cs" />
     <Compile Include="Network\NetworkExtensions.cs" />
@@ -453,6 +457,9 @@
   <ItemGroup>
     <Texture Include="Assets\Textures\MiniGun.png" />
     <Texture Include="Assets\Textures\Rocket.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Texture Include="Assets\Textures\LightingGun.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="IL.targets" />

@@ -20,18 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Gameplay.SceneNodes
+namespace OrbsHavoc.Gameplay.Behaviors
 {
+	using Client;
 	using Platform.Graphics;
-	using Platform.Memory;
 	using Rendering;
+	using SceneNodes;
 	using Utilities;
 
 	/// <summary>
-	///   Represents a node that draws a sprite.
+	///   Represents a behavior that draws a sprite.
 	/// </summary>
-	public class SpriteNode : SceneNode
+	internal class SpriteBehavior : Behavior<SceneNode>, IRenderable
 	{
+		private GameSession _gameSession;
+
 		/// <summary>
 		///   Gets or sets the texture of the sprite.
 		/// </summary>
@@ -51,31 +54,48 @@ namespace OrbsHavoc.Gameplay.SceneNodes
 		///   Draws the sprite using the given sprite batch.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
-		public void Draw(SpriteBatch spriteBatch)
+		void IRenderable.Draw(SpriteBatch spriteBatch)
 		{
+			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
+
 			spriteBatch.RenderState.Layer = Layer;
-			spriteBatch.Draw(Texture, WorldPosition, -Parent.Orientation, Color);
+			spriteBatch.Draw(Texture, SceneNode.WorldPosition, -SceneNode.Orientation, Color);
+		}
+
+		/// <summary>
+		///   Invoked when the behavior is attached to a scene node.
+		/// </summary>
+		protected override void OnAttached()
+		{
+			_gameSession.EntityRenderer.Add(this);
+		}
+
+		/// <summary>
+		///   Invoked when the behavior is detached from the scene node it is attached to.
+		/// </summary>
+		/// <remarks>This method is not called when the scene graph is disposed.</remarks>
+		protected override void OnDetached()
+		{
+			_gameSession.EntityRenderer.Remove(this);
 		}
 
 		/// <summary>
 		///   Creates a new instance.
 		/// </summary>
-		/// <param name="allocator">The allocator that should be used to allocate the sprite.</param>
-		/// <param name="parent">The parent scene node the sprite should be attached to.</param>
+		/// <param name="gameSession">The game session the sprite belongs to.</param>
 		/// <param name="texture">The texture that should be used to draw the sprite.</param>
 		/// <param name="color">The color that should be used to draw the sprite.</param>
 		/// <param name="layer">The layer the sprite should be drawn on.</param>
-		public static SpriteNode Create(PoolAllocator allocator, SceneNode parent, Texture texture, Color color, int layer)
+		public static SpriteBehavior Create(GameSession gameSession, Texture texture, Color color, int layer)
 		{
-			Assert.ArgumentNotNull(allocator, nameof(allocator));
-			Assert.ArgumentNotNull(parent, nameof(parent));
+			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
 			Assert.ArgumentNotNull(texture, nameof(texture));
 
-			var sprite = allocator.Allocate<SpriteNode>();
+			var sprite = gameSession.Allocator.Allocate<SpriteBehavior>();
+			sprite._gameSession = gameSession;
 			sprite.Texture = texture;
 			sprite.Color = color;
 			sprite.Layer = layer;
-			sprite.AttachTo(parent);
 
 			return sprite;
 		}

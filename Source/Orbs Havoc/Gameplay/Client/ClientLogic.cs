@@ -143,6 +143,10 @@ namespace OrbsHavoc.Gameplay.Client
 					case EntityType.Rocket:
 						entity = Rocket.Create(_gameSession, player, message.Position, message.Velocity, message.Orientation);
 						break;
+					case EntityType.LightingBolt:
+						entity = LightingBolt.Create(_gameSession, player);
+						entity.AttachTo(_entityMap[message.ParentEntity]);
+						break;
 					default:
 						Assert.NotReached("Unknown entity type.");
 						break;
@@ -315,7 +319,7 @@ namespace OrbsHavoc.Gameplay.Client
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			_entityMap[message.Entity]?.TransformationInterpolator.UpdateTransform(message, sequenceNumber);
+			_entityMap[message.Entity]?.TransformationInterpolator.UpdateTransform(message.Position, message.Orientation, sequenceNumber);
 		}
 
 		/// <summary>
@@ -328,17 +332,7 @@ namespace OrbsHavoc.Gameplay.Client
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
 			var orb = _entityMap[message.Entity] as Orb;
-			if (orb == null)
-				return;
-
-			orb.PowerUp = message.PowerUp;
-			orb.RemainingPowerUpTime = message.RemainingPowerUpTime;
-			orb.Health = message.Health;
-			orb.PrimaryWeapon = message.PrimaryWeapon;
-			orb.SecondaryWeapon = message.SecondaryWeapon;
-
-			for (var i = 0; i < Orb.WeaponsCount; ++i)
-				orb.WeaponEnergyLevels[i] = message.WeaponEnergyLevels[i];
+			orb?.OnUpdate(message, sequenceNumber);
 		}
 
 		/// <summary>
@@ -346,11 +340,12 @@ namespace OrbsHavoc.Gameplay.Client
 		/// </summary>
 		/// <param name="message">The message that should be dispatched.</param>
 		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
-		void IMessageHandler.OnUpdateRay(UpdateRayMessage message, uint sequenceNumber)
+		void IMessageHandler.OnUpdateLightingBolt(UpdateLightingBoltMessage message, uint sequenceNumber)
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			throw new NotImplementedException();
+			var bolt = _entityMap[message.Entity] as LightingBolt;
+			bolt?.OnUpdate(message, sequenceNumber);
 		}
 	}
 }

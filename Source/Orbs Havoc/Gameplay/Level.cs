@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.Gameplay
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Numerics;
 	using Platform.Memory;
@@ -172,6 +173,47 @@ namespace OrbsHavoc.Gameplay
 			Assert.InRange(y, 0, Height - 1);
 
 			return new Rectangle(x * BlockSize + PositionOffset.X, y * BlockSize + PositionOffset.Y, BlockSize, BlockSize);
+		}
+
+		/// <summary>
+		///   Casts a ray into the world and returns the result of the nearest collision.
+		/// </summary>
+		/// <param name="start">The start position of the ray.</param>
+		/// <param name="normalizedDirection">The normalized direction of the ray.</param>
+		/// <param name="length">The length of the ray.</param>
+		public CollisionInfo? RayCast(Vector2 start, Vector2 normalizedDirection, float length)
+		{
+			var position = start;
+			const float bigStep = BlockSize / 2;
+			const float smallStep = BlockSize / 256;
+
+			for (var i = 0; i < Math.Ceiling(length / bigStep); ++i)
+			{
+				int x, y;
+				GetBlock(position, out x, out y);
+				var blockType = this[x, y];
+
+				// While we're not hitting a wall, advance in big steps
+				if (!blockType.IsWall())
+				{
+					position += normalizedDirection * bigStep;
+					continue;
+				}
+
+				// We've hit a wall block, so we have to do a more thorough check now
+				do
+				{
+					var info = CheckWallCollision(new Circle(position, 4));
+					if (info.HasValue)
+						return info;
+
+					position += normalizedDirection * smallStep;
+					GetBlock(position, out x, out y);
+					blockType = this[x, y];
+				} while (blockType.IsWall());
+			}
+
+			return null;
 		}
 
 		/// <summary>
@@ -331,12 +373,12 @@ namespace OrbsHavoc.Gameplay
 			/// <summary>
 			///   The zero-based block index in x-direction.
 			/// </summary>
-			public int X;
+			public readonly int X;
 
 			/// <summary>
 			///   The zero-based block index in Y-direction.
 			/// </summary>
-			public int Y;
+			public readonly int Y;
 
 			/// <summary>
 			///   Initializes a instance.

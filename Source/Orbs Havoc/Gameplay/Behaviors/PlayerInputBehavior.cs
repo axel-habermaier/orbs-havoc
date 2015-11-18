@@ -110,7 +110,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 			input._acceleration = Vector2.Zero;
 			input._weapons[EntityType.MiniGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator);
 			input._weapons[EntityType.PlasmaGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[EntityType.LightingGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
+			input._weapons[EntityType.LightingGun.GetWeaponSlot()] = LightingGunBehavior.Create(allocator); 
 			input._weapons[EntityType.RocketLauncher.GetWeaponSlot()] = RocketLauncherBehavior.Create(allocator);
 			input._weapons[EntityType.Bfg.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[EntityType.Bomb.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO

@@ -30,7 +30,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes
 	/// <summary>
 	///   Represents the base class for all scene nodes of a scene graph.
 	/// </summary>
-	public abstract class SceneNode : PooledObject
+	public class SceneNode : PooledObject
 	{
 		/// <summary>
 		///   The local transformation matrix of the scene node, relative to the parent scene node.
