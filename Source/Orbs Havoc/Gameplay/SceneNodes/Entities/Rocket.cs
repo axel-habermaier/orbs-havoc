@@ -122,12 +122,13 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			else
 			{
 				var effect = gameSession.Effects.Rocket.Allocate();
-
 				effect.Emitters[0].ColorRange = player.ColorRange;
-				effect.Emitters[0].OrientationRange = -orientation;
-				effect.Emitters[1].OrientationRange = -orientation;
-				effect.Emitters[0].Direction = MathUtils.ToAngle(velocity);
-				effect.Emitters[1].Direction = MathUtils.ToAngle(velocity);
+
+				foreach (var emitter in effect.Emitters)
+				{
+					emitter.OrientationRange = -orientation;
+					emitter.Direction = MathUtils.ToAngle(velocity);
+				}
 
 				ParticleEffectNode.Create(gameSession.Allocator, effect, rocket._visualOffset).AttachTo(rocket);
 			}

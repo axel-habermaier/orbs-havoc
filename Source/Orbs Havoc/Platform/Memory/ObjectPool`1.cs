@@ -84,7 +84,7 @@ namespace OrbsHavoc.Platform.Memory
 		public T Allocate()
 		{
 			Assert.NotDisposed(this);
-
+			
 			T obj;
 			if (_pooledObjects.Count == 0)
 			{

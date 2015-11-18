@@ -48,6 +48,11 @@ namespace OrbsHavoc.Gameplay.Server
 		private readonly PoolAllocator _allocator;
 
 		/// <summary>
+		///   The bot commands generated on the main thread.
+		/// </summary>
+		private readonly ConcurrentQueue<BotCommand> _botCommands = new ConcurrentQueue<BotCommand>();
+
+		/// <summary>
 		///   The avaiable and currently unused bot names.
 		/// </summary>
 		private readonly List<string> _botNames = new List<string>
@@ -71,10 +76,6 @@ namespace OrbsHavoc.Gameplay.Server
 		///   The step timer that is used to update the server at a fixed rate.
 		/// </summary>
 		private readonly StepTimer _timer = new StepTimer { UseFixedTimeStep = true };
-		/// <summary>
-		/// The bot commands generated on the main thread.
-		/// </summary>
-		private readonly ConcurrentQueue<BotCommand> _botCommands = new ConcurrentQueue<BotCommand>();
 
 		/// <summary>
 		///   Allows the cancellation of the server task.

@@ -179,8 +179,11 @@ namespace OrbsHavoc.Scripting
 		/// <param name="value">The value the cvar should be set to.</param>
 		private void UpdateValue(T value)
 		{
-			if (_value.Equals(value) && Program.Initialized)
-				Log.Warn("'{0}' has not been changed, because the new and the old value are the same.", Name);
+			if (_value.Equals(value))
+			{
+				if (Program.Initialized)
+					Log.Warn("'{0}' has not been changed, because the new and the old value are the same.", Name);
+			}
 			else
 			{
 				_value = value;

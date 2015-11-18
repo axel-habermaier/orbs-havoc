@@ -74,14 +74,10 @@ namespace OrbsHavoc.Platform.Graphics
 			if (major < 3 || (major == 3 && minor < 3))
 				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
 
-			if (SDL_GL_ExtensionSupported("GL_ARB_shading_language_420pack") == 0)
-				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_shading_language_420pack' is not supported.");
-
-			if (SDL_GL_ExtensionSupported("GL_ARB_buffer_storage") == 0)
-				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_buffer_storage' is not supported.");
-
-			if (SDL_GL_ExtensionSupported("GL_ARB_base_instance") == 0)
-				Log.Die("Incompatible graphics card. Required OpenGL extension 'GL_ARB_base_instance' is not supported.");
+			CheckExtensionSupport("GL_ARB_separate_shader_objects");
+			CheckExtensionSupport("GL_ARB_shading_language_420pack");
+			CheckExtensionSupport("GL_ARB_buffer_storage");
+			CheckExtensionSupport("GL_ARB_base_instance");
 
 			Log.Info("OpenGL sprite batch: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
 				new string((sbyte*)glGetString(GL_VENDOR)));
@@ -112,6 +108,15 @@ namespace OrbsHavoc.Platform.Graphics
 		///   Gets the GPU frame time in milliseconds.
 		/// </summary>
 		public double FrameTime { get; private set; }
+
+		/// <summary>
+		///   Checks whether the given extension is supported by the graphics device.
+		/// </summary>
+		private static void CheckExtensionSupport(string extension)
+		{
+			if (SDL_GL_ExtensionSupported(extension) == 0)
+				Log.Die("Incompatible graphics card. Required OpenGL extension '{0}' is not supported.", extension);
+		}
 
 		/// <summary>
 		///   Makes the OpenGL context for the given window the current one on the calling thread.
