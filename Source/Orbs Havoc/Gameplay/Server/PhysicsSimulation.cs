@@ -145,9 +145,9 @@ namespace OrbsHavoc.Gameplay.Server
 			var info = _gameSession.Level.RayCast(start, normalizedDirection, length);
 			if (info.HasValue)
 			{
-				var collisionPosition = start - position + info.Value.Offset;
-				offset = collisionPosition.Length() / length;
-				break;
+			//	var collisionPosition = start - position + info.Value.Offset;
+			//	offset = collisionPosition.Length() / length;
+			//	break;
 			}
 
 			// Check for collisions with entities
