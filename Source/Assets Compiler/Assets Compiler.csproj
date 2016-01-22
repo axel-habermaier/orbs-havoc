@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\Dependencies\Packages\SharpFont.3.0.1\build\SharpFont.props" Condition="Exists('..\..\Dependencies\Packages\SharpFont.3.0.1\build\SharpFont.props')" />
+  <Import Project="..\..\Dependencies\Packages\SharpFont.3.1.0\build\SharpFont.props" Condition="Exists('..\..\Dependencies\Packages\SharpFont.3.1.0\build\SharpFont.props')" />
   <Import Project="..\..\Dependencies\Packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props" Condition="Exists('..\..\Dependencies\Packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -61,7 +61,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpFont, Version=3.0.1.200, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
-      <HintPath>..\..\Dependencies\Packages\SharpFont.3.0.1\lib\net20\SharpFont.dll</HintPath>
+      <HintPath>..\..\Dependencies\Packages\SharpFont.3.1.0\lib\net20\SharpFont.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -107,7 +107,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\Dependencies\Packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Dependencies\Packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props'))" />
-    <Error Condition="!Exists('..\..\Dependencies\Packages\SharpFont.3.0.1\build\SharpFont.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Dependencies\Packages\SharpFont.3.0.1\build\SharpFont.props'))" />
+    <Error Condition="!Exists('..\..\Dependencies\Packages\SharpFont.3.1.0\build\SharpFont.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Dependencies\Packages\SharpFont.3.1.0\build\SharpFont.props'))" />
   </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)Dependencies/Packages\SharpFont.Dependencies.2.6\bin\msvc12\x64/freetype6.dll" DestinationFolder="$(OutDir)" Condition="'$(OS)' == 'Windows_NT'" />
