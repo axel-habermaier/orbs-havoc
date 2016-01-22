@@ -303,7 +303,7 @@ namespace OrbsHavoc.Utilities
 		/// </summary>
 		public override string ToString()
 		{
-			return String.Format(CultureInfo.InvariantCulture, "Left: {0}, Top: {1}, Width: {2}, Height: {3}", Left, Top, Width, Height);
+			return $"Left: {Left}, Top: {Top}, Width: {Width}, Height: {Height}";
 		}
 
 		/// <summary>
@@ -313,11 +313,8 @@ namespace OrbsHavoc.Utilities
 		[Pure]
 		public bool Intersects(Rectangle rectangle)
 		{
-			var xOverlap = (Left >= rectangle.Left && Left <= rectangle.Right) ||
-						   (rectangle.Left >= Left && rectangle.Left <= Right);
-
-			var yOverlap = (Top >= rectangle.Top && Top <= rectangle.Bottom) ||
-						   (rectangle.Top >= Top && rectangle.Top <= Bottom);
+			var xOverlap = (Left >= rectangle.Left && Left <= rectangle.Right) || (rectangle.Left >= Left && rectangle.Left <= Right);
+			var yOverlap = (Top >= rectangle.Top && Top <= rectangle.Bottom) || (rectangle.Top >= Top && rectangle.Top <= Bottom);
 
 			return xOverlap && yOverlap;
 		}

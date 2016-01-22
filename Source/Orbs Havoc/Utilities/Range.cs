@@ -23,9 +23,9 @@
 namespace OrbsHavoc.Utilities
 {
 	/// <summary>
-	///   Configures a particle property of an emitter.
+	///   Represents a range of values.
 	/// </summary>
-	/// <typeparam name="T">The type of the configured property.</typeparam>
+	/// <typeparam name="T">The type of the values within the range.</typeparam>
 	public struct Range<T>
 	{
 		/// <summary>

@@ -55,15 +55,16 @@ namespace OrbsHavoc.Rendering.Particles
 			Emitter = emitter;
 			Capacity = capacity;
 
-			var particleSize = sizeof(Vector2) + // positions
-							   sizeof(Vector2) + // velocities
-							   sizeof(float) + // initial speed
-							   sizeof(Color) + // colors
-							   sizeof(float) + // remaining lifetimes
-							   sizeof(float) + // initial lifetimes
-							   sizeof(float) + // age
-							   sizeof(float) + // orientation
-							   sizeof(float); // scales
+			var particleSize =
+				sizeof(Vector2) + // positions
+				sizeof(Vector2) + // velocities
+				sizeof(float) + // initial speed
+				sizeof(Color) + // colors
+				sizeof(float) + // remaining lifetimes
+				sizeof(float) + // initial lifetimes
+				sizeof(float) + // age
+				sizeof(float) + // orientation
+				sizeof(float); // scales
 
 			_size = particleSize * Capacity;
 			_memory = Marshal.AllocHGlobal(_size).ToPointer();

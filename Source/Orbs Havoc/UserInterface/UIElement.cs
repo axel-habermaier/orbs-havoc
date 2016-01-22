@@ -31,7 +31,7 @@ namespace OrbsHavoc.UserInterface
 	using Utilities;
 
 	/// <summary>
-	///   Provides layouting, input, hit testing, rendering, and other base functionality for all UI elements.
+	///   Provides layouting, input events, hit testing, rendering, and other base functionality for all UI elements.
 	/// </summary>
 	public abstract partial class UIElement
 	{

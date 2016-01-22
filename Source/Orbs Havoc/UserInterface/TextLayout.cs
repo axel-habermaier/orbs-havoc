@@ -101,7 +101,7 @@ namespace OrbsHavoc.UserInterface
 			if (text == String.Empty)
 				return new Size(0, font.LineHeight);
 
-			if (_measured.SizeOutdated(font, text, desiredSize, lineSpacing, alignment, wrapping))
+			if (_measured.IsSizeOutdated(font, text, desiredSize, lineSpacing, alignment, wrapping))
 			{
 				_lineCount = 0;
 				_position = Vector2.Zero;
@@ -140,7 +140,7 @@ namespace OrbsHavoc.UserInterface
 				return new Size(0, font.LineHeight);
 			}
 
-			if (_arranged.SizeOutdated(font, text, desiredSize, lineSpacing, alignment, wrapping))
+			if (_arranged.IsSizeOutdated(font, text, desiredSize, lineSpacing, alignment, wrapping))
 			{
 				_lineCount = 0;
 				_position = Vector2.Zero;
@@ -511,7 +511,7 @@ namespace OrbsHavoc.UserInterface
 			/// <param name="lineSpacing">The amount of spacing between consecutive lines.</param>
 			/// <param name="alignment">The alignment of the text within the desired drawing area.</param>
 			/// <param name="wrapping">Indicates whether the text should be wrapped.</param>
-			public bool SizeOutdated(Font font, string text, Size desiredSize, int lineSpacing, TextAlignment alignment, TextWrapping wrapping)
+			public bool IsSizeOutdated(Font font, string text, Size desiredSize, int lineSpacing, TextAlignment alignment, TextWrapping wrapping)
 			{
 				Assert.ArgumentNotNull(font, nameof(font));
 				Assert.ArgumentNotNull(text, nameof(text));

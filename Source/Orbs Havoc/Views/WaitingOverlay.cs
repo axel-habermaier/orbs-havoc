@@ -73,7 +73,6 @@ namespace OrbsHavoc.Views
 
 				_timeout = timeout;
 				_label.Text = $"Waiting for server ({_timeout} seconds left)...";
-				Log.Info("...");
 			}
 			else
 				Hide();

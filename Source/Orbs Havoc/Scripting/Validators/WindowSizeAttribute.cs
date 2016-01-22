@@ -34,15 +34,15 @@ namespace OrbsHavoc.Scripting.Validators
 		///   Gets an error message that describes a validation error.
 		/// </summary>
 		public override string ErrorMessage =>
-			$"Only resolutions between {Window.MinimumSize.Width}x{Window.MinimumSize.Height} and " +
-			$"{Window.MaximumSize.Width}x{Window.MaximumSize.Height} are supported.";
+			$"Only window sizes between {TypeRegistry.ToString(new Size(Window.MinimumSize.Width, Window.MinimumSize.Height))} and " +
+			$"{TypeRegistry.ToString(new Size(Window.MaximumSize.Width, Window.MaximumSize.Height))} are supported.";
 
 		/// <summary>
 		///   Gets a description of the validation performed by the validator.
 		/// </summary>
 		public override string Description =>
-			$"must lie within {Window.MinimumSize.Width}x{Window.MinimumSize.Height} " +
-			$"and {Window.MaximumSize.Width}x{Window.MaximumSize.Height}";
+			$"must lie within {TypeRegistry.ToString(new Size(Window.MinimumSize.Width, Window.MinimumSize.Height))} " +
+			$"and {TypeRegistry.ToString(new Size(Window.MaximumSize.Width, Window.MaximumSize.Height))}";
 
 		/// <summary>
 		///   Validates the given value, returning true to indicate that validation succeeded.
@@ -51,7 +51,7 @@ namespace OrbsHavoc.Scripting.Validators
 		public override bool Validate(object value)
 		{
 			Assert.ArgumentNotNull(value, nameof(value));
-			Assert.ArgumentSatisfies(value is Size, nameof(value), "The value is not of type 'Size'.");
+			Assert.ArgumentSatisfies(value is Size, nameof(value), $"The value is not of type '{nameof(Size)}'.");
 
 			var size = (Size)value;
 			return Window.MinimumSize.Width <= size.Width && Window.MinimumSize.Height <= size.Height &&

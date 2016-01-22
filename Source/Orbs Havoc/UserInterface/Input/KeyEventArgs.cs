@@ -38,7 +38,7 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		internal KeyEventArgs()
+		private KeyEventArgs()
 		{
 		}
 

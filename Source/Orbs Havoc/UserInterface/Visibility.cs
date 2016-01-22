@@ -25,7 +25,7 @@ namespace OrbsHavoc.UserInterface
 	/// <summary>
 	///   Specifies the visiblity of an UI element.
 	/// </summary>
-	public enum Visibility
+	public enum Visibility : byte
 	{
 		/// <summary>
 		///   Indicates that the element is displayed.

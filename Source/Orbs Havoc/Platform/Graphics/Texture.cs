@@ -28,7 +28,7 @@ namespace OrbsHavoc.Platform.Graphics
 	using static OpenGL3;
 
 	/// <summary>
-	///   Represents a 2-dimensional texture.
+	///   Represents a two-dimensional texture.
 	/// </summary>
 	public sealed unsafe class Texture : DisposableObject
 	{

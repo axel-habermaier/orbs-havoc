@@ -135,7 +135,8 @@ namespace OrbsHavoc.UserInterface
 		}
 
 		/// <summary>
-		///   Gets or sets the foreground color of the UI element.
+		///   Gets or sets the foreground color of the UI element. If no foreground color is set, i.e., the foreground color is
+		///   transparent, it is inherited from the UI element's parent.
 		/// </summary>
 		public Color Foreground
 		{

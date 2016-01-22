@@ -73,9 +73,7 @@ namespace OrbsHavoc.UserInterface
 		{
 			SDL_FreeCursor(_cursor);
 
-			var sdlSurface = SDL_CreateRGBSurfaceFrom(data, _width, _height, 32, _width * 4,
-				0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-
+			var sdlSurface = SDL_CreateRGBSurfaceFrom(data, _width, _height, 32, _width * 4, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 			if (sdlSurface == null)
 				Log.Die("Failed to create surface for hardware cursor: {0}", SDL_GetError());
 

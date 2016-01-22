@@ -440,15 +440,8 @@ namespace OrbsHavoc.Views
 			if (String.IsNullOrWhiteSpace(_input.Text))
 				return null;
 
-			var commands = Commands
-				.All
-				.Where(command => command.Name.ToLower().StartsWith(_input.Text.ToLower()))
-				.Select(command => command.Name);
-
-			var cvars = Cvars
-				.All
-				.Where(cvar => cvar.Name.ToLower().StartsWith(_input.Text.ToLower()))
-				.Select(cvar => cvar.Name);
+			var commands = Commands.All.Where(command => command.Name.ToLower().StartsWith(_input.Text.ToLower())).Select(command => command.Name);
+			var cvars = Cvars.All.Where(cvar => cvar.Name.ToLower().StartsWith(_input.Text.ToLower())).Select(cvar => cvar.Name);
 
 			var list = cvars.Union(commands).OrderBy(item => item).ToArray();
 			if (list.Length == 0)

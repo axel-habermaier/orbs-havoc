@@ -61,7 +61,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static byte ParseUInt8(InputStream inputStream)
 		{
-			return Number(inputStream, Byte.Parse, allowNegative: false, allowDecimal: false);
+			return ParseNumber(inputStream, Byte.Parse, allowNegative: false, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static sbyte ParseInt8(InputStream inputStream)
 		{
-			return Number(inputStream, SByte.Parse, allowNegative: true, allowDecimal: false);
+			return ParseNumber(inputStream, SByte.Parse, allowNegative: true, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -77,7 +77,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static ushort ParseUInt16(InputStream inputStream)
 		{
-			return Number(inputStream, UInt16.Parse, allowNegative: false, allowDecimal: false);
+			return ParseNumber(inputStream, UInt16.Parse, allowNegative: false, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -85,7 +85,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static short ParseInt16(InputStream inputStream)
 		{
-			return Number(inputStream, Int16.Parse, allowNegative: true, allowDecimal: false);
+			return ParseNumber(inputStream, Int16.Parse, allowNegative: true, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -93,7 +93,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static uint ParseUInt32(InputStream inputStream)
 		{
-			return Number(inputStream, UInt32.Parse, allowNegative: false, allowDecimal: false);
+			return ParseNumber(inputStream, UInt32.Parse, allowNegative: false, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -101,7 +101,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static int ParseInt32(InputStream inputStream)
 		{
-			return Number(inputStream, Int32.Parse, allowNegative: true, allowDecimal: false);
+			return ParseNumber(inputStream, Int32.Parse, allowNegative: true, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -109,7 +109,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static ulong ParseUInt64(InputStream inputStream)
 		{
-			return Number(inputStream, UInt64.Parse, allowNegative: false, allowDecimal: false);
+			return ParseNumber(inputStream, UInt64.Parse, allowNegative: false, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -117,7 +117,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static long ParseInt64(InputStream inputStream)
 		{
-			return Number(inputStream, Int64.Parse, allowNegative: true, allowDecimal: false);
+			return ParseNumber(inputStream, Int64.Parse, allowNegative: true, allowDecimal: false);
 		}
 
 		/// <summary>
@@ -125,7 +125,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static float ParseFloat32(InputStream inputStream)
 		{
-			return Number(inputStream, Single.Parse, allowNegative: true, allowDecimal: true);
+			return ParseNumber(inputStream, Single.Parse, allowNegative: true, allowDecimal: true);
 		}
 
 		/// <summary>
@@ -133,7 +133,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static double ParseFloat64(InputStream inputStream)
 		{
-			return Number(inputStream, Double.Parse, allowNegative: true, allowDecimal: true);
+			return ParseNumber(inputStream, Double.Parse, allowNegative: true, allowDecimal: true);
 		}
 
 		/// <summary>
@@ -174,7 +174,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// <summary>
 		///   Parses a possibly quoted string.
 		/// </summary>
-		public static string QuotedString(InputStream inputStream)
+		public static string ParseQuotedString(InputStream inputStream)
 		{
 			if (inputStream.Peek() != '"')
 			{
@@ -448,12 +448,12 @@ namespace OrbsHavoc.Scripting.Parsing
 				// Check if a cvar has been referenced and if so, return the appropriate instruction
 				ICvar cvar;
 				if (Cvars.TryFind(name, out cvar))
-					return Parse(inputStream, cvar);
+					return ParseCvar(inputStream, cvar);
 
 				// Check if a command has been referenced and if so, return the appropriate instruction
 				ICommand command;
 				if (Commands.TryFind(name, out command))
-					return Parse(inputStream, command);
+					return ParseCommand(inputStream, command);
 
 				// If the name refers to neither a cvar nor a command, give up
 				inputStream.State = state;
@@ -468,7 +468,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// <summary>
 		///   Parses a cvar instruction.
 		/// </summary>
-		private static Instruction Parse(InputStream inputStream, ICvar cvar)
+		private static Instruction ParseCvar(InputStream inputStream, ICvar cvar)
 		{
 			if (inputStream.WhiteSpaceUntilEndOfInput())
 				return new Instruction(cvar, null);
@@ -499,7 +499,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// <summary>
 		///   Parses a command invocation.
 		/// </summary>
-		private static Instruction Parse(InputStream inputStream, ICommand command)
+		private static Instruction ParseCommand(InputStream inputStream, ICommand command)
 		{
 			var parameters = command.Parameters.ToArray();
 			var values = new object[parameters.Length];
@@ -552,7 +552,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// <summary>
 		///   Parses a number value.
 		/// </summary>
-		private static T Number<T>(InputStream inputStream, Func<string, T> convert, bool allowNegative, bool allowDecimal)
+		private static T ParseNumber<T>(InputStream inputStream, Func<string, T> convert, bool allowNegative, bool allowDecimal)
 		{
 			var state = inputStream.State;
 

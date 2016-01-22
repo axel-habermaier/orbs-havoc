@@ -28,6 +28,8 @@ namespace OrbsHavoc.Utilities
 	using JetBrains.Annotations;
 	using Platform.Memory;
 
+	// ReSharper disable UnusedParameter.Global
+
 	/// <summary>
 	///   Defines assertion helpers that can be used to check for errors. The checks are only performed in debug builds.
 	/// </summary>

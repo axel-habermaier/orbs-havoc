@@ -131,7 +131,7 @@ namespace OrbsHavoc
 					// Present the contents of the window's backbuffer
 					Window.Present();
 
-					// Save CPU when there are no focused windows
+					// Save CPU when the window is not focused
 					if (!Window.HasFocus)
 						Thread.Sleep(10);
 

@@ -53,8 +53,7 @@ namespace OrbsHavoc.Scripting.Validators
 		/// <summary>
 		///   Gets a description of the validation performed by the validator.
 		/// </summary>
-		public override string Description
-			=> $"length must not exceed {Maximum} {(CheckUtf8Length ? "UTF-8 bytes" : "characters")}";
+		public override string Description => $"length must not exceed {Maximum} {(CheckUtf8Length ? "UTF-8 bytes" : "characters")}";
 
 		/// <summary>
 		///   Gets the maximum allowed length of the string value.

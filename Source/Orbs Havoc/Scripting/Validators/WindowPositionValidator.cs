@@ -35,15 +35,15 @@ namespace OrbsHavoc.Scripting.Validators
 		///   Gets an error message that describes a validation error.
 		/// </summary>
 		public override string ErrorMessage =>
-			$"Only screen positions between ({-Window.MaximumSize.Width},{-Window.MaximumSize.Height}) " +
-			$"and ({Window.MaximumSize.Width},{Window.MaximumSize.Height}) are supported.";
+			$"Only window positions between {TypeRegistry.ToString(new Vector2(-Window.MaximumSize.Width, -Window.MaximumSize.Height))} " +
+			$"and {TypeRegistry.ToString(new Vector2(Window.MaximumSize.Width, Window.MaximumSize.Height))} are supported.";
 
 		/// <summary>
 		///   Gets a description of the validation performed by the validator.
 		/// </summary>
 		public override string Description =>
-			$"must lie within ({-Window.MaximumSize.Width},{-Window.MaximumSize.Height}) " +
-			$"and ({Window.MaximumSize.Width},{Window.MaximumSize.Height})";
+			$"must lie within {TypeRegistry.ToString(new Vector2(-Window.MaximumSize.Width, -Window.MaximumSize.Height))} " +
+			$"and {TypeRegistry.ToString(new Vector2(Window.MaximumSize.Width, Window.MaximumSize.Height))}";
 
 		/// <summary>
 		///   Validates the given value, returning true to indicate that validation succeeded.
@@ -52,7 +52,7 @@ namespace OrbsHavoc.Scripting.Validators
 		public override bool Validate(object value)
 		{
 			Assert.ArgumentNotNull(value, nameof(value));
-			Assert.ArgumentSatisfies(value is Vector2, nameof(value), "The value is not of type 'Vector2'.");
+			Assert.ArgumentSatisfies(value is Vector2, nameof(value), $"The value is not of type '{nameof(Vector2)}'.");
 
 			var position = (Vector2)value;
 			return -Window.MaximumSize.Width <= position.X && -Window.MaximumSize.Height <= position.Y &&

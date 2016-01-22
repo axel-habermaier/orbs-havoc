@@ -76,25 +76,25 @@ namespace OrbsHavoc.Platform.Graphics
 				case GL_FRAMEBUFFER_COMPLETE:
 					break;
 				case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-					Log.Die("Frame buffer status: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT.");
+					Log.Die($"Frame buffer status: {nameof(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)}.");
 					break;
 				case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-					Log.Die("Frame buffer status: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT.");
+					Log.Die($"Frame buffer status: {nameof(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)}.");
 					break;
 				case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-					Log.Die("Frame buffer status: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER.");
+					Log.Die($"Frame buffer status: {nameof(GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER)}.");
 					break;
 				case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-					Log.Die("Frame buffer status: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER.");
+					Log.Die($"Frame buffer status: {nameof(GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER)}.");
 					break;
 				case GL_FRAMEBUFFER_UNSUPPORTED:
-					Log.Die("Frame buffer status: GL_FRAMEBUFFER_UNSUPPORTED.");
+					Log.Die($"Frame buffer status: {nameof(GL_FRAMEBUFFER_UNSUPPORTED)}.");
 					break;
 				case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-					Log.Die("Frame buffer status: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE.");
+					Log.Die($"Frame buffer status: {nameof(GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE)}.");
 					break;
 				case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-					Log.Die("Frame buffer status: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS.");
+					Log.Die($"Frame buffer status: {nameof(GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS)}.");
 					break;
 				default:
 					Log.Die("The frame buffer is incomplete for an unknown reason.");

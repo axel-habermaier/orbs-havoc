@@ -251,7 +251,7 @@ namespace AssetsCompiler
 						p => p.Default != null ? $"{p.Type} {p.Identifier} = {p.Default.Value}" : $"{p.Type} {p.Identifier}"));
 					writer.AppendLine(command.GetLeadingTrivia().ToString().Trim());
 					writer.AppendLine("[DebuggerHidden]");
-					writer.AppendLine($"public static {command.ReturnType} {command.Identifier} ({parameters})");
+					writer.AppendLine($"public static {command.ReturnType} {command.Identifier}({parameters})");
 					writer.AppendBlockStatement(() =>
 					{
 						foreach (var parameter in command.ParameterList.Parameters)

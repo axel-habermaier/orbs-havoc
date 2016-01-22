@@ -26,7 +26,7 @@ namespace OrbsHavoc.UserInterface.Input
 	using Utilities;
 
 	/// <summary>
-	///   Represents an input binding that invokes a method on the associated UI element's data context whenever it is triggered.
+	///   Represents an input binding that invokes a callback whenever it is triggered.
 	/// </summary>
 	public abstract class InputBinding
 	{

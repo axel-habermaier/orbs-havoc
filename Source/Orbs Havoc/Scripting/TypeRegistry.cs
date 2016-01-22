@@ -32,6 +32,7 @@ namespace OrbsHavoc.Scripting
 	using Platform.Logging;
 	using Rendering;
 	using Utilities;
+	using static Parsing.Parser;
 
 	/// <summary>
 	///   Manages the types that can be used for command parameters and cvar values. All enumerations types as well as most C#
@@ -51,28 +52,28 @@ namespace OrbsHavoc.Scripting
 		static TypeRegistry()
 		{
 			// Register the C# built-in types (except for char, for which there is no obvious use-case)
-			Register(Parser.ParseBoolean, "Boolean", b => b ? "true" : "false", "true", "false", "0", "1", "on", "off");
-			Register(Parser.ParseUInt8, "8-bit unsigned integer", null, "0", "17");
-			Register(Parser.ParseInt8, "8-bit signed integer", null, "-17", "0", "17");
-			Register(Parser.ParseUInt16, "16-bit unsigned integer", null, "0", "17");
-			Register(Parser.ParseInt16, "16-bit signed integer", null, "-17", "0", "17");
-			Register(Parser.ParseUInt32, "32-bit unsigned integer", null, "0", "17");
-			Register(Parser.ParseInt32, "32-bit signed integer", null, "-17", "0", "17");
-			Register(Parser.ParseUInt64, "64-bit unsigned integer", null, "0", "17");
-			Register(Parser.ParseInt64, "64-bit signed integer", null, "-17", "0", "17");
-			Register(Parser.ParseFloat32, "32-bit floating point number", f => f.ToString("F"), "-17.1", "0.0", "17");
-			Register(Parser.ParseFloat64, "64-bit floating point number", d => d.ToString("F"), "-17.1", "0.0", "17");
-			Register(Parser.QuotedString, "string", null, "\"\"", "word", "\"multiple words\"", "\"escaped quote: \\\"\"");
+			Register(ParseBoolean, "Boolean", b => b ? "true" : "false", "true", "false", "0", "1", "on", "off");
+			Register(ParseUInt8, "8-bit unsigned integer", null, "0", "17");
+			Register(ParseInt8, "8-bit signed integer", null, "-17", "0", "17");
+			Register(ParseUInt16, "16-bit unsigned integer", null, "0", "17");
+			Register(ParseInt16, "16-bit signed integer", null, "-17", "0", "17");
+			Register(ParseUInt32, "32-bit unsigned integer", null, "0", "17");
+			Register(ParseInt32, "32-bit signed integer", null, "-17", "0", "17");
+			Register(ParseUInt64, "64-bit unsigned integer", null, "0", "17");
+			Register(ParseInt64, "64-bit signed integer", null, "-17", "0", "17");
+			Register(ParseFloat32, "32-bit floating point number", f => f.ToString("F"), "-17.1", "0.0", "17");
+			Register(ParseFloat64, "64-bit floating point number", d => d.ToString("F"), "-17.1", "0.0", "17");
+			Register(ParseQuotedString, "string", null, "\"\"", "word", "\"multiple words\"", "\"escaped quote: \\\"\"");
 
 			// Register default Pegasus framework types
-			Register(Parser.ParseIPAddress, "IPv4 or IPv6 address", null, "localhost", "::1", "127.0.0.1");
-			Register(Parser.ParseVector2, null, s => $"{s.X};{s.Y}", "0;0", "-10;10.5");
-			Register(Parser.ParseSize, null, s => $"{s.Width}x{s.Height}", "0x0", "-10x10.5", "1920x1200");
-			Register(Parser.ParseEnumerationLiteral<WindowMode>, null, null);
-			Register(Parser.ParseEnumerationLiteral<QualityLevel>, null, null);
-			Register(Parser.ParseEnumerationLiteral<Key>, "Key", null, "A", "B", "LeftControl", "Return", "F1");
-			Register(Parser.ParseEnumerationLiteral<MouseButton>, "Mouse Button", null, "Left", "Right", "Middle", "XButton1", "XButton2");
-			Register(Parser.ParseConfigurableInput, null, null, "[Key.A+Control]", "[Mouse.Left+Alt]", "[Mouse.XButton1+Shift+Alt]");
+			Register(ParseIPAddress, "IPv4 or IPv6 address", null, "localhost", "::1", "127.0.0.1");
+			Register(ParseVector2, null, s => $"{s.X};{s.Y}", "0;0", "-10;10.5");
+			Register(ParseSize, null, s => $"{s.Width}x{s.Height}", "0x0", "-10x10.5", "1920x1200");
+			Register(ParseEnumerationLiteral<WindowMode>, null, null);
+			Register(ParseEnumerationLiteral<QualityLevel>, null, null);
+			Register(ParseEnumerationLiteral<Key>, "Key", null, "A", "B", "LeftControl", "Return", "F1");
+			Register(ParseEnumerationLiteral<MouseButton>, "Mouse Button", null, "Left", "Right", "Middle", "XButton1", "XButton2");
+			Register(ParseConfigurableInput, null, null, "[Key.A+Control]", "[Mouse.Left+Alt]", "[Mouse.XButton1+Shift+Alt]");
 		}
 
 		/// <summary>
@@ -135,7 +136,7 @@ namespace OrbsHavoc.Scripting
 				return info.Parser;
 
 			if (type.GetTypeInfo().IsEnum)
-				return Parser.ParseEnumerationLiteral(type);
+				return ParseEnumerationLiteral(type);
 
 			Log.Die("An attempt was made to get a parser for an unregistered type.");
 			return null;

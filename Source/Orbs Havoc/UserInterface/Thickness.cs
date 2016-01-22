@@ -107,6 +107,7 @@ namespace OrbsHavoc.UserInterface
 		{
 			if (ReferenceEquals(null, obj))
 				return false;
+
 			return obj is Thickness && Equals((Thickness)obj);
 		}
 

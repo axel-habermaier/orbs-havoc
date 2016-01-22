@@ -66,8 +66,7 @@ namespace OrbsHavoc.Scripting.Validators
 		/// <summary>
 		///   Gets a description of the validation performed by the validator.
 		/// </summary>
-		public override string Description
-			=> $"must lie within {TypeRegistry.ToString(LowerBound)} and {TypeRegistry.ToString(UpperBound)}";
+		public override string Description => $"must lie within {TypeRegistry.ToString(LowerBound)} and {TypeRegistry.ToString(UpperBound)}";
 
 		/// <summary>
 		///   Validates the given value, returning true to indicate that validation succeeded.

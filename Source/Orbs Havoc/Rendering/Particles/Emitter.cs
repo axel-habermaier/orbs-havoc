@@ -31,8 +31,7 @@ namespace OrbsHavoc.Rendering.Particles
 	using Utilities;
 
 	/// <summary>
-	///   Emits, updates, and removes particles of a particle effect, with all particles sharing the same properties and
-	///   modifiers.
+	///   Emits, updates, and removes particles of a particle effect, with all particles sharing the same properties and modifiers.
 	/// </summary>
 	public sealed class Emitter : DisposableObject
 	{

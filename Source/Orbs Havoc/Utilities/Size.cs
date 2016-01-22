@@ -184,7 +184,7 @@ namespace OrbsHavoc.Utilities
 		/// </summary>
 		public override string ToString()
 		{
-			return String.Format(CultureInfo.InvariantCulture, "Width: {0}, Height: {1}", Width, Height);
+			return $"Width: {Width}, Height: {Height}";
 		}
 	}
 }

@@ -33,8 +33,8 @@ namespace OrbsHavoc.Scripting.Validators
 		/// <summary>
 		///   Gets an error message that describes a validation error.
 		/// </summary>
-		public override string ErrorMessage
-			=> "The given string is not a valid file name. It either contains a path specifier such as '/', or it contains illegal characters.";
+		public override string ErrorMessage => 
+			"The given string is not a valid file name. It either contains a path specifier such as '/', or it contains illegal characters.";
 
 		/// <summary>
 		///   Gets a description of the validation performed by the validator.

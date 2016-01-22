@@ -27,7 +27,6 @@ namespace OrbsHavoc.Views
 	using System.Threading;
 	using Assets;
 	using Gameplay;
-	using Gameplay.Behaviors;
 	using Gameplay.Client;
 	using Gameplay.SceneNodes;
 	using Network;

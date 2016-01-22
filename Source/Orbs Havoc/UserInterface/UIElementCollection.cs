@@ -26,7 +26,7 @@ namespace OrbsHavoc.UserInterface
 
 	/// <summary>
 	///   Represents a collection of UI elements that belongs to an UI element. When an UI element is added to or removed from the
-	///   collection, its logical parent is updated accordingly.
+	///   collection, its parent is updated accordingly.
 	/// </summary>
 	public class UIElementCollection : CustomCollection<UIElement>
 	{
