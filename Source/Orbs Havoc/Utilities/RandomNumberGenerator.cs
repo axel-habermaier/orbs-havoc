@@ -115,7 +115,7 @@ namespace OrbsHavoc.Utilities
 		/// <summary>
 		///   Gets the next random two-dimensional unit vector.
 		/// </summary>
-		/// <param name="vector">A pointer to an array of three floating point values where the resulting unit vector should be stored.</param>
+		/// <param name="vector">Returns the random unit vector.</param>
 		public static unsafe void NextUnitVector(Vector2* vector)
 		{
 			*vector = MathUtils.Rotate(Vector2.UnitX, NextSingle(0.0f, MathUtils.TwoPi));
