@@ -74,17 +74,6 @@ namespace OrbsHavoc.Platform.Graphics
 		}
 
 		/// <summary>
-		///   Loads a texture from the given buffer.
-		/// </summary>
-		/// <param name="buffer">The buffer the texture should be read from.</param>
-		public static Texture Create(ref BufferReader buffer)
-		{
-			var texture = new Texture();
-			texture.Load(ref buffer);
-			return texture;
-		}
-
-		/// <summary>
 		///   Loads the texture from the given buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the texture should be read from.</param>

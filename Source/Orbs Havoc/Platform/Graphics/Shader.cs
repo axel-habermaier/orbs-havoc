@@ -40,24 +40,6 @@ namespace OrbsHavoc.Platform.Graphics
 		private int _vertexShader;
 
 		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		private Shader()
-		{
-		}
-
-		/// <summary>
-		///   Loads a shader from the given buffer.
-		/// </summary>
-		/// <param name="buffer">The buffer the shader should be read from.</param>
-		public static Shader Create(ref BufferReader buffer)
-		{
-			var shader = new Shader();
-			shader.Load(ref buffer);
-			return shader;
-		}
-
-		/// <summary>
 		///   Binds the shader for rendering.
 		/// </summary>
 		public void Bind()

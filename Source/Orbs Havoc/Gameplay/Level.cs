@@ -45,13 +45,6 @@ namespace OrbsHavoc.Gameplay
 		public const float WallThickness = 5.0f;
 
 		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		private Level()
-		{
-		}
-
-		/// <summary>
 		///   Gets the level's position offset.
 		/// </summary>
 		public Vector2 PositionOffset { get; private set; }
@@ -82,17 +75,6 @@ namespace OrbsHavoc.Gameplay
 		/// <param name="x">The zero-based index in x-direction.</param>
 		/// <param name="y">The zero-based index in y-direction.</param>
 		public EntityType this[int x, int y] => x < 0 || y < 0 || x >= Width || y >= Height ? EntityType.Wall : Blocks[x * Height + y];
-
-		/// <summary>
-		///   Creates a new instance.
-		/// </summary>
-		/// <param name="buffer">The buffer the level should be loaded from.</param>
-		public static Level Create(ref BufferReader buffer)
-		{
-			var level = new Level();
-			level.Load(ref buffer);
-			return level;
-		}
 
 		/// <summary>
 		///   Loads the level from the given buffer.

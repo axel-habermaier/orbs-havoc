@@ -59,17 +59,6 @@ namespace OrbsHavoc.UserInterface
 		internal Texture Texture { get; } = new Texture();
 
 		/// <summary>
-		///   Loads a font from the given buffer.
-		/// </summary>
-		/// <param name="buffer">The buffer the font should be read from.</param>
-		public static Font Create(ref BufferReader buffer)
-		{
-			var font = new Font();
-			font.Load(ref buffer);
-			return font;
-		}
-
-		/// <summary>
 		///   Returns the width of the text.
 		/// </summary>
 		/// <param name="textString">The text whose width should be computed.</param>

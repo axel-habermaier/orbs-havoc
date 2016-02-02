@@ -32,23 +32,13 @@ namespace OrbsHavoc.UserInterface
 	/// </summary>
 	public unsafe class Cursor : DisposableObject
 	{
+		private Color _color = Colors.White;
 		private void* _cursor;
 		private byte[] _data;
 		private int _height;
 		private int _width;
 		private int _x;
 		private int _y;
-
-		/// <summary>
-		///   Initializes a cursor.
-		/// </summary>
-		/// <param name="buffer">The buffer the cursor should be created from.</param>
-		public static Cursor Create(ref BufferReader buffer)
-		{
-			var cursor = new Cursor();
-			cursor.Load(ref buffer);
-			return cursor;
-		}
 
 		/// <summary>
 		///   Loads the cursor from the given reader.
@@ -62,8 +52,7 @@ namespace OrbsHavoc.UserInterface
 			_height = buffer.ReadInt32();
 			_data = buffer.ReadByteArray();
 
-			fixed (byte* data = _data)
-				Initialize(data);
+			ChangeColor(_color);
 		}
 
 		/// <summary>
@@ -90,8 +79,9 @@ namespace OrbsHavoc.UserInterface
 		/// <param name="color">The new cursor color.</param>
 		public void ChangeColor(Color color)
 		{
-			var data = stackalloc byte[_data.Length];
+			_color = color;
 
+			var data = stackalloc byte[_data.Length];
 			for (var i = 0; i < _data.Length; i += 4)
 			{
 				data[i + 0] = (byte)(_data[i + 0] * color.Red / 255.0f);

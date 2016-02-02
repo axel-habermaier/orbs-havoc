@@ -41,28 +41,21 @@ namespace OrbsHavoc.Assets
 		/// </summary>
 		public AssetBundle()
 		{
-			Load(LoadAssets);
-			Commands.OnReloadAssets += Reload;
-		}
+			InitializeAssets();
+			Load();
 
-		/// <summary>
-		///   Reloads the assets.
-		/// </summary>
-		private static void Reload()
-		{
-			Load(ReloadAssets);
+			Commands.OnReloadAssets += Load;
 		}
 
 		/// <summary>
 		///   Loads the assets from disk.
 		/// </summary>
-		private static void Load(Action<BufferReader> loader)
+		private static void Load()
 		{
 			var start = Clock.GetTime();
 			var assets = Decompress(FileSystem.ReadAllBytes("Assets.pak"));
 
-			loader(new BufferReader(assets, Endianess.Little));
-
+			LoadAssets(new BufferReader(assets, Endianess.Little));
 			Log.Info("Asset bundle loaded ({0:F2}ms).", (Clock.GetTime() - start) * 1000);
 		}
 
@@ -94,7 +87,7 @@ namespace OrbsHavoc.Assets
 		protected override void OnDisposing()
 		{
 			DisposeAssets();
-			Commands.OnReloadAssets -= Reload;
+			Commands.OnReloadAssets -= Load;
 		}
 	}
 }

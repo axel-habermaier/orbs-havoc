@@ -125,15 +125,15 @@ namespace AssetsCompiler
 						writer.AppendLine($"public static {asset.Type} {asset.Name} {{ get; private set; }}");
 
 					writer.NewLine();
-					writer.AppendLine("private static void LoadAssets(BufferReader reader)");
+					writer.AppendLine("private static void InitializeAssets()");
 					writer.AppendBlockStatement(() =>
 					{
 						foreach (var asset in assets)
-							writer.AppendLine($"{asset.Name} = {asset.Type}.Create(ref reader);");
+							writer.AppendLine($"{asset.Name} = new {asset.Type}();");
 					});
 
 					writer.NewLine();
-					writer.AppendLine("private static void ReloadAssets(BufferReader reader)");
+					writer.AppendLine("private static void LoadAssets(BufferReader reader)");
 					writer.AppendBlockStatement(() =>
 					{
 						foreach (var asset in assets)
