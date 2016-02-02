@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Platform.Memory
 {
 	using System;
-	using PointWars.Platform.Memory;
 	using Utilities;
 
 	/// <summary>
