@@ -33,7 +33,7 @@ namespace OrbsHavoc.Platform.Memory
 		/// <summary>
 		///   The object pools with global lifetime that should be disposed automatically during application shutdown.
 		/// </summary>
-		private static readonly List<DisposableObject> GlobalPools = new List<DisposableObject>();
+		private static readonly List<ObjectPool> GlobalPools = new List<ObjectPool>();
 
 		/// <summary>
 		///   Used for thread synchronization.

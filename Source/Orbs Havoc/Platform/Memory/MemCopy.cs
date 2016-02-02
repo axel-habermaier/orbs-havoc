@@ -52,8 +52,9 @@ namespace OrbsHavoc.Platform.Memory
 			Assert.ArgumentNotNull(new IntPtr(destination), nameof(destination));
 			Assert.ArgumentNotNull(new IntPtr(source), nameof(source));
 			Assert.ArgumentSatisfies(byteCount > 0, nameof(byteCount), "At least 1 byte must be copied.");
-			Assert.ArgumentSatisfies((source < destination && (byte*)source + byteCount <= destination) ||
-									 (destination < source && (byte*)destination + byteCount <= source),
+			Assert.ArgumentSatisfies(
+				(source < destination && (byte*)source + byteCount <= destination) ||
+				(destination < source && (byte*)destination + byteCount <= source),
 				nameof(source), "The memory regions overlap.");
 
 			CopyBlock.Copy(destination, source, byteCount);

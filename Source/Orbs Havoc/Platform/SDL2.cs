@@ -32,6 +32,11 @@ namespace OrbsHavoc.Platform
 	/// <summary>
 	///   Provides access to SDL2 functions, constants, and types.
 	/// </summary>
+	/// <remarks>
+	///   Based on SDL2# - C# Wrapper for SDL2
+	///   https://github.com/flibitijibibo/SDL2-CS
+	///   zlib license
+	/// </remarks>
 	public static unsafe class SDL2
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]

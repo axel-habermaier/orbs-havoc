@@ -65,16 +65,16 @@ namespace OrbsHavoc.Platform.Graphics
 				switch (glError)
 				{
 					case GL_INVALID_ENUM:
-						msg = "GL_INVALID_ENUM";
+						msg = nameof(GL_INVALID_ENUM);
 						break;
 					case GL_INVALID_VALUE:
-						msg = "GL_INVALID_VALUE";
+						msg = nameof(GL_INVALID_VALUE);
 						break;
 					case GL_INVALID_OPERATION:
-						msg = "GL_INVALID_OPERATION";
+						msg = nameof(GL_INVALID_OPERATION);
 						break;
 					case GL_OUT_OF_MEMORY:
-						msg = "GL_OUT_OF_MEMORY";
+						msg = nameof(GL_OUT_OF_MEMORY);
 						break;
 					default:
 						msg = "Unknown OpenGL error.";
