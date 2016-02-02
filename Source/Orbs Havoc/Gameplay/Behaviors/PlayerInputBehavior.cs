@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2015, Axel Habermaier
+// Copyright (c) 2012-2016, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -110,7 +110,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 			input._acceleration = Vector2.Zero;
 			input._weapons[EntityType.MiniGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator);
 			input._weapons[EntityType.PlasmaGun.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
-			input._weapons[EntityType.LightingGun.GetWeaponSlot()] = LightingGunBehavior.Create(allocator); 
+			input._weapons[EntityType.LightingGun.GetWeaponSlot()] = LightingGunBehavior.Create(allocator);
 			input._weapons[EntityType.RocketLauncher.GetWeaponSlot()] = RocketLauncherBehavior.Create(allocator);
 			input._weapons[EntityType.Bfg.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO
 			input._weapons[EntityType.Bomb.GetWeaponSlot()] = MiniGunBehavior.Create(allocator); // TODO

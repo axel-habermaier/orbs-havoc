@@ -149,7 +149,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/VBNaming/EventHandlerPatternLong/@EntryValue">$object$_On$event$</s:String>
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">The MIT License (MIT)&#xD;
 &#xD;
-Copyright (c) 2015, Axel Habermaier&#xD;
+Copyright (c) 2012-2016, Axel Habermaier&#xD;
 &#xD;
 Permission is hereby granted, free of charge, to any person obtaining a copy&#xD;
 of this software and associated documentation files (the "Software"), to deal&#xD;
