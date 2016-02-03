@@ -39,19 +39,19 @@ namespace OrbsHavoc.Scripting
 		/// <summary>
 		///   The screen resolution used by the application in fullscreen mode.
 		/// </summary>
-		[DefaultValue("new Size(1024, 768)"), Persistent, WindowSize]
+		[DefaultValue(@"new Size(1024, 768)"), Persistent, WindowSize]
 		Size Resolution { get; set; }
 
 		/// <summary>
 		///   The size in pixels of the application window in non-fullscreen mode.
 		/// </summary>
-		[DefaultValue("new Size(1024, 768)"), Persistent, WindowSize, SystemOnly]
+		[DefaultValue(@"new Size(1024, 768)"), Persistent, WindowSize, SystemOnly]
 		Size WindowSize { get; set; }
 
 		/// <summary>
 		///   The screen position of the application window's top left corner in non-fullscreen mode.
 		/// </summary>
-		[DefaultValue("new Vector2(100, 100)"), Persistent, WindowPosition, SystemOnly]
+		[DefaultValue(@"new Vector2(100, 100)"), Persistent, WindowPosition, SystemOnly]
 		Vector2 WindowPosition { get; set; }
 
 		/// <summary>
@@ -75,7 +75,7 @@ namespace OrbsHavoc.Scripting
 		/// <summary>
 		///   The name of the player.
 		/// </summary>
-		[DefaultValue("UnnamedPlayer"), Persistent, NotEmpty, MaximumLength(NetworkProtocol.PlayerNameLength, checkUtf8Length: true)]
+		[DefaultValue(@"Environment.UserName"), Persistent, NotEmpty, MaximumLength(NetworkProtocol.PlayerNameLength, checkUtf8Length: true)]
 		string PlayerName { get; set; }
 
 		/// <summary>

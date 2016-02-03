@@ -211,8 +211,8 @@ namespace AssetsCompiler
 						var runtimeName = GetRuntimeName(cvar.Identifier.ToString());
 						var defaultValueAttribute = cvar.DescendantNodes().OfType<AttributeSyntax>().First(a => a.Name.ToString() == "DefaultValue");
 						var defaultValue = defaultValueAttribute.ArgumentList.Arguments.First().ToString().Trim();
-						if (cvar.Type.ToString() != "string" && defaultValue.StartsWith("\""))
-							defaultValue = defaultValue.Substring(1, defaultValue.Length - 2);
+						if (defaultValue.StartsWith("@\""))
+							defaultValue = defaultValue.Substring(2, defaultValue.Length - 3);
 
 						writer.Append($"{cvar.Identifier}Cvar = new Cvar<{cvar.Type}>(");
 						writer.Append($"\"{runtimeName}\", {defaultValue}, \"{GetSummaryText(cvar.GetLeadingTrivia().ToString())}\", ");
