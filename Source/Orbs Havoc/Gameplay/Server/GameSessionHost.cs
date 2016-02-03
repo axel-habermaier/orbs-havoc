@@ -169,7 +169,7 @@ namespace OrbsHavoc.Gameplay.Server
 				}
 			}, token);
 
-			Log.Info("Server started.");
+			Log.Info("Server '{1}' started on port {0}.", port, serverName);
 		}
 
 		/// <summary>

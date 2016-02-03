@@ -234,6 +234,7 @@
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringCache.cs" />
     <Compile Include="Views\HudOverlay.cs" />
+    <Compile Include="Views\StartGameMenu.cs" />
     <Compile Include="Views\RespawnOverlay.cs" />
     <Compile Include="Views\WaitingOverlay.cs" />
     <Compile Include="Views\Scoreboard.cs" />

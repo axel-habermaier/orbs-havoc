@@ -73,6 +73,7 @@ namespace OrbsHavoc.Views
 				MainMenu,
 				InGameMenu,
 				JoinGameMenu,
+				StartGameMenu,
 				LoadingOverlay,
 				EventMessages,
 				Scoreboard,
@@ -121,6 +122,11 @@ namespace OrbsHavoc.Views
 		///   Gets the menu that lets the user join a game.
 		/// </summary>
 		public JoinGameMenu JoinGameMenu { get; } = new JoinGameMenu();
+
+		/// <summary>
+		///   Gets the menu that lets the user start a new game.
+		/// </summary>
+		public StartGameMenu StartGameMenu { get; } = new StartGameMenu();
 
 		/// <summary>
 		///   Gets the application the view collection belongs to.
@@ -294,18 +300,29 @@ namespace OrbsHavoc.Views
 		/// <summary>
 		///   Starts a new locally-hosted game session.
 		/// </summary>
-		private void StartHost(string serverName, ushort serverPort)
+		public bool TryStartHost(string serverName, ushort serverPort)
 		{
 			try
 			{
 				Host.Start(serverName, serverPort);
+				return true;
 			}
 			catch (SocketException e)
 			{
 				var message = $"Unable to start the server: {e.GetMessage()}";
 				Log.Error("{0}", message);
 				MessageBoxes.ShowError("Server Failure", message);
+
+				return false;
 			}
+		}
+
+		/// <summary>
+		///   Starts a new locally-hosted game session.
+		/// </summary>
+		private void StartHost(string serverName, ushort serverPort)
+		{
+			TryStartHost(serverName, serverPort);
 		}
 	}
 }

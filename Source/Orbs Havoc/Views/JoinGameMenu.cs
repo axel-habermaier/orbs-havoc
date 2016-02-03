@@ -217,7 +217,7 @@ namespace OrbsHavoc.Views
 				server = new ServerInfo { EndPoint = ipEndPoint, Name = name, DiscoveryTime = Clock.GetTime() };
 				_discoveredServers.Add(server);
 
-				Log.Info("Discovered server {0}.", ipEndPoint);
+				Log.Info("Discovered server '{1}' at {0}.", ipEndPoint, name);
 			}
 			else
 				server.DiscoveryTime = Clock.GetTime();

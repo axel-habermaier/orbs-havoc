@@ -51,7 +51,11 @@ namespace OrbsHavoc.Views
 						Font = AssetBundle.Moonhouse80,
 						Margin = new Thickness(0, 0, 0, 30),
 					},
-					CreateButton("Start Game", () => { }),
+					CreateButton("Start Game", () =>
+					{
+						Views.StartGameMenu.Show();
+						Hide();
+					}),
 					CreateButton("Join Game", () =>
 					{
 						Views.JoinGameMenu.Show();

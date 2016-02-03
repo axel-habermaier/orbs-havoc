@@ -42,7 +42,7 @@ namespace OrbsHavoc.Gameplay.Server
 		/// <summary>
 		///   A cached buffer that is used to hold the contents of the discovery messages.
 		/// </summary>
-		private readonly byte[] _buffer = new byte[7 + NetworkProtocol.ServerNameLength];
+		private readonly byte[] _buffer = new byte[8 + NetworkProtocol.ServerNameLength];
 
 		/// <summary>
 		///   The name of the server that is sent in the discovery message.
