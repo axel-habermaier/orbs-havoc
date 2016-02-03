@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc
 {
-	using System;
 	using System.Threading;
 	using Assets;
 	using Platform;
@@ -71,7 +70,7 @@ namespace OrbsHavoc
 			_views.Initialize();
 
 			Commands.OnExit += Exit;
-			Commands.Bind(Key.F1, $"start_server \"{Environment.UserName}'s Server\"");
+			Commands.Bind(Key.F1, "start_server");
 			Commands.Bind(Key.F2, "stop_server");
 			Commands.Bind(Key.F3, "connect ::1");
 			Commands.Bind(Key.F4, "disconnect");

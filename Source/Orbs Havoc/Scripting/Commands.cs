@@ -132,7 +132,7 @@ namespace OrbsHavoc.Scripting
 		/// </summary>
 		/// <param name="serverName">The name of the server that is displayed in the Join screen.</param>
 		/// <param name="port">The port the server should use to communicate with the clients.</param>
-		void StartServer([NotEmpty, MaximumLength(NetworkProtocol.ServerNameLength, checkUtf8Length: true)] string serverName = "Server",
+		void StartServer([MaximumLength(NetworkProtocol.ServerNameLength, checkUtf8Length: true)] string serverName = "",
 						 ushort port = NetworkProtocol.DefaultServerPort);
 
 		/// <summary>

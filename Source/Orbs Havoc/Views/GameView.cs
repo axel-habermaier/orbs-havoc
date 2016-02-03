@@ -258,6 +258,8 @@ namespace OrbsHavoc.Views
 			Connection.EnqueueMessage(ClientConnectMessage.Create(_allocator, Cvars.PlayerName));
 
 			Show();
+			Views.EventMessages.Show();
+
 			Views.LoadingOverlay.Load(ServerEndPoint);
 		}
 
@@ -266,18 +268,9 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private void Disconnect()
 		{
-			Views.LoadingOverlay.Hide();
+			Views.HideAllViews(closeMessageBoxes: true);
 			Views.MainMenu.Show();
-			Views.Chat.Hide();
 			Views.EventMessages.Clear();
-			Views.InGameMenu.Hide();
-			Views.OptionsMenu.Hide();
-			Views.MessageBoxes.CloseAll();
-			Views.Scoreboard.Hide();
-			Views.WaitingOverlay.Hide();
-			Views.Hud.Hide();
-			Views.RespawnOverlay.Hide();
-			Hide();
 
 			_inputManager.SafeDispose();
 			GameSession.SafeDispose();

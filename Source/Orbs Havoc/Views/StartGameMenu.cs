@@ -26,6 +26,7 @@ namespace OrbsHavoc.Views
 	using System.Net;
 	using System.Text;
 	using Assets;
+	using Gameplay.Server;
 	using Network;
 	using Platform.Input;
 	using Rendering;
@@ -112,7 +113,7 @@ namespace OrbsHavoc.Views
 									Margin = new Thickness(5, 0, 0, 5),
 									Width = 200,
 									MaxLength = NetworkProtocol.ServerNameLength,
-									TextChanged = OnAddressChanged
+									TextChanged = OnNameChanged
 								}),
 								(_invalidName = new Label
 								{
@@ -192,14 +193,14 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		protected override void Activate()
 		{
-			_name.Text = $"{Environment.UserName}'s Server";
+			_name.Text = GameSessionHost.DefaultServerName;
 			_port.Text = NetworkProtocol.DefaultServerPort.ToString();
 		}
 
 		/// <summary>
-		///   Invoked when the user entered another address.
+		///   Invoked when the user entered another name.
 		/// </summary>
-		private void OnAddressChanged(string address)
+		private void OnNameChanged(string address)
 		{
 			_invalidName.Visibility = ServerName == null ? Visibility.Visible : Visibility.Collapsed;
 		}

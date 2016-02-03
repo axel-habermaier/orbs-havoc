@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.Views
 {
+	using System;
 	using System.Net.Sockets;
 	using Assets;
 	using Gameplay.Server;
@@ -185,6 +186,22 @@ namespace OrbsHavoc.Views
 		public RespawnOverlay RespawnOverlay { get; } = new RespawnOverlay();
 
 		/// <summary>
+		///   Hides all views except for the console and the debug overlay.
+		/// </summary>
+		/// <param name="closeMessageBoxes">Indicates whether all message boxes should be closed.</param>
+		public void HideAllViews(bool closeMessageBoxes)
+		{
+			foreach (var view in _views)
+			{
+				if (view != Console && view != DebugOverlay && view != MessageBoxes)
+					view.Hide();
+			}
+
+			if (closeMessageBoxes)
+				MessageBoxes.CloseAll();
+		}
+
+		/// <summary>
 		///   Initializes the views.
 		/// </summary>
 		public void Initialize()
@@ -328,7 +345,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private void StartHost(string serverName, ushort serverPort)
 		{
-			TryStartHost(serverName, serverPort);
+			TryStartHost(String.IsNullOrWhiteSpace(serverName) ? GameSessionHost.DefaultServerName : serverName, serverPort);
 		}
 	}
 }

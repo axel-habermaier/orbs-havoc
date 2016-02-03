@@ -136,6 +136,11 @@ namespace OrbsHavoc.Gameplay.Server
 		public bool IsRunning => _task != null;
 
 		/// <summary>
+		///   Gets a default server name.
+		/// </summary>
+		public static string DefaultServerName => $"{Environment.UserName}'s Server";
+
+		/// <summary>
 		///   Tries to start a server.
 		/// </summary>
 		/// <param name="serverName">The name of the server that is displayed in the Join screen.</param>
