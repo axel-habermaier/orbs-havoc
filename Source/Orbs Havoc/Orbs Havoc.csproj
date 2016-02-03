@@ -178,6 +178,7 @@
     <Compile Include="Rendering\RenderOperation.cs" />
     <Compile Include="Rendering\RenderState.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
+    <Compile Include="UserInterface\Controls\CheckBox.cs" />
     <Compile Include="UserInterface\Controls\Image.cs" />
     <Compile Include="UserInterface\Controls\Border.cs" />
     <Compile Include="UserInterface\Controls\Button.cs" />

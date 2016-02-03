@@ -460,7 +460,7 @@ namespace OrbsHavoc.UserInterface
 			{
 				case HorizontalAlignment.Stretch:
 				case HorizontalAlignment.Center:
-					offset.X = (availableSize.Width - RenderSize.Width + Margin.Left - Margin.Right) / 2;
+					offset.X = MathUtils.Round((availableSize.Width - RenderSize.Width + Margin.Left - Margin.Right) / 2);
 					break;
 				case HorizontalAlignment.Left:
 					offset.X = Margin.Left;
@@ -476,7 +476,7 @@ namespace OrbsHavoc.UserInterface
 			{
 				case VerticalAlignment.Stretch:
 				case VerticalAlignment.Center:
-					offset.Y = (availableSize.Height - RenderSize.Height + Margin.Top - Margin.Bottom) / 2;
+					offset.Y = MathUtils.Round((availableSize.Height - RenderSize.Height + Margin.Top - Margin.Bottom) / 2);
 					break;
 				case VerticalAlignment.Top:
 					offset.Y = Margin.Top;

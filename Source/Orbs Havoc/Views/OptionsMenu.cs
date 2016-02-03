@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.Views
 {
+	using System.Collections.Generic;
 	using System.Text;
 	using Assets;
 	using Network;
@@ -37,8 +38,11 @@ namespace OrbsHavoc.Views
 	/// </summary>
 	internal sealed class OptionsMenu : View
 	{
+		private CheckBox _bloom;
+		private CheckBox _debugOverlay;
 		private UIElement _invalidName;
 		private TextBox _name;
+		private CheckBox _vsync;
 
 		/// <summary>
 		///   Gets the player name entered by the user or null if the name is invalid.
@@ -73,7 +77,7 @@ namespace OrbsHavoc.Views
 							Font = AssetBundle.Moonhouse80,
 							Margin = new Thickness(0, 0, 0, 30),
 						},
-						new Grid(columns: 2, rows: 2)
+						new Grid(columns: 2, rows: 5)
 						{
 							HorizontalAlignment = HorizontalAlignment.Center,
 							Children =
@@ -104,7 +108,49 @@ namespace OrbsHavoc.Views
 									Width = 200,
 									Visibility = Visibility.Collapsed,
 									Text = $"Expected a non-empty string with a maximum length of {NetworkProtocol.PlayerNameLength} characters."
-								})
+								}),
+								new Label
+								{
+									Text = "VSync:",
+									Margin = new Thickness(0, 4, 15, 0),
+									Row = 2,
+									Column = 0
+								},
+								(_vsync = new CheckBox
+								{
+									Row = 2,
+									Column = 1,
+									HorizontalAlignment = HorizontalAlignment.Left,
+									Margin = new Thickness(0, 1, 0, 1)
+								}),
+								new Label
+								{
+									Text = "Debug Overlay:",
+									Margin = new Thickness(0, 4, 15, 0),
+									Row = 3,
+									Column = 0
+								},
+								(_debugOverlay = new CheckBox
+								{
+									Row = 3,
+									Column = 1,
+									HorizontalAlignment = HorizontalAlignment.Left,
+									Margin = new Thickness(0, 1, 0, 1)
+								}),
+								new Label
+								{
+									Text = "Bloom:",
+									Margin = new Thickness(0, 4, 15, 0),
+									Row = 4,
+									Column = 0
+								},
+								(_bloom = new CheckBox
+								{
+									Row = 4,
+									Column = 1,
+									HorizontalAlignment = HorizontalAlignment.Left,
+									Margin = new Thickness(0, 1, 0, 1)
+								}),
 							}
 						},
 						new StackPanel
@@ -138,6 +184,9 @@ namespace OrbsHavoc.Views
 		protected override void Activate()
 		{
 			_name.Text = Cvars.PlayerName;
+			_vsync.IsChecked = Cvars.Vsync;
+			_debugOverlay.IsChecked = Cvars.ShowDebugOverlay;
+			_bloom.IsChecked = Cvars.BloomEnabled;
 		}
 
 		/// <summary>
@@ -156,8 +205,21 @@ namespace OrbsHavoc.Views
 			if (PlayerName == null)
 				return;
 
-			Cvars.PlayerName = PlayerName;
+			ChangeValue(Cvars.PlayerNameCvar, PlayerName);
+			ChangeValue(Cvars.VsyncCvar, _vsync.IsChecked);
+			ChangeValue(Cvars.ShowDebugOverlayCvar, _debugOverlay.IsChecked);
+			ChangeValue(Cvars.BloomEnabledCvar, _bloom.IsChecked);
+
 			ShowPreviousMenu();
+		}
+
+		/// <summary>
+		///   Updates the cvar's value, if necessary.
+		/// </summary>
+		private static void ChangeValue<T>(Cvar<T> cvar, T value)
+		{
+			if (!EqualityComparer<T>.Default.Equals(cvar.Value, value))
+				cvar.Value = value;
 		}
 
 		/// <summary>

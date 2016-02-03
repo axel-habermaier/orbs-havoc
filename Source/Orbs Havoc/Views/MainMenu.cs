@@ -81,7 +81,7 @@ namespace OrbsHavoc.Views
 				Font = AssetBundle.Moonhouse24,
 				Width = 200,
 				Content = label,
-				Margin = new Thickness(4),
+				Margin = new Thickness(4)
 			};
 
 			button.Click += onClick;

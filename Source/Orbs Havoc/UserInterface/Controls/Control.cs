@@ -28,7 +28,7 @@ namespace OrbsHavoc.UserInterface.Controls
 	/// <summary>
 	///   Represents a base class for templated UI elements with a single logical child of any type as its content.
 	/// </summary>
-	public class Control : UIElement
+	public abstract class Control : UIElement
 	{
 		private static readonly ControlTemplate DefaultTemplate =
 			(out UIElement templateRoot, out ContentPresenter contentPresenter) => templateRoot = contentPresenter = new ContentPresenter();
@@ -43,7 +43,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="template">The template that should be used by the control.</param>
-		public Control(ControlTemplate template = null)
+		protected Control(ControlTemplate template = null)
 		{
 			Template = template ?? DefaultTemplate;
 		}
@@ -106,6 +106,7 @@ namespace OrbsHavoc.UserInterface.Controls
 				}
 
 				_templateRoot?.ChangeParent(this);
+				OnTemplateApplied(_templateRoot, _contentPresenter);
 			}
 		}
 
@@ -138,6 +139,15 @@ namespace OrbsHavoc.UserInterface.Controls
 		///   Invoked when the control's content has been changed.
 		/// </summary>
 		protected virtual void OnContentChanged()
+		{
+		}
+
+		/// <summary>
+		///   Invoked when the control's template has been applied.
+		/// </summary>
+		/// <param name="templateRoot">The UI element representing the root of the applied template.</param>
+		/// <param name="contentPresenter">The content presenter that presents the control's content.</param>
+		protected virtual void OnTemplateApplied(UIElement templateRoot, ContentPresenter contentPresenter)
 		{
 		}
 

@@ -166,19 +166,23 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
 		protected override void DrawCore(SpriteBatch spriteBatch)
 		{
-			base.DrawCore(spriteBatch);
+			var area = VisualArea;
+
+			if (Background != Colors.Transparent)
+			{
+				var backgroundArea = new Rectangle(area.Left + 1, area.Top + 1, area.Width - 2, area.Height - 2);
+				spriteBatch.Draw(backgroundArea, Background);
+			}
 
 			if (BorderColor == Colors.Transparent)
 				return;
 
-			var area = VisualArea;
-
 			// Make sure there is no overdraw at the corners
 			spriteBatch.RenderState.Layer += 1;
-			spriteBatch.DrawLine(area.TopLeft, area.TopRight, BorderColor, BorderThickness.Top);
-			spriteBatch.DrawLine(area.BottomLeft + new Vector2(1, -2), area.TopLeft + new Vector2(1, 0), BorderColor, BorderThickness.Left);
-			spriteBatch.DrawLine(area.TopRight, area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Right);
-			spriteBatch.DrawLine(area.BottomLeft - new Vector2(0, 1), area.BottomRight - new Vector2(0, 1), BorderColor, BorderThickness.Bottom);
+			spriteBatch.DrawLine(area.TopLeft + new Vector2(0, 1), area.TopRight + new Vector2(0, 1), BorderColor, BorderThickness.Top);
+			spriteBatch.DrawLine(area.BottomLeft + new Vector2(1, -1), area.TopLeft + new Vector2(1, 1), BorderColor, BorderThickness.Left);
+			spriteBatch.DrawLine(area.TopRight + new Vector2(0, 1), area.BottomRight + new Vector2(0, -1), BorderColor, BorderThickness.Right);
+			spriteBatch.DrawLine(area.BottomLeft , area.BottomRight , BorderColor, BorderThickness.Bottom);
 			spriteBatch.RenderState.Layer -= 1;
 		}
 	}

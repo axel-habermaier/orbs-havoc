@@ -265,7 +265,7 @@ namespace OrbsHavoc.UserInterface.Controls
 			if (((int)Math.Round(_clock.Seconds * BlinkingFrequency)) % 2 != 0)
 				return;
 
-			var top = new Vector2(position.X, position.Y - 1);
+			var top = new Vector2(position.X, position.Y);
 			var bottom = new Vector2(0, lineHeight) + top;
 
 			spriteBatch.RenderState.Layer += 1;

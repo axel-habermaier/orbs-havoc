@@ -129,6 +129,7 @@ namespace OrbsHavoc.Views
 				Row = 0,
 				Column = column,
 				Padding = new Thickness(0, 0, 0, 2),
+				Margin = new Thickness(0, 0, 0, 2),
 				Child = new Label
 				{
 					Text = header,
