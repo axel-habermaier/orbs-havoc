@@ -271,6 +271,7 @@ namespace OrbsHavoc.Views
 			Views.Chat.Hide();
 			Views.EventMessages.Clear();
 			Views.InGameMenu.Hide();
+			Views.OptionsMenu.Hide();
 			Views.MessageBoxes.CloseAll();
 			Views.Scoreboard.Hide();
 			Views.WaitingOverlay.Hide();

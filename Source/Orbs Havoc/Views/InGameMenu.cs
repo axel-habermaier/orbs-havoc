@@ -60,7 +60,11 @@ namespace OrbsHavoc.Views
 							Margin = new Thickness(0, 0, 0, 30),
 						},
 						CreateButton("Continue", Hide),
-						CreateButton("Options", () => { }),
+						CreateButton("Options", () =>
+						{
+							Hide();
+							Views.OptionsMenu.Show();
+						}),
 						CreateButton("Leave", Leave),
 						CreateButton("Exit", Views.Exit)
 					}

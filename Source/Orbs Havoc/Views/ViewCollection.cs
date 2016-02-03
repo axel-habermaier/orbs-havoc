@@ -74,6 +74,7 @@ namespace OrbsHavoc.Views
 				InGameMenu,
 				JoinGameMenu,
 				StartGameMenu,
+				OptionsMenu,
 				LoadingOverlay,
 				EventMessages,
 				Scoreboard,
@@ -152,6 +153,11 @@ namespace OrbsHavoc.Views
 		///   Gets the in-game menu view.
 		/// </summary>
 		public InGameMenu InGameMenu { get; } = new InGameMenu();
+
+		/// <summary>
+		///   Gets the options menu view.
+		/// </summary>
+		public OptionsMenu OptionsMenu { get; } = new OptionsMenu();
 
 		/// <summary>
 		///   Gets the view containing the messages boxes.

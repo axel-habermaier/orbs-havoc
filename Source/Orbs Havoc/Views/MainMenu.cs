@@ -61,7 +61,11 @@ namespace OrbsHavoc.Views
 						Views.JoinGameMenu.Show();
 						Hide();
 					}),
-					CreateButton("Options", () => { }),
+					CreateButton("Options", () =>
+					{
+						Views.OptionsMenu.Show();
+						Hide();
+					}),
 					CreateButton("Exit", Views.Exit)
 				}
 			};

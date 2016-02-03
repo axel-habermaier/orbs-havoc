@@ -92,6 +92,7 @@ namespace OrbsHavoc.Views
 			Views.MessageBoxes.CloseAll();
 			Views.JoinGameMenu.Hide();
 			Views.StartGameMenu.Hide();
+			Views.OptionsMenu.Hide();
 			Views.MainMenu.Hide();
 		}
 
