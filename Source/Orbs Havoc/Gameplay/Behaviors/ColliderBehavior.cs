@@ -46,7 +46,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// </summary>
 		protected override void OnAttached()
 		{
-			SceneNode.GameSession.PhysicsSimulation.AddCollider(this);
+			SceneNode.GameSession.Physics.AddCollider(this);
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// <remarks>This method is not called when the scene graph is disposed.</remarks>
 		protected override void OnDetached()
 		{
-			SceneNode.GameSession.PhysicsSimulation.RemoveCollider(this);
+			SceneNode.GameSession.Physics.RemoveCollider(this);
 		}
 
 		/// <summary>

@@ -52,7 +52,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public static WeaponTemplate LightingGun = new WeaponTemplate
 		{
 			Cooldown = -1,
-			DepleteSpeed = 1,
+			DepleteSpeed = 35,
 			Range = 900,
 			WeaponType = EntityType.LightingGun,
 			MaxEnergy = 200,

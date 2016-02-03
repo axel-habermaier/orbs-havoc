@@ -91,7 +91,7 @@ namespace OrbsHavoc.Gameplay
 		/// <summary>
 		///   Gets the game session's collision handler in server mode.
 		/// </summary>
-		public PhysicsSimulation PhysicsSimulation { get; private set; }
+		public PhysicsSimulation Physics { get; private set; }
 
 		/// <summary>
 		///   Gets the scene graph of the game session.
@@ -192,7 +192,7 @@ namespace OrbsHavoc.Gameplay
 
 			ServerMode = true;
 			Players = new PlayerCollection(Allocator, serverMode: true);
-			PhysicsSimulation = new PhysicsSimulation(this);
+			Physics = new PhysicsSimulation(this);
 
 			ChangeLevel(AssetBundle.TestLevel);
 		}
@@ -223,7 +223,7 @@ namespace OrbsHavoc.Gameplay
 		public void UpdateServer(float elapsedSeconds)
 		{
 			SceneGraph.Update();
-			PhysicsSimulation.Update(elapsedSeconds);
+			Physics.Update(elapsedSeconds);
 
 			foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
 				entity.ServerUpdate(elapsedSeconds);

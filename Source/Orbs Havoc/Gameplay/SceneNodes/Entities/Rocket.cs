@@ -71,7 +71,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			if (GameSession.ServerMode)
 			{
 				var radius = Weapons.RocketLauncher.Range;
-				foreach (var entity in GameSession.PhysicsSimulation.GetEntitiesInArea(new Circle(WorldPosition, radius)))
+				foreach (var entity in GameSession.Physics.GetEntitiesInArea(new Circle(WorldPosition, radius)))
 				{
 					var orb = entity as Orb;
 					if (orb == null)

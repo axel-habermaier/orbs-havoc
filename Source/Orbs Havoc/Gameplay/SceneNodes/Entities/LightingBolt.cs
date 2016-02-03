@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 {
+	using System;
 	using Client;
 	using Network;
 	using Network.Messages;
@@ -33,6 +34,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 	/// </summary>
 	internal class LightingBolt : Entity, IRenderable
 	{
+		private readonly Func<SceneNode, bool> _collisionFilter;
 		private uint _lastUpdateSequenceNumber;
 
 		/// <summary>
@@ -41,6 +43,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public LightingBolt()
 		{
 			Type = EntityType.LightingBolt;
+			_collisionFilter = FilterCollision;
 		}
 
 		/// <summary>
@@ -96,15 +99,17 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
 		public override void ServerUpdate(float elapsedSeconds)
 		{
-			var result = GameSession.PhysicsSimulation.RayCast(WorldPosition, Parent.Orientation, Weapons.LightingGun.Range, Parent);
+			var normalizedDirection = MathUtils.FromAngle(Parent.Orientation);
+			var distanceToNearestWall = GameSession.Level.RayCast(WorldPosition, normalizedDirection, Weapons.LightingGun.Range);
+			var entityCollision = GameSession.Physics.RayCast(WorldPosition, normalizedDirection, Weapons.LightingGun.Range, _collisionFilter);
 
-			if (result.Entity == null || result.Entity.Type == EntityType.Orb)
-				Length = result.Length;
-
-			if (result.Entity != null)
+			if (distanceToNearestWall <= entityCollision.Length || entityCollision.Entity?.Type != EntityType.Orb)
+				Length = distanceToNearestWall;
+			else if (entityCollision.Entity?.Type == EntityType.Orb)
 			{
-				HandleCollision(result.Entity);
-				result.Entity.HandleCollision(this);
+				Length = entityCollision.Length;
+				HandleCollision(entityCollision.Entity);
+				entityCollision.Entity.HandleCollision(this);
 			}
 		}
 
@@ -168,6 +173,18 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			bolt._lastUpdateSequenceNumber = 0;
 
 			return bolt;
+		}
+
+		/// <summary>
+		///   Filters out scene nodes the lighting bolt should not collide with.
+		/// </summary>
+		private bool FilterCollision(SceneNode sceneNode)
+		{
+			if (sceneNode == Parent)
+				return false;
+
+			var entity = sceneNode as Entity;
+			return entity?.Type == EntityType.Orb;
 		}
 	}
 }

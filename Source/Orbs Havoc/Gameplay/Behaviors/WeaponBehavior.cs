@@ -126,7 +126,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 				_nextDeplete = 1.0f / Template.DepleteSpeed;
 			}
 
-			Energy = MathUtils.Clamp(Energy, (byte)0, Template.MaxEnergy);
+			Energy = MathUtils.Clamp(Energy, 0, Template.MaxEnergy);
 		}
 
 		/// <summary>

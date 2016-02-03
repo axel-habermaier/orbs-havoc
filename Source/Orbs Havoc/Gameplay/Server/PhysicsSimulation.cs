@@ -25,7 +25,6 @@ namespace OrbsHavoc.Gameplay.Server
 	using System;
 	using System.Collections.Generic;
 	using System.Numerics;
-	using System.Threading;
 	using Behaviors;
 	using SceneNodes;
 	using SceneNodes.Entities;
@@ -126,35 +125,26 @@ namespace OrbsHavoc.Gameplay.Server
 		}
 
 		/// <summary>
-		///   Casts a ray into the world and returns the result of the nearest collision.
+		///   Casts a ray into the world and returns the result of the nearest entity collision.
 		/// </summary>
 		/// <param name="start">The start position of the ray.</param>
-		/// <param name="orientation">The orientation of the ray in radians.</param>
+		/// <param name="normalizedDirection">The normalized direction of the ray.</param>
 		/// <param name="length">The length of the ray.</param>
-		/// <param name="ignoredNode">An optional scene node that is ignored when doing the ray cast.</param>
-		public RayCastResult RayCast(Vector2 start, float orientation, float length, SceneNode ignoredNode)
+		/// <param name="predicate">The predicate that determines whether a scene node is considered for collision.</param>
+		public RayCastResult RayCast(Vector2 start, Vector2 normalizedDirection, float length, Func<SceneNode, bool> predicate)
 		{
 			Assert.ArgumentSatisfies(length > 0, nameof(length), "Invalid length.");
+			Assert.ArgumentNotNull(predicate, nameof(predicate));
 
-			var normalizedDirection = MathUtils.FromAngle(orientation);
-            var direction = normalizedDirection * length;
+			var direction = normalizedDirection * length;
 			var offset = 1.0f;
 			Entity entity = null;
-
-			// Check for wall collisions
-			var info = _gameSession.Level.RayCast(start, normalizedDirection, length);
-			if (info.HasValue)
-			{
-			//	var collisionPosition = start - position + info.Value.Offset;
-			//	offset = collisionPosition.Length() / length;
-			//	break;
-			}
 
 			// Check for collisions with entities
 			foreach (var collider in _colliders)
 			{
 				// Check if we're supposed to ignore the collider's scene node
-				if (collider.SceneNode == ignoredNode)
+				if (!predicate(collider.SceneNode))
 					continue;
 
 				// There can be no collisions if the collider is completely out of range
@@ -178,7 +168,7 @@ namespace OrbsHavoc.Gameplay.Server
 				discriminant = MathUtils.Sqrt(discriminant);
 				var t = 2 * c / (-b + discriminant);
 
-				if (t >= offset)
+				if (t < 0 || t > 1 || t >= offset)
 					continue;
 
 				offset = t;

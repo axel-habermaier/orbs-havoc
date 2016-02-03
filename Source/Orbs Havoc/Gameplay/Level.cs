@@ -163,39 +163,39 @@ namespace OrbsHavoc.Gameplay
 		/// <param name="start">The start position of the ray.</param>
 		/// <param name="normalizedDirection">The normalized direction of the ray.</param>
 		/// <param name="length">The length of the ray.</param>
-		public CollisionInfo? RayCast(Vector2 start, Vector2 normalizedDirection, float length)
+		public float RayCast(Vector2 start, Vector2 normalizedDirection, float length)
 		{
 			var position = start;
+			var distanceToWall = 0.0f;
+
 			const float bigStep = BlockSize / 2;
 			const float smallStep = BlockSize / 256;
 
-			for (var i = 0; i < Math.Ceiling(length / bigStep); ++i)
+			while (distanceToWall < length)
 			{
 				int x, y;
 				GetBlock(position, out x, out y);
 				var blockType = this[x, y];
 
-				// While we're not hitting a wall, advance in big steps
-				if (!blockType.IsWall())
+				if (blockType.IsWall())
 				{
-					position += normalizedDirection * bigStep;
-					continue;
+					var info = CheckWallCollision(new Circle(position, smallStep / 2));
+					if (info.HasValue)
+						return distanceToWall + smallStep / 2 - info.Value.Offset.Length();
+
+					// We've hit a wall block, so we have to do a more thorough check now
+					distanceToWall += smallStep;
+				}
+				else
+				{
+					// We're not hitting a wall, advance in big steps
+					distanceToWall += bigStep;
 				}
 
-				// We've hit a wall block, so we have to do a more thorough check now
-				do
-				{
-					var info = CheckWallCollision(new Circle(position, 4));
-					if (info.HasValue)
-						return info;
-
-					position += normalizedDirection * smallStep;
-					GetBlock(position, out x, out y);
-					blockType = this[x, y];
-				} while (blockType.IsWall());
+				position = start + normalizedDirection * distanceToWall;
 			}
 
-			return null;
+			return length;
 		}
 
 		/// <summary>
