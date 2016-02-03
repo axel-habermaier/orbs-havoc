@@ -299,7 +299,7 @@ namespace OrbsHavoc.Gameplay.Server
 			_playerStatsTimer.Update();
 			_clients.Update((float)elapsedSeconds);
 			_clients.DispatchClientMessages();
-			_gameSession.Update((float)elapsedSeconds);
+			_gameSession.UpdateServer((float)elapsedSeconds);
 			_serverLogic.BroadcastEntityUpdates();
 			_clients.SendQueuedMessages();
 

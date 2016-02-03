@@ -30,8 +30,7 @@ namespace OrbsHavoc.Utilities
 	public static class StringCache
 	{
 		private static readonly string[] Integers = new string[1000];
-		private static readonly string[] FrameTimes = new string[2000];
-		private static readonly string[] RespawnDelay = new string[100];
+		private static readonly string[] Doubles = new string[2000];
 
 		/// <summary>
 		///   Initializes the cached strings.
@@ -41,15 +40,12 @@ namespace OrbsHavoc.Utilities
 			for (var i = 0; i < Integers.Length; ++i)
 				Integers[i] = i.ToString(CultureInfo.InvariantCulture);
 
-			for (var i = 0; i < FrameTimes.Length; ++i)
-				FrameTimes[i] = (i / 100.0).ToString("F2");
-
-			for (var i = 0; i < RespawnDelay.Length; ++i)
-				RespawnDelay[i] = (i / 10.0f).ToString("F1");
+			for (var i = 0; i < Doubles.Length; ++i)
+				Doubles[i] = (i / 100.0).ToString("F2");
 		}
 
 		/// <summary>
-		///   Gets a possibly cached string representation for the given integer.
+		///   Gets a possibly cached string representation for the given value.
 		/// </summary>
 		public static string GetString(int value)
 		{
@@ -60,25 +56,14 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Gets a possible cached string representation for the given frame time.
+		///   Gets a possibly cached string representation for the given value.
 		/// </summary>
-		public static string GetFrameTimeString(double value)
+		public static string GetString(double value)
 		{
-			if (value >= 0 && value * 100 < FrameTimes.Length)
-				return FrameTimes[MathUtils.RoundIntegral((float)(value * 100))];
+			if (value >= 0 && value * 100 < Doubles.Length)
+				return Doubles[MathUtils.RoundIntegral((float)(value * 100))];
 
 			return value.ToString("F2");
-		}
-
-		/// <summary>
-		///   Gets a possible cached string representation for the given frame time.
-		/// </summary>
-		public static string GetRespawnDelayTimeString(float value)
-		{
-			if (value >= 0 && value * 10 < FrameTimes.Length)
-				return RespawnDelay[MathUtils.RoundIntegral(value * 10)];
-
-			return value.ToString("F1");
 		}
 	}
 }

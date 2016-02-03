@@ -172,6 +172,11 @@ namespace OrbsHavoc.Gameplay.SceneNodes
 		public SceneGraph SceneGraph { get; internal set; }
 
 		/// <summary>
+		///   Gets a value indicating whether the scene node is currently attached to a scene graph.
+		/// </summary>
+		public bool IsAttached => SceneGraph != null;
+
+		/// <summary>
 		///   Gets a value indicating whether the scene node has been removed from the scene graph it belonged to.
 		/// </summary>
 		public bool IsRemoved { get; internal set; }

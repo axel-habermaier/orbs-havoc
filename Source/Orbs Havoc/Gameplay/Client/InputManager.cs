@@ -207,11 +207,9 @@ namespace OrbsHavoc.Gameplay.Client
 
 			_clock.Reset();
 
-			var primaryWeapon = _player.Orb?.PrimaryWeapon ?? EntityType.MiniGun;
-
 			connection.EnqueueMessage(PlayerInputMessage.Create(
 				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, Vector2.Zero,
-				0, 0, 0, 0, 0, 0, primaryWeapon));
+				0, 0, 0, 0, 0, 0, _primaryWeapon));
 		}
 
 		/// <summary>

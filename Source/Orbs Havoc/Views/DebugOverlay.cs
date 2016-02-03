@@ -173,10 +173,10 @@ namespace OrbsHavoc.Views
 			if (!Cvars.ShowDebugOverlay)
 				return;
 
-			_gpuTimeLabel.Text = StringCache.GetFrameTimeString(_gpuFrameTime.Average);
-			_cpuTimeLabel.Text = StringCache.GetFrameTimeString(_cpuFrameTime.Average);
-			_updateTimeLabel.Text = StringCache.GetFrameTimeString(_cpuUpdateTime.Average);
-			_renderTimeLabel.Text = StringCache.GetFrameTimeString(_cpuRenderTime.Average);
+			_gpuTimeLabel.Text = StringCache.GetString(_gpuFrameTime.Average);
+			_cpuTimeLabel.Text = StringCache.GetString(_cpuFrameTime.Average);
+			_updateTimeLabel.Text = StringCache.GetString(_cpuUpdateTime.Average);
+			_renderTimeLabel.Text = StringCache.GetString(_cpuRenderTime.Average);
 		}
 
 		/// <summary>

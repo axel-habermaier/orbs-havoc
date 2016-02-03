@@ -139,7 +139,7 @@ namespace OrbsHavoc.Views
 					var elapsedSeconds = (float)_clock.Seconds;
 					_clock.Reset();
 
-					GameSession.Update(elapsedSeconds);
+					GameSession.UpdateClient(elapsedSeconds);
 					Connection.SendQueuedMessages();
 
 					if (Connection.IsLagging)
@@ -223,8 +223,12 @@ namespace OrbsHavoc.Views
 			// Draw the particles last, on top of everything, using additive blending
 			spriteBatch.RenderState.BlendOperation = BlendOperation.Additive;
 			spriteBatch.RenderState.Layer = 10000;
+
 			foreach (var particleNode in GameSession.SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
-				particleNode.Draw(spriteBatch);
+			{
+				if (RootElement.IsFocused || particleNode != GameSession.MouseEffect)
+					particleNode.Draw(spriteBatch);
+			}
 
 			spriteBatch.RenderState.BlendOperation = BlendOperation.Premultiplied;
 		}

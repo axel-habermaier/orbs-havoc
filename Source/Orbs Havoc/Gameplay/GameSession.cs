@@ -109,6 +109,11 @@ namespace OrbsHavoc.Gameplay
 		public Action<Message> Broadcast { get; set; }
 
 		/// <summary>
+		///   Gets or sets the scene node that represents the mouse effect.
+		/// </summary>
+		public SceneNode MouseEffect { get; set; }
+
+		/// <summary>
 		///   Changes level that is used by the game session.
 		/// </summary>
 		/// <param name="level">The level that should be used by the game session.</param>
@@ -193,37 +198,40 @@ namespace OrbsHavoc.Gameplay
 		}
 
 		/// <summary>
-		///   Updates the state of the game session.
+		///   Updates the state of a client game session.
 		/// </summary>
 		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
-		public void Update(float elapsedSeconds)
+		public void UpdateClient(float elapsedSeconds)
 		{
 			SceneGraph.Update();
 
-			if (ServerMode)
-			{
-				PhysicsSimulation.Update(elapsedSeconds);
-
-				foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
-					entity.ServerUpdate(elapsedSeconds);
-			}
-			else
-			{
-				foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
-					entity.ClientUpdate(elapsedSeconds);
-			}
+			foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
+				entity.ClientUpdate(elapsedSeconds);
 
 			SceneGraph.ExecuteBehaviors(elapsedSeconds);
 
-			if (ServerMode)
-				Players.UpdatePlayerRanks();
-			else
-			{
-				foreach (var particleNode in SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
+			foreach (var particleNode in SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
 					particleNode.Update(elapsedSeconds);
-			}
 
 			SceneGraph.Update();
+		}
+
+		/// <summary>
+		///   Updates the state of a server game session.
+		/// </summary>
+		/// <param name="elapsedSeconds">The number of seconds that have elapsed since the last update.</param>
+		public void UpdateServer(float elapsedSeconds)
+		{
+			SceneGraph.Update();
+			PhysicsSimulation.Update(elapsedSeconds);
+
+			foreach (var entity in SceneGraph.EnumeratePreOrder<Entity>())
+				entity.ServerUpdate(elapsedSeconds);
+
+			SceneGraph.ExecuteBehaviors(elapsedSeconds);
+			SceneGraph.Update();
+
+			Players.UpdatePlayerRanks();
 		}
 
 		/// <summary>

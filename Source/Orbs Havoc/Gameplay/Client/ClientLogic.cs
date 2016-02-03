@@ -116,6 +116,8 @@ namespace OrbsHavoc.Gameplay.Client
 			var effectNode = ParticleEffectNode.Create(_allocator, effect, Vector2.Zero);
 			effectNode.AddBehavior(TrailMouseBehavior.Create(_allocator, _views.Application.InputDevice.Mouse, _views.Game.Camera));
 			effectNode.AttachTo(_gameSession.SceneGraph);
+
+			_gameSession.MouseEffect = effectNode;
 		}
 
 		/// <summary>
