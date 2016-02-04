@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Gameplay
 {
-	using System;
 	using System.Collections.Generic;
 	using System.Numerics;
 	using Platform.Memory;
@@ -169,7 +168,7 @@ namespace OrbsHavoc.Gameplay
 			var distanceToWall = 0.0f;
 
 			const float bigStep = BlockSize / 2;
-			const float smallStep = BlockSize / 256;
+			const float smallStep = BlockSize / 32;
 
 			while (distanceToWall < length)
 			{
@@ -181,7 +180,7 @@ namespace OrbsHavoc.Gameplay
 				{
 					var info = CheckWallCollision(new Circle(position, smallStep / 2));
 					if (info.HasValue)
-						return distanceToWall + smallStep / 2 - info.Value.Offset.Length();
+						return distanceToWall - info.Value.Offset.Length();
 
 					// We've hit a wall block, so we have to do a more thorough check now
 					distanceToWall += smallStep;
