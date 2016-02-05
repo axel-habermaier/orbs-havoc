@@ -56,8 +56,8 @@
 		<Message Importance="High" Text="Generated code for '%(Compile.Identity)'." Condition="%(Compile.Registry) == 'true'" />
 	</Target>
 	
-	<Target Name="GenerateBindings" BeforeTargets="GenerateILAssembly" Inputs="%(OpenGL.FullPath);$(OutDir)pwc.exe" Outputs="$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.asm">
-		<Exec Command="$(OutDir)pwc.exe opengl --input &quot;%(OpenGL.FullPath)&quot; --output &quot;$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.asm&quot;" WorkingDirectory="$(OutDir)" />
+	<Target Name="GenerateBindings" BeforeTargets="GenerateILAssembly" Inputs="%(OpenGL.FullPath);$(OutDir)pwc.exe" Outputs="$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.il">
+		<Exec Command="$(OutDir)pwc.exe opengl --input &quot;%(OpenGL.FullPath)&quot; --output &quot;$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.il&quot;" WorkingDirectory="$(OutDir)" />
 		<Message Importance="High" Text="Generated code for '%(OpenGL.Identity)'." />
 	</Target>
 	

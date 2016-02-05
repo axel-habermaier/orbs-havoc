@@ -378,8 +378,11 @@
     <Compile Include="Utilities\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <IL Include="Properties\AssemblyInfo.asm" />
-    <IL Include="Platform\Memory\CopyBlock.asm" />
+   <IL Include="Properties\AssemblyInfo.il" />
+    <IL Include="Platform\Memory\MemCopy.il">
+      <DependentUpon>MemCopy.cs</DependentUpon>
+    </IL>
+   
   </ItemGroup>
   <ItemGroup>
     <Font Include="Assets\Fonts\DefaultFont.font" />
@@ -391,7 +394,7 @@
     <Compile Include="UserInterface\UIElement.Input.cs" />
   </ItemGroup>
   <ItemGroup>
-    <IL Include="Platform\Graphics\OpenGL3.g.asm">
+    <IL Include="Platform\Graphics\OpenGL3.g.il">
       <DependentUpon>OpenGL.xml</DependentUpon>
     </IL>
   </ItemGroup>
