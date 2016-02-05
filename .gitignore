@@ -27,3 +27,5 @@ packages
 *.assets
 *.*~*
 *.g.*
+NuGet.exe
+ILRepack.exe

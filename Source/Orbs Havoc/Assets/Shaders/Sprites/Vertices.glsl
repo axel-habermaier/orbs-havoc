@@ -52,7 +52,6 @@ out vec4 FragColor;
 
 void GenerateVertex(vec2 position, vec2 offset, vec2 texCoords, float cosAngle, float sinAngle)
 {
-	position *= GeomSize[0];
 	position = vec2(position.x * cosAngle - position.y * sinAngle, position.x * sinAngle + position.y * cosAngle);
 	position += offset;
 
@@ -66,14 +65,16 @@ void main()
 {
 	FragColor = GeomColor[0];
 
+	float width = GeomSize[0].x / 2;
+	float height = GeomSize[0].y / 2;
 	float cosAngle = cos(GeomOrientation[0]);
 	float sinAngle = sin(GeomOrientation[0]);
 	vec2 offset = GeomPosition[0] + CameraPosition;
 
-	GenerateVertex(vec2(-0.5f, -0.5f), offset, GeomTexCoords[0].xy, cosAngle, sinAngle);
-	GenerateVertex(vec2(-0.5f, 0.5f), offset, GeomTexCoords[0].xy + vec2(0, GeomTexCoords[0].w), cosAngle, sinAngle);
-	GenerateVertex(vec2(0.5f, -0.5f), offset, GeomTexCoords[0].xy + vec2(GeomTexCoords[0].z, 0), cosAngle, sinAngle);
-	GenerateVertex(vec2(0.5f, 0.5f), offset, GeomTexCoords[0].xy + GeomTexCoords[0].zw, cosAngle, sinAngle);
+	GenerateVertex(vec2(-width, -height), offset, GeomTexCoords[0].xy, cosAngle, sinAngle);
+	GenerateVertex(vec2(-width, height), offset, GeomTexCoords[0].xy + vec2(0, GeomTexCoords[0].w), cosAngle, sinAngle);
+	GenerateVertex(vec2(width, -height), offset, GeomTexCoords[0].xy + vec2(GeomTexCoords[0].z, 0), cosAngle, sinAngle);
+	GenerateVertex(vec2(width, height), offset, GeomTexCoords[0].xy + GeomTexCoords[0].zw, cosAngle, sinAngle);
 
 	EndPrimitive();
 }

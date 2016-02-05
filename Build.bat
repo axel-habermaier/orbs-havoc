@@ -3,7 +3,9 @@
 echo =====================================================================
 echo Installing NuGet packages...
 echo =====================================================================
+powershell -Command "Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile ./Dependencies/NuGet.exe"
 "Dependencies/NuGet.exe" restore "Orbs Havoc.sln" -OutputDirectory "Dependencies/Packages"
+"Dependencies/NuGet.exe" install ILRepack -OutputDirectory "Dependencies/Packages" -Version 2.0.10
 
 echo =====================================================================
 echo Compiling solution...
@@ -20,7 +22,7 @@ echo =====================================================================
 echo Merging assemblies...
 echo =====================================================================
 cd Build\Release
-..\..\Dependencies\ILRepack.exe /out:"Orbs Havoc.exe" /internalize "Orbs Havoc.exe" "Orbs Havoc.IL.dll"
+"..\..\Dependencies\Packages\ILRepack.2.0.10\tools\ILRepack.exe" /out:"Orbs Havoc.exe" /internalize "Orbs Havoc.exe" "Orbs Havoc.IL.dll"
 cd ..\..\Binaries
 
 echo =====================================================================
