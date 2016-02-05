@@ -37,7 +37,7 @@ namespace OrbsHavoc.Rendering
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
 		private readonly List<RenderOperation> _operations = new List<RenderOperation>();
-		private readonly DynamicBuffer _projectionMatrixBuffer;
+		private readonly UniformBuffer _projectionMatrixBuffer;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -47,7 +47,7 @@ namespace OrbsHavoc.Rendering
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
 
-			_projectionMatrixBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(Matrix4x4));
+			_projectionMatrixBuffer = new UniformBuffer(sizeof(Matrix4x4));
 			Window = window;
 			Window.Resized += UpdateProjectionMatrix;
 
@@ -90,6 +90,7 @@ namespace OrbsHavoc.Rendering
 			// Bind the projection matrix buffer and upload the quads to the GPU
 			_projectionMatrixBuffer.Bind(0);
 			Quads.UploadToGpu(RenderBuffer);
+			RenderBuffer.Unmap();
 
 			// Now execute all render operations
 			foreach (var operation in _operations)

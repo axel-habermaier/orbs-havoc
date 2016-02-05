@@ -27,14 +27,13 @@ namespace OrbsHavoc.Rendering
 	using Platform.Memory;
 	using Utilities;
 	using static Platform.Graphics.GraphicsHelpers;
-	using static Platform.Graphics.OpenGL3;
 
 	/// <summary>
 	///   Represents a camera that can be used to draw scenes.
 	/// </summary>
 	public sealed unsafe class Camera : DisposableObject
 	{
-		private readonly DynamicBuffer _buffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(Vector2));
+		private readonly UniformBuffer _buffer = new UniformBuffer(sizeof(Vector2));
 		private uint _lastChanged;
 		private Vector2 _position;
 

@@ -35,19 +35,24 @@ namespace OrbsHavoc.Rendering
 	internal sealed unsafe class RenderBuffer : DisposableObject
 	{
 		/// <summary>
-		///   The vertex buffer that is used to store the quad data.
+		///   The vertex buffers that are used to store the quad data.
 		/// </summary>
-		private readonly DynamicBuffer _dataBuffer;
+		private readonly Buffer[] _dataBuffers = new Buffer[GraphicsState.MaxFrameLag];
 
 		/// <summary>
 		///   The vertex buffer that stores the quad vertices.
 		/// </summary>
-		private readonly StaticBuffer _vertexBuffer;
+		private readonly Buffer _vertexBuffer;
 
 		/// <summary>
-		///   The vertex input layout that describes the vertex buffer.
+		///   The vertex input layouts that describe the vertex buffers.
 		/// </summary>
-		private readonly int _vertexLayout;
+		private readonly int[] _vertexLayouts = new int[GraphicsState.MaxFrameLag];
+
+		/// <summary>
+		///   The current index into the vertex layout and data buffer arrays.
+		/// </summary>
+		private int _index;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -62,36 +67,35 @@ namespace OrbsHavoc.Rendering
 			vertices[2] = new Vector2(0.5f, -0.5f);
 			vertices[3] = new Vector2(0.5f, 0.5f);
 
-			_vertexBuffer = new StaticBuffer(GL_ARRAY_BUFFER, 4 * sizeof(Vector2), vertices);
-			_dataBuffer = new DynamicBuffer(GL_ARRAY_BUFFER, QuadCollection.MaxQuads, Quad.SizeInBytes);
-			_vertexLayout = Allocate(glGenVertexArrays, "Vertex Layout");
+			_vertexBuffer = new Buffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, 4 * sizeof(Vector2), vertices);
 
-			glBindVertexArray(_vertexLayout);
-			glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(Vector2), (void*)0);
-			glVertexAttribDivisor(0, 0);
-			CheckErrors();
+			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
+			{
+				_dataBuffers[i] = new Buffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, QuadCollection.MaxQuads * Quad.SizeInBytes);
+				_vertexLayouts[i] = Allocate(glGenVertexArrays, "Vertex Layout");
 
-			glBindBuffer(GL_ARRAY_BUFFER, _dataBuffer);
-			CheckErrors();
+				glBindVertexArray(_vertexLayouts[i]);
+				glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(Vector2), (void*)0);
+				glVertexAttribDivisor(0, 0);
+				CheckErrors();
 
-			var offset = (byte*)0;
-			var index = 1;
+				glBindBuffer(GL_ARRAY_BUFFER, _dataBuffers[i]);
+				CheckErrors();
 
-			InitializeVertexAttribute(ref offset, ref index, 2, GL_FLOAT, sizeof(float), false); // Positions
-			InitializeVertexAttribute(ref offset, ref index, 1, GL_FLOAT, sizeof(float), false); // Orientations
-			InitializeVertexAttribute(ref offset, ref index, 4, GL_UNSIGNED_BYTE, sizeof(byte), true); // Colors
-			InitializeVertexAttribute(ref offset, ref index, 2, GL_UNSIGNED_SHORT, sizeof(ushort), false); // Sizes
-			InitializeVertexAttribute(ref offset, ref index, 4, GL_UNSIGNED_SHORT, sizeof(ushort), true); // Tex Coords
+				var offset = (byte*)0;
+				var index = 1;
+
+				InitializeVertexAttribute(ref offset, ref index, 2, GL_FLOAT, sizeof(float), false); // Positions
+				InitializeVertexAttribute(ref offset, ref index, 1, GL_FLOAT, sizeof(float), false); // Orientations
+				InitializeVertexAttribute(ref offset, ref index, 4, GL_UNSIGNED_BYTE, sizeof(byte), true); // Colors
+				InitializeVertexAttribute(ref offset, ref index, 2, GL_UNSIGNED_SHORT, sizeof(ushort), false); // Sizes
+				InitializeVertexAttribute(ref offset, ref index, 4, GL_UNSIGNED_SHORT, sizeof(ushort), true); // Tex Coords
+			}
 
 			glBindVertexArray(0);
 		}
-
-		/// <summary>
-		///   Gets the element offset that must be applied to all drawing operations.
-		/// </summary>
-		public int ElementOffset => _dataBuffer.ElementOffset;
 
 		/// <summary>
 		///   Binds the render buffer for rendering.
@@ -100,7 +104,7 @@ namespace OrbsHavoc.Rendering
 		{
 			// Do not actually bind the vertex layout here, as that causes all sorts of problems with buffer updates between
 			// the binding of the vertex layout and the actual draw call using the vertex layout
-			State.VertexLayout = _vertexLayout;
+			State.VertexLayout = _vertexLayouts[_index];
 		}
 
 		/// <summary>
@@ -122,19 +126,31 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			_dataBuffer.SafeDispose();
+			_dataBuffers.SafeDisposeAll();
 			_vertexBuffer.SafeDispose();
 
 			State.VertexLayout = -1;
-			Deallocate(glDeleteVertexArrays, _vertexLayout);
+
+			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
+				Deallocate(glDeleteVertexArrays, _vertexLayouts[i]);
 		}
 
 		/// <summary>
-		///   Gets the pointer to the GPU memory for the current frame.
+		///   Maps the buffer for data upload to the GPU.
 		/// </summary>
-		public Quad* GetPointer()
+		/// <param name="sizeInBytes">The number of bytes that can be written.</param>
+		public Quad* Map(int sizeInBytes)
 		{
-			return (Quad*)_dataBuffer.GetChunkPointer();
+			_index = (_index + 1) % GraphicsState.MaxFrameLag;
+			return (Quad*)_dataBuffers[_index].Map(sizeInBytes);
+		}
+
+		/// <summary>
+		///   Unmaps the buffer.
+		/// </summary>
+		public void Unmap()
+		{
+			_dataBuffers[_index].Unmap();
 		}
 	}
 }

@@ -116,11 +116,11 @@ namespace OrbsHavoc.Rendering
 		/// <param name="buffer">The buffer the quads should be uploaded to.</param>
 		internal void UploadToGpu(RenderBuffer buffer)
 		{
-			var gpuQuads = buffer.GetPointer();
 			var offset = 0;
+			var gpuBuffer = buffer.Map(_count);
 
 			foreach (var partition in _partitions)
-				partition.UploadQuads(_quads, gpuQuads, ref offset);
+				partition.UploadQuads(_quads, gpuBuffer, ref offset);
 		}
 
 		/// <summary>

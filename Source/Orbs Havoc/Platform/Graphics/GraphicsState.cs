@@ -31,9 +31,9 @@ namespace OrbsHavoc.Platform.Graphics
 	public sealed class GraphicsState
 	{
 		/// <summary>
-		///   The maximum number of constant buffers that can be bound simultaneously.
+		///   The maximum number of uniform buffers that can be bound simultaneously.
 		/// </summary>
-		public const int ConstantBufferSlotCount = 14;
+		public const int UniformBufferSlotCount = 14;
 
 		/// <summary>
 		///   The maximum number of constant buffers that can be bound simultaneously.
@@ -46,9 +46,9 @@ namespace OrbsHavoc.Platform.Graphics
 		public const int MaxFrameLag = 3;
 
 		/// <summary>
-		///   The constant buffers that are currently bound.
+		///   The uniform buffers that are currently bound.
 		/// </summary>
-		public readonly DynamicBuffer[] ConstantBuffers = new DynamicBuffer[ConstantBufferSlotCount];
+		public readonly UniformBuffer[] UniformBuffers = new UniformBuffer[UniformBufferSlotCount];
 
 		/// <summary>
 		///   The currently bound sampler states.

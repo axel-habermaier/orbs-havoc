@@ -95,7 +95,7 @@ namespace OrbsHavoc.Rendering
 						MathUtils.RoundIntegral(state.ScissorArea.Value.Height));
 				}
 
-				state.RenderTarget.DrawInstanced(partition.Count, 4, 0, Renderer.RenderBuffer.ElementOffset + partition.Offset, GL_TRIANGLE_STRIP);
+				state.RenderTarget.DrawInstanced(partition.Count, 4, 0, partition.Offset, GL_TRIANGLE_STRIP);
 			}
 
 			// Make sure we don't "leak out" the scissor rasterizer state

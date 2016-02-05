@@ -30,16 +30,15 @@ namespace OrbsHavoc.Rendering
 	using Platform.Memory;
 	using Scripting;
 	using Utilities;
-	using static Platform.Graphics.OpenGL3;
 
 	/// <summary>
 	///   Represents a effect that blooms the input render target.
 	/// </summary>
 	public class BloomEffect : FullscreenEffect
 	{
-		private readonly DynamicBuffer _bloomSettingsBuffer;
-		private readonly DynamicBuffer _horizontalBlurBuffer;
-		private readonly DynamicBuffer _verticalBlurBuffer;
+		private readonly UniformBuffer _bloomSettingsBuffer;
+		private readonly UniformBuffer _horizontalBlurBuffer;
+		private readonly UniformBuffer _verticalBlurBuffer;
 
 		private BloomSettings _bloomSettings = new BloomSettings
 		{
@@ -62,9 +61,9 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public unsafe BloomEffect()
 		{
-			_bloomSettingsBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BloomSettings));
-			_horizontalBlurBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BlurSettings));
-			_verticalBlurBuffer = new DynamicBuffer(GL_UNIFORM_BUFFER, 1, sizeof(BlurSettings));
+			_bloomSettingsBuffer = new UniformBuffer(sizeof(BloomSettings));
+			_horizontalBlurBuffer = new UniformBuffer(sizeof(BlurSettings));
+			_verticalBlurBuffer = new UniformBuffer(sizeof(BlurSettings));
 
 			Cvars.BloomQualityChanged += BloomQualityChanged;
 		}
@@ -151,24 +150,36 @@ namespace OrbsHavoc.Rendering
 		}
 
 		/// <summary>
+		///   Gets the render target size factor for the current bloom quality level.
+		/// </summary>
+		private static int GetRenderTargetSizeFactor()
+		{
+			switch (Cvars.BloomQuality)
+			{
+				case QualityLevel.Low:
+					return 4;
+				case QualityLevel.Medium:
+					return 2;
+				default:
+					return 1;
+			}
+		}
+
+		/// <summary>
 		///   Executes the render operation.
 		/// </summary>
 		internal override unsafe void Execute()
 		{
 			var size = Renderer.Window.Size;
-			if (_temporaryTarget1 == null || _temporaryTarget1.Size != size)
+			var bloomQuality = GetRenderTargetSizeFactor();
+
+			if (_temporaryTarget1 == null || _temporaryTarget1.Size != size / bloomQuality)
 			{
 				_temporaryTarget1.SafeDispose();
 				_temporaryTarget2.SafeDispose();
 
-				var qualityFactor = 1.0f;
-				if (Cvars.BloomQuality == QualityLevel.Low)
-					qualityFactor = 4;
-				if (Cvars.BloomQuality == QualityLevel.Medium)
-					qualityFactor = 2;
-
-				_temporaryTarget1 = new RenderTarget(size / qualityFactor);
-				_temporaryTarget2 = new RenderTarget(size / qualityFactor);
+				_temporaryTarget1 = new RenderTarget(size / bloomQuality);
+				_temporaryTarget2 = new RenderTarget(size / bloomQuality);
 				_dirty = true;
 			}
 

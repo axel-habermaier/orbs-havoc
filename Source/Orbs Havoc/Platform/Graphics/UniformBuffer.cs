@@ -29,39 +29,67 @@ namespace OrbsHavoc.Platform.Graphics
 	using static OpenGL3;
 
 	/// <summary>
-	///   Represents a vertex, index, or uniform buffer whose contents are completely static or at least don't change every frame.
+	///   Represents a uniform buffer that provides constant data to shaders.
 	/// </summary>
-	public sealed unsafe class StaticBuffer : DisposableObject
+	public unsafe class UniformBuffer : DisposableObject
 	{
-		private readonly int _type;
+		/// <summary>
+		///   The underlying OpenGL handle of the buffer.
+		/// </summary>
 		private readonly int _buffer;
 
 		/// <summary>
-		///   Initializes a new buffer.
+		///   The size in bytes of the buffer.
 		/// </summary>
-		public StaticBuffer(int bufferType, int sizeInBytes, void* data)
-		{
-			_buffer = Allocate(glGenBuffers, nameof(StaticBuffer));
-			SizeInBytes = sizeInBytes;
-			_type = bufferType;
+		private readonly int _sizeInBytes;
 
-			glBindBuffer(_type, _buffer);
-			glBufferData(_type, (void*)SizeInBytes, data, GL_STATIC_DRAW);
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="sizeInBytes">The number of bytes the buffer should be able to store.</param>
+		public UniformBuffer(int sizeInBytes)
+		{
+			_buffer = Allocate(glGenBuffers, nameof(UniformBuffer));
+			_sizeInBytes = sizeInBytes;
+
+			glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
+			glBufferData(GL_UNIFORM_BUFFER, (void*)_sizeInBytes, null, GL_DYNAMIC_DRAW);
 			CheckErrors();
 		}
 
 		/// <summary>
-		///   Gets the size of the buffer in bytes.
-		/// </summary>
-		public int SizeInBytes { get; }
-
-		/// <summary>
 		///   Casts the buffer to its underlying OpenGL handle.
 		/// </summary>
-		public static implicit operator int(StaticBuffer obj)
+		public static implicit operator int(UniformBuffer obj)
 		{
 			Assert.ArgumentNotNull(obj, nameof(obj));
 			return obj._buffer;
+		}
+
+		/// <summary>
+		///   Disposes the object, releasing all managed and unmanaged resources.
+		/// </summary>
+		protected override void OnDisposing()
+		{
+			CheckErrors();
+
+			Deallocate(glDeleteBuffers, _buffer);
+			Unset(State.UniformBuffers, this);
+		}
+
+		/// <summary>
+		///   Binds the uniform buffer to the given slot.
+		/// </summary>
+		public void Bind(int slot)
+		{
+			Assert.NotDisposed(this);
+			Assert.InRange(slot, 0, GraphicsState.UniformBufferSlotCount);
+
+			if (!Change(State.UniformBuffers, slot, this))
+				return;
+
+			glBindBufferBase(GL_UNIFORM_BUFFER, slot, _buffer);
+			CheckErrors();
 		}
 
 		/// <summary>
@@ -73,17 +101,9 @@ namespace OrbsHavoc.Platform.Graphics
 			Assert.NotDisposed(this);
 			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
-			glBindBuffer(_type, _buffer);
-			glBufferSubData(_type, (void*)0, (void*)SizeInBytes, data);
+			glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
+			glBufferData(GL_UNIFORM_BUFFER, (void*)_sizeInBytes, data, GL_DYNAMIC_DRAW);
 			CheckErrors();
-		}
-
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		protected override void OnDisposing()
-		{
-			Deallocate(glDeleteBuffers, _buffer);
 		}
 	}
 }
