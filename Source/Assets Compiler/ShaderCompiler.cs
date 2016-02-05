@@ -25,6 +25,7 @@ namespace AssetsCompiler
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using CommandLine;
@@ -62,26 +63,37 @@ namespace AssetsCompiler
 				var samplers = ExtractSamplers(ref shader);
 				var blocks = ExtractUniformBlocks(ref shader);
 
-				var match = Regex.Match(shader, @"Vertex(\s*){(?<vs>(.|\s)*?)}(\s*)Fragment(\s*){(?<fs>(.|\s)*?)}$", RegexOptions.Multiline);
-				if (!match.Success)
-					throw new InvalidOperationException($"Invalid shader '{InFile}': Expected Vertex and Fragment sections.");
+				var vertexShader = Preamble + ExtractShader(shader, "Vertex");
+				var geometryShader = ExtractShader(shader, "Geometry");
+				var fragmentShader = Preamble + ExtractShader(shader, "Fragment");
 
-				var vertexShader = Preamble + match.Groups["vs"].Value.Trim();
-				var fragmentShader = Preamble + match.Groups["fs"].Value.Trim();
+				if (!String.IsNullOrWhiteSpace(geometryShader))
+					geometryShader = Preamble + geometryShader;
 
 				// Only validate shaders on Windows, our primary development platform, to avoid a
 				// dependency on a >3 MBytes Linux version of the GLSL validator...
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT)
 				{
 					Validate(vertexShader, "vert");
+					if (!String.IsNullOrWhiteSpace(geometryShader))
+						Validate(geometryShader, "geom");
 					Validate(fragmentShader, "frag");
 				}
 
 				var vertexShaderBytes = Encoding.UTF8.GetBytes(vertexShader);
-				var fragmentShaderBytes = Encoding.UTF8.GetBytes(fragmentShader);
-
 				writer.Write(vertexShaderBytes.Length);
 				writer.Write(vertexShaderBytes);
+
+				if (!String.IsNullOrWhiteSpace(geometryShader))
+				{
+					var geometryShaderBytes = Encoding.UTF8.GetBytes(geometryShader);
+					writer.Write(geometryShaderBytes.Length);
+					writer.Write(geometryShaderBytes);
+				}
+				else
+					writer.Write(0);
+
+				var fragmentShaderBytes = Encoding.UTF8.GetBytes(fragmentShader);
 				writer.Write(fragmentShaderBytes.Length);
 				writer.Write(fragmentShaderBytes);
 
@@ -100,10 +112,20 @@ namespace AssetsCompiler
 
 				foreach (var c in name)
 					writer.Write(c);
-				
+
 				writer.Write((byte)0);
 				writer.Write(item.Item2);
 			}
+		}
+
+		private static string ExtractShader(string shader, string keyword)
+		{
+			return shader
+				.Split('\n')
+				.SkipWhile(l => !l.StartsWith($"// {keyword}"))
+				.Skip(1)
+				.TakeWhile(l => !l.StartsWith("// Vertex") && !l.StartsWith("// Geometry") && !l.StartsWith("// Fragment"))
+				.Aggregate(String.Empty, (s, line) => s + line.Trim() + Environment.NewLine);
 		}
 
 		private static List<Tuple<string, int>> ExtractSamplers(ref string shader)

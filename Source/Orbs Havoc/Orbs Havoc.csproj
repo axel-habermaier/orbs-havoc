@@ -427,10 +427,10 @@
     <Font Include="Assets\Fonts\HudFont.font" />
     <None Include="Assets\Shaders\Effects\BloomSettings.glsl" />
     <Shader Include="Assets\Shaders\Sprites\AdditiveSpriteShader.glsl" />
-    <None Include="Assets\Shaders\Sprites\VertexShader.glsl" />
+    <None Include="Assets\Shaders\Sprites\Vertices.glsl" />
     <Shader Include="Assets\Shaders\Effects\BlurShader.glsl" />
     <Shader Include="Assets\Shaders\Effects\CombineBloomShader.glsl" />
-    <None Include="Assets\Shaders\Effects\VertexShader.glsl" />
+    <None Include="Assets\Shaders\Effects\Vertices.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Texture Include="Assets\Textures\RoundParticle.png" />

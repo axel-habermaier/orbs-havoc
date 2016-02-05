@@ -393,6 +393,9 @@ namespace OrbsHavoc.Platform.Memory
 			var length = ReadInt32();
 			ValidateCanRead(length);
 
+			if (length == 0)
+				return new byte[0];
+
 			var byteArray = new byte[length];
 			Array.Copy(_buffer.Array, _readPosition, byteArray, 0, length);
 			_readPosition += length;

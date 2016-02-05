@@ -1,16 +1,17 @@
-﻿#include "VertexShader.glsl"
+﻿#include "Vertices.glsl"
 
-Fragment
+// ---------------------------------------------------------------------------------------------------------------------
+// Fragment
+// ---------------------------------------------------------------------------------------------------------------------
+
+layout(binding = 0) uniform sampler2D Texture;
+
+in vec2 FragTexCoords;
+in vec4 FragColor;
+
+out vec4 OutColor;
+
+void main()
 {
-	layout(binding = 0) uniform sampler2D Texture;
-
-	in vec2 FragTexCoords;
-	in vec4 FragColor;
-
-	out vec4 OutColor;
-
-	void main()
-	{
-		OutColor = vec4(texture(Texture, FragTexCoords).rgb * FragColor.rgb * FragColor.a, 1);
-	}
+	OutColor = vec4(texture(Texture, FragTexCoords).rgb * FragColor.rgb * FragColor.a, 1);
 }

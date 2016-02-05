@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Rendering
 {
-	using System.Numerics;
 	using Platform.Graphics;
 	using Platform.Memory;
 	using Utilities;
@@ -38,11 +37,6 @@ namespace OrbsHavoc.Rendering
 		///   The vertex buffers that are used to store the quad data.
 		/// </summary>
 		private readonly Buffer[] _dataBuffers = new Buffer[GraphicsState.MaxFrameLag];
-
-		/// <summary>
-		///   The vertex buffer that stores the quad vertices.
-		/// </summary>
-		private readonly Buffer _vertexBuffer;
 
 		/// <summary>
 		///   The vertex input layouts that describe the vertex buffers.
@@ -61,24 +55,12 @@ namespace OrbsHavoc.Rendering
 		{
 			Assert.That(sizeof(Quad) == Quad.SizeInBytes, "Unexpected quad size.");
 
-			var vertices = stackalloc Vector2[4];
-			vertices[0] = new Vector2(-0.5f, -0.5f);
-			vertices[1] = new Vector2(-0.5f, 0.5f);
-			vertices[2] = new Vector2(0.5f, -0.5f);
-			vertices[3] = new Vector2(0.5f, 0.5f);
-
-			_vertexBuffer = new Buffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, 4 * sizeof(Vector2), vertices);
-
 			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
 			{
 				_dataBuffers[i] = new Buffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, QuadCollection.MaxQuads * Quad.SizeInBytes);
 				_vertexLayouts[i] = Allocate(glGenVertexArrays, "Vertex Layout");
 
 				glBindVertexArray(_vertexLayouts[i]);
-				glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-				glEnableVertexAttribArray(0);
-				glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(Vector2), (void*)0);
-				glVertexAttribDivisor(0, 0);
 				CheckErrors();
 
 				glBindBuffer(GL_ARRAY_BUFFER, _dataBuffers[i]);
@@ -114,7 +96,6 @@ namespace OrbsHavoc.Rendering
 		{
 			glEnableVertexAttribArray(index);
 			glVertexAttribPointer(index, componentCount, type, normalize, Quad.SizeInBytes, offset);
-			glVertexAttribDivisor(index, 1);
 			CheckErrors();
 
 			index += 1;
@@ -127,7 +108,6 @@ namespace OrbsHavoc.Rendering
 		protected override void OnDisposing()
 		{
 			_dataBuffers.SafeDisposeAll();
-			_vertexBuffer.SafeDispose();
 
 			State.VertexLayout = -1;
 

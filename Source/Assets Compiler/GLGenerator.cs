@@ -31,7 +31,7 @@ namespace AssetsCompiler
 
 	public class GLGenerator : CompilationTask
 	{
-		private static readonly string[] Extensions = { "GL_ARB_base_instance" };
+		private static readonly string[] Extensions = {};
 
 		[Option("input", Required = true, HelpText = "The path to the input OpenGL file.")]
 		public string InFile { get; set; }

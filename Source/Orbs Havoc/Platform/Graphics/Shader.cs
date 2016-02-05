@@ -39,6 +39,7 @@ namespace OrbsHavoc.Platform.Graphics
 		private int _fragmentShader;
 		private int _program;
 		private int _vertexShader;
+		private int _geometryShader;
 
 		/// <summary>
 		///   Binds the shader for rendering.
@@ -62,6 +63,7 @@ namespace OrbsHavoc.Platform.Graphics
 
 			glDeleteShader(_vertexShader);
 			glDeleteShader(_fragmentShader);
+			glDeleteShader(_geometryShader);
 			glDeleteProgram(_program);
 		}
 
@@ -74,11 +76,15 @@ namespace OrbsHavoc.Platform.Graphics
 			OnDisposing();
 
 			_vertexShader = LoadShader(GL_VERTEX_SHADER, buffer.ReadString());
+			_geometryShader = LoadShader(GL_GEOMETRY_SHADER, buffer.ReadString());
 			_fragmentShader = LoadShader(GL_FRAGMENT_SHADER, buffer.ReadString());
 
 			_program = glCreateProgram();
 			if (_program == 0)
 				Log.Die("Failed to create OpenGL program object.");
+
+			if (_geometryShader != 0)
+				glAttachShader(_program, _geometryShader);
 
 			glAttachShader(_program, _vertexShader);
 			glAttachShader(_program, _fragmentShader);
@@ -135,6 +141,9 @@ namespace OrbsHavoc.Platform.Graphics
 		/// </summary>
 		private static int LoadShader(int shaderType, string shaderCode)
 		{
+			if (String.IsNullOrWhiteSpace(shaderCode))
+				return 0;
+
 			var shader = glCreateShader(shaderType);
 			if (shader == 0)
 				Log.Die("Failed to create OpenGL shader object.");

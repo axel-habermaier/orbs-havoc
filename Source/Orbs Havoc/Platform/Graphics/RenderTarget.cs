@@ -238,40 +238,6 @@ namespace OrbsHavoc.Platform.Graphics
 		}
 
 		/// <summary>
-		///   Draws primitiveCount-many instanced primitives, starting at the given offset into the currently bound vertex buffers.
-		/// </summary>
-		/// <param name="instanceCount">The number of instances that should be drawn.</param>
-		/// <param name="vertexCount">The number of vertices that should be drawn per instance.</param>
-		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
-		/// <param name="instanceOffset">The offset applied to the instanced vertex buffers.</param>
-		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
-		internal void DrawInstanced(int instanceCount, int vertexCount, int vertexOffset = 0, int instanceOffset = 0,
-									int primitiveType = GL_TRIANGLES)
-		{
-			BeforeDraw();
-			glDrawArraysInstancedBaseInstance(primitiveType, vertexOffset, vertexCount, instanceCount, instanceOffset);
-			AfterDraw();
-		}
-
-		/// <summary>
-		///   Draws indexCount-many instanced indices, starting at the given index offset into the currently bound index buffer.
-		/// </summary>
-		/// <param name="instanceCount">The number of instances to draw.</param>
-		/// <param name="indexCount">The number of indices to draw per instance.</param>
-		/// <param name="indexOffset">The location of the first index read by the GPU from the index buffer.</param>
-		/// <param name="vertexOffset">The offset applied to the non-instanced vertex buffers.</param>
-		/// <param name="instanceOffset">The offset applied to the instanced vertex buffers.</param>
-		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
-		internal void DrawIndexedInstanced(int instanceCount, int indexCount, int indexOffset = 0, int vertexOffset = 0,
-										   int instanceOffset = 0, int primitiveType = GL_TRIANGLES)
-		{
-			BeforeDraw();
-			glDrawElementsInstancedBaseVertexBaseInstance(primitiveType, indexCount, GL_UNSIGNED_INT,
-				(void*)indexOffset, instanceCount, vertexOffset, instanceOffset);
-			AfterDraw();
-		}
-
-		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
