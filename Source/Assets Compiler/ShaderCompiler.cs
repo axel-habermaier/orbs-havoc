@@ -23,6 +23,7 @@
 namespace AssetsCompiler
 {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
 	using System.Text;
 	using System.Text.RegularExpressions;
@@ -30,12 +31,7 @@ namespace AssetsCompiler
 
 	public class ShaderCompiler : CompilationTask
 	{
-		private const string Preamble = @"
-	#version 330
-	#extension GL_ARB_separate_shader_objects : enable
-	#extension GL_ARB_shading_language_420pack : enable
-
-	";
+		private const string Preamble = "#version 330\n";
 
 		[Option("input", Required = true, HelpText = "The path to the input shader file.")]
 		public string InFile { get; set; }
@@ -62,7 +58,10 @@ namespace AssetsCompiler
 
 					includesMatch = includesMatch.NextMatch();
 				}
-			
+
+				var samplers = ExtractSamplers(writer, ref shader);
+				var blocks = ExtractUniformBlocks(writer, ref shader);
+
 				var match = Regex.Match(shader, @"Vertex(\s*){(?<vs>(.|\s)*?)}(\s*)Fragment(\s*){(?<fs>(.|\s)*?)}$", RegexOptions.Multiline);
 				if (!match.Success)
 					throw new InvalidOperationException($"Invalid shader '{InFile}': Expected Vertex and Fragment sections.");
@@ -85,7 +84,58 @@ namespace AssetsCompiler
 				writer.Write(vertexShaderBytes);
 				writer.Write(fragmentShaderBytes.Length);
 				writer.Write(fragmentShaderBytes);
+
+				WriteMetadata(writer, samplers);
+				WriteMetadata(writer, blocks);
 			}
+		}
+
+		private static void WriteMetadata(BinaryWriter writer, List<Tuple<string, int>> items)
+		{
+			writer.Write(items.Count);
+			foreach (var item in items)
+			{
+				var name = Encoding.UTF8.GetBytes(item.Item1);
+				writer.Write(name.Length + 1);
+
+				foreach (var c in name)
+					writer.Write(c);
+				
+				writer.Write((byte)0);
+				writer.Write(item.Item2);
+			}
+		}
+
+		private List<Tuple<string, int>> ExtractSamplers(BinaryWriter writer, ref string shader)
+		{
+			var samplers = new List<Tuple<string, int>>();
+			var regex = @"layout\s*\(\s*binding\s*=\s*(?<slot>\d*)\s*\)\s*uniform\s*sampler2D\s*(?<sampler>.*)\s*;";
+			var match = Regex.Match(shader, regex, RegexOptions.Multiline);
+
+			while (match.Success)
+			{
+				samplers.Add(Tuple.Create(match.Groups["sampler"].Value, Int32.Parse(match.Groups["slot"].Value)));
+				match = match.NextMatch();
+			}
+
+			shader = Regex.Replace(shader, regex, "uniform sampler2D ${sampler};", RegexOptions.Multiline);
+			return samplers;
+		}
+
+		private List<Tuple<string, int>> ExtractUniformBlocks(BinaryWriter writer, ref string shader)
+		{
+			var blocks = new List<Tuple<string, int>>();
+			var regex = @"layout\s*\(std140\s*,\s*binding\s*=\s*(?<binding>\d*)\s*\)\s*uniform\s*(?<block>\S*)\s*\{";
+			var match = Regex.Match(shader, regex, RegexOptions.Multiline);
+
+			while (match.Success)
+			{
+				blocks.Add(Tuple.Create(match.Groups["block"].Value, Int32.Parse(match.Groups["binding"].Value)));
+				match = match.NextMatch();
+			}
+
+			shader = Regex.Replace(shader, regex, "layout(std140) uniform ${block} {", RegexOptions.Multiline);
+			return blocks;
 		}
 
 		private void Validate(string shader, string extension)

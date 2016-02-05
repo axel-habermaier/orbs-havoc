@@ -6,8 +6,8 @@ Fragment
 
 	layout(binding = 0) uniform sampler2D Texture;
 	layout(binding = 1) uniform sampler2D BloomTexture;
-	layout(location = 1) in vec2 TexCoords;
-	layout(location = 0) out vec4 OutColor;
+	in vec2 TexCoords;
+	out vec4 OutColor;
 
 	vec4 AdjustSaturation(vec4 color, float saturation)
 	{

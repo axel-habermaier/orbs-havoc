@@ -1,6 +1,6 @@
 ﻿Vertex
 {
-	layout(location = 1) out vec2 TexCoords;
+	out vec2 TexCoords;
 
 	void main()
 	{

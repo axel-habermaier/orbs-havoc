@@ -182,7 +182,7 @@ namespace OrbsHavoc.UserInterface.Controls
 			spriteBatch.DrawLine(area.TopLeft + new Vector2(0, 1), area.TopRight + new Vector2(0, 1), BorderColor, BorderThickness.Top);
 			spriteBatch.DrawLine(area.BottomLeft + new Vector2(1, -1), area.TopLeft + new Vector2(1, 1), BorderColor, BorderThickness.Left);
 			spriteBatch.DrawLine(area.TopRight + new Vector2(0, 1), area.BottomRight + new Vector2(0, -1), BorderColor, BorderThickness.Right);
-			spriteBatch.DrawLine(area.BottomLeft , area.BottomRight , BorderColor, BorderThickness.Bottom);
+			spriteBatch.DrawLine(area.BottomLeft, area.BottomRight, BorderColor, BorderThickness.Bottom);
 			spriteBatch.RenderState.Layer -= 1;
 		}
 	}

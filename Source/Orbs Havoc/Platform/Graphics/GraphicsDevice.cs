@@ -74,8 +74,6 @@ namespace OrbsHavoc.Platform.Graphics
 			if (major < 3 || (major == 3 && minor < 3))
 				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
 
-			CheckExtensionSupport("GL_ARB_separate_shader_objects");
-			CheckExtensionSupport("GL_ARB_shading_language_420pack");
 			CheckExtensionSupport("GL_ARB_buffer_storage");
 			CheckExtensionSupport("GL_ARB_base_instance");
 

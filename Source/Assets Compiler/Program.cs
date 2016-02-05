@@ -37,10 +37,6 @@ namespace AssetsCompiler
 				CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 				CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
-				//var index = 0;
-				//foreach (var arg in args)
-				//	Log.Info("{0}: {1}", index++, arg);
-
 				CompilationTask compilationTask = null;
 				var options = new Options();
 

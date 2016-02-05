@@ -17,8 +17,8 @@
 	layout(location = 4) in vec2 Size;
 	layout(location = 5) in vec4 TexCoords;
 
-	layout(location = 1) out vec2 OutTexCoords;
-	layout(location = 2) out vec4 OutColor;
+	out vec2 FragTexCoords;
+	out vec4 FragColor;
 
 	void main()
 	{
@@ -32,9 +32,9 @@
 
 		gl_Position = ProjectionMatrix * vec4(position, 0, 1);
 
-		OutTexCoords.x = (gl_VertexID < 2) ? TexCoords.x : TexCoords.x + TexCoords.z;
-		OutTexCoords.y = (gl_VertexID == 0 || gl_VertexID == 2) ? TexCoords.y : TexCoords.y + TexCoords.w;
+		FragTexCoords.x = (gl_VertexID < 2) ? TexCoords.x : TexCoords.x + TexCoords.z;
+		FragTexCoords.y = (gl_VertexID == 0 || gl_VertexID == 2) ? TexCoords.y : TexCoords.y + TexCoords.w;
 
-		OutColor = Color;
+		FragColor = Color;
 	}
 }

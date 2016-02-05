@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.Platform.Graphics
 {
+	using System;
 	using System.Text;
 	using Logging;
 	using Memory;
@@ -96,6 +97,37 @@ namespace OrbsHavoc.Platform.Graphics
 
 			if (logLength != 0)
 				Log.Warn("{0}", new string((sbyte*)log, 0, logLength).Trim());
+
+			Bind(ref buffer, name => glGetUniformLocation(_program, name.Pointer), glUniform1i);
+			Bind(ref buffer, name => glGetUniformBlockIndex(_program, name.Pointer),
+				(index, binding) => glUniformBlockBinding(_program, index, binding));
+		}
+
+		/// <summary>
+		///   Establishes sampler and uniform block bindings.
+		/// </summary>
+		private void Bind(ref BufferReader buffer, Func<BufferPointer, int> getIndex, Action<int, int> setBinding)
+		{
+			var count = buffer.ReadInt32();
+			for (var i = 0; i < count; ++i)
+			{
+				var nameLength = buffer.ReadInt32();
+				using (var name = buffer.Pointer)
+				{
+					var index = getIndex(name);
+					CheckErrors();
+
+					buffer.Skip(nameLength);
+					var binding = buffer.ReadInt32();
+
+					if (index == -1)
+						continue;
+
+					glUseProgram(_program);
+					setBinding(index, binding);
+					CheckErrors();
+				}
+			}
 		}
 
 		/// <summary>
