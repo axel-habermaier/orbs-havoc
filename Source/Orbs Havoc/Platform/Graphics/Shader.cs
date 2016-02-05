@@ -123,7 +123,7 @@ namespace OrbsHavoc.Platform.Graphics
 					if (index == -1)
 						continue;
 
-					glUseProgram(_program);
+					Bind();
 					setBinding(index, binding);
 					CheckErrors();
 				}

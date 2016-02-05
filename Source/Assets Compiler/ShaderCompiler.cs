@@ -59,8 +59,8 @@ namespace AssetsCompiler
 					includesMatch = includesMatch.NextMatch();
 				}
 
-				var samplers = ExtractSamplers(writer, ref shader);
-				var blocks = ExtractUniformBlocks(writer, ref shader);
+				var samplers = ExtractSamplers(ref shader);
+				var blocks = ExtractUniformBlocks(ref shader);
 
 				var match = Regex.Match(shader, @"Vertex(\s*){(?<vs>(.|\s)*?)}(\s*)Fragment(\s*){(?<fs>(.|\s)*?)}$", RegexOptions.Multiline);
 				if (!match.Success)
@@ -106,10 +106,11 @@ namespace AssetsCompiler
 			}
 		}
 
-		private List<Tuple<string, int>> ExtractSamplers(BinaryWriter writer, ref string shader)
+		private static List<Tuple<string, int>> ExtractSamplers(ref string shader)
 		{
+			const string regex = @"layout\s*\(\s*binding\s*=\s*(?<slot>\d*)\s*\)\s*uniform\s*sampler2D\s*(?<sampler>.*)\s*;";
+
 			var samplers = new List<Tuple<string, int>>();
-			var regex = @"layout\s*\(\s*binding\s*=\s*(?<slot>\d*)\s*\)\s*uniform\s*sampler2D\s*(?<sampler>.*)\s*;";
 			var match = Regex.Match(shader, regex, RegexOptions.Multiline);
 
 			while (match.Success)
@@ -122,11 +123,12 @@ namespace AssetsCompiler
 			return samplers;
 		}
 
-		private List<Tuple<string, int>> ExtractUniformBlocks(BinaryWriter writer, ref string shader)
+		private static List<Tuple<string, int>> ExtractUniformBlocks(ref string shader)
 		{
-			var blocks = new List<Tuple<string, int>>();
-			var regex = @"layout\s*\(std140\s*,\s*binding\s*=\s*(?<binding>\d*)\s*\)\s*uniform\s*(?<block>\S*)\s*\{";
+			const string regex = @"layout\s*\(std140\s*,\s*binding\s*=\s*(?<binding>\d*)\s*\)\s*uniform\s*(?<block>\S*)\s*\{";
+
 			var match = Regex.Match(shader, regex, RegexOptions.Multiline);
+			var blocks = new List<Tuple<string, int>>();
 
 			while (match.Success)
 			{
