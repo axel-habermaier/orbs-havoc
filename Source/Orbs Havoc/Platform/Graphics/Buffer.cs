@@ -106,8 +106,7 @@ namespace OrbsHavoc.Platform.Graphics
 			_lastChanged = State.FrameNumber;
 
 			glBindBuffer(_type, _buffer);
-			var pointer = glMapBufferRange(_type, (void*)0, (void*)sizeInBytes,
-				GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
+			var pointer = glMapBufferRange(_type, (void*)0, (void*)sizeInBytes, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
 
 			CheckErrors();
 			return pointer;

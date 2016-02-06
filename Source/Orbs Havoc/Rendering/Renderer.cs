@@ -90,7 +90,6 @@ namespace OrbsHavoc.Rendering
 			// Bind the projection matrix buffer and upload the quads to the GPU
 			_projectionMatrixBuffer.Bind(0);
 			Quads.UploadToGpu(RenderBuffer);
-			RenderBuffer.Unmap();
 
 			// Now execute all render operations
 			foreach (var operation in _operations)

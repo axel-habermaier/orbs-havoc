@@ -99,10 +99,10 @@ namespace OrbsHavoc.Platform.Graphics
 			CheckErrors();
 
 			if (success == GL_FALSE)
-				Log.Die("Program linking failed: {0}", new string((sbyte*)log, 0, logLength).Trim());
+				Log.Die("Program linking failed: {0}", new string((sbyte*)log).Trim());
 
 			if (logLength != 0)
-				Log.Warn("{0}", new string((sbyte*)log, 0, logLength).Trim());
+				Log.Warn("{0}", new string((sbyte*)log).Trim());
 
 			Bind(ref buffer, name => glGetUniformLocation(_program, name.Pointer), glUniform1i);
 			Bind(ref buffer, name => glGetUniformBlockIndex(_program, name.Pointer),
@@ -166,10 +166,10 @@ namespace OrbsHavoc.Platform.Graphics
 			CheckErrors();
 
 			if (success == GL_FALSE)
-				Log.Die("Shader compilation failed: {0}", new string((sbyte*)log, 0, logLength).Trim());
+				Log.Die("Shader compilation failed: {0}", new string((sbyte*)log).Trim());
 
 			if (logLength != 0)
-				Log.Warn("{0}", new string((sbyte*)log, 0, logLength).Trim());
+				Log.Warn("{0}", new string((sbyte*)log).Trim());
 
 			return shader;
 		}

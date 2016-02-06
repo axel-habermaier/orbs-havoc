@@ -38,15 +38,6 @@ namespace OrbsHavoc.Rendering
 		private Vector2 _position;
 
 		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public Camera()
-		{
-			var zero = Vector2.Zero;
-			_buffer.Copy(&zero);
-		}
-
-		/// <summary>
 		///   Gets or sets the camera's position within the scene.
 		/// </summary>
 		public Vector2 Position
