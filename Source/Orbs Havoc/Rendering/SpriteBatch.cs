@@ -244,12 +244,14 @@ namespace OrbsHavoc.Rendering
 			if (MathUtils.Equals(length, 0))
 				return;
 
-			var rotation = MathUtils.ComputeAngle(start, end, new Vector2(1, 0));
+			if (width <= 1) // prevents rounding errors on Nvidia GPUs
+				start.Y -= 0.1f;
+
 			var size = new Size(length, width);
 			var quad = new Quad
 			{
 				Color = color,
-				Orientation = rotation,
+				Orientation = MathUtils.ComputeAngle(start, end, new Vector2(1, 0)),
 				Position = start + Vector2.Normalize(direction) * length / 2,
 				Size = size,
 				TextureCoordinates = Rectangle.Unit
