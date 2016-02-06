@@ -21,6 +21,8 @@ void main()
 	GeomColor = Color;
 	GeomSize = Size;
 	GeomTexCoords = TexCoords;
+
+	gl_Position = vec4(PositionOffset, 0, 1);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -130,7 +130,6 @@ namespace OrbsHavoc.Views
 			_validationLabel.Visibility = Visibility.Collapsed;
 		}
 
-
 		/// <summary>
 		///   Sends the message, if any, and closes the chat input.
 		/// </summary>

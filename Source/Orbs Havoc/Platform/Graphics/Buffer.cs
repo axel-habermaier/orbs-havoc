@@ -100,6 +100,7 @@ namespace OrbsHavoc.Platform.Graphics
 		{
 			Assert.That(!_isMapped, "The buffer has already been mapped.");
 			Assert.That(_lastChanged < State.FrameNumber, "The buffer cannot be changed multiple times per frame.");
+			Assert.That(sizeInBytes <= SizeInBytes, "Invalid size.");
 
 			_isMapped = true;
 			_lastChanged = State.FrameNumber;
