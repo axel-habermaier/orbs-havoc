@@ -32,6 +32,7 @@ namespace OrbsHavoc.Views
 	/// </summary>
 	internal abstract class View : DisposableObject
 	{
+		private bool _activationChanged;
 		private bool _isShown;
 		private UIElement _rootElement;
 
@@ -97,7 +98,7 @@ namespace OrbsHavoc.Views
 			if (RootElement != null)
 				RootElement.Visibility = Visibility.Visible;
 
-			Activate();
+			_activationChanged = !_activationChanged;
 		}
 
 		/// <summary>
@@ -113,7 +114,7 @@ namespace OrbsHavoc.Views
 			if (RootElement != null)
 				RootElement.Visibility = Visibility.Collapsed;
 
-			Deactivate();
+			_activationChanged = !_activationChanged;
 		}
 
 		/// <summary>
@@ -135,6 +136,22 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		protected virtual void Deactivate()
 		{
+		}
+
+		/// <summary>
+		///   Handles activation changes.
+		/// </summary>
+		public void HandleActivationChange()
+		{
+			if (!_activationChanged)
+				return;
+
+			_activationChanged = false;
+
+			if (IsShown)
+				Activate();
+			else
+				Deactivate();
 		}
 
 		/// <summary>

@@ -220,6 +220,8 @@ namespace OrbsHavoc.Views
 		{
 			foreach (var view in _views)
 			{
+				view.HandleActivationChange();
+
 				if (view.IsShown)
 					view.Update();
 			}
