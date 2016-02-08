@@ -158,7 +158,7 @@ namespace AssetsCompiler
 			if (cvars.Length == 0)
 				return;
 
-			writer.AppendLine("public static partial class Cvars");
+			writer.AppendLine("partial class Cvars");
 			writer.AppendBlockStatement(() =>
 			{
 				foreach (var cvar in cvars)
@@ -235,7 +235,7 @@ namespace AssetsCompiler
 			if (commands.Length == 0)
 				return;
 
-			writer.AppendLine("public static partial class Commands");
+			writer.AppendLine("partial class Commands");
 			writer.AppendBlockStatement(() =>
 			{
 				foreach (var command in commands)
@@ -292,11 +292,9 @@ namespace AssetsCompiler
 						if (command.ParameterList.Parameters.Count > 0)
 							writer.Append(", ");
 
-						writer.IncreaseIndent();
 						writer.AppendSeparated(command.ParameterList.Parameters, ", ", parameter =>
 						{
 							var parameterDescription = GetParameterTag(parameter.Identifier.ToString(), command.GetLeadingTrivia().ToString());
-							writer.NewLine();
 
 							writer.Append($"new CommandParameter(\"{parameter.Identifier}\", typeof({parameter.Type}), ");
 							writer.Append($"{(parameter.Default != null).ToString().ToLower()}, ");
@@ -309,7 +307,6 @@ namespace AssetsCompiler
 							WriteValidators(writer, parameter);
 							writer.Append(")");
 						});
-						writer.DecreaseIndent();
 						writer.AppendLine(");");
 					}
 

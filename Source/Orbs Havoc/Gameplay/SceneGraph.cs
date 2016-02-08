@@ -42,12 +42,12 @@ namespace OrbsHavoc.Gameplay
 		/// <summary>
 		///   The number of enumerators that are currently enumerating the scene graph.
 		/// </summary>
-		internal int EnumeratorCount;
+		private int _enumeratorCount;
 
 		/// <summary>
 		///   The scene graph version, used to detect modifications during enumerations.
 		/// </summary>
-		internal int Version;
+		private int _version;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -64,7 +64,7 @@ namespace OrbsHavoc.Gameplay
 		/// <summary>
 		///   Gets a value indicating whether the scene graph is currently being enumerated.
 		/// </summary>
-		private bool IsEnumerated => EnumeratorCount > 0;
+		private bool IsEnumerated => _enumeratorCount > 0;
 
 		/// <summary>
 		///   Gets the root node of the scene graph.
@@ -275,7 +275,7 @@ namespace OrbsHavoc.Gameplay
 
 			sceneNode.Attach(this, parentNode);
 			NodeAdded?.Invoke(sceneNode);
-			++Version;
+			++_version;
 		}
 
 		/// <summary>
@@ -295,7 +295,7 @@ namespace OrbsHavoc.Gameplay
 
 			sceneNode.Detach();
 
-			++Version;
+			++_version;
 			sceneNode.SafeDispose();
 		}
 
@@ -311,7 +311,7 @@ namespace OrbsHavoc.Gameplay
 
 			sceneNode.Detach();
 			sceneNode.Attach(this, parentNode);
-			++Version;
+			++_version;
 		}
 
 		/// <summary>
@@ -328,7 +328,7 @@ namespace OrbsHavoc.Gameplay
 			}
 
 			behavior.Attach(sceneNode);
-			++Version;
+			++_version;
 		}
 
 		/// <summary>
@@ -338,7 +338,7 @@ namespace OrbsHavoc.Gameplay
 		private void RemoveBehaviorImmediately(Behavior behavior)
 		{
 			behavior.Detach();
-			++Version;
+			++_version;
 		}
 
 		/// <summary>
@@ -486,9 +486,9 @@ namespace OrbsHavoc.Gameplay
 				Assert.ArgumentNotNull(sceneGraph, nameof(sceneGraph));
 
 				_startNode = startNode ?? sceneGraph.Root;
-				_version = sceneGraph.Version;
+				_version = sceneGraph._version;
 				_sceneGraph = sceneGraph;
-				++_sceneGraph.EnumeratorCount;
+				++_sceneGraph._enumeratorCount;
 			}
 
 			/// <summary>
@@ -501,7 +501,7 @@ namespace OrbsHavoc.Gameplay
 			/// </summary>
 			public void Dispose()
 			{
-				--_sceneGraph.EnumeratorCount;
+				--_sceneGraph._enumeratorCount;
 			}
 
 			/// <summary>
@@ -509,7 +509,7 @@ namespace OrbsHavoc.Gameplay
 			/// </summary>
 			private bool Next()
 			{
-				Assert.That(_version == _sceneGraph.Version, "The scene graph has been modified while it was being enumerated.");
+				Assert.That(_version == _sceneGraph._version, "The scene graph has been modified while it was being enumerated.");
 				Assert.NotDisposed(_sceneGraph);
 
 				// Special case for the first node
@@ -622,9 +622,9 @@ namespace OrbsHavoc.Gameplay
 				Assert.ArgumentNotNull(sceneGraph, nameof(sceneGraph));
 
 				_startNode = startNode ?? sceneGraph.Root;
-				_version = sceneGraph.Version;
+				_version = sceneGraph._version;
 				_sceneGraph = sceneGraph;
-				++_sceneGraph.EnumeratorCount;
+				++_sceneGraph._enumeratorCount;
 			}
 
 			/// <summary>
@@ -637,7 +637,7 @@ namespace OrbsHavoc.Gameplay
 			/// </summary>
 			public void Dispose()
 			{
-				--_sceneGraph.EnumeratorCount;
+				--_sceneGraph._enumeratorCount;
 			}
 
 			/// <summary>
@@ -645,7 +645,7 @@ namespace OrbsHavoc.Gameplay
 			/// </summary>
 			private bool Next()
 			{
-				Assert.That(_version == _sceneGraph.Version, "The scene graph has been modified while it was being enumerated.");
+				Assert.That(_version == _sceneGraph._version, "The scene graph has been modified while it was being enumerated.");
 				Assert.NotDisposed(_sceneGraph);
 
 				// Special case for the root node that gets the enumeration started

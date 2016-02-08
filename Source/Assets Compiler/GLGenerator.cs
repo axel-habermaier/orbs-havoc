@@ -210,6 +210,7 @@ namespace AssetsCompiler
 					writer.AppendLine("ret");
 				});
 			});
+
 			File.WriteAllText(OutFile, writer.ToString());
 		}
 

@@ -70,8 +70,6 @@ namespace AssetsCompiler
 				if (!String.IsNullOrWhiteSpace(geometryShader))
 					geometryShader = Preamble + geometryShader;
 
-				// Only validate shaders on Windows, our primary development platform, to avoid a
-				// dependency on a >3 MBytes Linux version of the GLSL validator...
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT)
 				{
 					Validate(vertexShader, "vert");
