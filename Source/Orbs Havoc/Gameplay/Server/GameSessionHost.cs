@@ -271,7 +271,7 @@ namespace OrbsHavoc.Gameplay.Server
 			_botNames.RemoveAt(nameIndex);
 			_bots.Add(bot);
 
-			Log.Info("Bot '{0}' was added to the game session.", bot.Name);
+			Log.Info("Bot '{0}\\default' was added to the game session.", bot.Name);
 		}
 
 		/// <summary>
@@ -290,7 +290,7 @@ namespace OrbsHavoc.Gameplay.Server
 			_serverLogic.RemovePlayer(_bots[index]);
 			_bots.RemoveAt(index);
 
-			Log.Info("Bot '{0}' was removed from the game session.", name);
+			Log.Info("Bot '{0}\\default' was removed from the game session.", name);
 		}
 
 		/// <summary>

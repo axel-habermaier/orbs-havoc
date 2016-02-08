@@ -71,7 +71,7 @@ namespace OrbsHavoc.Scripting
 		private static void PrintHelp()
 		{
 			var builder = new StringBuilder();
-			builder.Append("\nUse the console to set and view cvars and to invoke commands.\n");
+			builder.Append("\nUse the console to view or set cvars and to invoke commands.\n");
 			builder.Append("Cvars:\n");
 			builder.Append("   Type '\\lightgrey<cvar-name>\\default' to view the current value of the cvar.\n");
 			builder.Append("   Type '\\lightgrey<cvar-name> <value>\\default' to set a cvar to a new value.\n");

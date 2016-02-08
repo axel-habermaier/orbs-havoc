@@ -45,27 +45,27 @@ namespace OrbsHavoc.Network.Messages
 		/// <summary>
 		///   Gets or sets the orb's primary weapon.
 		/// </summary>
-		public EntityType PrimaryWeapon { get; set; }
+		public EntityType PrimaryWeapon { get; private set; }
 
 		/// <summary>
 		///   Gets or sets the orb's secondary weapon.
 		/// </summary>
-		public EntityType SecondaryWeapon { get; set; }
+		public EntityType SecondaryWeapon { get; private set; }
 
 		/// <summary>
 		///   Gets or sets the power up that currently influences the orb.
 		/// </summary>
-		public EntityType PowerUp { get; set; }
+		public EntityType PowerUp { get; private set; }
 
 		/// <summary>
 		///   Gets or sets the remaining time until the power up is removed.
 		/// </summary>
-		public float RemainingPowerUpTime { get; set; }
+		public float RemainingPowerUpTime { get; private set; }
 
 		/// <summary>
 		///   Gets or sets the orb's remaining health.
 		/// </summary>
-		public float Health { get; set; }
+		public float Health { get; private set; }
 
 		/// <summary>
 		///   Serializes the message using the given writer.

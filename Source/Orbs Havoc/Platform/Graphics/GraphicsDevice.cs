@@ -74,7 +74,7 @@ namespace OrbsHavoc.Platform.Graphics
 			if (major < 3 || (major == 3 && minor < 3))
 				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
 
-			Log.Info("OpenGL sprite batch: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
+			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
 				new string((sbyte*)glGetString(GL_VENDOR)));
 			Log.Info("OpenGL version: {0}", new string((sbyte*)glGetString(GL_VERSION)));
 			Log.Info("OpenGL GLSL version: {0}", new string((sbyte*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
