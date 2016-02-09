@@ -26,51 +26,63 @@ namespace OrbsHavoc.Platform.Input
 	using Utilities;
 
 	/// <summary>
-	///   Represents a logical input, that is, an abstraction of physical input device states. In the simplest case, a logical
-	///   input corresponds to a key press or mouse button press. More complex chords, i.e., mixtures of several physical
-	///   input devices or more than one key/button, are also supported; for instance, a logical input might occur if a
-	///   keyboard key 'left control' is pressed while the left mouse button just went down. Furthermore, logical inputs allow
-	///   the specification of aliased inputs, i.e., alternatives where each alternative triggers the same action. So in
-	///   addition to left control + left mouse triggering the input as in the previous example, right mouse alone might
-	///   also trigger the same logical input. All of this is handled by the logical input framework, so that the application
-	///   does not have to worry about any of this.
+	///   Represents a logical input, that is, an abstraction of physical input device states.
 	/// </summary>
 	public class LogicalInput
 	{
 		/// <summary>
+		///   The cvar that holds the trigger, if any.
+		/// </summary>
+		private readonly Cvar<InputTrigger> _cvar;
+
+		/// <summary>
+		///   Determines when the input is considered to be triggered.
+		/// </summary>
+		private readonly TriggerType _triggerType;
+
+		/// <summary>
+		///   The input device the input is registered on.
+		/// </summary>
+		private LogicalInputDevice _device;
+
+		/// <summary>
+		///   Indicates whether the mouse wheel has been moved since the last update.
+		/// </summary>
+		private bool _mouseWheelMoved;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="trigger">The trigger that triggers the logical input.</param>
-		public LogicalInput(InputTrigger trigger)
+		/// <param name="triggerType">Determines when the input is considered to be triggered.</param>
+		public LogicalInput(InputTrigger trigger, TriggerType triggerType = TriggerType.Pressed)
 		{
-			Assert.ArgumentNotNull(trigger, nameof(trigger));
+			Assert.ArgumentInRange(triggerType, nameof(triggerType));
+
 			Trigger = trigger;
+			_triggerType = triggerType;
 		}
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="configurableInput">The configurable input that triggers the logical input.</param>
-		/// <param name="keyTriggerType">Determines the type of a key input trigger.</param>
-		/// <param name="mouseTriggerType">Determines the type of a mouse input trigger.</param>
-		public LogicalInput(Cvar<ConfigurableInput> configurableInput, KeyTriggerType keyTriggerType, MouseTriggerType mouseTriggerType)
+		/// <param name="trigger">The trigger that triggers the logical input.</param>
+		/// <param name="triggerType">Determines when the input is considered to be triggered.</param>
+		public LogicalInput(Cvar<InputTrigger> trigger, TriggerType triggerType = TriggerType.Pressed)
+			: this(trigger.Value, triggerType)
 		{
-			Assert.ArgumentNotNull(configurableInput, nameof(configurableInput));
-			Assert.ArgumentInRange(keyTriggerType, nameof(keyTriggerType));
-			Assert.ArgumentInRange(mouseTriggerType, nameof(mouseTriggerType));
-
-			Trigger = new ConfigurableTrigger(configurableInput, keyTriggerType, mouseTriggerType);
+			_cvar = trigger;
 		}
 
 		/// <summary>
-		///   The trigger that triggers the logical input.
+		///   Gets the trigger that triggers the input.
 		/// </summary>
-		internal InputTrigger Trigger { get; }
+		public InputTrigger Trigger { get; private set; }
 
 		/// <summary>
 		///   Gets or sets a value indicating whether the input is registered on a logical input device.
 		/// </summary>
-		public bool IsRegistered { get; private set; }
+		public bool IsRegistered => _device != null;
 
 		/// <summary>
 		///   Gets a value indicating whether the input is currently triggered.
@@ -86,20 +98,144 @@ namespace OrbsHavoc.Platform.Input
 		/// </param>
 		internal void SetLogicalDevice(LogicalInputDevice device)
 		{
-			IsRegistered = device != null;
+			_device = device;
 			IsTriggered = false;
 
-			Trigger.SetLogicalDevice(device);
+			if (_cvar != null && _device != null)
+				_cvar.Changed += OnCvarChanged;
+			else if (_cvar != null && _device == null)
+				_cvar.Changed -= OnCvarChanged;
+
+			OnTriggerOrDeviceChanged();
+		}
+
+		/// <summary>
+		///   Handles trigger changes.
+		/// </summary>
+		private void OnCvarChanged()
+		{
+			Trigger = _cvar.Value;
+			OnTriggerOrDeviceChanged();
+		}
+
+		/// <summary>
+		///   Handles trigger or input device changes.
+		/// </summary>
+		private void OnTriggerOrDeviceChanged()
+		{
+			Assert.That(Trigger.Key != null || Trigger.MouseButton != null || Trigger.MouseWheelDirection != null,
+				"Invalid trigger: Neither key nor mouse button nor mouse wheel is set.");
+
+			if (_device == null)
+				return;
+
+			_device.Mouse.Wheel -= OnMouseWheel;
+
+			if (Trigger.MouseWheelDirection != null)
+				_device.Mouse.Wheel += OnMouseWheel;
+		}
+
+		/// <summary>
+		///   Handles mouse wheel inputs.
+		/// </summary>
+		private void OnMouseWheel(MouseWheelDirection direction)
+		{
+			if (Trigger.MouseWheelDirection != null)
+				_mouseWheelMoved = direction == Trigger.MouseWheelDirection.Value;
 		}
 
 		/// <summary>
 		///   Evaluates the input's trigger and stores the result in the IsTriggered property.
 		/// </summary>
-		/// <param name="device">The logical input device that should be used to evaluate trigger.</param>
-		/// <param name="textInputEnabled">Indicates whether text input is currently enabled.</param>
-		internal void Update(LogicalInputDevice device, bool textInputEnabled)
+		internal void Update()
 		{
-			IsTriggered = !textInputEnabled && Trigger.Evaluate(device);
+			IsTriggered = false;
+
+			if (Trigger.Key != null)
+			{
+				switch (_triggerType)
+				{
+					case TriggerType.Released:
+						if (_device.Keyboard.IsPressed(Trigger.Key.Value))
+							return;
+						break;
+					case TriggerType.WentDown:
+						if (!_device.Keyboard.WentDown(Trigger.Key.Value))
+							return;
+						break;
+					case TriggerType.Pressed:
+						if (!_device.Keyboard.IsPressed(Trigger.Key.Value))
+							return;
+						break;
+					case TriggerType.WentUp:
+						if (!_device.Keyboard.WentUp(Trigger.Key.Value))
+							return;
+						break;
+					case TriggerType.Repeated:
+						if (!_device.Keyboard.IsRepeated(Trigger.Key.Value))
+							return;
+						break;
+					default:
+						Assert.NotReached("Unsupported trigger type.");
+						break;
+				}
+			}
+
+			if (Trigger.MouseButton != null)
+			{
+				switch (_triggerType)
+				{
+					case TriggerType.Released:
+						if (_device.Mouse.IsPressed(Trigger.MouseButton.Value))
+							return;
+						break;
+					case TriggerType.WentDown:
+						if (!_device.Mouse.WentDown(Trigger.MouseButton.Value))
+							return;
+						break;
+					case TriggerType.Pressed:
+						if (!_device.Mouse.IsPressed(Trigger.MouseButton.Value))
+							return;
+						break;
+					case TriggerType.WentUp:
+						if (!_device.Mouse.WentUp(Trigger.MouseButton.Value))
+							return;
+						break;
+					default:
+						Assert.NotReached("Unsupported trigger type.");
+						break;
+				}
+			}
+
+			if (Trigger.MouseWheelDirection != null)
+			{
+				if (!_mouseWheelMoved)
+					return;
+
+				_mouseWheelMoved = false;
+			}
+
+			var modifiers = Trigger.Modifiers;
+			var alt = _device.Keyboard.IsPressed(Key.LeftAlt) || _device.Keyboard.IsPressed(Key.RightAlt);
+			var shift = _device.Keyboard.IsPressed(Key.LeftShift) || _device.Keyboard.IsPressed(Key.RightShift);
+			var control = _device.Keyboard.IsPressed(Key.LeftControl) || _device.Keyboard.IsPressed(Key.RightControl);
+
+			if ((modifiers & KeyModifiers.Alt) != 0 && (modifiers & KeyModifiers.Shift) != 0 && (modifiers & KeyModifiers.Control) != 0)
+				IsTriggered = alt && shift && control;
+			else if ((modifiers & KeyModifiers.Shift) != 0 && (modifiers & KeyModifiers.Control) != 0)
+				IsTriggered = !alt && shift && control;
+			else if ((modifiers & KeyModifiers.Alt) != 0 && (modifiers & KeyModifiers.Control) != 0)
+				IsTriggered = alt && !shift && control;
+			else if ((modifiers & KeyModifiers.Alt) != 0 && (modifiers & KeyModifiers.Shift) != 0)
+				IsTriggered = alt && shift && !control;
+			else if ((modifiers & KeyModifiers.Alt) != 0)
+				IsTriggered = alt && !shift && !control;
+			else if ((modifiers & KeyModifiers.Shift) != 0)
+				IsTriggered = !alt && shift && !control;
+			else if ((modifiers & KeyModifiers.Control) != 0)
+				IsTriggered = !alt && !shift && control;
+			else
+				IsTriggered = true;
 		}
 	}
 }

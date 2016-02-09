@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2012-2016, Axel Habermaier
 // 
@@ -22,70 +22,185 @@
 
 namespace OrbsHavoc.Platform.Input
 {
+	using System;
+	using System.Text;
 	using Utilities;
 
 	/// <summary>
-	///   Represents an input trigger that is triggered if a logical input device is in a certain state.
+	///   Represents a combination of keys and mouse buttons that trigger an input.
 	/// </summary>
-	public abstract class InputTrigger
+	public struct InputTrigger : IEquatable<InputTrigger>
 	{
 		/// <summary>
-		///   Evaluates the trigger, returning true to indicate that the trigger has fired.
+		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="device">The logical input device that should be used to evaluate the trigger.</param>
-		internal abstract bool Evaluate(LogicalInputDevice device);
-
-		/// <summary>
-		///   Sets the logical input device the logical input is currently registered on.
-		/// </summary>
-		/// <param name="device">
-		///   The logical input device the logical input is currently registered on. Null should be passed to
-		///   indicate that the logical input is currently not registered on any device.
-		/// </param>
-		internal virtual void SetLogicalDevice(LogicalInputDevice device)
+		/// <param name="key">The key that triggers the input.</param>
+		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
+		public InputTrigger(Key key, KeyModifiers modifiers)
+			: this()
 		{
+			Assert.ArgumentInRange(key, nameof(key));
+
+			Key = key;
+			Modifiers = modifiers;
 		}
 
 		/// <summary>
-		///   Constructs a chord, i.e., a trigger that triggers if and only if both of its constituting triggers trigger.
+		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="left">The first sub-trigger.</param>
-		/// <param name="right">The second sub-trigger.</param>
-		public static InputTrigger operator &(InputTrigger left, InputTrigger right)
+		/// <param name="mouseButton">The mouse button that triggers the input.</param>
+		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
+		public InputTrigger(MouseButton mouseButton, KeyModifiers modifiers)
+			: this()
 		{
-			Assert.ArgumentNotNull(left, nameof(left));
-			Assert.ArgumentNotNull(right, nameof(right));
+			Assert.ArgumentInRange(mouseButton, nameof(mouseButton));
 
-			return new BinaryInputTrigger(BinaryInputTriggerType.Chord, left, right);
+			MouseButton = mouseButton;
+			Modifiers = modifiers;
 		}
 
 		/// <summary>
-		///   Constructs a chord that triggers only for the first frame in which both of its sub-triggers trigger. The chord
-		///   triggers again only after at least one of its two sub-triggers has not triggered for the duration of at least
-		///   one frame.
+		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="left">The first sub-trigger.</param>
-		/// <param name="right">The second sub-trigger.</param>
-		public static InputTrigger operator +(InputTrigger left, InputTrigger right)
+		/// <param name="direction">The direction the mouse wheel must be turned in that triggers the input.</param>
+		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
+		public InputTrigger(MouseWheelDirection direction, KeyModifiers modifiers)
+			: this()
 		{
-			Assert.ArgumentNotNull(left, nameof(left));
-			Assert.ArgumentNotNull(right, nameof(right));
+			Assert.ArgumentInRange(direction, nameof(direction));
 
-			return new BinaryInputTrigger(BinaryInputTriggerType.ChordOnce, left, right);
+			MouseWheelDirection = direction;
+			Modifiers = modifiers;
 		}
 
 		/// <summary>
-		///   Constructs an input alias, i.e., a trigger that triggers if and only if at least one of its two
-		///   constituting triggers trigger.
+		///   Gets the key that triggers the input, or null if a mouse button or the mouse wheel triggers the input.
 		/// </summary>
-		/// <param name="left">The first sub-trigger.</param>
-		/// <param name="right">The second sub-trigger.</param>
-		public static InputTrigger operator |(InputTrigger left, InputTrigger right)
-		{
-			Assert.ArgumentNotNull(left, nameof(left));
-			Assert.ArgumentNotNull(right, nameof(right));
+		public Key? Key { get; }
 
-			return new BinaryInputTrigger(BinaryInputTriggerType.Alias, left, right);
+		/// <summary>
+		///   Gets the mouse button that triggers the input, or null if a key or the mouse wheel triggers the input.
+		/// </summary>
+		public MouseButton? MouseButton { get; }
+
+		/// <summary>
+		///   Gets the modifier keys that must be pressed for the input to trigger.
+		/// </summary>
+		public KeyModifiers Modifiers { get; }
+
+		/// <summary>
+		///   Gets the direction the mouse wheel must be turned in that triggers the input, or null if a key or mouse button triggers
+		///   the input.
+		/// </summary>
+		public MouseWheelDirection? MouseWheelDirection { get; }
+
+		/// <summary>
+		///   Implicitly creates a configurable input for the given key.
+		/// </summary>
+		/// <param name="key">The key the configurable input should be created for.</param>
+		public static implicit operator InputTrigger(Key key)
+		{
+			return new InputTrigger(key, KeyModifiers.None);
+		}
+
+		/// <summary>
+		///   Implicitly creates a configurable input for the given key.
+		/// </summary>
+		/// <param name="mouseButton">The mouse button the configurable input should be created for.</param>
+		public static implicit operator InputTrigger(MouseButton mouseButton)
+		{
+			return new InputTrigger(mouseButton, KeyModifiers.None);
+		}
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		/// <param name="direction">The direction the mouse wheel must be turned in that triggers the input.</param>
+		public static implicit operator InputTrigger(MouseWheelDirection direction)
+		{
+			return new InputTrigger(direction, KeyModifiers.None);
+		}
+
+		/// <summary>
+		///   Checks if the inputs are equal.
+		/// </summary>
+		public bool Equals(InputTrigger other)
+		{
+			return Modifiers == other.Modifiers &&
+				   Key == other.Key &&
+				   MouseButton == other.MouseButton &&
+				   MouseWheelDirection == other.MouseWheelDirection;
+		}
+
+		/// <summary>
+		///   Checks if the inputs are equal.
+		/// </summary>
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+				return false;
+
+			return obj is InputTrigger && Equals((InputTrigger)obj);
+		}
+
+		/// <summary>
+		///   Gets a hash code.
+		/// </summary>
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = Key.GetHashCode();
+				hashCode = (hashCode * 397) ^ MouseButton.GetHashCode();
+				hashCode = (hashCode * 397) ^ (int)Modifiers;
+				return hashCode;
+			}
+		}
+
+		/// <summary>
+		///   Checks if the inputs are equal.
+		/// </summary>
+		public static bool operator ==(InputTrigger left, InputTrigger right)
+		{
+			return left.Equals(right);
+		}
+
+		/// <summary>
+		///   Checks if the inputs are not equal.
+		/// </summary>
+		public static bool operator !=(InputTrigger left, InputTrigger right)
+		{
+			return !left.Equals(right);
+		}
+
+		/// <summary>
+		///   Returns a string representation of the configurable input.
+		/// </summary>
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+			builder.Append("[");
+
+			if (MouseWheelDirection != null)
+				builder.Append("MouseWheel." + MouseWheelDirection.Value);
+
+			if (Key != null)
+				builder.Append("Key." + Key.Value);
+
+			if (MouseButton != null)
+				builder.Append("Mouse." + MouseButton.Value);
+
+			if ((Modifiers & KeyModifiers.Alt) != 0)
+				builder.Append("+Alt");
+
+			if ((Modifiers & KeyModifiers.Shift) != 0)
+				builder.Append("+Shift");
+
+			if ((Modifiers & KeyModifiers.Control) != 0)
+				builder.Append("+Control");
+
+			builder.Append("]");
+			return builder.ToString();
 		}
 	}
 }

@@ -153,7 +153,7 @@
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
     <Compile Include="Platform\Graphics\UniformBuffer.cs" />
     <Compile Include="Platform\Graphics\GraphicsHelpers.cs" />
-    <Compile Include="Platform\Input\MouseWheelTrigger.cs" />
+    <Compile Include="Platform\Input\TriggerType.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
     <Compile Include="Platform\Memory\BufferOverflowException.cs" />
     <Compile Include="Rendering\BloomEffect.cs" />
@@ -261,24 +261,14 @@
     <Compile Include="Platform\Graphics\SamplerState.cs" />
     <Compile Include="Platform\Graphics\Shader.cs" />
     <Compile Include="Platform\Graphics\Texture.cs" />
-    <Compile Include="Platform\Input\BinaryInputTrigger.cs" />
-    <Compile Include="Platform\Input\BinaryInputTriggerType.cs" />
-    <Compile Include="Platform\Input\ConfigurableInput.cs" />
-    <Compile Include="Platform\Input\ConfigurableTrigger.cs" />
-    <Compile Include="Platform\Input\InputExtensions.cs" />
-    <Compile Include="Platform\Input\InputState.cs" />
     <Compile Include="Platform\Input\InputTrigger.cs" />
+    <Compile Include="Platform\Input\InputState.cs" />
     <Compile Include="Platform\Input\Keyboard.cs" />
-    <Compile Include="Platform\Input\KeyTrigger.cs" />
-    <Compile Include="Platform\Input\KeyTriggerType.cs" />
     <Compile Include="Platform\Input\LogicalInput.cs" />
     <Compile Include="Platform\Input\LogicalInputDevice.cs" />
     <Compile Include="Platform\Input\Mouse.cs" />
-    <Compile Include="Platform\Input\MouseTrigger.cs" />
-    <Compile Include="Platform\Input\MouseTriggerType.cs" />
     <Compile Include="Platform\Input\MouseWheelDirection.cs" />
     <Compile Include="Platform\Input\ScanCode.cs" />
-    <Compile Include="Platform\Input\ScanCodeKeyTrigger.cs" />
     <Compile Include="Platform\SDL2.cs" />
     <Compile Include="Platform\WindowMode.cs" />
     <Compile Include="Program.cs" />
@@ -378,11 +368,10 @@
     <Compile Include="Utilities\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
-   <IL Include="Properties\AssemblyInfo.il" />
+    <IL Include="Properties\AssemblyInfo.il" />
     <IL Include="Platform\Memory\MemCopy.il">
       <DependentUpon>MemCopy.cs</DependentUpon>
     </IL>
-   
   </ItemGroup>
   <ItemGroup>
     <Font Include="Assets\Fonts\DefaultFont.font" />

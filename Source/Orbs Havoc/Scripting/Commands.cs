@@ -91,13 +91,13 @@ namespace OrbsHavoc.Scripting
 		/// </summary>
 		/// <param name="trigger">The input that triggers the command.</param>
 		/// <param name="command">The command (including the arguments) that should be executed when the trigger is fired.</param>
-		void Bind(ConfigurableInput trigger, [NotEmpty] string command);
+		void Bind(InputTrigger trigger, [NotEmpty] string command);
 
 		/// <summary>
 		///   Unbinds all commands currently bound to a logical input.
 		/// </summary>
 		/// <param name="trigger">The input that should be unbound.</param>
-		void Unbind(ConfigurableInput trigger);
+		void Unbind(InputTrigger trigger);
 
 		/// <summary>
 		///   Removes all command bindings.

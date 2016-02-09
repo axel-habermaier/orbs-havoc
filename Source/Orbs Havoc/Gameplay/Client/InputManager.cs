@@ -67,18 +67,18 @@ namespace OrbsHavoc.Gameplay.Client
 			_inputDevice = inputDevice;
 			_player = player;
 
-			_miniGun = new LogicalInput(Cvars.InputSelectMiniGunCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_rocketLauncher = new LogicalInput(Cvars.InputSelectRocketLauncherCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_lightingGun = new LogicalInput(Cvars.InputSelectLightingGunCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_nextWeapon = new LogicalInput(Cvars.InputNextWeaponCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_previousWeapon = new LogicalInput(Cvars.InputPreviousWeaponCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+			_miniGun = new LogicalInput(Cvars.InputSelectMiniGunCvar);
+			_rocketLauncher = new LogicalInput(Cvars.InputSelectRocketLauncherCvar);
+			_lightingGun = new LogicalInput(Cvars.InputSelectLightingGunCvar);
+			_nextWeapon = new LogicalInput(Cvars.InputNextWeaponCvar);
+			_previousWeapon = new LogicalInput(Cvars.InputPreviousWeaponCvar);
 
-			_moveUp.Input = new LogicalInput(Cvars.InputMoveUpCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_moveDown.Input = new LogicalInput(Cvars.InputMoveDownCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_moveLeft.Input = new LogicalInput(Cvars.InputMoveLeftCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_moveRight.Input = new LogicalInput(Cvars.InputMoveRightCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_firePrimary.Input = new LogicalInput(Cvars.InputFirePrimaryCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-			_fireSecondary.Input = new LogicalInput(Cvars.InputFireSecondaryCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
+			_moveUp.Input = new LogicalInput(Cvars.InputMoveUpCvar);
+			_moveDown.Input = new LogicalInput(Cvars.InputMoveDownCvar);
+			_moveLeft.Input = new LogicalInput(Cvars.InputMoveLeftCvar);
+			_moveRight.Input = new LogicalInput(Cvars.InputMoveRightCvar);
+			_firePrimary.Input = new LogicalInput(Cvars.InputFirePrimaryCvar);
+			_fireSecondary.Input = new LogicalInput(Cvars.InputFireSecondaryCvar);
 
 			_inputDevice.Add(_moveUp.Input);
 			_inputDevice.Add(_moveDown.Input);

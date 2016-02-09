@@ -126,7 +126,7 @@ namespace OrbsHavoc.Scripting
 		///   Invoked when the unbind command is used.
 		/// </summary>
 		/// <param name="trigger">The trigger that should be unbound.</param>
-		private void OnUnbind(ConfigurableInput trigger)
+		private void OnUnbind(InputTrigger trigger)
 		{
 			var removed = 0;
 			for (var i = 0; i < _bindings.Count; ++i)
@@ -153,9 +153,9 @@ namespace OrbsHavoc.Scripting
 		/// </summary>
 		/// <param name="trigger">The trigger that should be bound.</param>
 		/// <param name="command">The instruction that should be bound.</param>
-		private void OnBind(ConfigurableInput trigger, string command)
+		private void OnBind(InputTrigger trigger, string command)
 		{
-			var input = new LogicalInput(trigger.ToInputTrigger(KeyTriggerType.WentDown, MouseTriggerType.WentDown));
+			var input = new LogicalInput(trigger, TriggerType.WentDown);
 			_device.Add(input);
 
 			try

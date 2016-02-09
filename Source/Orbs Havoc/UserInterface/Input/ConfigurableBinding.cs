@@ -36,14 +36,14 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <summary>
 		///   The configurable input cvar that triggers the binding.
 		/// </summary>
-		private readonly Cvar<ConfigurableInput> _cvar;
+		private readonly Cvar<InputTrigger> _cvar;
 
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="callback">The callback that should be invoked when the binding is triggered.</param>
 		/// <param name="cvar">The configurable input cvar that should trigger the binding.</param>
-		public ConfigurableBinding(Action callback, Cvar<ConfigurableInput> cvar)
+		public ConfigurableBinding(Action callback, Cvar<InputTrigger> cvar)
 			: base(callback)
 		{
 			Assert.ArgumentNotNull(cvar, nameof(cvar));

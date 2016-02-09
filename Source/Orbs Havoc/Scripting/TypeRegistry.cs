@@ -73,7 +73,7 @@ namespace OrbsHavoc.Scripting
 			Register(ParseEnumerationLiteral<QualityLevel>, null, null);
 			Register(ParseEnumerationLiteral<Key>, "Key", null, "A", "B", "LeftControl", "Return", "F1");
 			Register(ParseEnumerationLiteral<MouseButton>, "Mouse Button", null, "Left", "Right", "Middle", "XButton1", "XButton2");
-			Register(ParseConfigurableInput, null, null, "[Key.A+Control]", "[Mouse.Left+Alt]", "[Mouse.XButton1+Shift+Alt]");
+			Register(ParseInputTrigger, null, null, "[Key.A+Control]", "[Mouse.Left+Alt]", "[Mouse.XButton1+Shift+Alt]");
 		}
 
 		/// <summary>

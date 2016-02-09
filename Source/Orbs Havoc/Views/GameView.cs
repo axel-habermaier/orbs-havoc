@@ -88,8 +88,7 @@ namespace OrbsHavoc.Views
 			Commands.OnSay += OnSay;
 			Cvars.PlayerNameChanged += OnPlayerNameChanged;
 
-			_showScoreboard = new LogicalInput(Cvars.InputShowScoreboardCvar, KeyTriggerType.Pressed, MouseTriggerType.Pressed);
-
+			_showScoreboard = new LogicalInput(Cvars.InputShowScoreboardCvar);
 			InputDevice.Add(_showScoreboard);
 
 			RootElement = new Border

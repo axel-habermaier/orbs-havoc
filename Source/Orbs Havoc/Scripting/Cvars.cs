@@ -94,79 +94,79 @@ namespace OrbsHavoc.Scripting
 		///   While the input is triggered in an active game session, shows the scoreboard.
 		/// </summary>
 		[DefaultValue(Key.Tab), Persistent]
-		ConfigurableInput InputShowScoreboard { get; set; }
+		InputTrigger InputShowScoreboard { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, moves the player in the up direction.
 		/// </summary>
 		[DefaultValue(Key.W), Persistent]
-		ConfigurableInput InputMoveUp { get; set; }
+		InputTrigger InputMoveUp { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, moves the player in the down direction.
 		/// </summary>
 		[DefaultValue(Key.S), Persistent]
-		ConfigurableInput InputMoveDown { get; set; }
+		InputTrigger InputMoveDown { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, moves the player to the left.
 		/// </summary>
 		[DefaultValue(Key.A), Persistent]
-		ConfigurableInput InputMoveLeft { get; set; }
+		InputTrigger InputMoveLeft { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, moves the player to the right.
 		/// </summary>
 		[DefaultValue(Key.D), Persistent]
-		ConfigurableInput InputMoveRight { get; set; }
+		InputTrigger InputMoveRight { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, fires the player's primary weapon.
 		/// </summary>
 		[DefaultValue(MouseButton.Left), Persistent]
-		ConfigurableInput InputFirePrimary { get; set; }
+		InputTrigger InputFirePrimary { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, fires the player's secondary weapon.
 		/// </summary>
 		[DefaultValue(MouseButton.Right), Persistent]
-		ConfigurableInput InputFireSecondary { get; set; }
+		InputTrigger InputFireSecondary { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, opens the chat input.
 		/// </summary>
 		[DefaultValue(Key.Enter), Persistent]
-		ConfigurableInput InputChat { get; set; }
+		InputTrigger InputChat { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, the next available primary weapon is selected.
 		/// </summary>
 		[DefaultValue(MouseWheelDirection.Up), Persistent]
-		ConfigurableInput InputNextWeapon { get; set; }
+		InputTrigger InputNextWeapon { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, the previous available primary weapon is selected.
 		/// </summary>
 		[DefaultValue(MouseWheelDirection.Down), Persistent]
-		ConfigurableInput InputPreviousWeapon { get; set; }
+		InputTrigger InputPreviousWeapon { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, selects the minigun.
 		/// </summary>
 		[DefaultValue(Key.Num1), Persistent]
-		ConfigurableInput InputSelectMiniGun { get; set; }
+		InputTrigger InputSelectMiniGun { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, selects the rocket launcher.
 		/// </summary>
 		[DefaultValue(Key.Num2), Persistent]
-		ConfigurableInput InputSelectRocketLauncher { get; set; }
+		InputTrigger InputSelectRocketLauncher { get; set; }
 
 		/// <summary>
 		///   When the input is triggered in an active game session, selects the lighting gun.
 		/// </summary>
 		[DefaultValue(Key.Num3), Persistent]
-		ConfigurableInput InputSelectLightingGun { get; set; }
+		InputTrigger InputSelectLightingGun { get; set; }
 
 		/// <summary>
 		///   Indicates whether the bloom effect is enabled.

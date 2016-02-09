@@ -123,10 +123,11 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		internal void Update()
 		{
-			// Update all inputs
-			var textInputEnabled = Keyboard.TextInputEnabled;
-			foreach (var input in _inputs)
-				input.Update(this, textInputEnabled);
+			if (!Keyboard.TextInputEnabled)
+			{
+				foreach (var input in _inputs)
+					input.Update();
+			}
 
 			Keyboard.Update();
 			Mouse.Update();

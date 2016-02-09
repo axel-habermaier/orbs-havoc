@@ -318,9 +318,9 @@ namespace OrbsHavoc.Scripting.Parsing
 		}
 
 		/// <summary>
-		///   Parses a configurable input of the form 'Key.A', 'Key.A+Control', 'Mouse.Left+Alt+Shift', etc.
+		///   Parses an input trigger of the form 'Key.A', 'Key.A+Control', 'Mouse.Left+Alt+Shift', etc.
 		/// </summary>
-		public static ConfigurableInput ParseConfigurableInput(InputStream inputStream)
+		public static InputTrigger ParseInputTrigger(InputStream inputStream)
 		{
 			if (inputStream.Peek() != '[')
 				throw new ParseException(inputStream, "Expected a '['.");
@@ -416,13 +416,13 @@ namespace OrbsHavoc.Scripting.Parsing
 			inputStream.Skip(1);
 
 			if (key != null)
-				return new ConfigurableInput(key.Value, modifiers);
+				return new InputTrigger(key.Value, modifiers);
 
 			if (button != null)
-				return new ConfigurableInput(button.Value, modifiers);
+				return new InputTrigger(button.Value, modifiers);
 
 			if (direction != null)
-				return new ConfigurableInput(direction.Value, modifiers);
+				return new InputTrigger(direction.Value, modifiers);
 
 			inputStream.State = state;
 			throw new ParseException(inputStream, "Input must use a key or a mouse button.");
