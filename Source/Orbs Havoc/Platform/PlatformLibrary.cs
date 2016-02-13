@@ -88,7 +88,8 @@ namespace OrbsHavoc.Platform
 			catch (DllNotFoundException)
 			{
 				Log.Die("The SDL2 library could not be not found. Make sure SDL2 is installed on your " +
-						"system or 'SDL2.dll' is placed in the application directory.");
+						"system or 'SDL2.dll' is placed in the application directory. On Windows, make sure " +
+						"that you have the latest Microsoft Visual C++ Redistributable (x64) installed.");
 			}
 		}
 
