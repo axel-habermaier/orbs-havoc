@@ -107,8 +107,10 @@ namespace OrbsHavoc.Utilities
 			get
 			{
 				for (var i = 0; i < _text.Length; ++i)
+				{
 					if (!Char.IsWhiteSpace(_text[i]))
 						return false;
+				}
 
 				return true;
 			}
@@ -259,9 +261,7 @@ namespace OrbsHavoc.Utilities
 				ColorSpecifier color;
 
 				if (TryMatch(SourceString, i, out color))
-				{
 					i += color.Specifier.Length - 1;
-				}
 				else
 					++index;
 

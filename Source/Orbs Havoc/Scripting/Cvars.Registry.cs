@@ -45,7 +45,7 @@ namespace OrbsHavoc.Scripting
 		///   Registers the given cvar.
 		/// </summary>
 		/// <param name="cvar">The cvar that should be registered.</param>
-		public static void Register(ICvar cvar)
+		private static void Register(ICvar cvar)
 		{
 			Assert.ArgumentNotNull(cvar, nameof(cvar));
 			Assert.NotNullOrWhitespace(cvar.Name, "The cvar cannot have an empty name.");
