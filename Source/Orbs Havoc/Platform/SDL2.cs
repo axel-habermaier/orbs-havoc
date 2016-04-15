@@ -625,7 +625,7 @@ namespace OrbsHavoc.Platform
 		public static extern int SDL_HasClipboardText();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern sbyte* SDL_GetClipboardText();
+		public static extern byte* SDL_GetClipboardText();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_SetClipboardText(

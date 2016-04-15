@@ -24,7 +24,6 @@ namespace OrbsHavoc.Platform
 {
 	using System;
 	using System.Numerics;
-	using System.Text;
 	using Graphics;
 	using Input;
 	using Logging;
@@ -362,11 +361,7 @@ namespace OrbsHavoc.Platform
 						KeyReleased?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);
 						break;
 					case SDL_TEXTINPUT:
-						var count = 0;
-						while (e.text.text[count] != 0)
-							++count;
-						
-						TextEntered?.Invoke(new string((sbyte*)e.text.text, 0, count, Encoding.UTF8));
+						TextEntered?.Invoke(Interop.ToString(e.text.text));
 						break;
 					case SDL_MOUSEBUTTONDOWN:
 						MousePressed?.Invoke(e.button.button, new Vector2(e.button.x, e.button.y), e.button.clicks == 2);

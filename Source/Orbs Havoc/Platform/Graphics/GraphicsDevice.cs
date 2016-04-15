@@ -25,6 +25,7 @@ namespace OrbsHavoc.Platform.Graphics
 	using System;
 	using Logging;
 	using Memory;
+	using Utilities;
 	using static GraphicsHelpers;
 	using static OpenGL3;
 	using static SDL2;
@@ -74,10 +75,10 @@ namespace OrbsHavoc.Platform.Graphics
 			if (major < 3 || (major == 3 && minor < 3))
 				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
 
-			Log.Info("OpenGL renderer: {0} ({1})", new string((sbyte*)glGetString(GL_RENDERER)),
-				new string((sbyte*)glGetString(GL_VENDOR)));
-			Log.Info("OpenGL version: {0}", new string((sbyte*)glGetString(GL_VERSION)));
-			Log.Info("OpenGL GLSL version: {0}", new string((sbyte*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+			Func<int, string> getString = option => Interop.ToString(glGetString(option));
+			Log.Info("OpenGL renderer: {0} ({1})", getString(GL_RENDERER), getString(GL_VENDOR));
+			Log.Info("OpenGL version: {0}", getString(GL_VERSION));
+			Log.Info("OpenGL GLSL version: {0}", getString(GL_SHADING_LANGUAGE_VERSION));
 
 			SamplerState.Initialize();
 			glDisable(GL_DEPTH_TEST);

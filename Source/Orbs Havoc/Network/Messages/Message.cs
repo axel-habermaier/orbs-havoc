@@ -59,7 +59,7 @@ namespace OrbsHavoc.Network.Messages
 				.GetTypeInfo()
 				.Assembly
 				.DefinedTypes
-				.Where(type => type.IsClass && !type.IsAbstract && typeof(Message).GetTypeInfo().IsAssignableFrom(type));
+				.Where(type => type.GetTypeInfo().IsClass && !type.GetTypeInfo().IsAbstract && typeof(Message).GetTypeInfo().IsAssignableFrom(type));
 
 			foreach (var messageType in messageTypes)
 			{

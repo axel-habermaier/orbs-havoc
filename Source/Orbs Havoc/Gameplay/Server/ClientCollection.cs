@@ -22,6 +22,7 @@
 
 namespace OrbsHavoc.Gameplay.Server
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Net;
 	using System.Net.Sockets;
@@ -146,11 +147,7 @@ namespace OrbsHavoc.Gameplay.Server
 				{
 					client.SendQueuedMessages();
 				}
-				catch (ConnectionDroppedException)
-				{
-					// Ignore the exception here, we'll deal with the dropped client during the next update
-				}
-				catch (NetworkException)
+				catch (Exception e) when (e is ConnectionDroppedException || e is NetworkException)
 				{
 					// Ignore the exception here, we'll deal with the dropped client during the next update
 				}

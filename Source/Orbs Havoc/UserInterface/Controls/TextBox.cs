@@ -181,7 +181,7 @@ namespace OrbsHavoc.UserInterface.Controls
 						if (text == null)
 							Log.Error("Failed to retrieve clipboard text from OS: {0}", SDL_GetError());
 
-						Insert(new string(text));
+						Insert(Interop.ToString(text));
 					}
 					break;
 				default:

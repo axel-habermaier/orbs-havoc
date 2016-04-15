@@ -232,6 +232,7 @@
     <Compile Include="Utilities\Circle.cs" />
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
+    <Compile Include="Utilities\Interop.cs" />
     <Compile Include="Utilities\RandomNumberGenerator.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringCache.cs" />
