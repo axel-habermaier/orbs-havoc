@@ -75,7 +75,8 @@ namespace OrbsHavoc.Scripting
 		/// <summary>
 		///   The name of the player.
 		/// </summary>
-		[DefaultValue(@"Environment.UserName"), Persistent, NotEmpty, MaximumLength(NetworkProtocol.PlayerNameLength, checkUtf8Length: true)]
+		[Persistent, NotEmpty, MaximumLength(NetworkProtocol.PlayerNameLength, checkUtf8Length: true)]
+		[DefaultValue(@"String.IsNullOrWhiteSpace(Environment.UserName) ? ""UnnamedUser"" : Environment.UserName")]
 		string PlayerName { get; set; }
 
 		/// <summary>
