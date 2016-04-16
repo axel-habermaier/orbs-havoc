@@ -54,6 +54,7 @@ namespace OrbsHavoc.Platform
 		public static readonly Size MaximumSize = new Size(4096, 2160);
 
 		private readonly void* _window;
+		private readonly GraphicsDevice _graphicsDevice;
 		private bool _shouldClose;
 
 		/// <summary>
@@ -95,7 +96,7 @@ namespace OrbsHavoc.Platform
 			SDL_SetWindowMinimumSize(_window, MinimumSize.IntegralWidth, MinimumSize.IntegralHeight);
 			SDL_SetWindowMaximumSize(_window, MaximumSize.IntegralWidth, MaximumSize.IntegralHeight);
 
-			GraphicsDevice = graphicsDevice;
+			_graphicsDevice = graphicsDevice;
 			BackBuffer = new RenderTarget(this);
 			BackBuffer.Clear(Colors.Black);
 			Present();
@@ -103,11 +104,6 @@ namespace OrbsHavoc.Platform
 			Cvars.VsyncChanged += SetVsync;
 			SetVsync();
 		}
-
-		/// <summary>
-		///   Gets the graphics device used to draw the window's contents.
-		/// </summary>
-		public GraphicsDevice GraphicsDevice { get; }
 
 		/// <summary>
 		///   Gets the render target representing the window's back buffer.
@@ -188,6 +184,14 @@ namespace OrbsHavoc.Platform
 
 				return WindowMode.Normal;
 			}
+		}
+
+		/// <summary>
+		///   Makes the OpenGL context for the window the current one on the calling thread.
+		/// </summary>
+		public void MakeCurrent(Window window = null)
+		{
+			_graphicsDevice.MakeCurrent(this);
 		}
 
 		/// <summary>
@@ -272,7 +276,7 @@ namespace OrbsHavoc.Platform
 		protected override void OnDisposing()
 		{
 			Cvars.VsyncChanged -= SetVsync;
-			GraphicsDevice.MakeCurrent();
+			_graphicsDevice.MakeCurrent();
 
 			BackBuffer.SafeDispose();
 			SDL_DestroyWindow(_window);

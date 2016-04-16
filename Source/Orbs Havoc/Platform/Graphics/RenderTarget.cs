@@ -166,7 +166,7 @@ namespace OrbsHavoc.Platform.Graphics
 		private void Bind()
 		{
 			if (IsBackBuffer && Change(ref State.Window, _window))
-				_window.GraphicsDevice.MakeCurrent(_window);
+				_window.MakeCurrent();
 
 			if (Change(ref State.RenderTarget, this))
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _renderTarget);
