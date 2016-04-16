@@ -23,10 +23,13 @@
 namespace OrbsHavoc.Platform
 {
 	// ReSharper disable InconsistentNaming
+	// ReSharper disable MemberCanBePrivate.Global
+	// ReSharper disable FieldCanBeMadeReadOnly.Global
 	using System;
 	using System.Diagnostics;
 	using System.Runtime.InteropServices;
 	using Input;
+	using JetBrains.Annotations;
 	using Utilities;
 
 	/// <summary>
@@ -37,6 +40,7 @@ namespace OrbsHavoc.Platform
 	///   https://github.com/flibitijibibo/SDL2-CS
 	///   zlib license
 	/// </remarks>
+	[UsedImplicitly(ImplicitUseTargetFlags.Members)]
 	public static unsafe class SDL2
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -287,32 +291,24 @@ namespace OrbsHavoc.Platform
 		public static extern void SDL_ClearHints();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GetHint(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string name);
+		public static extern byte* SDL_GetHint(byte* name);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_SetHint(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string name,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string value);
+		public static extern int SDL_SetHint(byte* name, byte* value);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_SetHintWithPriority(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string name,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string value,
-			int priority);
+		public static extern int SDL_SetHintWithPriority(byte* name, byte* value, int priority);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_ClearError();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL_GetError")]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		private static extern string GetError();
+		private static extern byte* GetError();
 
 		[DebuggerHidden]
 		public static string SDL_GetError()
 		{
-			var message = GetError().Trim().Replace("\r", "");
+			var message = Interop.ToString(GetError()).Trim().Replace("\r", "");
 
 			if (message.EndsWith(".."))
 				return message.Substring(0, message.Length - 1);
@@ -324,11 +320,7 @@ namespace OrbsHavoc.Platform
 		}
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_ShowSimpleMessageBox(
-			int flags,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string title,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string message,
-			void* window);
+		public static extern int SDL_ShowSimpleMessageBox(int flags, byte* title, byte* message, void* window);
 
 		public static void SDL_VERSION(out SDL_version x)
 		{
@@ -351,8 +343,7 @@ namespace OrbsHavoc.Platform
 		public static extern void SDL_GetVersion(out SDL_version ver);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GetRevision();
+		public static extern byte* SDL_GetRevision();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_GetRevisionNumber();
@@ -378,9 +369,7 @@ namespace OrbsHavoc.Platform
 		}
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void* SDL_CreateWindow(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string title,
-			int x, int y, int w, int h, uint flags);
+		public static extern void* SDL_CreateWindow(byte* title, int x, int y, int w, int h, uint flags);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_DestroyWindow(void* window);
@@ -413,9 +402,7 @@ namespace OrbsHavoc.Platform
 		public static extern float SDL_GetWindowBrightness(void* window);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void* SDL_GetWindowData(
-			void* window,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string name);
+		public static extern void* SDL_GetWindowData(void* window, byte* name);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_GetWindowDisplayIndex(void* window);
@@ -467,8 +454,7 @@ namespace OrbsHavoc.Platform
 		public static extern void* SDL_GetWindowSurface(void* window);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GetWindowTitle(void* window);
+		public static extern byte* SDL_GetWindowTitle(void* window);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_GL_BindTexture(void* texture, out float texw, out float texh);
@@ -480,12 +466,10 @@ namespace OrbsHavoc.Platform
 		public static extern void SDL_GL_DeleteContext(void* context);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void* SDL_GL_GetProcAddress(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string proc);
+		public static extern void* SDL_GL_GetProcAddress(byte* proc);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_GL_ExtensionSupported(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string extension);
+		public static extern int SDL_GL_ExtensionSupported(byte* extension);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_GL_ResetAttributes();
@@ -542,10 +526,7 @@ namespace OrbsHavoc.Platform
 		public static extern int SDL_SetWindowBrightness(void* window, float brightness);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void* SDL_SetWindowData(
-			void* window,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string name,
-			void* userdata);
+		public static extern void* SDL_SetWindowData(void* window, byte* name, void* userdata);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_SetWindowDisplayMode(void* window, ref SDL_DisplayMode mode);
@@ -582,9 +563,7 @@ namespace OrbsHavoc.Platform
 		public static extern void SDL_SetWindowBordered(void* window, int bordered);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void SDL_SetWindowTitle(
-			void* window,
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string title);
+		public static extern void SDL_SetWindowTitle(void* window, byte* title);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_ShowWindow(void* window);
@@ -599,8 +578,7 @@ namespace OrbsHavoc.Platform
 			int numrects);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_VideoInit(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string driver_name);
+		public static extern int SDL_VideoInit(byte* driver_name);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_VideoQuit();
@@ -628,8 +606,7 @@ namespace OrbsHavoc.Platform
 		public static extern byte* SDL_GetClipboardText();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_SetClipboardText(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string text);
+		public static extern int SDL_SetClipboardText(byte* text);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_PumpEvents();
@@ -713,20 +690,16 @@ namespace OrbsHavoc.Platform
 		public static extern ScanCode SDL_GetScancodeFromKey(Key key);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GetScancodeName(ScanCode scancode);
+		public static extern byte* SDL_GetScancodeName(ScanCode scancode);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern ScanCode SDL_GetScancodeFromName(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string name);
+		public static extern ScanCode SDL_GetScancodeFromName(byte* name);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GetKeyName(Key key);
+		public static extern byte* SDL_GetKeyName(Key key);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern Key SDL_GetKeyFromName(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string name);
+		public static extern Key SDL_GetKeyFromName(byte* name);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SDL_StartTextInput();
@@ -818,12 +791,10 @@ namespace OrbsHavoc.Platform
 		public static extern byte SDL_JoystickGetHat(void* joystick, int hat);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_JoystickName(void* joystick);
+		public static extern byte* SDL_JoystickName(void* joystick);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_JoystickNameForIndex(int device_index);
+		public static extern byte* SDL_JoystickNameForIndex(int device_index);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_JoystickNumAxes(void* joystick);
@@ -859,8 +830,7 @@ namespace OrbsHavoc.Platform
 		public static extern void SDL_JoystickGetGUIDString(Guid guid, byte[] pszGUID, int cbGUID);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern Guid SDL_JoystickGetGUIDFromString(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string pchGUID);
+		public static extern Guid SDL_JoystickGetGUIDFromString(byte* pchGUID);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_JoystickGetAttached(void* joystick);
@@ -869,30 +839,25 @@ namespace OrbsHavoc.Platform
 		public static extern int SDL_JoystickInstanceID(void* joystick);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_GameControllerAddMapping(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string mappingString);
+		public static extern int SDL_GameControllerAddMapping(byte* mappingString);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GameControllerMappingForGUID(Guid guid);
+		public static extern byte* SDL_GameControllerMappingForGUID(Guid guid);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GameControllerMapping(void* gamecontroller);
+		public static extern byte* SDL_GameControllerMapping(void* gamecontroller);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_IsGameController(int joystick_index);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GameControllerNameForIndex(int joystick_index);
+		public static extern byte* SDL_GameControllerNameForIndex(int joystick_index);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void* SDL_GameControllerOpen(int joystick_index);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GameControllerName(void* gamecontroller);
+		public static extern byte* SDL_GameControllerName(void* gamecontroller);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_GameControllerGetAttached(void* gamecontroller);
@@ -907,12 +872,10 @@ namespace OrbsHavoc.Platform
 		public static extern void SDL_GameControllerUpdate();
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_GameControllerGetAxisFromString(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string pchString);
+		public static extern int SDL_GameControllerGetAxisFromString(byte* pchString);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GameControllerGetStringForAxis(int axis);
+		public static extern byte* SDL_GameControllerGetStringForAxis(int axis);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern intBind SDL_GameControllerGetBindForAxis(void* gamecontroller, int axis);
@@ -921,12 +884,10 @@ namespace OrbsHavoc.Platform
 		public static extern short SDL_GameControllerGetAxis(void* gamecontroller, int axis);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern int SDL_GameControllerGetButtonFromString(
-			[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler))] string pchString);
+		public static extern int SDL_GameControllerGetButtonFromString(byte* pchString);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_GameControllerGetStringForButton(int button);
+		public static extern byte* SDL_GameControllerGetStringForButton(int button);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern intBind SDL_GameControllerGetBindForButton(void* gamecontroller, int button);
@@ -953,8 +914,7 @@ namespace OrbsHavoc.Platform
 		public static extern int SDL_HapticIndex(void* haptic);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-		[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(StringMarshaler), MarshalCookie = StringMarshaler.NoFree)]
-		public static extern string SDL_HapticName(int device_index);
+		public static extern byte* SDL_HapticName(int device_index);
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_HapticNewEffect(void* haptic, ref SDL_HapticEffect effect);
@@ -1457,6 +1417,7 @@ namespace OrbsHavoc.Platform
 			public uint unicode;
 		}
 
+		[StructLayout(LayoutKind.Sequential)]
 		public struct SDL_Finger
 		{
 			public long id;

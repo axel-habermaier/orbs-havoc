@@ -20,14 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Utilities
+namespace OrbsHavoc.Platform
 {
 	using System.Text;
+	using Memory;
 
 	/// <summary>
 	///   Provides methods that facilitate native code interop.
 	/// </summary>
-	public static unsafe class Interop
+	internal static unsafe class Interop
 	{
 		/// <summary>
 		///   Converts the given native string to a .NET string.
@@ -40,6 +41,15 @@ namespace OrbsHavoc.Utilities
 				++length;
 
 			return Encoding.UTF8.GetString(str, length);
+		}
+
+		/// <summary>
+		///   Gets a pinned pointer to the string.
+		/// </summary>
+		/// <param name="str">The string the pointer should be created for.</param>
+		public static PinnedPointer ToPointer(string str)
+		{
+			return PinnedPointer.Create(Encoding.UTF8.GetBytes(str));
 		}
 	}
 }

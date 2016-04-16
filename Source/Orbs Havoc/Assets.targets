@@ -11,7 +11,7 @@
 	
 	<PropertyGroup>
 		<AssetBundle>$(TargetDir)Assets.pak</AssetBundle>
-		<AssetsCompiler>&quot;$(OutDir)Assets Compiler.exe&quot;</AssetsCompiler>
+		<AssetsCompiler>$(OutDir)AssetsCompiler.exe</AssetsCompiler>
 	</PropertyGroup>
 	
 	<ItemGroup> 

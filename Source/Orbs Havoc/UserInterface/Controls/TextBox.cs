@@ -26,6 +26,7 @@ namespace OrbsHavoc.UserInterface.Controls
 	using System.Numerics;
 	using Assets;
 	using Input;
+	using Platform;
 	using Platform.Input;
 	using Platform.Logging;
 	using Rendering;

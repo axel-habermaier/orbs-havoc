@@ -25,7 +25,6 @@ namespace OrbsHavoc.Platform.Graphics
 	using System;
 	using Logging;
 	using Memory;
-	using Utilities;
 	using static GraphicsHelpers;
 	using static OpenGL3;
 	using static SDL2;
@@ -47,7 +46,10 @@ namespace OrbsHavoc.Platform.Graphics
 		/// </summary>
 		public GraphicsDevice()
 		{
-			_contextWindow = SDL_CreateWindow("CtxWnd", 0, 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
+			byte* title = stackalloc byte[1];
+			title[0] = 0;
+
+			_contextWindow = SDL_CreateWindow(title, 0, 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
 			if (_contextWindow == null)
 				Log.Die("Failed to create the OpenGL context window: {0}", SDL_GetError());
 
@@ -59,13 +61,16 @@ namespace OrbsHavoc.Platform.Graphics
 
 			Load(entryPoint =>
 			{
-				var function = SDL_GL_GetProcAddress(entryPoint);
+				using (var entryPointPtr = Interop.ToPointer(entryPoint))
+				{
+					var function = SDL_GL_GetProcAddress(entryPointPtr);
 
-				// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
-				if ((long)function >= -1 && (long)function <= 3)
-					Log.Die("Failed to load OpenGL entry point '{0}'.", entryPoint);
+					// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
+					if ((long)function >= -1 && (long)function <= 3)
+						Log.Die("Failed to load OpenGL entry point '{0}'.", entryPoint);
 
-				return new IntPtr(function);
+					return new IntPtr(function);
+				}
 			});
 
 			int major, minor;

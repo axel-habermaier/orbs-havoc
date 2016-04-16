@@ -69,5 +69,14 @@ namespace OrbsHavoc.Platform.Memory
 		{
 			return pointer._handle.AddrOfPinnedObject().ToPointer();
 		}
+
+		/// <summary>
+		///   Converts the pinned pointer to a byte pointer.
+		/// </summary>
+		/// <param name="pointer">The pinned pointer that should be converted.</param>
+		public static unsafe implicit operator byte* (PinnedPointer pointer)
+		{
+			return (byte*)pointer._handle.AddrOfPinnedObject().ToPointer();
+		}
 	}
 }

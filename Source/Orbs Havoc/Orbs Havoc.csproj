@@ -232,7 +232,7 @@
     <Compile Include="Utilities\Circle.cs" />
     <Compile Include="Utilities\CustomCollection.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
-    <Compile Include="Utilities\Interop.cs" />
+    <Compile Include="Platform\Interop.cs" />
     <Compile Include="Utilities\RandomNumberGenerator.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringCache.cs" />
@@ -363,7 +363,6 @@
     <Compile Include="Utilities\Clock.cs" />
     <Compile Include="Utilities\FatalErrorException.cs" />
     <Compile Include="Utilities\StepTimer.cs" />
-    <Compile Include="Utilities\StringMarshaler.cs" />
     <Compile Include="Utilities\TextString.cs" />
     <Compile Include="Utilities\TimeMeasurement.cs" />
     <Compile Include="Utilities\Timer.cs" />
