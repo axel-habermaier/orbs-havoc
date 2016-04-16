@@ -58,7 +58,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes
 		}
 
 		/// <summary>
-		///   Draws the sprite using the given sprite batch.
+		///   Draws the particle effect using the given sprite batch.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used for drawing.</param>
 		public void Draw(SpriteBatch spriteBatch)

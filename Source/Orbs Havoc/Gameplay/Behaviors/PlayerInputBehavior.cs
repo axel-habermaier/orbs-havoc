@@ -78,6 +78,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 			if (_acceleration != Vector2.Zero)
 				_acceleration = Vector2.Normalize(_acceleration);
 
+			// Fire the orb's weapons
 			_weapons[SceneNode.PrimaryWeapon.GetWeaponSlot()].HandlePlayerInput(firePrimary);
 			if (SceneNode.SecondaryWeapon != EntityType.Unknown)
 				_weapons[SceneNode.SecondaryWeapon.GetWeaponSlot()].HandlePlayerInput(fireSecondary);
