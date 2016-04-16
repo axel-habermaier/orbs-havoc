@@ -28,7 +28,9 @@ namespace AssetsCompiler
 	using System.Linq;
 	using System.Xml.Linq;
 	using CommandLine;
+	using JetBrains.Annotations;
 
+	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class GLGenerator : CompilationTask
 	{
 		private static readonly string[] Extensions = {};

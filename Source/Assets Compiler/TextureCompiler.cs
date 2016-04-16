@@ -27,7 +27,9 @@ namespace AssetsCompiler
 	using System.Drawing.Imaging;
 	using System.IO;
 	using CommandLine;
+	using JetBrains.Annotations;
 
+	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class TextureCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input texture file.")]

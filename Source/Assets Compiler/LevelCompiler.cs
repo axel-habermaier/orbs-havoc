@@ -26,8 +26,10 @@ namespace AssetsCompiler
 	using System.Drawing;
 	using System.IO;
 	using CommandLine;
+	using JetBrains.Annotations;
 	using OrbsHavoc.Gameplay.SceneNodes.Entities;
 
+	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class LevelCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input level file.")]

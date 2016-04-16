@@ -29,7 +29,9 @@ namespace AssetsCompiler
 	using System.Security.Cryptography;
 	using System.Text;
 	using CommandLine;
+	using JetBrains.Annotations;
 
+	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class BundleCompiler : CompilationTask
 	{
 		[Option("shaders", Required = true, HelpText = "The paths to the input shader files.")]
@@ -68,6 +70,7 @@ namespace AssetsCompiler
 				.Concat(textures.Select(texture => new { Type = "Texture", Name = Path.GetFileNameWithoutExtension(texture), File = texture }))
 				.Concat(levels.Select(level => new { Type = "Level", Name = Path.GetFileNameWithoutExtension(level), File = level }))
 				.Concat(cursors.Select(cursor => new { Type = "Cursor", Name = Path.GetFileNameWithoutExtension(cursor), File = cursor }))
+				.OrderBy(asset => asset.Name)
 				.ToArray();
 
 			// bundles with the same sequence of asset types and names should have the same hash

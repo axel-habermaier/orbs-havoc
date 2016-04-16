@@ -30,8 +30,10 @@ namespace AssetsCompiler
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using CommandLine;
+	using JetBrains.Annotations;
 	using SharpFont;
 
+	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class FontCompiler : CompilationTask
 	{
 		private const int Padding = 1;

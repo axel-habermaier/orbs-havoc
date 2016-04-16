@@ -29,10 +29,12 @@ namespace AssetsCompiler
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using CommandLine;
+	using JetBrains.Annotations;
 	using Microsoft.CodeAnalysis;
 	using Microsoft.CodeAnalysis.CSharp;
 	using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class RegistryGenerator : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input cvars file.")]
