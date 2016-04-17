@@ -81,11 +81,6 @@ namespace OrbsHavoc.Scripting
 		void Process([NotEmpty, FileName] string fileName);
 
 		/// <summary>
-		///   Prints information about the application.
-		/// </summary>
-		void PrintAppInfo();
-
-		/// <summary>
 		///   Binds a command invocation to a logical input. Whenever the input is triggered, the command is invoked with the
 		///   specified arguments.
 		/// </summary>

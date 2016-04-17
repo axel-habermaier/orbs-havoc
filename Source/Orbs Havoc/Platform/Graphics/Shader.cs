@@ -104,15 +104,15 @@ namespace OrbsHavoc.Platform.Graphics
 			if (logLength != 0)
 				Log.Debug("{0}", Interop.ToString(log).Trim());
 
-			Bind(ref buffer, name => glGetUniformLocation(_program, name.Pointer), glUniform1i);
-			Bind(ref buffer, name => glGetUniformBlockIndex(_program, name.Pointer),
+			Bind(ref buffer, name => glGetUniformLocation(_program, name), glUniform1i);
+			Bind(ref buffer, name => glGetUniformBlockIndex(_program, name),
 				(index, binding) => glUniformBlockBinding(_program, index, binding));
 		}
 
 		/// <summary>
 		///   Establishes sampler and uniform block bindings.
 		/// </summary>
-		private void Bind(ref BufferReader buffer, Func<BufferPointer, int> getIndex, Action<int, int> setBinding)
+		private void Bind(ref BufferReader buffer, Func<PinnedPointer, int> getIndex, Action<int, int> setBinding)
 		{
 			var count = buffer.ReadInt32();
 			for (var i = 0; i < count; ++i)

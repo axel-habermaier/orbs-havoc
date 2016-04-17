@@ -24,6 +24,7 @@ namespace OrbsHavoc.Rendering
 {
 	using System;
 	using System.Collections.Generic;
+	using Platform;
 	using Platform.Memory;
 
 	/// <summary>
@@ -91,7 +92,7 @@ namespace OrbsHavoc.Rendering
 
 			foreach (var section in _sections)
 			{
-				MemCopy.Copy(gpuBuffer + gpuOffset, cpuBuffer + section.Offset, section.Length * Quad.SizeInBytes);
+				Interop.Copy(gpuBuffer + gpuOffset, cpuBuffer + section.Offset, section.Length * Quad.SizeInBytes);
 				gpuOffset += section.Length;
 			}
 		}

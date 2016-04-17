@@ -51,7 +51,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// <summary>
 		///   Gets zero-based position within the input where the parse error occurred.
 		/// </summary>
-		public int Position => InputStream.State.Position;
+		public int Position => InputStream.Position;
 
 		/// <summary>
 		///   Gets the input that was parsed.

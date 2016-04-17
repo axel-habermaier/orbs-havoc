@@ -27,7 +27,6 @@ namespace OrbsHavoc.Scripting
 	using System.Linq;
 	using System.Text;
 	using Parsing;
-	using Platform;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Utilities;
@@ -47,7 +46,6 @@ namespace OrbsHavoc.Scripting
 			Commands.OnListCommands += OnListCommands;
 			Commands.OnListCvars += OnListCvars;
 			Commands.OnReset += OnResetCvar;
-			Commands.OnPrintAppInfo += OnPrintAppInfo;
 			Commands.OnToggle += OnToggle;
 		}
 
@@ -61,7 +59,6 @@ namespace OrbsHavoc.Scripting
 			Commands.OnListCommands -= OnListCommands;
 			Commands.OnListCvars -= OnListCvars;
 			Commands.OnReset -= OnResetCvar;
-			Commands.OnPrintAppInfo -= OnPrintAppInfo;
 			Commands.OnToggle -= OnToggle;
 		}
 
@@ -83,19 +80,6 @@ namespace OrbsHavoc.Scripting
 				else
 					cvar.SetValue(!(bool)cvar.Value, true);
 			}
-		}
-
-		/// <summary>
-		///   Prints information about the application.
-		/// </summary>
-		private static void OnPrintAppInfo()
-		{
-			var builder = new StringBuilder();
-			builder.AppendFormat("\nApplication Name:     {0}\n", Application.Name);
-			builder.AppendFormat("Operating System:     {0}\n", PlatformInfo.Platform);
-			builder.AppendFormat("User File Directory:  {0}\n", FileSystem.UserDirectory);
-
-			Log.Info("{0}", builder);
 		}
 
 		/// <summary>

@@ -45,8 +45,8 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// </summary>
 		protected override void Fire()
 		{
-			SpawnBullet(SceneNode.Orientation - RandomNumberGenerator.NextSingle(Weapons.MiniGun.MinSpread, Weapons.MiniGun.MaxSpread));
-			SpawnBullet(SceneNode.Orientation + RandomNumberGenerator.NextSingle(Weapons.MiniGun.MinSpread, Weapons.MiniGun.MaxSpread));
+			SpawnBullet(SceneNode.Orientation - RandomNumbers.NextSingle(Weapons.MiniGun.MinSpread, Weapons.MiniGun.MaxSpread));
+			SpawnBullet(SceneNode.Orientation + RandomNumbers.NextSingle(Weapons.MiniGun.MinSpread, Weapons.MiniGun.MaxSpread));
 		}
 
 		/// <summary>

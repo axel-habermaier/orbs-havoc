@@ -53,8 +53,8 @@ namespace OrbsHavoc.Rendering
 
 			UpdateProjectionMatrix(Window.Size);
 
-			using (var pointer = new BufferPointer(new byte[] { 255, 255, 255, 255 }))
-				WhiteTexture = new Texture(new Size(1, 1), GL_RGBA, pointer);
+			var data = 0xFFFFFFFF;
+			WhiteTexture = new Texture(new Size(1, 1), GL_RGBA, &data);
 		}
 
 		/// <summary>

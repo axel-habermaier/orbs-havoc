@@ -22,13 +22,14 @@
 
 namespace OrbsHavoc.UserInterface
 {
+	using System.Collections.ObjectModel;
 	using Utilities;
 
 	/// <summary>
 	///   Represents a collection of UI elements that belongs to an UI element. When an UI element is added to or removed from the
 	///   collection, its parent is updated accordingly.
 	/// </summary>
-	public class UIElementCollection : CustomCollection<UIElement>
+	public class UIElementCollection : Collection<UIElement>
 	{
 		/// <summary>
 		///   The parent of the UI elements contained in the collection.
@@ -46,6 +47,11 @@ namespace OrbsHavoc.UserInterface
 		}
 
 		/// <summary>
+		///   Gets the version of the collection. Each modification of the collection increments the version number by one.
+		/// </summary>
+		internal int Version { get; private set; }
+
+		/// <summary>
 		///   Removes all elements from the collection.
 		/// </summary>
 		protected override void ClearItems()
@@ -55,6 +61,8 @@ namespace OrbsHavoc.UserInterface
 
 			_parent.OnChildrenChanged();
 			base.ClearItems();
+
+			++Version;
 		}
 
 		/// <summary>
@@ -70,6 +78,8 @@ namespace OrbsHavoc.UserInterface
 
 			item.ChangeParent(_parent);
 			_parent.OnChildrenChanged();
+
+			++Version;
 		}
 
 		/// <summary>
@@ -82,6 +92,8 @@ namespace OrbsHavoc.UserInterface
 			base.RemoveItem(index);
 
 			_parent.OnChildrenChanged();
+
+			++Version;
 		}
 
 		/// <summary>
@@ -99,6 +111,17 @@ namespace OrbsHavoc.UserInterface
 			item.ChangeParent(_parent);
 
 			_parent.OnChildrenChanged();
+
+			++Version;
+		}
+
+		/// <summary>
+		///   Gets an enumerator for the collection.
+		/// </summary>
+		/// <Remarks>This method returns a custom enumerator in order to avoid heap allocations.</Remarks>
+		public new UIElementEnumerator GetEnumerator()
+		{
+			return Count == 0 ? UIElementEnumerator.Empty : UIElementEnumerator.FromElements(this);
 		}
 	}
 }

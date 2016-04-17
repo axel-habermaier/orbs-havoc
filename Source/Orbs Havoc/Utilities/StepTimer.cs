@@ -27,11 +27,11 @@ namespace OrbsHavoc.Utilities
 	/// <summary>
 	///   Provides time measurements and raises the update event whenever necessary. In variable
 	///   timestep mode, the update event is raised as often as possible, i.e., once with every call to
-	///   Tick(). In fixed timestep mode, the timer attempts to raise the update event approximately at
-	///   intervals of the given target elapsed time. Therefore, if the application is calling Tick() faster
-	///   than the target elapsed time, not every call to Tick() raises the update event. On the other hand,
-	///   if calls to Tick() are infrequent, the update event might be raised several times to catch up.
-	///   However, MaxDelta limits the maximum elapsed time between two calls to Tick(), as unreasonably long
+	///   Update(). In fixed timestep mode, the timer attempts to raise the update event approximately at
+	///   intervals of the given target elapsed time. Therefore, if the application is calling Update() faster
+	///   than the target elapsed time, not every call to Update() raises the update event. On the other hand,
+	///   if calls to Update() are infrequent, the update event might be raised several times to catch up.
+	///   However, MaxDelta limits the maximum elapsed time between two calls to Update(), as unreasonably long
 	///   pauses are usually due to the app being inactive for some time or due to the debugger pausing the app.
 	/// </summary>
 	/// <remarks>Adopted from a Visual Studio C++ WinRT template.</remarks>

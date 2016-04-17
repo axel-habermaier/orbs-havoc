@@ -262,7 +262,7 @@ namespace OrbsHavoc.UserInterface.Controls
 			Assert.ArgumentNotNull(spriteBatch, nameof(spriteBatch));
 
 			// Show and hide the caret depending on the frequency and offset
-			if (((int)Math.Round(_clock.Seconds * BlinkingFrequency)) % 2 != 0)
+			if ((int)Math.Round(_clock.Seconds * BlinkingFrequency) % 2 != 0)
 				return;
 
 			var top = new Vector2(position.X, position.Y);

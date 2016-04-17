@@ -24,16 +24,22 @@ namespace OrbsHavoc.Platform.Memory
 {
 	using System;
 	using System.Runtime.InteropServices;
+	using Utilities;
 
 	/// <summary>
 	///   Provides access to a pointer to a pinned object.
 	/// </summary>
-	internal struct PinnedPointer : IDisposable
+	public unsafe struct PinnedPointer : IDisposable
 	{
 		/// <summary>
 		///   The handle of the pinned object.
 		/// </summary>
 		private GCHandle _handle;
+
+		/// <summary>
+		///   The pointer to the pinned offset.
+		/// </summary>
+		private void* _pointer;
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
@@ -47,9 +53,15 @@ namespace OrbsHavoc.Platform.Memory
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		internal static PinnedPointer Create<T>(T obj)
+		/// <param name="obj">The object the pointer should be created for.</param>
+		/// <param name="offsetInBytes">The offset in bytes that should be applied to the pinned pointer.</param>
+		internal static PinnedPointer Create<T>(T obj, int offsetInBytes = 0)
+			where T : class
 		{
-			return new PinnedPointer { _handle = GCHandle.Alloc(obj, GCHandleType.Pinned) };
+			Assert.ArgumentNotNull(obj, nameof(obj));
+
+			var handle = GCHandle.Alloc(obj, GCHandleType.Pinned);
+			return new PinnedPointer { _handle = handle, _pointer = (byte*)handle.AddrOfPinnedObject().ToPointer() + offsetInBytes };
 		}
 
 		/// <summary>
@@ -58,25 +70,25 @@ namespace OrbsHavoc.Platform.Memory
 		/// <param name="pointer">The pinned pointer that should be converted.</param>
 		public static implicit operator IntPtr(PinnedPointer pointer)
 		{
-			return pointer._handle.AddrOfPinnedObject();
+			return new IntPtr(pointer._pointer);
 		}
 
 		/// <summary>
 		///   Converts the pinned pointer to a void pointer.
 		/// </summary>
 		/// <param name="pointer">The pinned pointer that should be converted.</param>
-		public static unsafe implicit operator void*(PinnedPointer pointer)
+		public static implicit operator void*(PinnedPointer pointer)
 		{
-			return pointer._handle.AddrOfPinnedObject().ToPointer();
+			return pointer._pointer;
 		}
 
 		/// <summary>
 		///   Converts the pinned pointer to a byte pointer.
 		/// </summary>
 		/// <param name="pointer">The pinned pointer that should be converted.</param>
-		public static unsafe implicit operator byte* (PinnedPointer pointer)
+		public static implicit operator byte*(PinnedPointer pointer)
 		{
-			return (byte*)pointer._handle.AddrOfPinnedObject().ToPointer();
+			return (byte*)pointer._pointer;
 		}
 	}
 }

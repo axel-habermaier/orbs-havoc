@@ -45,8 +45,8 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// </summary>
 		protected override void Fire()
 		{
-			var spread = RandomNumberGenerator.NextSingle(Weapons.RocketLauncher.MinSpread, Weapons.RocketLauncher.MaxSpread);
-			spread *= RandomNumberGenerator.NextInteger() % 2 == 0 ? 1 : -1;
+			var spread = RandomNumbers.NextSingle(Weapons.RocketLauncher.MinSpread, Weapons.RocketLauncher.MaxSpread);
+			spread *= RandomNumbers.NextInteger() % 2 == 0 ? 1 : -1;
 
 			var directionVector = MathUtils.FromAngle(SceneNode.Orientation + spread);
 			var velocity = Vector2.Normalize(directionVector) * Template.Speed;

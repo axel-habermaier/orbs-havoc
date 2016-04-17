@@ -101,8 +101,11 @@ namespace OrbsHavoc.Views
 				{
 					Children =
 					{
-						CreateLine("Platform:    ", new Label { Text = $"{PlatformInfo.Platform} {IntPtr.Size * 8}bit" }, margin),
-						CreateLine("Debug Mode:  ", new Label { Text = $"{PlatformInfo.IsDebug.ToString().ToLower()}" }, margin),
+#if DEBUG
+						CreateLine("Debug Mode:  ", new Label { Text = "true" }, margin),
+#else
+						CreateLine("Debug Mode:  ", new Label { Text = "false" }, margin),
+#endif
 						CreateLine("VSync:       ", _vsyncLabel, margin),
 						CreateLine("# of GCs:    ", _gcLabel, 5 * margin),
 						CreateLine("GPU Time:    ", _gpuTimeLabel, "ms", margin),

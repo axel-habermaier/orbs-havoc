@@ -25,8 +25,8 @@ namespace OrbsHavoc.Rendering
 	using System.Collections.Generic;
 	using System.Numerics;
 	using Assets;
+	using Platform;
 	using Platform.Graphics;
-	using Platform.Memory;
 	using Utilities;
 	using static Platform.Graphics.OpenGL3;
 
@@ -283,7 +283,7 @@ namespace OrbsHavoc.Rendering
 			Assert.ArgumentInRange(count, 0, quads.Length, nameof(count));
 
 			fixed (Quad* ptr = quads)
-				MemCopy.Copy(AddQuads(count, texture), ptr, count * sizeof(Quad));
+				Interop.Copy(AddQuads(count, texture), ptr, count * sizeof(Quad));
 		}
 
 		/// <summary>

@@ -56,13 +56,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all children of the panel.
 		/// </summary>
-		protected sealed override Enumerator<UIElement> GetChildren()
-		{
-			if (Children == null)
-				return Enumerator<UIElement>.Empty;
-
-			return Children.GetEnumerator();
-		}
+		protected sealed override UIElementEnumerator GetChildren() => Children?.GetEnumerator() ?? UIElementEnumerator.Empty;
 
 		/// <summary>
 		///   Adds the given UI element to the panel.

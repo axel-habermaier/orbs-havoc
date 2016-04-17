@@ -29,7 +29,7 @@ namespace OrbsHavoc.Utilities
 	/// <summary>
 	///   A random number generator that uses the FastRand algorithm to generate random values.
 	/// </summary>
-	internal static class RandomNumberGenerator
+	internal static class RandomNumbers
 	{
 		/// <summary>
 		///   The internal state that is used to determine the next random value.

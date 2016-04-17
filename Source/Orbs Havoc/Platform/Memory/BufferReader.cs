@@ -119,7 +119,7 @@ namespace OrbsHavoc.Platform.Memory
 		/// <summary>
 		///   Gets a pointer to the next byte of the buffer that should be read.
 		/// </summary>
-		public BufferPointer Pointer => new BufferPointer(_buffer.Array, _buffer.Offset + _readPosition, _buffer.Count);
+		public PinnedPointer Pointer => PinnedPointer.Create(_buffer.Array, _buffer.Offset + _readPosition);
 
 		/// <summary>
 		///   Resets the read position so that all content can be read again.
@@ -145,6 +145,7 @@ namespace OrbsHavoc.Platform.Memory
 		public void Skip(int count)
 		{
 			Assert.ArgumentInRange(count, 0, Int32.MaxValue, nameof(count));
+
 			ValidateCanRead(count);
 			_readPosition += count;
 		}
@@ -157,6 +158,7 @@ namespace OrbsHavoc.Platform.Memory
 		private void ValidateCanRead(int size)
 		{
 			Assert.NotNull(_buffer.Array, "No buffer has been set for reading.");
+
 			if (!CanRead(size))
 				throw new BufferOverflowException();
 		}
@@ -204,7 +206,7 @@ namespace OrbsHavoc.Platform.Memory
 			ValidateCanRead(2);
 			var value = (short)(Next() | (Next() << 8));
 
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			return value;
@@ -218,7 +220,7 @@ namespace OrbsHavoc.Platform.Memory
 			ValidateCanRead(2);
 			var value = (ushort)(Next() | (Next() << 8));
 
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			return value;
@@ -240,7 +242,7 @@ namespace OrbsHavoc.Platform.Memory
 			ValidateCanRead(4);
 			var value = Next() | (Next() << 8) | (Next() << 16) | (Next() << 24);
 
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			return value;
@@ -254,7 +256,7 @@ namespace OrbsHavoc.Platform.Memory
 			ValidateCanRead(4);
 			var value = (uint)(Next() | (Next() << 8) | (Next() << 16) | (Next() << 24));
 
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			return value;
@@ -275,7 +277,7 @@ namespace OrbsHavoc.Platform.Memory
 						((long)(Next()) << 48) |
 						((long)(Next()) << 56);
 
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			return value;
@@ -296,7 +298,7 @@ namespace OrbsHavoc.Platform.Memory
 						((ulong)(Next()) << 48) |
 						((ulong)(Next()) << 56);
 
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			return value;

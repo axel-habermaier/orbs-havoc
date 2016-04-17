@@ -158,7 +158,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all children of the UI element.
 		/// </summary>
-		protected override Enumerator<UIElement> GetChildren() => Enumerator<UIElement>.FromItemOrEmpty(Child);
+		protected override UIElementEnumerator GetChildren() => UIElementEnumerator.FromElement(Child);
 
 		/// <summary>
 		///   Draws the UI element using the given sprite batch.

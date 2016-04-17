@@ -41,11 +41,6 @@ namespace OrbsHavoc
 	internal static class Program
 	{
 		/// <summary>
-		///   Gets a value indicating whether the program was successfully initialized.
-		/// </summary>
-		public static bool Initialized { get; private set; }
-
-		/// <summary>
 		///   The entry point of the application.
 		/// </summary>
 		/// <param name="arguments">The command line arguments passed to the application.</param>
@@ -58,12 +53,13 @@ namespace OrbsHavoc
 				CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 				CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
-				using (var platform = new PlatformLibrary())
 				using (var logFile = new LogFile())
 				{
 					LogEntryCache.EnableCaching();
 					Log.OnLog += WriteToConsole;
+
 					Log.Info("Starting {0}...", Application.Name);
+					Log.Info("User file directory: {0}", FileSystem.UserDirectory);
 
 					Cvars.Initialize();
 					Commands.Initialize();
@@ -78,11 +74,8 @@ namespace OrbsHavoc
 							ConfigurationFile.Process(ConfigurationFile.AutoExec, executedByUser: false);
 							CommandLine.Process(arguments);
 
-							platform.Initialize();
-
-							Initialized = true;
-							var app = new Application();
-							app.Run();
+							using (SDL2.Initialize())
+								Application.Run();
 
 							ConfigurationFile.WriteAutoExec();
 							Log.Info("{0} has shut down.", Application.Name);
@@ -110,7 +103,7 @@ namespace OrbsHavoc
 			var message = "The application has been terminated after a fatal error. " +
 						  "See the log file for further details.\n\nThe error was: {0}\n\nLog file: {1}";
 
-			if (exception is TargetInvocationException || exception is TypeInitializationException)
+			while (exception is TargetInvocationException || exception is TypeInitializationException)
 				exception = exception.InnerException;
 
 			logFile.Enqueue(new LogEntry(LogType.Error, $"Exception type: {exception.GetType().FullName}"));

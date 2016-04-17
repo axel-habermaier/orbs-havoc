@@ -30,7 +30,8 @@ namespace OrbsHavoc.Platform
 	using System.Runtime.InteropServices;
 	using Input;
 	using JetBrains.Annotations;
-	using Utilities;
+	using Logging;
+	using Memory;
 
 	/// <summary>
 	///   Provides access to SDL2 functions, constants, and types.
@@ -277,6 +278,55 @@ namespace OrbsHavoc.Platform
 		public static readonly uint SDL_BUTTON_RMASK = SDL_BUTTON(SDL_BUTTON_RIGHT);
 		public static readonly uint SDL_BUTTON_X1MASK = SDL_BUTTON(SDL_BUTTON_X1);
 		public static readonly uint SDL_BUTTON_X2MASK = SDL_BUTTON(SDL_BUTTON_X2);
+
+		public static IDisposable Initialize()
+		{
+			try
+			{
+				if (SDL_Init(SDL_INIT_VIDEO) != 0)
+					Log.Die("SDL2 initialization failed: {0}", SDL_GetError());
+
+				SDL_version version;
+				SDL_GetVersion(out version);
+
+				const int major = 2, minor = 0, patch = 2;
+				if (!SDL_VERSION_ATLEAST(major, minor, patch))
+				{
+					Log.Die("SDL2 is outdated: Version {0}.{1}.{2} is installed but at least version {3}.{4}.{5} is required.",
+						version.major, version.minor, version.patch, major, minor, patch);
+				}
+
+				SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+				SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+				SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+				SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
+				SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+#if DEBUG
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG | SDL_GL_CONTEXT_DEBUG_FLAG);
+#else
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+#endif
+
+				SDL_StopTextInput();
+				if (SDL_GL_LoadLibrary(null) != 0)
+					Log.Die("Failed to load the OpenGL library: {0}", SDL_GetError());
+
+				Log.Info("SDL {0}.{1}.{2} initialized.", version.major, version.minor, version.patch);
+				return new PlatformCleanup();
+			}
+			catch (DllNotFoundException)
+			{
+				Log.Die("The SDL2 library could not be not found. Make sure SDL2 is installed on your " +
+						"system or 'SDL2.dll' is placed in the application directory. On Windows, make sure " +
+						"that you have the latest Microsoft Visual C++ Redistributable (x64) installed.");
+			}
+
+			return null;
+		}
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_Init(uint flags);
@@ -1016,6 +1066,21 @@ namespace OrbsHavoc.Platform
 
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern int SDL_GetSystemRAM();
+
+		private class PlatformCleanup : DisposableObject
+		{
+			protected override void OnDisposing()
+			{
+				try
+				{
+					SDL_GL_UnloadLibrary();
+					SDL_Quit();
+				}
+				catch (DllNotFoundException)
+				{
+				}
+			}
+		}
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct SDL_version

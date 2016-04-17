@@ -68,7 +68,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 			var behavior = allocator.Allocate<CircleMovementBehavior>();
 			behavior._speed = speed;
 			behavior._radius = radius;
-			behavior._time = RandomNumberGenerator.NextSingle(0, MathUtils.TwoPi);
+			behavior._time = RandomNumbers.NextSingle(0, MathUtils.TwoPi);
 			return behavior;
 		}
 	}

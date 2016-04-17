@@ -81,15 +81,5 @@ namespace OrbsHavoc.Scripting
 			if (cvar != null && _parameter != null)
 				cvar.SetValue(_parameter, executedByUser);
 		}
-
-		/// <summary>
-		///   Indicates whether the instruction has the given object as its target.
-		/// </summary>
-		/// <param name="target">The object that should be checked.</param>
-		public bool HasTarget(object target)
-		{
-			Assert.ArgumentNotNull(target, nameof(target));
-			return _target == target;
-		}
 	}
 }

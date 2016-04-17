@@ -22,11 +22,19 @@
 
 namespace OrbsHavoc.Platform.Memory
 {
+	using System;
+
 	/// <summary>
 	///   Converts between little and big endian encoding.
 	/// </summary>
 	public static class EndianConverter
 	{
+		/// <summary>
+		///   Gets a value indicating whether an endianess conversion is required for multi-byte values.
+		/// </summary>
+		/// <param name="endianess">The endianess of the data that must potentially be converted.</param>
+		public static bool RequiresConversion(Endianess endianess) => BitConverter.IsLittleEndian && endianess != Endianess.Little;
+
 		/// <summary>
 		///   Converts an 8 byte signed integer.
 		/// </summary>

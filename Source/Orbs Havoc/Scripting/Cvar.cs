@@ -81,13 +81,7 @@ namespace OrbsHavoc.Scripting
 		public T Value
 		{
 			get { return _value; }
-			set
-			{
-				if (!ValidateValue(value))
-					return;
-
-				UpdateValue(value);
-			}
+			set { SetValue(value, setByUser: false); }
 		}
 
 		/// <summary>
@@ -142,7 +136,7 @@ namespace OrbsHavoc.Scripting
 			if (setByUser && SystemOnly)
 				Log.Warn("'{0}' can only be set by the application.", Name);
 			else
-				Value = (T)value;
+				SetValue((T)value, setByUser);
 		}
 
 		/// <summary>
@@ -152,6 +146,19 @@ namespace OrbsHavoc.Scripting
 		public object Parse(InputStream inputStream)
 		{
 			return TypeRegistry.GetParser<T>()(inputStream);
+		}
+
+		/// <summary>
+		///   Sets the cvar's value.
+		/// </summary>
+		/// <param name="value">The value that should be set.</param>
+		/// <param name="setByUser">If true, indicates that the cvar was set by the user (e.g., via the console).</param>
+		private void SetValue(T value, bool setByUser)
+		{
+			if (!ValidateValue(value))
+				return;
+
+			UpdateValue(value, setByUser);
 		}
 
 		/// <summary>
@@ -177,11 +184,12 @@ namespace OrbsHavoc.Scripting
 		///   Sets the cvar's current value to the new one.
 		/// </summary>
 		/// <param name="value">The value the cvar should be set to.</param>
-		private void UpdateValue(T value)
+		/// <param name="setByUser">If true, indicates that the cvar was set by the user (e.g., via the console).</param>
+		private void UpdateValue(T value, bool setByUser)
 		{
 			if (_value.Equals(value))
 			{
-				if (Program.Initialized)
+				if (setByUser)
 					Log.Warn("'{0}' has not been changed, because the new and the old value are the same.", Name);
 			}
 			else

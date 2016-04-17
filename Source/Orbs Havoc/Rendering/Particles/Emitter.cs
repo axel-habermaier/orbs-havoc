@@ -226,19 +226,19 @@ namespace OrbsHavoc.Rendering.Particles
 			while (count-- > 0)
 			{
 				*positions = _spawnPosition;
-				*initialSpeeds = RandomNumberGenerator.NextSingle(SpeedRange.LowerBound, SpeedRange.UpperBound);
+				*initialSpeeds = RandomNumbers.NextSingle(SpeedRange.LowerBound, SpeedRange.UpperBound);
 				*velocities =
-					MathUtils.Rotate(Vector2.UnitX, RandomNumberGenerator.NextSingle(Direction.LowerBound, Direction.UpperBound)) * *initialSpeeds;
-				*initialLifetimes = RandomNumberGenerator.NextSingle(LiftetimeRange.LowerBound, LiftetimeRange.UpperBound);
+					MathUtils.Rotate(Vector2.UnitX, RandomNumbers.NextSingle(Direction.LowerBound, Direction.UpperBound)) * *initialSpeeds;
+				*initialLifetimes = RandomNumbers.NextSingle(LiftetimeRange.LowerBound, LiftetimeRange.UpperBound);
 				*lifetimes = *initialLifetimes;
 				*age = 1;
-				*scales = RandomNumberGenerator.NextSingle(ScaleRange.LowerBound, ScaleRange.UpperBound);
-				*orientations = RandomNumberGenerator.NextSingle(OrientationRange.LowerBound, OrientationRange.UpperBound);
+				*scales = RandomNumbers.NextSingle(ScaleRange.LowerBound, ScaleRange.UpperBound);
+				*orientations = RandomNumbers.NextSingle(OrientationRange.LowerBound, OrientationRange.UpperBound);
 				*colors = new Color(
-					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Red, ColorRange.UpperBound.Red),
-					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Green, ColorRange.UpperBound.Green),
-					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Blue, ColorRange.UpperBound.Blue),
-					RandomNumberGenerator.NextByte(ColorRange.LowerBound.Alpha, ColorRange.UpperBound.Alpha));
+					RandomNumbers.NextByte(ColorRange.LowerBound.Red, ColorRange.UpperBound.Red),
+					RandomNumbers.NextByte(ColorRange.LowerBound.Green, ColorRange.UpperBound.Green),
+					RandomNumbers.NextByte(ColorRange.LowerBound.Blue, ColorRange.UpperBound.Blue),
+					RandomNumbers.NextByte(ColorRange.LowerBound.Alpha, ColorRange.UpperBound.Alpha));
 
 				positions += 1;
 				velocities += 1;

@@ -25,8 +25,6 @@ namespace OrbsHavoc.Rendering
 	using System.Numerics;
 	using Platform.Graphics;
 	using Platform.Memory;
-	using Utilities;
-	using static Platform.Graphics.GraphicsHelpers;
 
 	/// <summary>
 	///   Represents a camera that can be used to draw scenes.
@@ -34,7 +32,6 @@ namespace OrbsHavoc.Rendering
 	public sealed unsafe class Camera : DisposableObject
 	{
 		private readonly UniformBuffer _buffer = new UniformBuffer(sizeof(Vector2));
-		private uint _lastChanged;
 		private Vector2 _position;
 
 		/// <summary>
@@ -45,12 +42,9 @@ namespace OrbsHavoc.Rendering
 			get { return _position; }
 			set
 			{
-				Assert.That(_lastChanged < State.FrameNumber, "The buffer cannot be changed multiple times per frame.");
-
 				if (_position == value)
 					return;
 
-				_lastChanged = State.FrameNumber;
 				_position = value;
 				_buffer.Copy(&value);
 			}

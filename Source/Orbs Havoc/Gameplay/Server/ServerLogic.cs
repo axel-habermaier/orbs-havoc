@@ -236,7 +236,7 @@ namespace OrbsHavoc.Gameplay.Server
 			const int retries = 16;
 			for (var i = 0; i < retries; ++i)
 			{
-				var startIndex = RandomNumberGenerator.NextIndex(_gameSession.Level.PlayerStarts);
+				var startIndex = RandomNumbers.NextIndex(_gameSession.Level.PlayerStarts);
 				var startBlockIndex = _gameSession.Level.PlayerStarts[startIndex];
 				var startArea = _gameSession.Level.GetBlockArea(startBlockIndex);
 				var isOccupied = false;

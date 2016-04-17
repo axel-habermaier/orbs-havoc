@@ -39,7 +39,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static string ParseIdentifier(InputStream inputStream)
 		{
-			var position = inputStream.State.Position;
+			var position = inputStream.Position;
 			var c = inputStream.Peek();
 
 			if (!Char.IsLetter(c) && c != '_')
@@ -53,7 +53,7 @@ namespace OrbsHavoc.Scripting.Parsing
 
 				inputStream.Skip(1);
 			}
-			return inputStream.Substring(position, inputStream.State.Position - position);
+			return inputStream.Substring(position, inputStream.Position - position);
 		}
 
 		/// <summary>
@@ -142,12 +142,12 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static bool IsKeyword(InputStream inputStream, string keyword)
 		{
-			var state = inputStream.State;
+			var state = inputStream.Position;
 			foreach (var character in keyword.ToCharArray())
 			{
 				if (inputStream.EndOfInput || Char.ToLower(inputStream.Peek()) != character)
 				{
-					inputStream.State = state;
+					inputStream.Position = state;
 					return false;
 				}
 
@@ -178,15 +178,15 @@ namespace OrbsHavoc.Scripting.Parsing
 		{
 			if (inputStream.Peek() != '"')
 			{
-				var position = inputStream.State.Position;
+				var position = inputStream.Position;
 				while (!inputStream.EndOfInput && !Char.IsWhiteSpace(inputStream.Peek()))
 					inputStream.Skip(1);
 
-				return inputStream.Substring(position, inputStream.State.Position - position);
+				return inputStream.Substring(position, inputStream.Position - position);
 			}
 			else
 			{
-				var state = inputStream.State;
+				var position = inputStream.Position;
 				inputStream.Skip(1);
 
 				var wasBackslash = false;
@@ -204,12 +204,12 @@ namespace OrbsHavoc.Scripting.Parsing
 				// Parse the closing quote
 				if (inputStream.EndOfInput)
 				{
-					inputStream.State = state;
+					inputStream.Position = position;
 					throw new ParseException(inputStream, "Missing closing quote '\"'.");
 				}
 
 				// Extract the string literal and unescape all escaped quotes
-				var result = inputStream.Substring(state.Position + 1, inputStream.State.Position - state.Position - 1);
+				var result = inputStream.Substring(position + 1, inputStream.Position - position - 1);
 				result = result.Replace("\\\"", "\"");
 
 				// Skip the closing quote and return the result.
@@ -259,7 +259,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		public static IPAddress ParseIPAddress(InputStream inputStream)
 		{
-			var state = inputStream.State;
+			var position = inputStream.Position;
 
 			// Check for the 'localhost' keyword first
 			if (IsKeyword(inputStream, "localhost"))
@@ -267,9 +267,9 @@ namespace OrbsHavoc.Scripting.Parsing
 
 			// Try to find out whether it is an IPv4 or IPv6 address
 			var ipv4 = inputStream.Skip(c => c != '.');
-			inputStream.State = state;
+			inputStream.Position = position;
 			var ipv6 = inputStream.Skip(c => c != ':');
-			inputStream.State = state;
+			inputStream.Position = position;
 
 			var isIPv6 = ipv6 < ipv4;
 			int length;
@@ -281,7 +281,7 @@ namespace OrbsHavoc.Scripting.Parsing
 				length = inputStream.Skip(c => Char.IsDigit(c) || c == '.');
 
 			IPAddress address;
-			if (IPAddress.TryParse(inputStream.Substring(state.Position, length), out address))
+			if (IPAddress.TryParse(inputStream.Substring(position, length), out address))
 				return address;
 
 			throw new ParseException(inputStream, "Expected an IP address (either IPv4 or IPv6).");
@@ -325,16 +325,16 @@ namespace OrbsHavoc.Scripting.Parsing
 			if (inputStream.Peek() != '[')
 				throw new ParseException(inputStream, "Expected a '['.");
 
-			var state = inputStream.State;
+			var position = inputStream.Position;
 			inputStream.Skip(c => c != ']');
 
 			if (inputStream.EndOfInput)
 			{
-				inputStream.State = state;
+				inputStream.Position = position;
 				throw new ParseException(inputStream, "'[' is never closed.");
 			}
 
-			inputStream.State = state;
+			inputStream.Position = position;
 			inputStream.Skip(1);
 
 			var modifiers = KeyModifiers.None;
@@ -354,10 +354,10 @@ namespace OrbsHavoc.Scripting.Parsing
 					inputStream.SkipWhitespaces();
 				}
 
-				var begin = inputStream.State;
+				var begin = inputStream.Position;
 				inputStream.Skip(c => c != '+' && c != ']');
 
-				var value = inputStream.Substring(begin.Position, inputStream.State.Position - begin.Position);
+				var value = inputStream.Substring(begin, inputStream.Position - begin);
 				var normalizedValue = value.ToLower().Trim();
 
 				if (normalizedValue == String.Empty)
@@ -394,13 +394,13 @@ namespace OrbsHavoc.Scripting.Parsing
 							}
 							else
 							{
-								inputStream.State = begin;
+								inputStream.Position = begin;
 								throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", value.Trim());
 							}
 						}
 						catch (ArgumentException)
 						{
-							inputStream.State = begin;
+							inputStream.Position = begin;
 							throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", value.Trim());
 						}
 						break;
@@ -408,7 +408,7 @@ namespace OrbsHavoc.Scripting.Parsing
 
 				if (key != null && button != null)
 				{
-					inputStream.State = begin;
+					inputStream.Position = begin;
 					throw new ParseException(inputStream, "Input cannot use both key and mouse button at the same time.");
 				}
 			}
@@ -424,7 +424,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			if (direction != null)
 				return new InputTrigger(direction.Value, modifiers);
 
-			inputStream.State = state;
+			inputStream.Position = position;
 			throw new ParseException(inputStream, "Input must use a key or a mouse button.");
 		}
 
@@ -442,7 +442,7 @@ namespace OrbsHavoc.Scripting.Parsing
 					throw new ParseException(inputStream, "Expected a valid cvar or command name.");
 
 				// Parse the cvar or command name
-				var state = inputStream.State;
+				var state = inputStream.Position;
 				var name = ParseIdentifier(inputStream);
 
 				// Check if a cvar has been referenced and if so, return the appropriate instruction
@@ -456,7 +456,7 @@ namespace OrbsHavoc.Scripting.Parsing
 					return ParseCommand(inputStream, command);
 
 				// If the name refers to neither a cvar nor a command, give up
-				inputStream.State = state;
+				inputStream.Position = state;
 				throw new ParseException(inputStream, $"Unknown cvar or command '{name}'.");
 			}
 			catch (ParseException e)
@@ -554,7 +554,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		private static T ParseNumber<T>(InputStream inputStream, Func<string, T> convert, bool allowNegative, bool allowDecimal)
 		{
-			var state = inputStream.State;
+			var position = inputStream.Position;
 
 			// Parse the optional sign
 			var sign = inputStream.Peek();
@@ -563,7 +563,7 @@ namespace OrbsHavoc.Scripting.Parsing
 
 			if (negative && !allowNegative)
 			{
-				inputStream.State = state;
+				inputStream.Position = position;
 				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 
@@ -574,7 +574,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			var count = inputStream.Skip(Char.IsDigit);
 			if (count == 0 && (!allowDecimal || inputStream.Peek() != '.'))
 			{
-				inputStream.State = state;
+				inputStream.Position = position;
 				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 
@@ -586,7 +586,7 @@ namespace OrbsHavoc.Scripting.Parsing
 
 				if (count == 0)
 				{
-					inputStream.State = state;
+					inputStream.Position = position;
 					throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 				}
 			}
@@ -594,16 +594,16 @@ namespace OrbsHavoc.Scripting.Parsing
 			// Convert everything from the first digit (or sign or decimal point) to the last digit followed by a non-digit character
 			try
 			{
-				return convert(inputStream.Substring(state.Position, inputStream.State.Position - state.Position));
+				return convert(inputStream.Substring(position, inputStream.Position - position));
 			}
 			catch (FormatException)
 			{
-				inputStream.State = state;
+				inputStream.Position = position;
 				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 			catch (OverflowException)
 			{
-				inputStream.State = state;
+				inputStream.Position = position;
 				throw new ParseException(inputStream, "The value lies outside the range of type '{0}'.", TypeRegistry.GetDescription<T>());
 			}
 		}

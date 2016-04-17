@@ -540,7 +540,7 @@ namespace OrbsHavoc.UserInterface
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all children of the UI element.
 		/// </summary>
-		protected abstract Enumerator<UIElement> GetChildren();
+		protected abstract UIElementEnumerator GetChildren();
 
 		/// <summary>
 		///   Invoked when the UI element is now (transitively) attached to the root of a tree.

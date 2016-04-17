@@ -28,6 +28,7 @@ namespace OrbsHavoc.Gameplay.Server
 	using System.Linq;
 	using System.Net;
 	using System.Net.Sockets;
+	using System.Reflection;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using Network;
@@ -200,14 +201,22 @@ namespace OrbsHavoc.Gameplay.Server
 				{
 					Log.Error("One ore more exceptions occurred on the server thread.");
 
-					foreach (var exception in aggregateException.InnerExceptions)
+					var exceptions = aggregateException.InnerExceptions.Select(ex =>
+					{
+						while (ex is TargetInvocationException || ex is TypeInitializationException)
+							ex = ex.InnerException;
+
+						return ex;
+					}).ToArray();
+
+					foreach (var exception in exceptions)
 					{
 						Log.Error("Exception type: {0}", exception.GetType().FullName);
 						Log.Error("Exception message: {0}", exception.Message);
 						Log.Error("Stack trace: {0}", exception.StackTrace);
 					}
 
-					var messages = aggregateException.InnerExceptions.Select(ex => ex.Message);
+					var messages = exceptions.Select(ex => ex.Message);
 					throw new InvalidOperationException(String.Join("\n\n", messages));
 				}
 			}
@@ -265,7 +274,7 @@ namespace OrbsHavoc.Gameplay.Server
 			if (_gameSession == null || _gameSession.Players.Count >= NetworkProtocol.MaxPlayers)
 				return;
 
-			var nameIndex = RandomNumberGenerator.NextIndex(_botNames);
+			var nameIndex = RandomNumbers.NextIndex(_botNames);
 			var bot = _serverLogic.CreatePlayer(_botNames[nameIndex], PlayerKind.Bot);
 
 			_botNames.RemoveAt(nameIndex);
@@ -282,7 +291,7 @@ namespace OrbsHavoc.Gameplay.Server
 			if (_gameSession == null || _bots.Count == 0)
 				return;
 
-			var index = RandomNumberGenerator.NextIndex(_bots);
+			var index = RandomNumbers.NextIndex(_bots);
 			var name = _bots[index].Name;
 
 			_bots[index].LeaveReason = LeaveReason.Disconnect;

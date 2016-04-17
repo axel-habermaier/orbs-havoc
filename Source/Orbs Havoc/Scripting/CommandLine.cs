@@ -29,7 +29,7 @@ namespace OrbsHavoc.Scripting
 
 	/// <summary>
 	///   Parses and executes the command line arguments, consisting of potentially multiple instructions. For instance, the
-	///   command line "/time_scale 0.01" sets the value of the time scale cvar to 0.01.
+	///   command line "/time_scale 0.01" sets the value of the 'time_scale' cvar to 0.01.
 	/// </summary>
 	internal static class CommandLine
 	{

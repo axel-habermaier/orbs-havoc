@@ -36,40 +36,18 @@ namespace OrbsHavoc
 	/// <summary>
 	///   Represents the application.
 	/// </summary>
-	internal class Application
+	internal static class Application
 	{
 		/// <summary>
 		///   The name of the application.
 		/// </summary>
 		public const string Name = "Orbs Havoc";
 
-		private Renderer _renderer;
-		private bool _running;
-		private ViewCollection _views;
-
 		/// <summary>
-		///   Gets the application's window.
+		///   Initializes the command subsystem.
 		/// </summary>
-		public Window Window { get; private set; }
-
-		/// <summary>
-		///   Gets the application's input device.
-		/// </summary>
-		public LogicalInputDevice InputDevice { get; private set; }
-
-		/// <summary>
-		///   Gets thhe graphics device used by the application.
-		/// </summary>
-		public GraphicsDevice GraphicsDevice { get; private set; }
-
-		/// <summary>
-		///   Initializes the application.
-		/// </summary>
-		private void Initialize()
+		private static void InitializeCommands()
 		{
-			_views.Initialize();
-
-			Commands.OnExit += Exit;
 			Commands.Bind(Key.F1, "start_server");
 			Commands.Bind(Key.F2, "stop_server");
 			Commands.Bind(Key.F3, "connect ::1");
@@ -79,94 +57,81 @@ namespace OrbsHavoc
 			Commands.Bind(new InputTrigger(Key.B, KeyModifiers.Control | KeyModifiers.Shift), "remove_bot");
 			Commands.Bind(new InputTrigger(Key.Escape, KeyModifiers.LeftShift), "exit");
 			Commands.Bind(Key.F10, "toggle show_debug_overlay");
+			Commands.Help();
 		}
 
 		/// <summary>
 		///   Runs the application.
 		/// </summary>
-		public unsafe void Run()
+		public static unsafe void Run()
 		{
-			_running = true;
-
-			using (GraphicsDevice = new GraphicsDevice())
-			using (Window = new Window(GraphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
-			using (InputDevice = new LogicalInputDevice(Window))
-			using (var bindings = new BindingCollection(InputDevice))
+			using (var graphicsDevice = new GraphicsDevice())
+			using (var window = new Window(graphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
+			using (var inputDevice = new LogicalInputDevice(window))
+			using (var bindings = new BindingCollection(inputDevice))
 			using (new AssetBundle())
-			using (_renderer = new Renderer(Window))
-			using (_views = new ViewCollection(this))
+			using (var renderer = new Renderer(window))
+			using (var views = new ViewCollection(window, inputDevice))
 			{
-				Initialize();
-				Commands.Help();
+				// Initialize the views and the command subsystem
+				views.Initialize();
+				InitializeCommands();
 
-				while (_running)
+				// Abort when the exit command is invoked
+				var running = true;
+				Commands.OnExit += () =>
+				{
+					running = false;
+					Log.Info("Exiting {0}...", Name);
+				};
+
+				while (running)
 				{
 					double updateTime, drawTime;
 
 					// Perform the necessary updates for the frame
 					using (TimeMeasurement.Measure(&updateTime))
 					{
-						HandleInput();
+						// Process all pending operating system events
+						window.HandleEvents();
+
+						// Update the logical inputs based on the new state of the input system as well as the bindings
+						inputDevice.Update();
 						bindings.Update();
 
-						_views.Update();
+						// Update the views
+						views.Update();
 					}
 
 					// Ensure that CPU and GPU are synchronized after this point, i.e., the GPU lags behind by
 					// at most GraphicsDevice.FrameLag frames
-					GraphicsDevice.SyncWithCpu();
+					graphicsDevice.SyncWithCpu();
 
 					// Draw the current frame
 					using (TimeMeasurement.Measure(&drawTime))
 					{
-						GraphicsDevice.BeginFrame();
+						graphicsDevice.BeginFrame();
 
-						_renderer.ClearRenderTarget(Window.BackBuffer, Colors.Black);
-						_views.Draw(_renderer);
-						_renderer.Render();
+						renderer.ClearRenderTarget(window.BackBuffer, Colors.Black);
+						views.Draw(renderer);
+						renderer.Render();
 
-						GraphicsDevice.EndFrame();
+						graphicsDevice.EndFrame();
 					}
 
 					// Present the contents of the window's backbuffer
-					Window.Present();
+					window.Present();
 
 					// Save CPU when the window is not focused
-					if (!Window.HasFocus)
+					if (!window.HasFocus)
 						Thread.Sleep(10);
 
 					// Update the debug overlay
-					_views.DebugOverlay.GpuFrameTime = GraphicsDevice.FrameTime;
-					_views.DebugOverlay.CpuUpdateTime = updateTime;
-					_views.DebugOverlay.CpuRenderTime = drawTime;
+					views.DebugOverlay.GpuFrameTime = graphicsDevice.FrameTime;
+					views.DebugOverlay.CpuUpdateTime = updateTime;
+					views.DebugOverlay.CpuRenderTime = drawTime;
 				}
 			}
-		}
-
-		/// <summary>
-		///   Handles all user input.
-		/// </summary>
-		private void HandleInput()
-		{
-			// Update the keyboard and mouse state first (this ensures that WentDown returns 
-			// false for all keys and buttons, etc.)
-			InputDevice.Keyboard.Update();
-			InputDevice.Mouse.Update();
-
-			// Process all pending operating system events
-			Window.HandleEvents();
-
-			// Update the logical inputs based on the new state of the input system
-			InputDevice.Update();
-		}
-
-		/// <summary>
-		///   Exists the application.
-		/// </summary>
-		private void Exit()
-		{
-			_running = false;
-			Log.Info("Exiting {0}...", Name);
 		}
 	}
 }

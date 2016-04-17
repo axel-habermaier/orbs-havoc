@@ -139,9 +139,13 @@ namespace OrbsHavoc.Platform.Logging
 		/// <param name="message">The message that the message box should display.</param>
 		public static void ShowErrorBox(string title, string message)
 		{
-			if (PlatformInfo.Platform == PlatformType.Windows)
+			try
+			{
+				// Try to show a native Windows message box (which looks much better than the SDL2 one);
+				// if that fails because we're running on Linux, for instance, fall back to the SDL2 message box
 				MessageBox(null, message, title, 0x10);
-			else
+			}
+			catch (DllNotFoundException)
 			{
 				using (var titlePtr = Interop.ToPointer(title))
 				using (var messagePtr = Interop.ToPointer(message))

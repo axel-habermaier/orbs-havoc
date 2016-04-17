@@ -46,21 +46,21 @@ namespace OrbsHavoc.Scripting.Parsing
 		public string Input { get; }
 
 		/// <summary>
-		///   Gets the current state of the input stream.
+		///   Gets the current position of the input stream.
 		/// </summary>
-		internal InputStreamState State { get; set; }
+		internal int Position { get; set; }
 
 		/// <summary>
 		///   Gets a value indicating whether the end of the input has been reached.
 		/// </summary>
-		internal bool EndOfInput => State.Position >= Input.Length;
+		internal bool EndOfInput => Position >= Input.Length;
 
 		/// <summary>
 		///   Returns the current character without changing the stream state.
 		/// </summary>
 		internal char Peek()
 		{
-			return EndOfInput ? Char.MaxValue : Input[State.Position];
+			return EndOfInput ? Char.MaxValue : Input[Position];
 		}
 
 		/// <summary>
@@ -96,7 +96,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			Assert.ArgumentInRange(count, 0, Int32.MaxValue, nameof(count));
 
 			for (var i = 0; i < count && !EndOfInput; ++i)
-				State = State.Advance();
+				++Position;
 		}
 
 		/// <summary>
@@ -130,7 +130,7 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// </summary>
 		internal bool WhiteSpaceUntilEndOfInput()
 		{
-			for (var i = State.Position; i < Input.Length; ++i)
+			for (var i = Position; i < Input.Length; ++i)
 			{
 				if (!Char.IsWhiteSpace(Input[i]))
 					return false;

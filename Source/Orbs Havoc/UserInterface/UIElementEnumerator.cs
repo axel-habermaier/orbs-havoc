@@ -20,22 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Utilities
+namespace OrbsHavoc.UserInterface
 {
+	using Utilities;
+
 	/// <summary>
 	///   Enumerates a custom collection.
 	/// </summary>
-	public struct Enumerator<T>
+	public struct UIElementEnumerator
 	{
 		/// <summary>
 		///   Represents an enumerator that does not enumerate any items.
 		/// </summary>
-		public static readonly Enumerator<T> Empty = new Enumerator<T>();
+		public static readonly UIElementEnumerator Empty = new UIElementEnumerator();
 
 		/// <summary>
 		///   The collection that is enumerated.
 		/// </summary>
-		private CustomCollection<T> _collection;
+		private UIElementCollection _collection;
 
 		/// <summary>
 		///   The index of the current enumerated item.
@@ -45,7 +47,7 @@ namespace OrbsHavoc.Utilities
 		/// <summary>
 		///   The single item that is enumerated.
 		/// </summary>
-		private T _item;
+		private UIElement _item;
 
 		/// <summary>
 		///   Indicates whether only a single item should be enumerated.
@@ -60,40 +62,25 @@ namespace OrbsHavoc.Utilities
 		/// <summary>
 		///   Gets the item at the current position of the enumerator.
 		/// </summary>
-		public T Current { get; private set; }
-
-		/// <summary>
-		///   Creates an enumerator for a single item.
-		/// </summary>
-		/// <param name="item">The item that should be enumerated.</param>
-		public static Enumerator<T> FromItem(T item)
-		{
-			Assert.ArgumentNotNull((object)item, nameof(item));
-			return new Enumerator<T> { _item = item, _singleItem = true };
-		}
+		public UIElement Current { get; private set; }
 
 		/// <summary>
 		///   Creates an enumerator for a single item. If the item is null, an empty enumerator is returned.
 		/// </summary>
-		/// <typeparam name="TItem">The type of the item that should be enumerated.</typeparam>
 		/// <param name="item">The item that should be enumerated.</param>
-		public static Enumerator<TItem> FromItemOrEmpty<TItem>(TItem item)
-			where TItem : class
+		public static UIElementEnumerator FromElement(UIElement item)
 		{
-			if (item == null)
-				return Enumerator<TItem>.Empty;
-
-			return new Enumerator<TItem> { _item = item, _singleItem = true };
+			return item == null ? Empty : new UIElementEnumerator { _item = item, _singleItem = true };
 		}
 
 		/// <summary>
 		///   Creates an enumerator for a collection with multiple items.
 		/// </summary>
 		/// <param name="collection">The collection that should be enumerated.</param>
-		public static Enumerator<T> FromElements(CustomCollection<T> collection)
+		public static UIElementEnumerator FromElements(UIElementCollection collection)
 		{
 			Assert.ArgumentNotNull(collection, nameof(collection));
-			return new Enumerator<T> { _collection = collection, _version = collection.Version };
+			return new UIElementEnumerator { _collection = collection, _version = collection.Version };
 		}
 
 		/// <summary>
@@ -134,7 +121,7 @@ namespace OrbsHavoc.Utilities
 		/// <remarks>
 		///   This method just returns the enumerator object. It is only required to enable foreach support.
 		/// </remarks>
-		public Enumerator<T> GetEnumerator()
+		public UIElementEnumerator GetEnumerator()
 		{
 			return this;
 		}

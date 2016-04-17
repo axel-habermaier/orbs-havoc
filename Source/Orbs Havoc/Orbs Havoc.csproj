@@ -178,6 +178,7 @@
     <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Rendering\RenderOperation.cs" />
     <Compile Include="Rendering\RenderState.cs" />
+    <Compile Include="Scripting\Parsing\ParseException.cs" />
     <Compile Include="UserInterface\Controls\AreaPanel.cs" />
     <Compile Include="UserInterface\Controls\CheckBox.cs" />
     <Compile Include="UserInterface\Controls\Image.cs" />
@@ -230,10 +231,9 @@
     <Compile Include="UserInterface\VerticalAlignment.cs" />
     <Compile Include="UserInterface\Visibility.cs" />
     <Compile Include="Utilities\Circle.cs" />
-    <Compile Include="Utilities\CustomCollection.cs" />
-    <Compile Include="Utilities\Enumerator.cs" />
+    <Compile Include="UserInterface\UIElementEnumerator.cs" />
     <Compile Include="Platform\Interop.cs" />
-    <Compile Include="Utilities\RandomNumberGenerator.cs" />
+    <Compile Include="Utilities\RandomNumbers.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringCache.cs" />
     <Compile Include="Views\HudOverlay.cs" />
@@ -287,7 +287,6 @@
     <Compile Include="Platform\Logging\LogEntry.cs" />
     <Compile Include="Platform\Logging\LogFile.cs" />
     <Compile Include="Platform\Logging\LogType.cs" />
-    <Compile Include="Platform\Memory\BufferPointer.cs" />
     <Compile Include="Platform\Memory\BufferReader.cs" />
     <Compile Include="Platform\Memory\BufferWriter.cs" />
     <Compile Include="Platform\Memory\DisposableExtensions.cs" />
@@ -295,15 +294,11 @@
     <Compile Include="Platform\Memory\EndianConverter.cs" />
     <Compile Include="Platform\Memory\Endianess.cs" />
     <Compile Include="Platform\Memory\IPooledObject.cs" />
-    <Compile Include="Platform\Memory\MemCopy.cs" />
     <Compile Include="Platform\Memory\ObjectPool.cs" />
     <Compile Include="Platform\Memory\ObjectPool`1.cs" />
     <Compile Include="Platform\Memory\PinnedPointer.cs" />
     <Compile Include="Platform\Memory\PoolAllocator.cs" />
     <Compile Include="Platform\Memory\PooledObject.cs" />
-    <Compile Include="Platform\PlatformInfo.cs" />
-    <Compile Include="Platform\PlatformLibrary.cs" />
-    <Compile Include="Platform\PlatformType.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="Platform\Window.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -346,9 +341,7 @@
     <Compile Include="Scripting\Parsing\InputStream.cs" />
     <Compile Include="Scripting\Instruction.cs" />
     <Compile Include="Scripting\Interpreter.cs" />
-    <Compile Include="Scripting\Parsing\ParseException.cs" />
     <Compile Include="Scripting\Parsing\Parser.cs" />
-    <Compile Include="Scripting\Parsing\InputStreamState.cs" />
     <Compile Include="Scripting\PersistentAttribute.cs" />
     <Compile Include="Scripting\SystemOnlyAttribute.cs" />
     <Compile Include="Scripting\TypeRegistry.cs" />
@@ -369,9 +362,6 @@
   </ItemGroup>
   <ItemGroup>
     <IL Include="Properties\AssemblyInfo.il" />
-    <IL Include="Platform\Memory\MemCopy.il">
-      <DependentUpon>MemCopy.cs</DependentUpon>
-    </IL>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Assets\Fonts\DefaultFont.font" />
@@ -418,6 +408,9 @@
   <ItemGroup>
     <Font Include="Assets\Fonts\HudFont.font" />
     <None Include="Assets\Shaders\Effects\BloomSettings.glsl" />
+    <IL Include="Platform\Interop.il">
+      <DependentUpon>Interop.cs</DependentUpon>
+    </IL>
     <Shader Include="Assets\Shaders\Sprites\AdditiveSpriteShader.glsl" />
     <None Include="Assets\Shaders\Sprites\Vertices.glsl" />
     <Shader Include="Assets\Shaders\Effects\BlurShader.glsl" />

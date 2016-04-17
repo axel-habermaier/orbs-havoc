@@ -95,7 +95,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <summary>
 		///   Gets an enumerator that can be used to enumerate all logical children of the UI element.
 		/// </summary>
-		protected override Enumerator<UIElement> GetChildren() => Enumerator<UIElement>.Empty;
+		protected override UIElementEnumerator GetChildren() => UIElementEnumerator.Empty;
 
 		/// <summary>
 		///   Computes and returns the desired size of the element given the available space allocated by the parent UI element.

@@ -163,7 +163,7 @@ namespace OrbsHavoc.Gameplay
 
 				if (!player.IsServerPlayer)
 				{
-					var index = RandomNumberGenerator.NextIndex(_availableColors);
+					var index = RandomNumbers.NextIndex(_availableColors);
 					player.Color = _availableColors[index];
 					_availableColors.RemoveAt(index);
 				}

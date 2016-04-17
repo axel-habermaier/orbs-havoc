@@ -220,7 +220,7 @@ namespace OrbsHavoc.Platform.Memory
 		public void WriteInt16(short value)
 		{
 			ValidateCanWrite(2);
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
@@ -234,7 +234,7 @@ namespace OrbsHavoc.Platform.Memory
 		public void WriteUInt16(ushort value)
 		{
 			ValidateCanWrite(2);
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
@@ -258,7 +258,7 @@ namespace OrbsHavoc.Platform.Memory
 		public void WriteInt32(int value)
 		{
 			ValidateCanWrite(4);
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
@@ -274,7 +274,7 @@ namespace OrbsHavoc.Platform.Memory
 		public void WriteUInt32(uint value)
 		{
 			ValidateCanWrite(4);
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
@@ -290,7 +290,7 @@ namespace OrbsHavoc.Platform.Memory
 		public void WriteInt64(long value)
 		{
 			ValidateCanWrite(8);
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
@@ -310,7 +310,7 @@ namespace OrbsHavoc.Platform.Memory
 		public void WriteUInt64(ulong value)
 		{
 			ValidateCanWrite(8);
-			if (_endianess != PlatformInfo.Endianess)
+			if (EndianConverter.RequiresConversion(_endianess))
 				value = EndianConverter.Convert(value);
 
 			Append((byte)value);

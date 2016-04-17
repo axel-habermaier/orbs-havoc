@@ -46,7 +46,7 @@ namespace OrbsHavoc.UserInterface
 		/// <summary>
 		///   Gets a value indicating whether the font supports kerning.
 		/// </summary>
-		public bool KerningSupported => _kernings != null;
+		private bool KerningSupported => _kernings != null;
 
 		/// <summary>
 		///   Gets the line height.
@@ -312,7 +312,7 @@ namespace OrbsHavoc.UserInterface
 		/// <summary>
 		///   Provides the metadata for a glyph used by a font.
 		/// </summary>
-		internal struct Glyph
+		private struct Glyph
 		{
 			/// <summary>
 			///   The number of pixels to advance the drawing cursor after drawing this glyph.
@@ -348,7 +348,7 @@ namespace OrbsHavoc.UserInterface
 		/// <summary>
 		///   A kerning pair stores an position offset for two glyphs.
 		/// </summary>
-		internal struct KerningPair
+		private struct KerningPair
 		{
 			/// <summary>
 			///   The kerning offset.

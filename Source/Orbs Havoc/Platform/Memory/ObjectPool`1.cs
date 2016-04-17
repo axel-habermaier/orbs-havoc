@@ -153,7 +153,7 @@ namespace OrbsHavoc.Platform.Memory
 			if (leakedObjects.Length > 0)
 				Log.Error("Leaked {1} object(s) of type '{0}'.", typeof(T).FullName, leakedObjects.Length);
 
-			if (leakedObjects.Length > 0 && Debugger.IsAttached && PlatformInfo.Platform == PlatformType.Windows)
+			if (leakedObjects.Length > 0 && Debugger.IsAttached)
 				Debugger.Break();
 
 			_allocatedObjects.Clear();

@@ -27,6 +27,7 @@ namespace OrbsHavoc.Views
 	using Assets;
 	using Gameplay.Server;
 	using Network;
+	using Platform;
 	using Platform.Graphics;
 	using Platform.Input;
 	using Platform.Logging;
@@ -50,21 +51,25 @@ namespace OrbsHavoc.Views
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="app">The application the view collection belongs to.</param>
-		public ViewCollection(Application app)
+		/// <param name="window">The application window the view is shown in.</param>
+		/// <param name="inputDevice">The input device that is used to control the view.</param>
+		public ViewCollection(Window window, LogicalInputDevice inputDevice)
 		{
-			Assert.ArgumentNotNull(app, nameof(app));
+			Assert.ArgumentNotNull(window, nameof(window));
+			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
 
-			RootElement = new RootUIElement(app.InputDevice);
+			Window = window;
+			InputDevice = inputDevice;
+
+			RootElement = new RootUIElement(InputDevice);
 			RootElement.InputBindings.Add(new ScanCodeBinding(ToggleConsole, ScanCode.Grave) { Preview = true });
-			RootElement.InputBindings.Add(new KeyBinding(app.Window.ToggleFullscreen, Key.Enter, KeyModifiers.Alt) { Preview = true });
-			RootElement.InputBindings.Add(new KeyBinding(app.Window.ToggleFullscreen, Key.NumpadEnter, KeyModifiers.Alt) { Preview = true });
+			RootElement.InputBindings.Add(new KeyBinding(Window.ToggleFullscreen, Key.Enter, KeyModifiers.Alt) { Preview = true });
+			RootElement.InputBindings.Add(new KeyBinding(Window.ToggleFullscreen, Key.NumpadEnter, KeyModifiers.Alt) { Preview = true });
 
-			Application = app;
-			Application.Window.Closing += Exit;
-			Application.Window.Resized += OnResized;
+			Window.Closing += Exit;
+			Window.Resized += OnResized;
 
-			OnResized(Application.Window.Size);
+			OnResized(Window.Size);
 
 			_views = new View[]
 			{
@@ -89,6 +94,16 @@ namespace OrbsHavoc.Views
 			Commands.OnStartServer += StartHost;
 			Commands.OnStopServer += Host.Stop;
 		}
+
+		/// <summary>
+		///   Gets the application window the view is shown in.
+		/// </summary>
+		public Window Window { get; }
+
+		/// <summary>
+		///   Gets the input device that is used to control the view.
+		/// </summary>
+		public LogicalInputDevice InputDevice { get; }
 
 		/// <summary>
 		///   Gets the event messages.
@@ -129,11 +144,6 @@ namespace OrbsHavoc.Views
 		///   Gets the menu that lets the user start a new game.
 		/// </summary>
 		public StartGameMenu StartGameMenu { get; } = new StartGameMenu();
-
-		/// <summary>
-		///   Gets the application the view collection belongs to.
-		/// </summary>
-		public Application Application { get; }
 
 		/// <summary>
 		///   Gets the waiting-for-server overlay.
@@ -226,7 +236,7 @@ namespace OrbsHavoc.Views
 					view.Update();
 			}
 
-			RootElement.Update(Application.Window.Size);
+			RootElement.Update(Window.Size);
 			Host.CheckForErrors();
 		}
 
@@ -244,13 +254,13 @@ namespace OrbsHavoc.Views
 				{
 					renderer.ClearRenderTarget(_bloomRenderTarget, Colors.Black);
 					Game.Draw(renderer.CreateSpriteBatch(_bloomRenderTarget));
-					renderer.Bloom(_bloomRenderTarget, Application.Window.BackBuffer);
+					renderer.Bloom(_bloomRenderTarget, Window.BackBuffer);
 				}
 				else
-					Game.Draw(renderer.CreateSpriteBatch(Application.Window.BackBuffer));
+					Game.Draw(renderer.CreateSpriteBatch(Window.BackBuffer));
 			}
 
-			RootElement.Draw(renderer.CreateSpriteBatch(Application.Window.BackBuffer));
+			RootElement.Draw(renderer.CreateSpriteBatch(Window.BackBuffer));
 			DrawCursor();
 		}
 
@@ -261,7 +271,7 @@ namespace OrbsHavoc.Views
 		{
 			// Check if the hovered element or any of its parents override the default cursor
 			Cursor cursor = null;
-			var element = RootElement.HitTest(Application.InputDevice.Mouse.Position, boundsTestOnly: true);
+			var element = RootElement.HitTest(InputDevice.Mouse.Position, boundsTestOnly: true);
 
 			while (element != null && cursor == null)
 			{
@@ -284,8 +294,8 @@ namespace OrbsHavoc.Views
 			// Remove all views from the root element so that they can execute cleanup logic
 			RootElement.Clear();
 
-			Application.Window.Closing -= Exit;
-			Application.Window.Resized -= OnResized;
+			Window.Closing -= Exit;
+			Window.Resized -= OnResized;
 			Host.SafeDispose();
 
 			_bloomRenderTarget.SafeDispose();
