@@ -139,7 +139,7 @@ namespace OrbsHavoc.Platform.Graphics
 			long begin, end;
 			glGetQueryObjectui64v(_beginQueries[_syncedIndex], GL_QUERY_RESULT, &begin);
 			glGetQueryObjectui64v(_endQueries[_syncedIndex], GL_QUERY_RESULT, &end);
-			FrameTime = (end - begin) / 1000000.0f;
+			FrameTime = (end - begin) / 1000000.0;
 
 			// Issue timing query for the current frame and allow drawing
 			glQueryCounter(_beginQueries[_syncedIndex], GL_TIMESTAMP);

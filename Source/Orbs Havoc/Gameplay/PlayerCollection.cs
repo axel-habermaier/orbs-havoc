@@ -35,16 +35,6 @@ namespace OrbsHavoc.Gameplay
 	internal sealed class PlayerCollection : DisposableObject
 	{
 		/// <summary>
-		///   The list of active players.
-		/// </summary>
-		private readonly List<Player> _players = new List<Player>();
-
-		/// <summary>
-		///   Indicates whether players are managed in server mode.
-		/// </summary>
-		private readonly bool _serverMode;
-
-		/// <summary>
 		///   The currently available player colors.
 		/// </summary>
 		private readonly List<Color> _availableColors = new List<Color>
@@ -59,6 +49,42 @@ namespace OrbsHavoc.Gameplay
 			new Color(0xFFFFFF00), // yellow
 			new Color(0xFF0050FF), // dark blue
 		};
+
+		/// <summary>
+		///   Compares two players, sorting them by kill count, death count, and name.
+		/// </summary>
+		private readonly Comparer<Player> _playerComparer = Comparer<Player>.Create((x, y) =>
+		{
+			// The server player is always the last one
+			if (x.IsServerPlayer)
+				return 1;
+
+			if (y.IsServerPlayer)
+				return -1;
+
+			// First rank by kills; higher kill count = lower rank
+			var result = x.Kills.CompareTo(y.Kills);
+			if (result != 0)
+				return -result;
+
+			// Then rank by deaths; higher death count = higher rank
+			result = x.Deaths.CompareTo(y.Deaths);
+			if (result != 0)
+				return result;
+
+			// If all else is equal, then rank by name in order to guarantee fixed ranks 
+			return String.Compare(x.Name, y.Name, StringComparison.Ordinal);
+		});
+
+		/// <summary>
+		///   The list of active players.
+		/// </summary>
+		private readonly List<Player> _players = new List<Player>();
+
+		/// <summary>
+		///   Indicates whether players are managed in server mode.
+		/// </summary>
+		private readonly bool _serverMode;
 
 		/// <summary>
 		///   The allocator that is used to allocate network identities for the players.
@@ -209,7 +235,7 @@ namespace OrbsHavoc.Gameplay
 		/// </summary>
 		public void UpdatePlayerRanks()
 		{
-			_players.Sort(PlayerComparer.Instance);
+			_players.Sort(_playerComparer);
 
 			for (var i = 0; i < _players.Count; ++i)
 				_players[i].Rank = i + 1;
@@ -249,34 +275,6 @@ namespace OrbsHavoc.Gameplay
 			}
 
 			return true;
-		}
-
-		private class PlayerComparer : IComparer<Player>
-		{
-			public static readonly PlayerComparer Instance = new PlayerComparer();
-
-			public int Compare(Player x, Player y)
-			{
-				// The server player is always the last one
-				if (x.IsServerPlayer)
-					return 1;
-
-				if (y.IsServerPlayer)
-					return -1;
-
-				// First rank by kills; higher kill count = lower rank
-				var result = x.Kills.CompareTo(y.Kills);
-				if (result != 0)
-					return -result;
-
-				// Then rank by deaths; higher death count = higher rank
-				result = x.Deaths.CompareTo(y.Deaths);
-				if (result != 0)
-					return result;
-
-				// If all else is equal, then rank by name in order to guarantee fixed ranks 
-				return String.Compare(x.Name, y.Name, StringComparison.Ordinal);
-			}
 		}
 	}
 }
