@@ -142,6 +142,19 @@ namespace OrbsHavoc.Rendering
 		}
 
 		/// <summary>
+		///   Copies the given input render target, writing the result to the given output render target.
+		/// </summary>
+		/// <param name="input">The render target that should be copied.</param>
+		/// <param name="output">The render target that should be rendered to.</param>
+		public CopyEffect Copy(RenderTarget input, RenderTarget output)
+		{
+			var operation = AddOperation<CopyEffect>();
+			operation.Input = input;
+			operation.Output = output;
+			return operation;
+		}
+
+		/// <summary>
 		///   Blooms the given input render target, writing the result to the given output render target.
 		/// </summary>
 		/// <param name="input">The render target that should be bloomed.</param>

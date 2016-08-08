@@ -159,6 +159,7 @@
     <Compile Include="Rendering\BloomEffect.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\ClearRenderTarget.cs" />
+    <Compile Include="Rendering\CopyEffect.cs" />
     <Compile Include="Rendering\Particles\SpeedModifier.cs" />
     <Compile Include="Rendering\Particles\VelocityOrientationModifier.cs" />
     <Compile Include="Rendering\Particles\VelocityScaleModifier.cs" />
@@ -412,6 +413,7 @@
       <DependentUpon>Interop.cs</DependentUpon>
     </IL>
     <Shader Include="Assets\Shaders\Sprites\AdditiveSpriteShader.glsl" />
+    <Shader Include="Assets\Shaders\Effects\CopyShader.glsl" />
     <None Include="Assets\Shaders\Sprites\Vertices.glsl" />
     <Shader Include="Assets\Shaders\Effects\BlurShader.glsl" />
     <Shader Include="Assets\Shaders\Effects\CombineBloomShader.glsl" />

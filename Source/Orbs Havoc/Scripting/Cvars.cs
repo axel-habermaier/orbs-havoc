@@ -37,7 +37,7 @@ namespace OrbsHavoc.Scripting
 	internal interface ICvars
 	{
 		/// <summary>
-		///   The screen resolution used by the application in fullscreen mode.
+		///   The screen resolution used by the game in fullscreen mode.
 		/// </summary>
 		[DefaultValue("new Size(1024, 768)"), Persistent, WindowSize]
 		Size Resolution { get; set; }

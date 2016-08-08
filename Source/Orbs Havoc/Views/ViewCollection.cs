@@ -45,8 +45,8 @@ namespace OrbsHavoc.Views
 	internal class ViewCollection : DisposableObject
 	{
 		private readonly View[] _views;
-		private RenderTarget _bloomRenderTarget;
 		private bool _exitMessageBoxOpen;
+		private RenderTarget _gameRenderTarget;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -93,6 +93,7 @@ namespace OrbsHavoc.Views
 
 			Commands.OnStartServer += StartHost;
 			Commands.OnStopServer += Host.Stop;
+			Cvars.ResolutionChanged += OnResolutionChanged;
 		}
 
 		/// <summary>
@@ -250,14 +251,13 @@ namespace OrbsHavoc.Views
 
 			if (Game.IsRunning)
 			{
+				renderer.ClearRenderTarget(_gameRenderTarget, Colors.Black);
+				Game.Draw(renderer.CreateSpriteBatch(_gameRenderTarget));
+
 				if (Cvars.BloomEnabled)
-				{
-					renderer.ClearRenderTarget(_bloomRenderTarget, Colors.Black);
-					Game.Draw(renderer.CreateSpriteBatch(_bloomRenderTarget));
-					renderer.Bloom(_bloomRenderTarget, Window.BackBuffer);
-				}
+					renderer.Bloom(_gameRenderTarget, Window.BackBuffer);
 				else
-					Game.Draw(renderer.CreateSpriteBatch(Window.BackBuffer));
+					renderer.Copy(_gameRenderTarget, Window.BackBuffer);
 			}
 
 			RootElement.Draw(renderer.CreateSpriteBatch(Window.BackBuffer));
@@ -290,6 +290,7 @@ namespace OrbsHavoc.Views
 		{
 			Commands.OnStartServer -= StartHost;
 			Commands.OnStopServer -= Host.Stop;
+			Cvars.ResolutionChanged -= OnResolutionChanged;
 
 			// Remove all views from the root element so that they can execute cleanup logic
 			RootElement.Clear();
@@ -298,8 +299,16 @@ namespace OrbsHavoc.Views
 			Window.Resized -= OnResized;
 			Host.SafeDispose();
 
-			_bloomRenderTarget.SafeDispose();
+			_gameRenderTarget.SafeDispose();
 			_views.SafeDisposeAll();
+		}
+
+		/// <summary>
+		///   Changes the resolution of the game.
+		/// </summary>
+		private void OnResolutionChanged()
+		{
+			OnResized(Cvars.Resolution);
 		}
 
 		/// <summary>
@@ -307,8 +316,20 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private void OnResized(Size size)
 		{
-			_bloomRenderTarget.SafeDispose();
-			_bloomRenderTarget = new RenderTarget(size);
+			_gameRenderTarget.SafeDispose();
+
+			if (Window.Mode == WindowMode.Fullscreen)
+			{
+				if (Cvars.ResolutionCvar.HasExplicitValue)
+					size = Cvars.Resolution;
+				else
+				{
+					size = Window.Size;
+					Cvars.Resolution = size;
+				}
+			}
+
+			_gameRenderTarget = new RenderTarget(size);
 		}
 
 		/// <summary>

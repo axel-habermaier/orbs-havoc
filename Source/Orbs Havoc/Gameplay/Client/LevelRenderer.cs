@@ -163,6 +163,7 @@ namespace OrbsHavoc.Gameplay.Client
 
 			spriteBatch.RenderState.Layer += 1;
 			spriteBatch.RenderState.SamplerState = SamplerState.Point;
+			spriteBatch.RenderState.BlendOperation = BlendOperation.Premultiplied;
 			spriteBatch.Draw(_quads, _quads.Length, AssetBundle.LevelBorders);
 			spriteBatch.RenderState.SamplerState = SamplerState.Bilinear;
 		}

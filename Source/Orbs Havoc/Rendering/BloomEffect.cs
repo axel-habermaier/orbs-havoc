@@ -26,6 +26,7 @@ namespace OrbsHavoc.Rendering
 	using System.Numerics;
 	using System.Runtime.InteropServices;
 	using Assets;
+	using Platform;
 	using Platform.Graphics;
 	using Platform.Memory;
 	using Scripting;
@@ -170,7 +171,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		internal override unsafe void Execute()
 		{
-			var size = Renderer.Window.Size;
+			var size = Input.Size;
 			var bloomQuality = GetRenderTargetSizeFactor();
 
 			if (_temporaryTarget1 == null || _temporaryTarget1.Size != size / bloomQuality)

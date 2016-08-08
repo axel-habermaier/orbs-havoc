@@ -76,6 +76,12 @@ namespace OrbsHavoc.Scripting
 		}
 
 		/// <summary>
+		///   Gets a value indicating whether the cvar's value has been set explicitly. If false, the cvar has its default value. This
+		///   property is also true if the cvar's default value has been set explicitly.
+		/// </summary>
+		public bool HasExplicitValue { get; private set; }
+
+		/// <summary>
 		///   Gets or sets the value of the cvar.
 		/// </summary>
 		public T Value
@@ -159,6 +165,7 @@ namespace OrbsHavoc.Scripting
 				return;
 
 			UpdateValue(value, setByUser);
+			HasExplicitValue = true;
 		}
 
 		/// <summary>
