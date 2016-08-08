@@ -36,8 +36,8 @@ namespace OrbsHavoc.Scripting
 
 	/// <summary>
 	///   Manages the types that can be used for command parameters and cvar values. All enumerations types as well as most C#
-	///   built-in types and common .NET and Pegasus framework types are supported automatically. Enumeration types can also be
-	///   registered, in which case they overwrite the defaults.
+	///   built-in types and common .NET types are supported automatically. Enumeration types can also be registered, in which case
+	///   they overwrite the defaults.
 	/// </summary>
 	public static class TypeRegistry
 	{
@@ -65,8 +65,7 @@ namespace OrbsHavoc.Scripting
 			Register(ParseFloat64, "64-bit floating point number", d => d.ToString("F"), "-17.1", "0.0", "17");
 			Register(ParseQuotedString, "string", null, "\"\"", "word", "\"multiple words\"", "\"escaped quote: \\\"\"");
 
-			// Register default Pegasus framework types
-			Register(ParseIPAddress, "IPv4 or IPv6 address", null, "localhost", "::1", "127.0.0.1");
+			// Register some additional common types
 			Register(ParseVector2, null, s => $"{s.X};{s.Y}", "0;0", "-10;10.5");
 			Register(ParseSize, null, s => $"{s.Width}x{s.Height}", "0x0", "-10x10.5", "1920x1200");
 			Register(ParseEnumerationLiteral<WindowMode>, null, null);

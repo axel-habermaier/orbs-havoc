@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Views
 {
 	using System;
-	using System.Net;
 	using System.Text;
 	using Assets;
 	using Gameplay.Server;
@@ -222,7 +221,7 @@ namespace OrbsHavoc.Views
 				return;
 
 			if (Views.TryStartHost(ServerName, ServerPort.Value))
-				Commands.Connect(IPAddress.IPv6Loopback, ServerPort.Value);
+				Commands.Connect("::1", ServerPort.Value);
 		}
 	}
 }

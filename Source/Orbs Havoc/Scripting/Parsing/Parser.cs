@@ -255,39 +255,6 @@ namespace OrbsHavoc.Scripting.Parsing
 		}
 
 		/// <summary>
-		///   Parses an IPv4 or IPv6 address.
-		/// </summary>
-		public static IPAddress ParseIPAddress(InputStream inputStream)
-		{
-			var position = inputStream.Position;
-
-			// Check for the 'localhost' keyword first
-			if (IsKeyword(inputStream, "localhost"))
-				return IPAddress.IPv6Loopback;
-
-			// Try to find out whether it is an IPv4 or IPv6 address
-			var ipv4 = inputStream.Skip(c => c != '.');
-			inputStream.Position = position;
-			var ipv6 = inputStream.Skip(c => c != ':');
-			inputStream.Position = position;
-
-			var isIPv6 = ipv6 < ipv4;
-			int length;
-
-			if (isIPv6)
-				length = inputStream.Skip(c => Char.IsDigit(c) || c == ':' || c == '.' || c == '%' ||
-											   (Char.ToLower(c) >= 'a' && Char.ToLower(c) <= 'f'));
-			else
-				length = inputStream.Skip(c => Char.IsDigit(c) || c == '.');
-
-			IPAddress address;
-			if (IPAddress.TryParse(inputStream.Substring(position, length), out address))
-				return address;
-
-			throw new ParseException(inputStream, "Expected an IP address (either IPv4 or IPv6).");
-		}
-
-		/// <summary>
 		///   Parses a size value of the format 100x100.
 		/// </summary>
 		public static Size ParseSize(InputStream inputStream)

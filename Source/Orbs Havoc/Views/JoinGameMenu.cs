@@ -48,24 +48,13 @@ namespace OrbsHavoc.Views
 		private readonly List<ServerInfo> _discoveredServers = new List<ServerInfo>();
 		private readonly Panel _serversPanel = new StackPanel();
 		private TextBox _address;
+		private bool _connecting;
 		private UIElement _invalidAddress;
 		private UIElement _invalidPort;
 		private bool _isFaulted;
 		private bool _panelDirty;
 		private TextBox _port;
 		private Socket _socket;
-
-		/// <summary>
-		///   Gets the server name entered by the user or null if the name is invalid.
-		/// </summary>
-		private IPAddress ServerAddress
-		{
-			get
-			{
-				IPAddress address;
-				return IPAddress.TryParse(_address.Text, out address) ? address : null;
-			}
-		}
 
 		/// <summary>
 		///   Gets the server port entered by the user or null if the port is invalid.
@@ -92,11 +81,7 @@ namespace OrbsHavoc.Views
 				AutoFocus = true,
 				InputBindings =
 				{
-					new KeyBinding(() =>
-					{
-						Hide();
-						Views.MainMenu.Show();
-					}, Key.Escape)
+					new KeyBinding(Close, Key.Escape)
 				},
 				Child = new StackPanel
 				{
@@ -129,13 +114,14 @@ namespace OrbsHavoc.Views
 									Column = 1,
 									Margin = new Thickness(5, 0, 0, 5),
 									Width = 200,
-									MaxLength = NetworkProtocol.ServerNameLength
+									MaxLength = NetworkProtocol.ServerNameLength,
+									TextChanged = OnServerAddressChanged
 								}),
 								(_invalidAddress = new Label
 								{
 									Row = 1,
 									Column = 1,
-									Text = $"Expected a valid IPv4 or IPv6 address (e.g., {String.Join(", ", TypeRegistry.GetExamples<IPAddress>())}).",
+									Text = "Expected a valid server name.",
 									Margin = new Thickness(5, 0, 0, 5),
 									Foreground = Colors.Red,
 									VerticalAlignment = VerticalAlignment.Center,
@@ -157,7 +143,7 @@ namespace OrbsHavoc.Views
 									Column = 1,
 									Margin = new Thickness(5, 0, 0, 5),
 									Width = 200,
-									MaxLength = NetworkProtocol.ServerNameLength,
+									MaxLength = 5,
 									TextChanged = OnPortChanged
 								}),
 								(_invalidPort = new Label
@@ -165,8 +151,7 @@ namespace OrbsHavoc.Views
 									Width = 200,
 									Row = 3,
 									Column = 1,
-									Text = $"Expected a value of type {TypeRegistry.GetDescription<ushort>()} (e.g., " +
-										   $"{String.Join(", ", TypeRegistry.GetExamples<ushort>())})",
+									Text = "Expected a valid server port.",
 									Margin = new Thickness(5, 0, 0, 5),
 									Foreground = Colors.Red,
 									TextWrapping = TextWrapping.Wrap,
@@ -222,11 +207,19 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
+		///   Invoked when the user entered another server address.
+		/// </summary>
+		private void OnServerAddressChanged(string port)
+		{
+			_invalidAddress.Visibility = String.IsNullOrWhiteSpace(_address.Text) ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		/// <summary>
 		///   Invoked when the view should be activated.
 		/// </summary>
 		protected override void Activate()
 		{
-			_address.Text = "::1";
+			_connecting = false;
 			_port.Text = NetworkProtocol.DefaultServerPort.ToString();
 			_invalidAddress.Visibility = Visibility.Collapsed;
 			_invalidPort.Visibility = Visibility.Collapsed;
@@ -308,10 +301,26 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private void Connect()
 		{
-			if (ServerAddress != null && ServerPort != null)
-				Commands.Connect(ServerAddress, ServerPort.Value);
+			if (_connecting)
+				return;
+
+			if (!String.IsNullOrWhiteSpace(_address.Text) && ServerPort != null)
+			{
+				_connecting = true;
+				Close();
+				Commands.Connect(_address.Text, ServerPort.Value);
+			}
 			else
-				_invalidAddress.Visibility = ServerAddress == null ? Visibility.Visible : Visibility.Collapsed;
+				_invalidAddress.Visibility = String.IsNullOrWhiteSpace(_address.Text) ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		/// <summary>
+		///   Closes the view.
+		/// </summary>
+		private void Close()
+		{
+			Hide();
+			Views.MainMenu.Show();
 		}
 
 		/// <summary>
@@ -331,7 +340,7 @@ namespace OrbsHavoc.Views
 				{
 					Content = new Label { Text = $"{server.Name} @ {server.EndPoint}", TextWrapping = TextWrapping.Wrap },
 					Margin = new Thickness(0, 2, 0, 2),
-					Click = () => Commands.Connect(server.EndPoint.Address, (ushort)server.EndPoint.Port)
+					Click = () => Commands.Connect(server.EndPoint.Address.ToString(), (ushort)server.EndPoint.Port)
 				});
 			}
 		}

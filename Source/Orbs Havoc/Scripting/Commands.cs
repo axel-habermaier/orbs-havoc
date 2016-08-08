@@ -138,9 +138,9 @@ namespace OrbsHavoc.Scripting
 		/// <summary>
 		///   Connects to a game session on a remote or local server.
 		/// </summary>
-		/// <param name="ipAddress">The IP address of the server.</param>
+		/// <param name="serverAddress">The IP address or name of the server.</param>
 		/// <param name="port">The port of the server.</param>
-		void Connect(IPAddress ipAddress, ushort port = NetworkProtocol.DefaultServerPort);
+		void Connect([NotEmpty] string serverAddress, ushort port = NetworkProtocol.DefaultServerPort);
 
 		/// <summary>
 		///   Disconnects from the current game session.

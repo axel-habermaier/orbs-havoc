@@ -23,6 +23,7 @@
 namespace OrbsHavoc.Views
 {
 	using System.Net;
+	using System.Net.Sockets;
 	using System.Numerics;
 	using System.Threading;
 	using Assets;
@@ -67,11 +68,6 @@ namespace OrbsHavoc.Views
 		///   Gets the currently active game session.
 		/// </summary>
 		public GameSession GameSession { get; private set; }
-
-		/// <summary>
-		///   Gets the remote end point of the server.
-		/// </summary>
-		public IPEndPoint ServerEndPoint { get; private set; }
 
 		/// <summary>
 		///   Gets a value indicating whether a game session is currently running.
@@ -119,7 +115,7 @@ namespace OrbsHavoc.Views
 					if (!_clientLogic.IsSynced)
 						return;
 
-					Log.Info("Loading completed and game state synced. Now connected to game session hosted by {0}.", ServerEndPoint);
+					Log.Info("Loading completed and game state synced. Now connected to game session hosted by {0}.", Connection.RemoteEndPoint);
 					Views.LoadingOverlay.Hide();
 
 					// Resend player name, as it might have been changed during the connection attempt
@@ -164,7 +160,7 @@ namespace OrbsHavoc.Views
 				Commands.Disconnect();
 
 				if (!wasSynced)
-					Views.MessageBoxes.ShowError("Connection Failed", $"Unable to connect to {ServerEndPoint}. The connection attempt timed out.");
+					Views.MessageBoxes.ShowError("Connection Failed", $"Unable to connect to the server. The connection attempt timed out.");
 				else
 					Views.MessageBoxes.ShowError("Connection Lost", "The connection to the server has been lost.");
 			}
@@ -235,7 +231,7 @@ namespace OrbsHavoc.Views
 		/// <summary>
 		///   Invoked when the client should connect to a game session.
 		/// </summary>
-		private void Connect(IPAddress serverAddress, ushort serverPort)
+		private void Connect(string serverAddress, ushort serverPort)
 		{
 			if (_clientLogic != null)
 			{
@@ -246,10 +242,28 @@ namespace OrbsHavoc.Views
 				Thread.Sleep(75);
 			}
 
-			ServerEndPoint = new IPEndPoint(serverAddress, serverPort);
+			// We always use the first address, which might be problematic for internet play
+			// but should not be a problem in a local area network
+			IPEndPoint endpoint;
+			try
+			{
+				var ipAddresses = Dns.GetHostAddresses(serverAddress);
+				if (ipAddresses == null || ipAddresses.Length == 0)
+				{
+					Views.MessageBoxes.ShowError("Connection Error", "The specified server address could not be resolved.");
+					return;
+				}
+
+				endpoint = new IPEndPoint(ipAddresses[0], serverPort);
+			}
+			catch (SocketException e)
+			{
+				Views.MessageBoxes.ShowError("Connection Error", $"The connection attempt has been aborted due to a network error: {e.GetMessage()}");
+				return;
+			}
 
 			GameSession = new GameSession(_allocator);
-			Connection = Connection.Create(_allocator, ServerEndPoint);
+			Connection = Connection.Create(_allocator, endpoint);
 
 			_clientLogic = new ClientLogic(_allocator, GameSession, Views);
 
@@ -259,7 +273,7 @@ namespace OrbsHavoc.Views
 			Show();
 			Views.EventMessages.Show();
 
-			Views.LoadingOverlay.Load(ServerEndPoint);
+			Views.LoadingOverlay.Load(Connection.RemoteEndPoint);
 		}
 
 		/// <summary>
