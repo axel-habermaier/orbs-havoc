@@ -178,7 +178,7 @@ namespace OrbsHavoc.Scripting
 		/// <summary>
 		///   Determines the quality of the bloom effect, if enabled.
 		/// </summary>
-		[DefaultValue(QualityLevel.High), Persistent]
+		[DefaultValue(QualityLevel.Medium), Persistent]
 		QualityLevel BloomQuality { get; set; }
 	}
 }
