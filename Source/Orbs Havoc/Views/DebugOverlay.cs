@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Views
 {
 	using System;
-	using Platform;
 	using Rendering;
 	using Scripting;
 	using UserInterface;
@@ -43,9 +42,10 @@ namespace OrbsHavoc.Views
 		/// <summary>
 		///   The number of measurements that are used to calculate an average.
 		/// </summary>
-		private const int AverageSampleCount = 16;
+		private const int AverageSampleCount = 32;
 
 		private readonly Label _cpuTimeLabel = new Label();
+		private readonly Label _fpsLabel = new Label();
 		private readonly WeakReference _gcCheck = new WeakReference(new object());
 		private readonly Label _gcLabel = new Label { Text = "0" };
 		private readonly Label _gpuTimeLabel = new Label();
@@ -55,6 +55,7 @@ namespace OrbsHavoc.Views
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuRenderTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuUpdateTime = new AveragedDouble(AverageSampleCount);
+		private AveragedDouble _fps = new AveragedDouble(AverageSampleCount);
 		private int _garbageCollections;
 		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
@@ -108,6 +109,7 @@ namespace OrbsHavoc.Views
 #endif
 						CreateLine("VSync:       ", _vsyncLabel, margin),
 						CreateLine("# of GCs:    ", _gcLabel, 5 * margin),
+						CreateLine("FPS:         ", _fpsLabel, margin),
 						CreateLine("GPU Time:    ", _gpuTimeLabel, "ms", margin),
 						CreateLine("CPU Time:    ", _cpuTimeLabel, "ms", margin),
 						CreateLine("Update Time: ", _updateTimeLabel, "ms", margin),
@@ -163,6 +165,11 @@ namespace OrbsHavoc.Views
 			}
 
 			_cpuFrameTime.AddMeasurement(_cpuUpdateTime.LastValue + _cpuRenderTime.LastValue);
+
+			var frameTime = Math.Max(_cpuFrameTime.LastValue, _gpuFrameTime.LastValue);
+			if (frameTime > 0.0)
+				_fps.AddMeasurement(1.0 / frameTime * 1000);
+
 			_timer.Update();
 
 			RootElement.Visibility = Cvars.ShowDebugOverlay ? Visibility.Visible : Visibility.Collapsed;
@@ -176,6 +183,7 @@ namespace OrbsHavoc.Views
 			if (!Cvars.ShowDebugOverlay)
 				return;
 
+			_fpsLabel.Text = StringCache.GetString((int)Math.Round(_fps.Average));
 			_gpuTimeLabel.Text = StringCache.GetString(_gpuFrameTime.Average);
 			_cpuTimeLabel.Text = StringCache.GetString(_cpuFrameTime.Average);
 			_updateTimeLabel.Text = StringCache.GetString(_cpuUpdateTime.Average);
