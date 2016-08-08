@@ -81,7 +81,9 @@ namespace OrbsHavoc.Views
 				AutoFocus = true,
 				InputBindings =
 				{
-					new KeyBinding(Close, Key.Escape)
+					new KeyBinding(Close, Key.Escape),
+					new KeyBinding(Connect, Key.Enter),
+					new KeyBinding(Connect, Key.NumpadEnter)
 				},
 				Child = new StackPanel
 				{
