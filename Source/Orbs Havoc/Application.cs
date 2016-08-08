@@ -87,49 +87,56 @@ namespace OrbsHavoc
 
 				while (running)
 				{
-					double updateTime, drawTime;
+					double frameTime;
 
-					// Perform the necessary updates for the frame
-					using (TimeMeasurement.Measure(&updateTime))
+					using (TimeMeasurement.Measure(&frameTime))
 					{
-						// Process all pending operating system events
-						window.HandleEvents();
+						double updateTime, drawTime;
 
-						// Update the logical inputs based on the new state of the input system as well as the bindings
-						inputDevice.Update();
-						bindings.Update();
+						// Perform the necessary updates for the frame
+						using (TimeMeasurement.Measure(&updateTime))
+						{
+							// Process all pending operating system events
+							window.HandleEvents();
 
-						// Update the views
-						views.Update();
+							// Update the logical inputs based on the new state of the input system as well as the bindings
+							inputDevice.Update();
+							bindings.Update();
+
+							// Update the views
+							views.Update();
+						}
+
+						// Ensure that CPU and GPU are synchronized after this point, i.e., the GPU lags behind by
+						// at most GraphicsDevice.FrameLag frames
+						graphicsDevice.SyncWithCpu();
+
+						// Draw the current frame
+						using (TimeMeasurement.Measure(&drawTime))
+						{
+							graphicsDevice.BeginFrame();
+
+							renderer.ClearRenderTarget(window.BackBuffer, Colors.Black);
+							views.Draw(renderer);
+							renderer.Render();
+
+							graphicsDevice.EndFrame();
+						}
+
+						// Present the contents of the window's backbuffer
+						window.Present();
+
+						// Save CPU when the window is not focused
+						if (!window.HasFocus)
+							Thread.Sleep(10);
+
+						// Update the debug overlay
+						views.DebugOverlay.GpuFrameTime = graphicsDevice.FrameTime;
+						views.DebugOverlay.CpuUpdateTime = updateTime;
+						views.DebugOverlay.CpuRenderTime = drawTime;
 					}
 
-					// Ensure that CPU and GPU are synchronized after this point, i.e., the GPU lags behind by
-					// at most GraphicsDevice.FrameLag frames
-					graphicsDevice.SyncWithCpu();
-
-					// Draw the current frame
-					using (TimeMeasurement.Measure(&drawTime))
-					{
-						graphicsDevice.BeginFrame();
-
-						renderer.ClearRenderTarget(window.BackBuffer, Colors.Black);
-						views.Draw(renderer);
-						renderer.Render();
-
-						graphicsDevice.EndFrame();
-					}
-
-					// Present the contents of the window's backbuffer
-					window.Present();
-
-					// Save CPU when the window is not focused
-					if (!window.HasFocus)
-						Thread.Sleep(10);
-
-					// Update the debug overlay
-					views.DebugOverlay.GpuFrameTime = graphicsDevice.FrameTime;
-					views.DebugOverlay.CpuUpdateTime = updateTime;
-					views.DebugOverlay.CpuRenderTime = drawTime;
+					views.DebugOverlay.CpuFrameTime = frameTime;
 				}
 			}
 		}

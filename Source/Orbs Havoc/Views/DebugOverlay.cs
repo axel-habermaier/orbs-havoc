@@ -55,10 +55,20 @@ namespace OrbsHavoc.Views
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuRenderTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuUpdateTime = new AveragedDouble(AverageSampleCount);
-		private AveragedDouble _fps = new AveragedDouble(AverageSampleCount);
 		private int _garbageCollections;
 		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
+
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		public DebugOverlay()
+		{
+			_cpuFrameTime.AddMeasurement(0.016);
+			_cpuRenderTime.AddMeasurement(0.016);
+			_cpuUpdateTime.AddMeasurement(0.016);
+			_gpuFrameTime.AddMeasurement(0.016);
+		}
 
 		/// <summary>
 		///   Sets the GPU frame time in milliseconds that is displayed by the debug overlay.
@@ -66,6 +76,14 @@ namespace OrbsHavoc.Views
 		internal double GpuFrameTime
 		{
 			set { _gpuFrameTime.AddMeasurement(value); }
+		}
+
+		/// <summary>
+		///   Sets the CPU frame time in milliseconds that is displayed by the debug overlay.
+		/// </summary>
+		internal double CpuFrameTime
+		{
+			set { _cpuFrameTime.AddMeasurement(value); }
 		}
 
 		/// <summary>
@@ -92,6 +110,7 @@ namespace OrbsHavoc.Views
 			const float margin = 3;
 			RootElement = new Border
 			{
+				MinWidth = 165,
 				IsHitTestVisible = false,
 				Margin = new Thickness(5),
 				Background = new Color(0xAA000000),
@@ -164,14 +183,7 @@ namespace OrbsHavoc.Views
 				_gcCheck.Target = new object();
 			}
 
-			_cpuFrameTime.AddMeasurement(_cpuUpdateTime.LastValue + _cpuRenderTime.LastValue);
-
-			var frameTime = Math.Max(_cpuFrameTime.LastValue, _gpuFrameTime.LastValue);
-			if (frameTime > 0.0)
-				_fps.AddMeasurement(1.0 / frameTime * 1000);
-
 			_timer.Update();
-
 			RootElement.Visibility = Cvars.ShowDebugOverlay ? Visibility.Visible : Visibility.Collapsed;
 		}
 
@@ -183,7 +195,7 @@ namespace OrbsHavoc.Views
 			if (!Cvars.ShowDebugOverlay)
 				return;
 
-			_fpsLabel.Text = StringCache.GetString((int)Math.Round(_fps.Average));
+			_fpsLabel.Text = StringCache.GetString((int)Math.Round(1.0 / _cpuFrameTime.Average * 1000));
 			_gpuTimeLabel.Text = StringCache.GetString(_gpuFrameTime.Average);
 			_cpuTimeLabel.Text = StringCache.GetString(_cpuFrameTime.Average);
 			_updateTimeLabel.Text = StringCache.GetString(_cpuUpdateTime.Average);
