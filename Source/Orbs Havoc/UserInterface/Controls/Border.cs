@@ -170,7 +170,12 @@ namespace OrbsHavoc.UserInterface.Controls
 
 			if (Background != Colors.Transparent)
 			{
-				var backgroundArea = new Rectangle(area.Left + 1, area.Top + 1, area.Width - 2, area.Height - 2);
+				// If we have a border, make sure the background and the border do not overlap; otherwise, 
+				// draw the background into the border area
+				var backgroundArea = BorderColor == Colors.Transparent
+					? area
+					: new Rectangle(area.Left + 1, area.Top + 1, area.Width - 2, area.Height - 2);
+
 				spriteBatch.Draw(backgroundArea, Background);
 			}
 
