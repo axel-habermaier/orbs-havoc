@@ -78,7 +78,9 @@ namespace OrbsHavoc.Views
 					{
 						Hide();
 						Views.MainMenu.Show();
-					}, Key.Escape)
+					}, Key.Escape),
+					new KeyBinding(StartGame, Key.Enter),
+					new KeyBinding(StartGame, Key.NumpadEnter)
 				},
 				Child = new StackPanel
 				{
