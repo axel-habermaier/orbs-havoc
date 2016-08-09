@@ -134,6 +134,8 @@ namespace OrbsHavoc
 						views.DebugOverlay.GpuFrameTime = graphicsDevice.FrameTime;
 						views.DebugOverlay.CpuUpdateTime = updateTime;
 						views.DebugOverlay.CpuRenderTime = drawTime;
+						views.DebugOverlay.VertexCount = renderer.VertexCount;
+						views.DebugOverlay.DrawCalls = renderer.DrawCalls;
 					}
 
 					views.DebugOverlay.CpuFrameTime = frameTime;

@@ -56,7 +56,7 @@ namespace OrbsHavoc.Rendering
 			// does not require any inputs. Unfortunately, OpenGL raises an error when no vertex layout
 			// is bound, so let's just bind the render buffer
 			Renderer.RenderBuffer.Bind();
-			renderTarget.Draw(3, 0);
+			Renderer.Draw(renderTarget, 3, 0);
 		}
 	}
 }

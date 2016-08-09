@@ -163,13 +163,15 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <summary>
 		///   Binds the render target for rendering.
 		/// </summary>
-		private void Bind()
+		public void Bind()
 		{
 			if (IsBackBuffer && Change(ref State.Window, _window))
 				_window.MakeCurrent();
 
 			if (Change(ref State.RenderTarget, this))
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _renderTarget);
+
+			SetViewport();
 		}
 
 		/// <summary>
@@ -185,56 +187,6 @@ namespace OrbsHavoc.Platform.Graphics
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			CheckErrors();
-		}
-
-		/// <summary>
-		///   Sets up and validates the required GPU state for a draw call.
-		/// </summary>
-		private void BeforeDraw()
-		{
-			Bind();
-			SetViewport();
-			State.Validate();
-
-			glBindVertexArray(State.VertexLayout);
-			CheckErrors();
-		}
-
-		/// <summary>
-		///   Sets up and validates the GPU state after a draw call.
-		/// </summary>
-		private static void AfterDraw()
-		{
-			glBindVertexArray(0);
-			CheckErrors();
-		}
-
-		/// <summary>
-		///   Draws primitiveCount-many primitives, starting at the given offset into the currently bound vertex buffers.
-		/// </summary>
-		/// <param name="vertexCount">The number of vertices that should be drawn.</param>
-		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
-		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
-		public void Draw(int vertexCount, int vertexOffset, int primitiveType = GL_TRIANGLES)
-		{
-			BeforeDraw();
-			glDrawArrays(primitiveType, vertexOffset, vertexCount); 
-			AfterDraw();
-		}
-
-		/// <summary>
-		///   Draws indexCount-many indices, starting at the given index offset into the currently bound index buffer, where the
-		///   vertex offset is added to each index before accessing the currently bound vertex buffers.
-		/// </summary>
-		/// <param name="indexCount">The number of indices to draw.</param>
-		/// <param name="indexOffset">The location of the first index read by the GPU from the index buffer.</param>
-		/// <param name="vertexOffset">The value that should be added to each index before reading a vertex from the vertex buffer.</param>
-		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
-		public void DrawIndexed(int indexCount, int indexOffset, int vertexOffset, int primitiveType = GL_TRIANGLES)
-		{
-			BeforeDraw();
-			glDrawElementsBaseVertex(primitiveType, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
-			AfterDraw();
 		}
 
 		/// <summary>

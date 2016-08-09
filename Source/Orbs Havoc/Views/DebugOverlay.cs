@@ -45,17 +45,21 @@ namespace OrbsHavoc.Views
 		private const int AverageSampleCount = 32;
 
 		private readonly Label _cpuTimeLabel = new Label();
+		private readonly Label _drawCallsLabel = new Label();
 		private readonly Label _fpsLabel = new Label();
 		private readonly Label[] _gcLabels = new Label[GC.MaxGeneration + 1];
 		private readonly Label _gpuTimeLabel = new Label();
 		private readonly Label _renderTimeLabel = new Label();
 		private readonly Label _updateTimeLabel = new Label();
+		private readonly Label _vertexCountLabel = new Label();
 		private readonly Label _vsyncLabel = new Label { Text = Cvars.Vsync.ToString().ToLower() };
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuRenderTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuUpdateTime = new AveragedDouble(AverageSampleCount);
-		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
+		private AveragedDouble _drawCalls = new AveragedDouble(AverageSampleCount / 2);
+		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount / 2);
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
+		private AveragedDouble _vertexCount = new AveragedDouble(AverageSampleCount);
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -69,6 +73,22 @@ namespace OrbsHavoc.Views
 
 			for (var i = 0; i < _gcLabels.Length; ++i)
 				_gcLabels[i] = new Label { Text = "0" };
+		}
+
+		/// <summary>
+		///   Sets number of draw calls drawn during the last frame that is displayed by the debug overlay.
+		/// </summary>
+		internal int DrawCalls
+		{
+			set { _drawCalls.AddMeasurement(value); }
+		}
+
+		/// <summary>
+		///   Sets the number of vertices drawn during the last frame that is displayed by the debug overlay.
+		/// </summary>
+		internal int VertexCount
+		{
+			set { _vertexCount.AddMeasurement(value); }
 		}
 
 		/// <summary>
@@ -121,7 +141,7 @@ namespace OrbsHavoc.Views
 
 			RootElement = new Border
 			{
-				MinWidth = 165,
+				MinWidth = 170,
 				IsHitTestVisible = false,
 				Margin = new Thickness(5),
 				Background = new Color(0xAA000000),
@@ -133,17 +153,19 @@ namespace OrbsHavoc.Views
 					Children =
 					{
 #if DEBUG
-						CreateLine("Debug Mode:  ", new Label { Text = "true" }, margin),
+						CreateLine("Debug Build:  ", new Label { Text = "true" }, margin),
 #else
-						CreateLine("Debug Mode:  ", new Label { Text = "false" }, margin),
+						CreateLine("Debug Build:  ", new Label { Text = "false" }, margin),
 #endif
-						CreateLine("VSync:       ", _vsyncLabel, margin),
-						CreateLine("# of GCs:    ", gcPanel, 5 * margin),
-						CreateLine("FPS:         ", _fpsLabel, margin),
-						CreateLine("GPU Time:    ", _gpuTimeLabel, "ms", margin),
-						CreateLine("CPU Time:    ", _cpuTimeLabel, "ms", margin),
-						CreateLine("Update Time: ", _updateTimeLabel, "ms", margin),
-						CreateLine("Render Time: ", _renderTimeLabel, "ms", 0)
+						CreateLine("VSync:        ", _vsyncLabel, margin),
+						CreateLine("# GCs:        ", gcPanel, margin),
+						CreateLine("# Draw Calls: ", _drawCallsLabel, margin),
+						CreateLine("# Vertices:   ", _vertexCountLabel, 5 * margin),
+						CreateLine("FPS:          ", _fpsLabel, margin),
+						CreateLine("GPU Time:     ", _gpuTimeLabel, "ms", margin),
+						CreateLine("CPU Time:     ", _cpuTimeLabel, "ms", margin),
+						CreateLine("Update Time:  ", _updateTimeLabel, "ms", margin),
+						CreateLine("Render Time:  ", _renderTimeLabel, "ms", 0)
 					}
 				}
 			};
@@ -204,6 +226,8 @@ namespace OrbsHavoc.Views
 			_cpuTimeLabel.Text = StringCache.GetString(_cpuFrameTime.Average);
 			_updateTimeLabel.Text = StringCache.GetString(_cpuUpdateTime.Average);
 			_renderTimeLabel.Text = StringCache.GetString(_cpuRenderTime.Average);
+			_drawCallsLabel.Text = StringCache.GetString((int)Math.Round(_drawCalls.Average));
+			_vertexCountLabel.Text = StringCache.GetString((int)Math.Round(_vertexCount.Average));
 
 			for (var i = 0; i < _gcLabels.Length; ++i)
 				_gcLabels[i].Text = StringCache.GetString(GC.CollectionCount(i));

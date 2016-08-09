@@ -43,7 +43,6 @@ namespace OrbsHavoc.Rendering
 		private readonly ObjectPool<QuadPartition> _pooledPartitions = new ObjectPool<QuadPartition>();
 		private readonly Quad* _quads;
 		private readonly int _sizeInBytes = sizeof(Quad) * MaxQuads;
-		private int _count;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -53,6 +52,11 @@ namespace OrbsHavoc.Rendering
 			_quads = (Quad*)Marshal.AllocHGlobal(_sizeInBytes).ToPointer();
 			GC.AddMemoryPressure(_sizeInBytes);
 		}
+
+		/// <summary>
+		///   Gets the number of quads contained in the collection.
+		/// </summary>
+		public int Count { get; private set; }
 
 		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
@@ -71,7 +75,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public void Clear()
 		{
-			_count = 0;
+			Count = 0;
 			_partitions.SafeDisposeAll();
 			_partitions.Clear();
 		}
@@ -90,10 +94,10 @@ namespace OrbsHavoc.Rendering
 			Assert.ArgumentSatisfies(count > 0, nameof(count), "At least one quad must be added.");
 
 			CheckQuadCount(count);
-			partition.AddQuads(offset: _count, count: count);
+			partition.AddQuads(offset: Count, count: count);
 
-			var quads = &_quads[_count];
-			_count += count;
+			var quads = &_quads[Count];
+			Count += count;
 			return quads;
 		}
 
@@ -117,7 +121,7 @@ namespace OrbsHavoc.Rendering
 		internal void UploadToGpu(RenderBuffer buffer)
 		{
 			var offset = 0;
-			var gpuBuffer = buffer.Map(_count * sizeof(Quad));
+			var gpuBuffer = buffer.Map(Count * sizeof(Quad));
 
 			foreach (var partition in _partitions)
 				partition.UploadQuads(_quads, gpuBuffer, ref offset);
@@ -134,7 +138,7 @@ namespace OrbsHavoc.Rendering
 			Assert.ArgumentInRange(quadCount, 0, MaxQuads, nameof(quadCount));
 
 			// Check whether we would overflow if we added the given batch.
-			var tooManyQuads = _count + quadCount >= MaxQuads;
+			var tooManyQuads = Count + quadCount >= MaxQuads;
 			if (tooManyQuads)
 				Log.Die("Out of memory while trying to {0} add additional quads.", quadCount);
 		}
