@@ -25,6 +25,7 @@ namespace OrbsHavoc.Platform.Graphics
 	using System;
 	using Logging;
 	using Memory;
+	using Utilities;
 	using static GraphicsHelpers;
 	using static OpenGL3;
 	using static SDL2;
@@ -149,9 +150,57 @@ namespace OrbsHavoc.Platform.Graphics
 		}
 
 		/// <summary>
+		///   Sets up and validates the required GPU state for a draw call.
+		/// </summary>
+		private static void BeforeDraw()
+		{
+			State.Validate();
+
+			glBindVertexArray(State.VertexLayout);
+			CheckErrors();
+		}
+
+		/// <summary>
+		///   Sets up and validates the GPU state after a draw call.
+		/// </summary>
+		private static void AfterDraw()
+		{
+			glBindVertexArray(0);
+			CheckErrors();
+		}
+
+		/// <summary>
+		///   Draws primitiveCount-many primitives, starting at the given offset into the currently bound vertex buffers.
+		/// </summary>
+		/// <param name="vertexCount">The number of vertices that should be drawn.</param>
+		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
+		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
+		public void Draw(int vertexCount, int vertexOffset, PrimitiveType primitiveType)
+		{
+			BeforeDraw();
+			glDrawArrays((int)primitiveType, vertexOffset, vertexCount);
+			AfterDraw();
+		}
+
+		/// <summary>
+		///   Draws indexCount-many indices, starting at the given index offset into the currently bound index buffer, where the
+		///   vertex offset is added to each index before accessing the currently bound vertex buffers.
+		/// </summary>
+		/// <param name="indexCount">The number of indices to draw.</param>
+		/// <param name="indexOffset">The location of the first index read by the GPU from the index buffer.</param>
+		/// <param name="vertexOffset">The value that should be added to each index before reading a vertex from the vertex buffer.</param>
+		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
+		public void DrawIndexed(int indexCount, int indexOffset, int vertexOffset, PrimitiveType primitiveType)
+		{
+			BeforeDraw();
+			glDrawElementsBaseVertex((int)primitiveType, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
+			AfterDraw();
+		}
+
+		/// <summary>
 		///   Marks the end of a frame, properly synchronizing the GPU and the CPU and updating the GPU frame time.
 		/// </summary>
-		internal void EndFrame()
+		public void EndFrame()
 		{
 			// Issue timing query to get frame end time
 			glQueryCounter(_endQueries[_syncedIndex], GL_TIMESTAMP);
@@ -184,6 +233,31 @@ namespace OrbsHavoc.Platform.Graphics
 
 			SDL_GL_DeleteContext(_context);
 			SDL_DestroyWindow(_contextWindow);
+		}
+
+		/// <summary>
+		///   Enables the scissor test.
+		/// </summary>
+		/// <param name="renderTarget">The render target the scissor test should be enabled for.</param>
+		/// <param name="area">The area that should be drawn.</param>
+		public void EnableScissorTest(RenderTarget renderTarget, Rectangle area)
+		{
+			Assert.ArgumentNotNull(renderTarget, nameof(renderTarget));
+
+			glEnable(GL_SCISSOR_TEST);
+			glScissor(
+				MathUtils.RoundIntegral(area.Left),
+				MathUtils.RoundIntegral(renderTarget.Size.Height - area.Height - area.Top),
+				MathUtils.RoundIntegral(area.Width),
+				MathUtils.RoundIntegral(area.Height));
+		}
+
+		/// <summary>
+		///   Disables the scissor test.
+		/// </summary>
+		public void DisableScissorTest()
+		{
+			glDisable(GL_SCISSOR_TEST);
 		}
 	}
 }

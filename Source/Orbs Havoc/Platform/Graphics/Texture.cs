@@ -44,7 +44,7 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		public Texture(Size size, int format, void* data)
+		public Texture(Size size, DataFormat format, void* data)
 		{
 			Initialize(size, format, data);
 		}
@@ -85,14 +85,14 @@ namespace OrbsHavoc.Platform.Graphics
 			using (var data = buffer.Pointer)
 			{
 				buffer.Skip(sizeInBytes);
-				Initialize(size, GL_RGBA, data);
+				Initialize(size, DataFormat.Rgba, data);
 			}
 		}
 
 		/// <summary>
 		///   Initializes the texture.
 		/// </summary>
-		private void Initialize(Size size, int format, void* data)
+		private void Initialize(Size size, DataFormat format, void* data)
 		{
 			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
 
@@ -101,7 +101,7 @@ namespace OrbsHavoc.Platform.Graphics
 			_texture = Allocate(glGenTextures, nameof(Texture));
 
 			glBindTexture(GL_TEXTURE_2D, _texture);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, size.IntegralWidth, size.IntegralHeight, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, (int)format, GL_UNSIGNED_BYTE, data);
 			CheckErrors();
 
 			if (State.ActiveTextureSlot != -1)

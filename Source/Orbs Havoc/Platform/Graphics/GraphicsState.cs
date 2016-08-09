@@ -93,7 +93,7 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <summary>
 		///   The currently bound vertex layout.
 		/// </summary>
-		public int VertexLayout = -1;
+		public VertexLayout VertexLayout;
 
 		/// <summary>
 		///   The currently bound viewport.

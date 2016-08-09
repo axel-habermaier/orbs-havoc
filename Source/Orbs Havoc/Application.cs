@@ -70,7 +70,7 @@ namespace OrbsHavoc
 			using (var inputDevice = new LogicalInputDevice(window))
 			using (var bindings = new BindingCollection(inputDevice))
 			using (new AssetBundle())
-			using (var renderer = new Renderer(window))
+			using (var renderer = new Renderer(graphicsDevice, window))
 			using (var views = new ViewCollection(window, inputDevice))
 			{
 				// Initialize the views and the command subsystem

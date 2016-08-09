@@ -62,7 +62,7 @@ namespace OrbsHavoc.Platform.Graphics
 			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
 
 			_size = size;
-			_texture = new Texture(size, GL_RGBA, null);
+			_texture = new Texture(size, DataFormat.Rgba, null);
 
 			Viewport = new Rectangle(0, 0, _size);
 			_renderTarget = Allocate(glGenFramebuffers, nameof(RenderTarget));

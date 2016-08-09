@@ -28,8 +28,6 @@ namespace OrbsHavoc.Rendering
 	using Platform.Graphics;
 	using Platform.Memory;
 	using Utilities;
-	using static Platform.Graphics.OpenGL3;
-	using static Platform.Graphics.GraphicsHelpers;
 
 	/// <summary>
 	///   Renders the application.
@@ -43,20 +41,29 @@ namespace OrbsHavoc.Rendering
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
+		/// <param name="graphicsDevice">The graphics device that should be used to draw the frame.</param>
 		/// <param name="window">The window the renderer should belong to.</param>
-		public Renderer(Window window)
+		public Renderer(GraphicsDevice graphicsDevice, Window window)
 		{
+			Assert.ArgumentNotNull(graphicsDevice, nameof(graphicsDevice));
 			Assert.ArgumentNotNull(window, nameof(window));
 
+			GraphicsDevice = graphicsDevice;
 			_projectionMatrixBuffer = new UniformBuffer(sizeof(Matrix4x4));
+
 			Window = window;
 			Window.Resized += UpdateProjectionMatrix;
 
 			UpdateProjectionMatrix(Window.Size);
 
 			var data = 0xFFFFFFFF;
-			WhiteTexture = new Texture(new Size(1, 1), GL_RGBA, &data);
+			WhiteTexture = new Texture(new Size(1, 1), DataFormat.Rgba, &data);
 		}
+
+		/// <summary>
+		///   Gets the graphics device used to draw the frame.
+		/// </summary>
+		public GraphicsDevice GraphicsDevice { get; }
 
 		/// <summary>
 		///   Gets the default camera that is used when no camera is set explicitly.
@@ -118,40 +125,18 @@ namespace OrbsHavoc.Rendering
 		}
 
 		/// <summary>
-		///   Sets up and validates the required GPU state for a draw call.
-		/// </summary>
-		private void BeforeDraw(RenderTarget renderTarget)
-		{
-			++DrawCalls;
-
-			renderTarget.Bind();
-			State.Validate();
-
-			glBindVertexArray(State.VertexLayout);
-			CheckErrors();
-		}
-
-		/// <summary>
-		///   Sets up and validates the GPU state after a draw call.
-		/// </summary>
-		private static void AfterDraw()
-		{
-			glBindVertexArray(0);
-			CheckErrors();
-		}
-
-		/// <summary>
 		///   Draws primitiveCount-many primitives, starting at the given offset into the currently bound vertex buffers.
 		/// </summary>
 		/// <param name="renderTarget">The render target that should be drawn into.</param>
 		/// <param name="vertexCount">The number of vertices that should be drawn.</param>
 		/// <param name="vertexOffset">The offset into the vertex buffers.</param>
 		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
-		public void Draw(RenderTarget renderTarget, int vertexCount, int vertexOffset, int primitiveType = GL_TRIANGLES)
+		public void Draw(RenderTarget renderTarget, int vertexCount, int vertexOffset, PrimitiveType primitiveType)
 		{
-			BeforeDraw(renderTarget);
-			glDrawArrays(primitiveType, vertexOffset, vertexCount);
-			AfterDraw();
+			++DrawCalls;
+			renderTarget.Bind();
+
+			GraphicsDevice.Draw(vertexCount, vertexOffset, primitiveType);
 		}
 
 		/// <summary>
@@ -163,11 +148,12 @@ namespace OrbsHavoc.Rendering
 		/// <param name="indexOffset">The location of the first index read by the GPU from the index buffer.</param>
 		/// <param name="vertexOffset">The value that should be added to each index before reading a vertex from the vertex buffer.</param>
 		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
-		public void DrawIndexed(RenderTarget renderTarget, int indexCount, int indexOffset, int vertexOffset, int primitiveType = GL_TRIANGLES)
+		public void DrawIndexed(RenderTarget renderTarget, int indexCount, int indexOffset, int vertexOffset, PrimitiveType primitiveType)
 		{
-			BeforeDraw(renderTarget);
-			glDrawElementsBaseVertex(primitiveType, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
-			AfterDraw();
+			++DrawCalls;
+			renderTarget.Bind();
+
+			GraphicsDevice.DrawIndexed(indexCount, indexOffset, vertexOffset, primitiveType);
 		}
 
 		/// <summary>

@@ -152,6 +152,10 @@
     <Compile Include="Network\ServerFullException.cs" />
     <Compile Include="Network\ServerQuitException.cs" />
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
+    <Compile Include="Platform\Graphics\PrimitiveType.cs" />
+    <Compile Include="Platform\Graphics\DataFormat.cs" />
+    <Compile Include="Platform\Graphics\ResourceUsage.cs" />
+    <Compile Include="Platform\Graphics\VertexLayout.cs" />
     <Compile Include="Platform\Graphics\UniformBuffer.cs" />
     <Compile Include="Platform\Graphics\GraphicsHelpers.cs" />
     <Compile Include="Platform\Input\TriggerType.cs" />

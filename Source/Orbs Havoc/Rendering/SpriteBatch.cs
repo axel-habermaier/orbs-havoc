@@ -28,7 +28,6 @@ namespace OrbsHavoc.Rendering
 	using Platform;
 	using Platform.Graphics;
 	using Utilities;
-	using static Platform.Graphics.OpenGL3;
 
 	/// <summary>
 	///   Efficiently draws large amounts of 2D sprites.
@@ -82,24 +81,15 @@ namespace OrbsHavoc.Rendering
 
 				// Enable or disable the scissor test
 				if (state.ScissorArea == null)
-					glDisable(GL_SCISSOR_TEST);
+					Renderer.GraphicsDevice.DisableScissorTest();
 				else
-				{
-					var y = state.RenderTarget.Size.Height - state.ScissorArea.Value.Height - state.ScissorArea.Value.Top;
+					Renderer.GraphicsDevice.EnableScissorTest(state.RenderTarget, state.ScissorArea.Value);
 
-					glEnable(GL_SCISSOR_TEST);
-					glScissor(
-						MathUtils.RoundIntegral(state.ScissorArea.Value.Left),
-						MathUtils.RoundIntegral(y),
-						MathUtils.RoundIntegral(state.ScissorArea.Value.Width),
-						MathUtils.RoundIntegral(state.ScissorArea.Value.Height));
-				}
-
-				Renderer.Draw(state.RenderTarget, partition.Count, partition.Offset, GL_POINTS);
+				Renderer.Draw(state.RenderTarget, partition.Count, partition.Offset, PrimitiveType.Points);
 			}
 
 			// Make sure we don't "leak out" the scissor rasterizer state
-			glDisable(GL_SCISSOR_TEST);
+			Renderer.GraphicsDevice.DisableScissorTest();
 		}
 
 		/// <summary>

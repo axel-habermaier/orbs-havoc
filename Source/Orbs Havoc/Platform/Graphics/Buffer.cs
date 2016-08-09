@@ -53,14 +53,14 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <param name="usage">The OpenGL buffer usage flag.</param>
 		/// <param name="sizeInBytes">The size of the buffer in bytes.</param>
 		/// <param name="data">The data that should be copied into the buffer, or null if no data should be copied.</param>
-		public Buffer(int bufferType, int usage, int sizeInBytes, void* data = null)
+		private Buffer(int bufferType, ResourceUsage usage, int sizeInBytes, void* data = null)
 		{
 			_buffer = Allocate(glGenBuffers, nameof(Buffer));
 			_type = bufferType;
 			SizeInBytes = sizeInBytes;
 
 			glBindBuffer(_type, _buffer);
-			glBufferData(_type, (void*)SizeInBytes, data, usage);
+			glBufferData(_type, (void*)SizeInBytes, data, (int)usage);
 			CheckErrors();
 		}
 
@@ -68,6 +68,17 @@ namespace OrbsHavoc.Platform.Graphics
 		///   Gets the size of the buffer in bytes.
 		/// </summary>
 		public int SizeInBytes { get; }
+
+		/// <summary>
+		///   Initializes a new buffer.
+		/// </summary>
+		/// <param name="usage">The OpenGL buffer usage flag.</param>
+		/// <param name="sizeInBytes">The size of the buffer in bytes.</param>
+		/// <param name="data">The data that should be copied into the buffer, or null if no data should be copied.</param>
+		public static Buffer CreateVertexBuffer(ResourceUsage usage, int sizeInBytes, void* data = null)
+		{
+			return new Buffer(GL_ARRAY_BUFFER, usage, sizeInBytes, data);
+		}
 
 		/// <summary>
 		///   Casts the buffer to its underlying OpenGL handle.
