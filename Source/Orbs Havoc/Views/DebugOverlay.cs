@@ -46,8 +46,7 @@ namespace OrbsHavoc.Views
 
 		private readonly Label _cpuTimeLabel = new Label();
 		private readonly Label _fpsLabel = new Label();
-		private readonly WeakReference _gcCheck = new WeakReference(new object());
-		private readonly Label _gcLabel = new Label { Text = "0" };
+		private readonly Label[] _gcLabels = new Label[GC.MaxGeneration + 1];
 		private readonly Label _gpuTimeLabel = new Label();
 		private readonly Label _renderTimeLabel = new Label();
 		private readonly Label _updateTimeLabel = new Label();
@@ -55,7 +54,6 @@ namespace OrbsHavoc.Views
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuRenderTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuUpdateTime = new AveragedDouble(AverageSampleCount);
-		private int _garbageCollections;
 		private AveragedDouble _gpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
 
@@ -68,6 +66,9 @@ namespace OrbsHavoc.Views
 			_cpuRenderTime.AddMeasurement(0.016);
 			_cpuUpdateTime.AddMeasurement(0.016);
 			_gpuFrameTime.AddMeasurement(0.016);
+
+			for (var i = 0; i < _gcLabels.Length; ++i)
+				_gcLabels[i] = new Label { Text = "0" };
 		}
 
 		/// <summary>
@@ -108,6 +109,16 @@ namespace OrbsHavoc.Views
 		public override void Initialize()
 		{
 			const float margin = 3;
+
+			var gcPanel = new StackPanel { Orientation = Orientation.Horizontal };
+			for (var i = 0; i < _gcLabels.Length; ++i)
+			{
+				gcPanel.Children.Add(_gcLabels[i]);
+
+				if (i < _gcLabels.Length - 1)
+					gcPanel.Children.Add(new Label { Text = "/" });
+			}
+
 			RootElement = new Border
 			{
 				MinWidth = 165,
@@ -127,7 +138,7 @@ namespace OrbsHavoc.Views
 						CreateLine("Debug Mode:  ", new Label { Text = "false" }, margin),
 #endif
 						CreateLine("VSync:       ", _vsyncLabel, margin),
-						CreateLine("# of GCs:    ", _gcLabel, 5 * margin),
+						CreateLine("# of GCs:    ", gcPanel, 5 * margin),
 						CreateLine("FPS:         ", _fpsLabel, margin),
 						CreateLine("GPU Time:    ", _gpuTimeLabel, "ms", margin),
 						CreateLine("CPU Time:    ", _cpuTimeLabel, "ms", margin),
@@ -148,12 +159,12 @@ namespace OrbsHavoc.Views
 		/// <summary>
 		///   Creates a debug output line.
 		/// </summary>
-		private static UIElement CreateLine(string text, Label label, float marginBottom)
+		private static UIElement CreateLine(string text, UIElement element, float marginBottom)
 		{
 			return new StackPanel
 			{
 				Orientation = Orientation.Horizontal,
-				Children = { new Label { Text = text }, label },
+				Children = { new Label { Text = text }, element },
 				Margin = new Thickness(0, 0, 0, marginBottom)
 			};
 		}
@@ -161,12 +172,12 @@ namespace OrbsHavoc.Views
 		/// <summary>
 		///   Creates a debug output line.
 		/// </summary>
-		private static UIElement CreateLine(string text, Label label, string suffix, float marginBottom)
+		private static UIElement CreateLine(string text, UIElement element, string suffix, float marginBottom)
 		{
 			return new StackPanel
 			{
 				Orientation = Orientation.Horizontal,
-				Children = { new Label { Text = text }, label, new Label { Text = suffix } },
+				Children = { new Label { Text = text }, element, new Label { Text = suffix } },
 				Margin = new Thickness(0, 0, 0, marginBottom)
 			};
 		}
@@ -176,13 +187,6 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		public override void Update()
 		{
-			if (!_gcCheck.IsAlive)
-			{
-				++_garbageCollections;
-				_gcLabel.Text = StringCache.GetString(_garbageCollections);
-				_gcCheck.Target = new object();
-			}
-
 			_timer.Update();
 			RootElement.Visibility = Cvars.ShowDebugOverlay ? Visibility.Visible : Visibility.Collapsed;
 		}
@@ -200,6 +204,9 @@ namespace OrbsHavoc.Views
 			_cpuTimeLabel.Text = StringCache.GetString(_cpuFrameTime.Average);
 			_updateTimeLabel.Text = StringCache.GetString(_cpuUpdateTime.Average);
 			_renderTimeLabel.Text = StringCache.GetString(_cpuRenderTime.Average);
+
+			for (var i = 0; i < _gcLabels.Length; ++i)
+				_gcLabels[i].Text = StringCache.GetString(GC.CollectionCount(i));
 		}
 
 		/// <summary>
