@@ -1,0 +1,24 @@
+﻿// Encoding:
+//   □ = Wall
+//   S = Spawn Location
+//   H = Health Pack
+//   R = Regeneration Powerup
+//   Q = Quad Damage Powerup
+//   I = Invisibility Powerup
+//
+□ □ □ □ □ □ □ □ □ □ □ □ □ □ □ □
+□ □ □ □ □ □ □ □ □ □ □ □ □ □ □ □
+□ □ S                     S □ □
+□ □   □ □             □ □   □ □
+□ □   □ □ S         S □ □   □ □
+□ □           □ □ H         □ □
+□ □         R □ □ H         □ □
+□ □ H     □ □ □ □ □ □     H □ □
+□ □ H     □ □ □ □ □ □     H □ □
+□ □         H □ □ Q         □ □
+□ □         H □ □           □ □
+□ □   □ □ S         S □ □   □ □
+□ □   □ □             □ □   □ □
+□ □ S           I         S □ □
+□ □ □ □ □ □ □ □ □ □ □ □ □ □ □ □
+□ □ □ □ □ □ □ □ □ □ □ □ □ □ □ □

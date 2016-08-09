@@ -23,8 +23,8 @@
 namespace AssetsCompiler
 {
 	using System;
-	using System.Drawing;
 	using System.IO;
+	using System.Linq;
 	using CommandLine;
 	using JetBrains.Annotations;
 	using OrbsHavoc.Gameplay.SceneNodes.Entities;
@@ -46,135 +46,136 @@ namespace AssetsCompiler
 
 			using (var stream = File.Create(OutFile))
 			using (var writer = new BinaryWriter(stream))
-			using (var bitmap = (Bitmap)Image.FromFile(InFile))
 			{
-				writer.Write((short)bitmap.Width);
-				writer.Write((short)bitmap.Height);
+				var levelData = LoadLevelData();
+				var width = levelData.GetLength(0);
+				var height = levelData.GetLength(1);
 
-				var originalBlocks = new EntityType[bitmap.Width][];
-				var lineBlocks = new EntityType[bitmap.Width][];
-				var edgeBlocks = new EntityType[bitmap.Width][];
+				writer.Write((short)width);
+				writer.Write((short)height);
+
+				var lineBlocks = new EntityType[width, height];
+				var edgeBlocks = new EntityType[width, height];
 
 				// Get the basic blocks from the level texture
-				for (var x = 0; x < bitmap.Width; ++x)
+				for (var x = 0; x < width; ++x)
 				{
-					originalBlocks[x] = new EntityType[bitmap.Height];
-					lineBlocks[x] = new EntityType[bitmap.Height];
-					edgeBlocks[x] = new EntityType[bitmap.Height];
-
-					for (var y = 0; y < bitmap.Height; ++y)
+					for (var y = 0; y < height; ++y)
 					{
-						var color = bitmap.GetPixel(x, y);
-						var block = MapColor(color.ToArgb());
-
-						if (block == null)
-							throw new InvalidOperationException($"'{InFile}': {color} at {x}x{y} is invalid.");
-
-						originalBlocks[x][y] = block.Value;
-						lineBlocks[x][y] = block.Value;
-						edgeBlocks[x][y] = block.Value;
+						lineBlocks[x, y] = levelData[x, y];
+						edgeBlocks[x, y] = levelData[x, y];
 					}
 				}
 
 				// Identify straight lines
-				for (var x = 1; x < bitmap.Width - 1; ++x)
+				for (var x = 1; x < width - 1; ++x)
 				{
-					for (var y = 1; y < bitmap.Height - 1; ++y)
+					for (var y = 1; y < height - 1; ++y)
 					{
-						if (originalBlocks[x][y] != EntityType.Wall)
+						if (levelData[x, y] != EntityType.Wall)
 							continue;
 
 						// The type of the wall depends on how the block is surrounded with walls
-						var left = originalBlocks[x - 1][y] == EntityType.Wall;
-						var right = originalBlocks[x + 1][y] == EntityType.Wall;
-						var top = originalBlocks[x][y - 1] == EntityType.Wall;
-						var bottom = originalBlocks[x][y + 1] == EntityType.Wall;
+						var left = levelData[x - 1, y] == EntityType.Wall;
+						var right = levelData[x + 1, y] == EntityType.Wall;
+						var top = levelData[x, y - 1] == EntityType.Wall;
+						var bottom = levelData[x, y + 1] == EntityType.Wall;
 
 						if (!right && left)
-							lineBlocks[x][y] = EntityType.LeftWall;
+							lineBlocks[x, y] = EntityType.LeftWall;
 						else if (right && !left)
-							lineBlocks[x][y] = EntityType.RightWall;
+							lineBlocks[x, y] = EntityType.RightWall;
 						else if (!top && bottom)
-							lineBlocks[x][y] = EntityType.BottomWall;
+							lineBlocks[x, y] = EntityType.BottomWall;
 						else if (top && !bottom)
-							lineBlocks[x][y] = EntityType.TopWall;
+							lineBlocks[x, y] = EntityType.TopWall;
 
-						edgeBlocks[x][y] = lineBlocks[x][y];
+						edgeBlocks[x, y] = lineBlocks[x, y];
 					}
 				}
 
 				// Identify edges
-				for (var x = 1; x < bitmap.Width - 1; ++x)
+				for (var x = 1; x < width - 1; ++x)
 				{
-					for (var y = 1; y < bitmap.Height - 1; ++y)
+					for (var y = 1; y < height - 1; ++y)
 					{
-						if (originalBlocks[x][y] != EntityType.Wall)
+						if (levelData[x, y] != EntityType.Wall)
 							continue;
 
 						// The type of the wall depends on how the block is surrounded with walls
-						var left = lineBlocks[x - 1][y];
-						var right = lineBlocks[x + 1][y];
-						var top = lineBlocks[x][y - 1];
-						var bottom = lineBlocks[x][y + 1];
-						var topLeft = lineBlocks[x - 1][y - 1];
-						var topRight = lineBlocks[x + 1][y - 1];
-						var bottomLeft = lineBlocks[x - 1][y + 1];
-						var bottomRight = lineBlocks[x + 1][y + 1];
+						var left = lineBlocks[x - 1, y];
+						var right = lineBlocks[x + 1, y];
+						var top = lineBlocks[x, y - 1];
+						var bottom = lineBlocks[x, y + 1];
+						var topLeft = lineBlocks[x - 1, y - 1];
+						var topRight = lineBlocks[x + 1, y - 1];
+						var bottomLeft = lineBlocks[x - 1, y + 1];
+						var bottomRight = lineBlocks[x + 1, y + 1];
 
 						if (right.IsWall() && bottom.IsWall() && !left.IsWall() && !top.IsWall())
-							edgeBlocks[x][y] = EntityType.LeftTopWall;
+							edgeBlocks[x, y] = EntityType.LeftTopWall;
 						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !bottomRight.IsWall())
-							edgeBlocks[x][y] = EntityType.InverseLeftTopWall;
+							edgeBlocks[x, y] = EntityType.InverseLeftTopWall;
 						else if (left.IsWall() && bottom.IsWall() && !right.IsWall() && !top.IsWall())
-							edgeBlocks[x][y] = EntityType.RightTopWall;
+							edgeBlocks[x, y] = EntityType.RightTopWall;
 						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !bottomLeft.IsWall())
-							edgeBlocks[x][y] = EntityType.InverseRightTopWall;
+							edgeBlocks[x, y] = EntityType.InverseRightTopWall;
 						else if (right.IsWall() && top.IsWall() && !left.IsWall() && !bottom.IsWall())
-							edgeBlocks[x][y] = EntityType.LeftBottomWall;
+							edgeBlocks[x, y] = EntityType.LeftBottomWall;
 						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !topRight.IsWall())
-							edgeBlocks[x][y] = EntityType.InverseLeftBottomWall;
+							edgeBlocks[x, y] = EntityType.InverseLeftBottomWall;
 						else if (left.IsWall() && top.IsWall() && !right.IsWall() && !bottom.IsWall())
-							edgeBlocks[x][y] = EntityType.RightBottomWall;
+							edgeBlocks[x, y] = EntityType.RightBottomWall;
 						else if (right.IsWall() && bottom.IsWall() && left.IsWall() && top.IsWall() && !topLeft.IsWall())
-							edgeBlocks[x][y] = EntityType.InverseRightBottomWall;
+							edgeBlocks[x, y] = EntityType.InverseRightBottomWall;
 					}
 				}
 
 				// Write the blocks to the compiled asset file
-				for (var x = 0; x < bitmap.Width; ++x)
+				for (var x = 0; x < width; ++x)
 				{
-					for (var y = 0; y < bitmap.Height; ++y)
-						writer.Write((byte)edgeBlocks[x][y]);
+					for (var y = 0; y < height; ++y)
+						writer.Write((byte)edgeBlocks[x, y]);
 				}
 			}
 		}
 
-		private static EntityType? MapColor(int color)
+		private EntityType[,] LoadLevelData()
 		{
-			unchecked
+			var content = File.ReadAllLines(InFile).Select(line => line.Trim()).Where(line => !line.StartsWith("//")).ToArray();
+			var height = content.Length;
+			var width = content.Max(line => (int)Math.Ceiling(line.Length / 2.0));
+			var data = new EntityType[width, height];
+
+			for (var x = 0; x < width; ++x)
 			{
-				if (color == Color.White.ToArgb())
-					return EntityType.None;
+				for (var y = 0; y < height; ++y)
+					data[x, y] = MapToType(x * 2, y, content[y][x * 2]);
+			}
 
-				if (color == Color.Black.ToArgb())
+			return data;
+		}
+
+		private static EntityType MapToType(int x, int y, char type)
+		{
+			switch (type)
+			{
+				case '□':
 					return EntityType.Wall;
-
-				if (color == Color.Gray.ToArgb())
+				case 'S':
 					return EntityType.PlayerStart;
-
-				if (color == (int)0xFF00FF00)
+				case 'H':
 					return EntityType.Health;
-
-				if (color == (int)0xFF0094FF)
-					return EntityType.QuadDamage;
-
-				if (color == (int)0xFF007F0E)
+				case 'R':
 					return EntityType.Regeneration;
-
-				if (color == (int)0xFF4800FF)
+				case 'Q':
+					return EntityType.QuadDamage;
+				case 'I':
 					return EntityType.Invisibility;
-
-				return null;
+				case ' ':
+					return EntityType.None;
+				default:
+					throw new InvalidOperationException($"Unknown entity type '{type}' at position {x}x{y}.");
 			}
 		}
 	}
