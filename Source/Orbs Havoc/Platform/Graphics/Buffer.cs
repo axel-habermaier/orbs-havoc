@@ -55,6 +55,8 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <param name="data">The data that should be copied into the buffer, or null if no data should be copied.</param>
 		private Buffer(int bufferType, ResourceUsage usage, int sizeInBytes, void* data = null)
 		{
+			Assert.ArgumentInRange(usage, nameof(usage));
+
 			_buffer = Allocate(glGenBuffers, nameof(Buffer));
 			_type = bufferType;
 			SizeInBytes = sizeInBytes;

@@ -94,6 +94,7 @@ namespace OrbsHavoc.Platform.Graphics
 		/// </summary>
 		private void Initialize(Size size, DataFormat format, void* data)
 		{
+			Assert.ArgumentInRange(format, nameof(format));
 			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
 
 			OnDisposing();

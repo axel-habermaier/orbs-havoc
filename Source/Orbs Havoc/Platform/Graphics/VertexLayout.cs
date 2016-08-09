@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Platform.Graphics
 {
 	using Memory;
-	using Rendering;
 	using Utilities;
 	using static GraphicsHelpers;
 	using static OpenGL3;
@@ -34,33 +33,44 @@ namespace OrbsHavoc.Platform.Graphics
 	public sealed unsafe class VertexLayout : DisposableObject
 	{
 		private readonly int _vertexLayout = Allocate(glGenVertexArrays, "Vertex Layout");
-		private int _index = 1;
-		private byte* _offset;
 
 		/// <summary>
-		///   Adds a vertex attribute to the layout.
+		///   Initializes a new instance.
 		/// </summary>
-		/// <param name="buffer">The buffer the data should be read from.</param>
-		/// <param name="componentCount">The number of components accessed by the attribute.</param>
-		/// <param name="type">The data type of the attribute.</param>
-		/// <param name="size">The size in bytes of the attribute.</param>
-		/// <param name="normalize">Indicates whether the attribute values should be normalized.</param>
-		public void AddAttribute(Buffer buffer, int componentCount, DataFormat type, int size, bool normalize)
+		/// <param name="attributes">The attributes the layout should contain.</param>
+		public VertexLayout(params VertexAttribute[] attributes)
 		{
+			Assert.ArgumentNotNull(attributes, nameof(attributes));
+			Assert.ArgumentSatisfies(attributes.Length > 0, nameof(attributes), "Expected at least one vertex attribute.");
+
 			glBindVertexArray(_vertexLayout);
 			CheckErrors();
 
-			glBindBuffer(GL_ARRAY_BUFFER, buffer);
-			CheckErrors();
-
-			glEnableVertexAttribArray(_index);
-			glVertexAttribPointer(_index, componentCount, (int)type, normalize, Quad.SizeInBytes, _offset);
-			CheckErrors();
-
-			_index += 1;
-			_offset += componentCount * size;
+			var index = 1;
+			byte* offset = null;
+			foreach (var attribute in attributes)
+				AddAttribute(attribute, ref offset, ref index);
 
 			glBindVertexArray(0);
+			CheckErrors();
+		}
+
+		/// <summary>
+		///   Adds the vertex attribute to the layout.
+		/// </summary>
+		private static void AddAttribute(VertexAttribute attribute, ref byte* offset, ref int index)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, attribute.Buffer);
+			CheckErrors();
+
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(index, attribute.ComponentCount, (int)attribute.DataFormat, attribute.Normalize, attribute.StrideInBytes, offset);
+			CheckErrors();
+
+			index += 1;
+			offset += attribute.ComponentCount * attribute.SizeInBytes;
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			CheckErrors();
 		}
 

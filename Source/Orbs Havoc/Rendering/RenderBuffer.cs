@@ -56,13 +56,12 @@ namespace OrbsHavoc.Rendering
 			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
 			{
 				_dataBuffers[i] = Buffer.CreateVertexBuffer(ResourceUsage.Dynamic, QuadCollection.MaxQuads * Quad.SizeInBytes);
-				_vertexLayouts[i] = new VertexLayout();
-
-				_vertexLayouts[i].AddAttribute(_dataBuffers[i], 2, DataFormat.Float, sizeof(float), false); // Positions
-				_vertexLayouts[i].AddAttribute(_dataBuffers[i], 1, DataFormat.Float, sizeof(float), false); // Orientations
-				_vertexLayouts[i].AddAttribute(_dataBuffers[i], 4, DataFormat.UnsignedByte, sizeof(byte), true); // Colors
-				_vertexLayouts[i].AddAttribute(_dataBuffers[i], 2, DataFormat.UnsignedShort, sizeof(ushort), false); // Sizes
-				_vertexLayouts[i].AddAttribute(_dataBuffers[i], 4, DataFormat.UnsignedShort, sizeof(ushort), true); // Tex Coords
+				_vertexLayouts[i] = new VertexLayout(
+					new VertexAttribute(_dataBuffers[i], DataFormat.Float, 2, sizeof(float), Quad.SizeInBytes, false), // Positions
+					new VertexAttribute(_dataBuffers[i], DataFormat.Float, 1, sizeof(float), Quad.SizeInBytes, false), // Orientations
+					new VertexAttribute(_dataBuffers[i], DataFormat.UnsignedByte, 4, sizeof(byte), Quad.SizeInBytes, true), // Colors
+					new VertexAttribute(_dataBuffers[i], DataFormat.UnsignedShort, 2, sizeof(ushort), Quad.SizeInBytes, false), // Sizes
+					new VertexAttribute(_dataBuffers[i], DataFormat.UnsignedShort, 4, sizeof(ushort), Quad.SizeInBytes, true)); // Tex Coords
 			}
 		}
 

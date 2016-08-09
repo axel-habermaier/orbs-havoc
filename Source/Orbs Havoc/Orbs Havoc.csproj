@@ -155,6 +155,7 @@
     <Compile Include="Platform\Graphics\PrimitiveType.cs" />
     <Compile Include="Platform\Graphics\DataFormat.cs" />
     <Compile Include="Platform\Graphics\ResourceUsage.cs" />
+    <Compile Include="Platform\Graphics\VertexAttribute.cs" />
     <Compile Include="Platform\Graphics\VertexLayout.cs" />
     <Compile Include="Platform\Graphics\UniformBuffer.cs" />
     <Compile Include="Platform\Graphics\GraphicsHelpers.cs" />

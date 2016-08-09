@@ -177,6 +177,8 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
 		public void Draw(int vertexCount, int vertexOffset, PrimitiveType primitiveType)
 		{
+			Assert.ArgumentInRange(primitiveType, nameof(primitiveType));
+
 			BeforeDraw();
 			glDrawArrays((int)primitiveType, vertexOffset, vertexCount);
 			AfterDraw();
@@ -192,6 +194,8 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <param name="primitiveType">The type of the primitives that should be drawn.</param>
 		public void DrawIndexed(int indexCount, int indexOffset, int vertexOffset, PrimitiveType primitiveType)
 		{
+			Assert.ArgumentInRange(primitiveType, nameof(primitiveType));
+
 			BeforeDraw();
 			glDrawElementsBaseVertex((int)primitiveType, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
 			AfterDraw();
