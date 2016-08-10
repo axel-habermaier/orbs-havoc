@@ -150,6 +150,26 @@ namespace OrbsHavoc.Platform.Graphics
 		}
 
 		/// <summary>
+		///   Marks the end of a frame, properly synchronizing the GPU and the CPU and updating the GPU frame time.
+		/// </summary>
+		public void EndFrame()
+		{
+			// Issue timing query to get frame end time
+			glQueryCounter(_endQueries[_syncedIndex], GL_TIMESTAMP);
+
+			// We've completed the frame, so issue the synced query for the current frame and update the synced index
+			glDeleteSync(_syncQueries[_syncedIndex]);
+			_syncQueries[_syncedIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			_syncedIndex = (_syncedIndex + 1) % GraphicsState.MaxFrameLag;
+
+			// Drawing is no longer allowed, but all frame-dependant resources can now be updated again
+			State.CanDraw = false;
+			State.FrameNumber += 1;
+
+			CheckErrors();
+		}
+
+		/// <summary>
 		///   Sets up and validates the required GPU state for a draw call.
 		/// </summary>
 		private static void BeforeDraw()
@@ -197,28 +217,8 @@ namespace OrbsHavoc.Platform.Graphics
 			Assert.ArgumentInRange(primitiveType, nameof(primitiveType));
 
 			BeforeDraw();
-			glDrawElementsBaseVertex((int)primitiveType, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(uint)), vertexOffset);
+			glDrawElementsBaseVertex((int)primitiveType, indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(int)), vertexOffset);
 			AfterDraw();
-		}
-
-		/// <summary>
-		///   Marks the end of a frame, properly synchronizing the GPU and the CPU and updating the GPU frame time.
-		/// </summary>
-		public void EndFrame()
-		{
-			// Issue timing query to get frame end time
-			glQueryCounter(_endQueries[_syncedIndex], GL_TIMESTAMP);
-
-			// We've completed the frame, so issue the synced query for the current frame and update the synced index
-			glDeleteSync(_syncQueries[_syncedIndex]);
-			_syncQueries[_syncedIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-			_syncedIndex = (_syncedIndex + 1) % GraphicsState.MaxFrameLag;
-
-			// Drawing is no longer allowed, but all frame-dependant resources can now be updated again
-			State.CanDraw = false;
-			State.FrameNumber += 1;
-
-			CheckErrors();
 		}
 
 		/// <summary>

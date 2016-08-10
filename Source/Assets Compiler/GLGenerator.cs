@@ -232,7 +232,6 @@ namespace AssetsCompiler
 				case "GLfixed":
 				case "GLclampx":
 					return "int32";
-				case "GLsizeiptr":
 				case "GLsync":
 				case "GLintptr":
 				case "GLDEBUGPROC":
@@ -251,6 +250,7 @@ namespace AssetsCompiler
 					return "int16";
 				case "GLuint64":
 				case "GLint64":
+				case "GLsizeiptr":
 					return "int64";
 				default:
 					return glType;

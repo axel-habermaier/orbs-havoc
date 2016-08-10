@@ -57,7 +57,7 @@ namespace OrbsHavoc.Platform.Graphics
 				data[i] = 0;
 
 			glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
-			glBufferData(GL_UNIFORM_BUFFER, (void*)_sizeInBytes, data, GL_DYNAMIC_DRAW);
+			glBufferData(GL_UNIFORM_BUFFER, _sizeInBytes, data, GL_DYNAMIC_DRAW);
 			CheckErrors();
 		}
 
@@ -106,7 +106,7 @@ namespace OrbsHavoc.Platform.Graphics
 			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
 			glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
-			glBufferSubData(GL_UNIFORM_BUFFER, (void*)0, (void*)_sizeInBytes, data);
+			glBufferSubData(GL_UNIFORM_BUFFER, null, _sizeInBytes, data);
 			CheckErrors();
 		}
 	}

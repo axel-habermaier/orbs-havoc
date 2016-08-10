@@ -62,7 +62,7 @@ namespace OrbsHavoc.Platform.Graphics
 			SizeInBytes = sizeInBytes;
 
 			glBindBuffer(_type, _buffer);
-			glBufferData(_type, (void*)SizeInBytes, data, (int)usage);
+			glBufferData(_type, SizeInBytes, data, (int)usage);
 			CheckErrors();
 		}
 
@@ -101,7 +101,7 @@ namespace OrbsHavoc.Platform.Graphics
 			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
 			glBindBuffer(_type, _buffer);
-			glBufferSubData(_type, (void*)0, (void*)SizeInBytes, data);
+			glBufferSubData(_type, null, SizeInBytes, data);
 			CheckErrors();
 		}
 
@@ -119,7 +119,7 @@ namespace OrbsHavoc.Platform.Graphics
 			_lastChanged = State.FrameNumber;
 
 			glBindBuffer(_type, _buffer);
-			var pointer = glMapBufferRange(_type, (void*)0, (void*)sizeInBytes, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
+			var pointer = glMapBufferRange(_type, null, sizeInBytes, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
 
 			CheckErrors();
 			return pointer;
