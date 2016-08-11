@@ -111,7 +111,7 @@ namespace OrbsHavoc.Platform
 		{
 			return input.Replace("\r\n", "\n")
 						.Replace("\r", "\n")
-						.Replace("\t", String.Join(" ", Enumerable.Range(0, SpacesPerTab).Select(_ => String.Empty)));
+						.Replace("\t", new string(' ', SpacesPerTab));
 		}
 
 		/// <summary>
