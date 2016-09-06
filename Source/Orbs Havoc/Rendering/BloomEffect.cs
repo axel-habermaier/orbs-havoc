@@ -26,7 +26,6 @@ namespace OrbsHavoc.Rendering
 	using System.Numerics;
 	using System.Runtime.InteropServices;
 	using Assets;
-	using Platform;
 	using Platform.Graphics;
 	using Platform.Memory;
 	using Scripting;

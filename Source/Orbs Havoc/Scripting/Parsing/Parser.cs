@@ -328,7 +328,7 @@ namespace OrbsHavoc.Scripting.Parsing
 				var normalizedValue = value.ToLower().Trim();
 
 				if (normalizedValue == String.Empty)
-					throw new ParseException(inputStream, "Unexpected token '{0}'.", inputStream.Peek());
+					throw new ParseException(inputStream, "Unexpected token '{0}\\default'.", inputStream.Peek());
 
 				switch (normalizedValue)
 				{
@@ -362,13 +362,13 @@ namespace OrbsHavoc.Scripting.Parsing
 							else
 							{
 								inputStream.Position = begin;
-								throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", value.Trim());
+								throw new ParseException(inputStream, "Input contains unrecognizable value '{0}\\default'.", value.Trim());
 							}
 						}
 						catch (ArgumentException)
 						{
 							inputStream.Position = begin;
-							throw new ParseException(inputStream, "Input contains unrecognizable value '{0}'.", value.Trim());
+							throw new ParseException(inputStream, "Input contains unrecognizable value '{0}\\default'.", value.Trim());
 						}
 						break;
 				}
@@ -424,11 +424,11 @@ namespace OrbsHavoc.Scripting.Parsing
 
 				// If the name refers to neither a cvar nor a command, give up
 				inputStream.Position = state;
-				throw new ParseException(inputStream, $"Unknown cvar or command '{name}'.");
+				throw new ParseException(inputStream, $"Unknown cvar or command '{name}\\default'.");
 			}
 			catch (ParseException e)
 			{
-				throw new ParseException(e.InputStream, "{0}\n{1}^\n{2}", e.Input, new string(' ', e.Position), e.Message);
+				throw new ParseException(e.InputStream, "{0}\\default\n{1}^\n{2}", e.Input, new string(' ', e.Position), e.Message);
 			}
 		}
 
@@ -453,7 +453,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			}
 			catch (ParseException e)
 			{
-				throw new ParseException(inputStream, "{0}\n{1}\n{2}",
+				throw new ParseException(inputStream, "{0}\\default\n{1}\n{2}",
 					e.Message, TypeRegistry.GetExampleString(cvar.ValueType), Help.GetHint(cvar.Name));
 			}
 
@@ -504,7 +504,7 @@ namespace OrbsHavoc.Scripting.Parsing
 				catch (ParseException e)
 				{
 					throw new ParseException(inputStream,
-						"Invalid value for parameter '{0}': {1}\nParameter type: {2}\n{3}\n{4}",
+						"Invalid value for parameter '{0}': {1}\\default\nParameter type: {2}\n{3}\n{4}",
 						parameters[i].Name, e.Message, TypeRegistry.GetDescription(parameters[i].Type),
 						TypeRegistry.GetExampleString(parameters[i].Type), Help.GetHint(command.Name));
 				}

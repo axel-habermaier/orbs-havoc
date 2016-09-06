@@ -265,7 +265,8 @@ namespace OrbsHavoc.UserInterface
 			_position = position;
 			_color = color;
 
-			spriteBatch.Draw(_quads, _numQuads, _arranged.Font.Texture);
+			if (_numQuads > 0)
+				spriteBatch.Draw(_quads, _numQuads, _arranged.Font.Texture);
 		}
 
 		/// <summary>

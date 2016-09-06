@@ -160,7 +160,10 @@ namespace OrbsHavoc.Scripting
 			Assert.ArgumentNotNull(name, nameof(name));
 			Assert.ArgumentNotNull(description, nameof(description));
 
-			var elements = PatternMatches(source, name, pattern).ToArray();
+			if (pattern.Trim() != "*")
+				source = source.Where(item => name(item).ToLower().Contains(pattern.ToLower()));
+
+			var elements = source.OrderBy(name).ToArray();
 			if (elements.Length == 0)
 			{
 				Log.Warn("No elements found matching search pattern '{0}'.", pattern);
@@ -173,26 +176,6 @@ namespace OrbsHavoc.Scripting
 				builder.AppendFormat("'\\lightgrey{0}\\default': {1}\n", name(element), description(element));
 
 			Log.Info("{0}", builder);
-		}
-
-		/// <summary>
-		///   Returns an ordered sequence of all elements of the source sequence, whose selected property matches the given
-		///   pattern.
-		/// </summary>
-		/// <typeparam name="T">The type of the items that should be checked.</typeparam>
-		/// <param name="source">The items that should be checked.</param>
-		/// <param name="selector">The selector function that selects the item property that should be used for pattern matching.</param>
-		/// <param name="pattern">The pattern that should be checked.</param>
-		private static IEnumerable<T> PatternMatches<T>(IEnumerable<T> source, Func<T, string> selector, string pattern)
-		{
-			Assert.ArgumentNotNull(source, nameof(source));
-			Assert.ArgumentNotNull(selector, nameof(selector));
-			Assert.ArgumentNotNullOrWhitespace(pattern, nameof(pattern));
-
-			if (pattern.Trim() == "*")
-				return source.OrderBy(selector);
-
-			return source.Where(item => selector(item).ToLower().Contains(pattern.ToLower())).OrderBy(selector);
 		}
 	}
 }
