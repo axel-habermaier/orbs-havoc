@@ -366,7 +366,7 @@ namespace OrbsHavoc.Views
 			catch (SocketException e)
 			{
 				var message = $"Unable to start the server: {e.GetMessage()}";
-				Log.Error("{0}", message);
+				Log.Error(message);
 				MessageBoxes.ShowError("Server Failure", message);
 
 				return false;

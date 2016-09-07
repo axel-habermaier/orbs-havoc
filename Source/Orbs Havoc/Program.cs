@@ -58,8 +58,8 @@ namespace OrbsHavoc
 					LogEntryCache.EnableCaching();
 					Log.OnLog += WriteToConsole;
 
-					Log.Info("Starting {0}...", Application.Name);
-					Log.Info("User file directory: {0}", FileSystem.UserDirectory);
+					Log.Info($"Starting {Application.Name}...");
+					Log.Info($"User file directory: {FileSystem.UserDirectory}");
 
 					Cvars.Initialize();
 					Commands.Initialize();
@@ -78,7 +78,7 @@ namespace OrbsHavoc
 								Application.Run();
 
 							ConfigurationFile.WriteAutoExec();
-							Log.Info("{0} has shut down.", Application.Name);
+							Log.Info($"{Application.Name} has shut down.");
 						}
 					}
 					catch (Exception e)
@@ -116,11 +116,11 @@ namespace OrbsHavoc
 
 			if (!(exception is FatalErrorException))
 			{
-				Log.Error("Exception type: {0}", exception.GetType().FullName);
-				Log.Error("Exception message: {0}", exception.Message);
+				Log.Error($"Exception type: {exception.GetType().FullName}");
+				Log.Error($"Exception message: {exception.Message}");
 			}
 
-			Log.Error("The application has been terminated after a fatal error. The log file is located at '{0}'.", logFile.FilePath);
+			Log.Error($"The application has been terminated after a fatal error. The log file is located at '{logFile.FilePath}'.");
 		}
 
 		/// <summary>

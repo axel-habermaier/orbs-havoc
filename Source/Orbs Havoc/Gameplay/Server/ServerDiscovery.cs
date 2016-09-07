@@ -119,7 +119,7 @@ namespace OrbsHavoc.Gameplay.Server
 			catch (SocketException e)
 			{
 				if (_faultCount >= RetryCount)
-					Log.Error("Server discovery has been disabled. {0}", e.Message);
+					Log.Error($"Server discovery has been disabled. {e.Message}");
 
 				++_faultCount;
 				_socket.SafeDispose();

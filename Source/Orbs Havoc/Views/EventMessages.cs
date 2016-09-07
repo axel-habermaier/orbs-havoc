@@ -208,7 +208,7 @@ namespace OrbsHavoc.Views
 			_removalTimes[_messageCount] = Clock.GetTime() + (isChatMessage ? Cvars.ChatMessageDisplayTime : Cvars.EventMessageDisplayTime);
 			++_messageCount;
 
-			Log.Info("{0}", message);
+			Log.Info(message);
 		}
 	}
 }

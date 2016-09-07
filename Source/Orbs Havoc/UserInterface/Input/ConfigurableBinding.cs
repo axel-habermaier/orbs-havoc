@@ -24,7 +24,6 @@ namespace OrbsHavoc.UserInterface.Input
 {
 	using System;
 	using Platform.Input;
-	using Platform.Logging;
 	using Scripting;
 	using Utilities;
 
@@ -74,7 +73,7 @@ namespace OrbsHavoc.UserInterface.Input
 						return keyEventArgs.Kind == InputEventKind.Up && keyEventArgs.Key == _cvar.Value.Key &&
 							   keyEventArgs.Modifiers == _cvar.Value.Modifiers;
 					default:
-						Log.Die("Unknown trigger mode.");
+						Assert.NotReached("Unknown trigger mode.");
 						return false;
 				}
 			}
@@ -95,7 +94,7 @@ namespace OrbsHavoc.UserInterface.Input
 						return mouseEventArgs.Kind == InputEventKind.Up &&
 							   (mouseEventArgs.Button == _cvar.Value.MouseButton || mouseEventArgs.Modifiers != _cvar.Value.Modifiers);
 					default:
-						Log.Die("Unknown trigger mode.");
+						Assert.NotReached("Unknown trigger mode.");
 						return false;
 				}
 			}

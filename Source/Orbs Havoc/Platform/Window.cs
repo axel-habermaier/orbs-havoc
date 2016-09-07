@@ -91,7 +91,7 @@ namespace OrbsHavoc.Platform
 				_window = SDL_CreateWindow(titlePtr, x, y, size.IntegralWidth, size.IntegralHeight, flags);
 
 			if (_window == null)
-				Log.Die("Failed to create window: {0}", SDL_GetError());
+				Log.Die($"Failed to create window: {SDL_GetError()}");
 
 			SDL_SetWindowMinimumSize(_window, MinimumSize.IntegralWidth, MinimumSize.IntegralHeight);
 			SDL_SetWindowMaximumSize(_window, MaximumSize.IntegralWidth, MaximumSize.IntegralHeight);
@@ -299,14 +299,14 @@ namespace OrbsHavoc.Platform
 			if (Mode == WindowMode.Fullscreen)
 			{
 				if (SDL_SetWindowFullscreen(_window, 0) != 0)
-					Log.Die("Failed to switch to windowed mode: {0}", SDL_GetError());
+					Log.Die($"Failed to switch to windowed mode: {SDL_GetError()}");
 
 				SDL_SetWindowGrab(_window, 0);
 			}
 			else
 			{
 				if (SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
-					Log.Die("Failed to switch to fullscreen mode: {0}", SDL_GetError());
+					Log.Die($"Failed to switch to fullscreen mode: {SDL_GetError()}");
 
 				SDL_SetWindowGrab(_window, 1);
 			}
@@ -413,13 +413,13 @@ namespace OrbsHavoc.Platform
 			var num = SDL_GetNumVideoDisplays();
 
 			if (num <= 0)
-				Log.Die("Failed to determine the number of displays: {0}", SDL_GetError());
+				Log.Die($"Failed to determine the number of displays: {SDL_GetError()}");
 
 			for (var i = 0; i < num; ++i)
 			{
 				SDL_Rect bounds;
 				if (SDL_GetDisplayBounds(i, out bounds) != 0)
-					Log.Die("Failed to retrieve display bounds of display {0}: {1}", i, SDL_GetError());
+					Log.Die($"Failed to retrieve display bounds of display {i}: {SDL_GetError()}");
 
 				left = bounds.x < left ? bounds.x : left;
 				right = bounds.x + bounds.w > right ? bounds.x + bounds.w : right;
@@ -462,7 +462,7 @@ namespace OrbsHavoc.Platform
 		private static void SetVsync()
 		{
 			if (SDL_GL_SetSwapInterval(Cvars.Vsync ? 1 : 0) != 0)
-				Log.Warn("Failed to change vsync mode: {0}", SDL_GetError());
+				Log.Warn($"Failed to change vsync mode: {SDL_GetError()}");
 		}
 	}
 }

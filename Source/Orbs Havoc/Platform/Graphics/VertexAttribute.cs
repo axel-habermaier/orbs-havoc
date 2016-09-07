@@ -32,32 +32,32 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <summary>
 		///   The buffer the data is read from.
 		/// </summary>
-		public Buffer Buffer;
+		public readonly Buffer Buffer;
 
 		/// <summary>
 		///   The number of components accessed by the attribute.
 		/// </summary>
-		public int ComponentCount;
+		public readonly int ComponentCount;
 
 		/// <summary>
 		///   The data format of the attribute.
 		/// </summary>
-		public DataFormat DataFormat;
+		public readonly DataFormat DataFormat;
 
 		/// <summary>
 		///   The number of bytes accessed by the attribute.
 		/// </summary>
-		public int SizeInBytes;
+		public readonly int SizeInBytes;
 
 		/// <summary>
 		///   Indicates whether the attribute values should be normalized.
 		/// </summary>
-		public bool Normalize;
+		public readonly bool Normalize;
 
 		/// <summary>
 		///   The stride in bytes between two consecutive values of the attribute.
 		/// </summary>
-		public int StrideInBytes;
+		public readonly int StrideInBytes;
 
 		/// <summary>
 		///   Initializes a new instance.

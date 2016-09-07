@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Scripting
 {
-	using System.Net;
 	using Network;
 	using Platform.Input;
 	using Validators;

@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Network
 {
 	using System;
-	using JetBrains.Annotations;
 
 	/// <summary>
 	///   Raised when a network error occurred.
@@ -34,10 +33,8 @@ namespace OrbsHavoc.Network
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="message">A message explaining the exception.</param>
-		/// <param name="args">The format arguments for the exception message.</param>
-		[StringFormatMethod("message")]
-		public NetworkException(string message, params object[] args)
-			: base(String.Format(message, args))
+		public NetworkException(string message)
+			: base(message)
 		{
 		}
 	}

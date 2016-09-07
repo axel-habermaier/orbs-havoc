@@ -49,86 +49,77 @@ namespace OrbsHavoc.Platform.Logging
 		///   Raises the OnFatalError event with the given message and terminates the application by throwing
 		///   an InvalidOperationException.
 		/// </summary>
-		/// <param name="message">The message that should be formatted and passed as an argument of the OnFatalError event.</param>
-		/// <param name="arguments">The arguments that should be copied into the message.</param>
-		[DebuggerHidden, StringFormatMethod("message"), ContractAnnotation("=> halt")]
-		public static void Die(string message, params object[] arguments)
+		/// <param name="message">The message that should be passed as an argument of the OnFatalError event.</param>
+		[DebuggerHidden, ContractAnnotation("=> halt")]
+		public static void Die(string message)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
 
-			RaiseEvent(LogType.Fatal, message, arguments);
-			throw new FatalErrorException(message, arguments);
+			RaiseEvent(LogType.Fatal, message);
+			throw new FatalErrorException(message);
 		}
 
 		/// <summary>
 		///   Raises the OnError event with the given message.
 		/// </summary>
-		/// <param name="message">The message that should be formatted and passed as an argument of the OnError event.</param>
-		/// <param name="arguments">The arguments that should be copied into the message.</param>
-		[StringFormatMethod("message")]
-		public static void Error(string message, params object[] arguments)
+		/// <param name="message">The message that should be passed as an argument of the OnError event.</param>
+		public static void Error(string message)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-			RaiseEvent(LogType.Error, message, arguments);
+			RaiseEvent(LogType.Error, message);
 		}
 
 		/// <summary>
 		///   Raises the OnWarning event with the given message.
 		/// </summary>
-		/// <param name="message">The message that should be formatted and passed as an argument of the OnWarning event.</param>
-		/// <param name="arguments">The arguments that should be copied into the message.</param>
-		[StringFormatMethod("message")]
-		public static void Warn(string message, params object[] arguments)
+		/// <param name="message">The message that should be passed as an argument of the OnWarning event.</param>
+		public static void Warn(string message)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-			RaiseEvent(LogType.Warning, message, arguments);
+			RaiseEvent(LogType.Warning, message);
 		}
 
 		/// <summary>
 		///   Raises the OnInfo event with the given message.
 		/// </summary>
-		/// <param name="message">The message that should be formatted and passed as an argument of the OnInfo event.</param>
-		/// <param name="arguments">The arguments that should be copied into the message.</param>
-		[StringFormatMethod("message")]
-		public static void Info(string message, params object[] arguments)
+		/// <param name="message">The message that should be passed as an argument of the OnInfo event.</param>
+		public static void Info(string message)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-			RaiseEvent(LogType.Info, message, arguments);
+			RaiseEvent(LogType.Info, message);
 		}
 
 		/// <summary>
 		///   In debug builds, raises the OnDebugInfo event with the given message.
 		/// </summary>
-		/// <param name="message">The message that should be formatted and passed as an argument of the OnDebugInfo event.</param>
-		/// <param name="arguments">The arguments that should be copied into the message.</param>
-		[Conditional("DEBUG"), StringFormatMethod("message")]
-		public static void Debug(string message, params object[] arguments)
+		/// <param name="message">The message that should be passed as an argument of the OnDebugInfo event.</param>
+		[Conditional("DEBUG")]
+		public static void Debug(string message)
 		{
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
-			RaiseEvent(LogType.Debug, message, arguments);
+			RaiseEvent(LogType.Debug, message);
 		}
 
 		/// <summary>
 		///   In debug builds, raises the OnDebugInfo event with the given message if the given condition is true.
 		/// </summary>
 		/// <param name="condition">The condition that must be true for the message to be displayed.</param>
-		/// <param name="message">The message that should be formatted and passed as an argument of the OnDebugInfo event.</param>
-		/// <param name="arguments">The arguments that should be copied into the message.</param>
-		[Conditional("DEBUG"), StringFormatMethod("message")]
-		public static void DebugIf(bool condition, string message, params object[] arguments)
+		/// <param name="message">The message that should be passed as an argument of the OnDebugInfo event.</param>
+		[Conditional("DEBUG")]
+		public static void DebugIf(bool condition, string message)
 		{
 			if (condition)
-				Debug(message, arguments);
+				Debug(message);
 		}
 
 		/// <summary>
 		///   Raises the OnLog event.
 		/// </summary>
-		private static void RaiseEvent(LogType logType, string message, params object[] arguments)
+		private static void RaiseEvent(LogType logType, string message)
 		{
 			lock (LockObject)
 			{
-				OnLog?.Invoke(new LogEntry(logType, String.Format(message, arguments)));
+				OnLog?.Invoke(new LogEntry(logType, message));
 			}
 		}
 
@@ -151,7 +142,7 @@ namespace OrbsHavoc.Platform.Logging
 				using (var messagePtr = Interop.ToPointer(message))
 				{
 					if (SDL_WasInit(SDL_INIT_VIDEO) != 0 && SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, titlePtr, messagePtr, null) != 0)
-						Error("Failed to show message box: {0}", SDL_GetError());
+						Error($"Failed to show message box: {SDL_GetError()}");
 				}
 			}
 		}

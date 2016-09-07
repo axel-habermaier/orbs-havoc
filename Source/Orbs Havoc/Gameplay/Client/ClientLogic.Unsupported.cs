@@ -55,7 +55,7 @@ namespace OrbsHavoc.Gameplay.Client
 		/// <param name="message">The unsupported message that should be handled.</param>
 		private static void HandleUnsupportedMessage(Message message)
 		{
-			Assert.That(false, "The client cannot handle a message of type '{0}'.", message.MessageType);
+			Assert.That(false, $"The client cannot handle a message of type '{message.MessageType}'.");
 		}
 	}
 }

@@ -49,9 +49,9 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNull(command, nameof(command));
 			Assert.NotNullOrWhitespace(command.Name, "The command cannot have an empty name.");
-			Assert.That(!RegisteredCommands.ContainsKey(command.Name), "A command with the name '{0}' has already been registered.", command.Name);
+			Assert.That(!RegisteredCommands.ContainsKey(command.Name), $"A command with the name '{command.Name}' has already been registered.");
 			Assert.That(Cvars.All.All(cvar => cvar.Name != command.Name),
-				"A cvar with the name '{0}' has already been registered.", command.Name);
+				$"A cvar with the name '{command.Name}' has already been registered.");
 
 			RegisteredCommands.Add(command.Name, command);
 		}

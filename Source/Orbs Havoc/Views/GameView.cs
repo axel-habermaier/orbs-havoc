@@ -115,7 +115,7 @@ namespace OrbsHavoc.Views
 					if (!_clientLogic.IsSynced)
 						return;
 
-					Log.Info("Loading completed and game state synced. Now connected to game session hosted by {0}.", Connection.RemoteEndPoint);
+					Log.Info($"Loading completed and game state synced. Now connected to game session hosted by {Connection.RemoteEndPoint}.");
 					Views.LoadingOverlay.Hide();
 
 					// Resend player name, as it might have been changed during the connection attempt

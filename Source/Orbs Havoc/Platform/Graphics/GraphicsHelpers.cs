@@ -81,7 +81,7 @@ namespace OrbsHavoc.Platform.Graphics
 						break;
 				}
 
-				Log.Error("OpenGL error: {0}", msg);
+				Log.Error($"OpenGL error: {msg}");
 				glErrorOccurred = true;
 			}
 
@@ -104,7 +104,7 @@ namespace OrbsHavoc.Platform.Graphics
 			CheckErrors();
 
 			if (handle == 0)
-				Log.Die("Failed to allocate an OpenGL object of type '{0}'.", type);
+				Log.Die($"Failed to allocate an OpenGL object of type '{type}'.");
 
 			return handle;
 		}

@@ -108,7 +108,7 @@ namespace OrbsHavoc.Scripting
 				if (validator.Validate(value))
 					continue;
 
-				Log.Error("'{0}' is not a valid value for parameter '{1}': {2}", value, Name, validator.ErrorMessage);
+				Log.Error($"'{value}' is not a valid value for parameter '{Name}': {validator.ErrorMessage}");
 				return false;
 			}
 

@@ -151,16 +151,15 @@ namespace OrbsHavoc.Utilities
 		/// </summary>
 		/// <param name="condition">The condition that, if false, causes the exception to be raised.</param>
 		/// <param name="argumentName">The name of the argument that is checked.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("condition: false => halt")]
-		public static void ArgumentSatisfies(bool condition, string argumentName, string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("condition: false => halt")]
+		public static void ArgumentSatisfies(bool condition, string argumentName, string message)
 		{
-			ArgumentNotNull(formatMessage, nameof(formatMessage));
+			ArgumentNotNull(message, nameof(message));
 			ArgumentNotNullOrWhitespace(argumentName, nameof(argumentName));
 
 			if (!condition)
-				throw new ArgumentException(String.Format(formatMessage, parameters), argumentName);
+				throw new ArgumentException(String.Format(message), argumentName);
 		}
 
 		/// <summary>
@@ -168,16 +167,15 @@ namespace OrbsHavoc.Utilities
 		/// </summary>
 		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
 		/// <param name="obj">The object to check for null.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("obj: notnull => halt")]
-		public static void IsNull<T>([NoEnumeration] T obj, string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("obj: notnull => halt")]
+		public static void IsNull<T>([NoEnumeration] T obj, string message)
 			where T : class
 		{
-			ArgumentNotNull(formatMessage, nameof(formatMessage));
+			ArgumentNotNull(message, nameof(message));
 
 			if (obj != null)
-				throw new FatalErrorException(formatMessage, parameters);
+				throw new FatalErrorException(message);
 		}
 
 		/// <summary>
@@ -185,48 +183,29 @@ namespace OrbsHavoc.Utilities
 		/// </summary>
 		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
 		/// <param name="obj">The object to check for null.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("obj: null => halt")]
-		public static void NotNull<T>([NoEnumeration] T obj, string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("obj: null => halt")]
+		public static void NotNull<T>([NoEnumeration] T obj, string message)
 			where T : class
 		{
-			ArgumentNotNull(formatMessage, nameof(formatMessage));
+			ArgumentNotNull(message, nameof(message));
 
 			if (obj == null)
-				throw new FatalErrorException(formatMessage, parameters);
-		}
-
-		/// <summary>
-		///   Throws a FatalErrorException if the object is null.
-		/// </summary>
-		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
-		/// <param name="obj">The object to check for null.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("obj: null => halt")]
-		public static void NotNull<T>(T? obj, string formatMessage, params object[] parameters)
-			where T : struct
-		{
-			ArgumentNotNull(formatMessage, nameof(formatMessage));
-
-			if (obj == null)
-				throw new FatalErrorException(formatMessage, parameters);
+				throw new FatalErrorException(message);
 		}
 
 		/// <summary>
 		///   Throws a FatalErrorException if the pointer is null.
 		/// </summary>
 		/// <param name="ptr">The pointer to check for null.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("ptr: null => halt")]
-		public static void NotNull(IntPtr ptr, string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("ptr: null => halt")]
+		public static void NotNull(IntPtr ptr, string message)
 		{
-			ArgumentNotNull(formatMessage, nameof(formatMessage));
+			ArgumentNotNull(message, nameof(message));
 
 			if (ptr == IntPtr.Zero)
-				throw new FatalErrorException(formatMessage, parameters);
+				throw new FatalErrorException(message);
 		}
 
 		/// <summary>
@@ -237,19 +216,6 @@ namespace OrbsHavoc.Utilities
 		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("null => halt")]
 		public static void NotNull<T>([NoEnumeration] T obj)
 			where T : class
-		{
-			if (obj == null)
-				throw new FatalErrorException("Expected a valid reference.");
-		}
-
-		/// <summary>
-		///   Throws a FatalErrorException if the object is null.
-		/// </summary>
-		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
-		/// <param name="obj">The object to check for null.</param>
-		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("null => halt")]
-		public static void NotNull<T>(T? obj)
-			where T : struct
 		{
 			if (obj == null)
 				throw new FatalErrorException("Expected a valid reference.");
@@ -270,41 +236,38 @@ namespace OrbsHavoc.Utilities
 		///   Throws a FatalErrorException if the string is null or empty (or only whitespace).
 		/// </summary>
 		/// <param name="s">The string to check.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("s: null => halt")]
-		public static void NotNullOrWhitespace(string s, string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("s: null => halt")]
+		public static void NotNullOrWhitespace(string s, string message)
 		{
 			ArgumentNotNull(s, nameof(s));
 
 			if (String.IsNullOrWhiteSpace(s))
-				throw new FatalErrorException(formatMessage, parameters);
+				throw new FatalErrorException(message);
 		}
 
 		/// <summary>
 		///   Throws a FatalErrorException if the condition does not hold.
 		/// </summary>
 		/// <param name="condition">The condition that, if false, causes the exception to be raised.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("condition: false => halt")]
-		public static void That(bool condition, string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("condition: false => halt")]
+		public static void That(bool condition, string message)
 		{
-			ArgumentNotNull(formatMessage, nameof(formatMessage));
+			ArgumentNotNull(message, nameof(message));
 
 			if (!condition)
-				throw new FatalErrorException(formatMessage, parameters);
+				throw new FatalErrorException(message);
 		}
 
 		/// <summary>
 		///   Throws a FatalErrorException if the method is invoked.
 		/// </summary>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage"), ContractAnnotation("=> halt")]
-		public static void NotReached(string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("=> halt")]
+		public static void NotReached(string message)
 		{
-			That(false, formatMessage, parameters);
+			That(false, message);
 		}
 
 		/// <summary>
@@ -332,10 +295,10 @@ namespace OrbsHavoc.Utilities
 			where T : IComparable<T>
 		{
 			if (index.CompareTo(min) < 0)
-				throw new FatalErrorException("Lower bound violation. Expected argument to lie between {0} and {1}.", min, max);
+				throw new FatalErrorException($"Lower bound violation. Expected argument to lie between {min} and {max}.");
 
 			if (index.CompareTo(max) > 0)
-				throw new FatalErrorException("Upper bound violation. Expected argument to lie between {0} and {1}.", min, max);
+				throw new FatalErrorException($"Upper bound violation. Expected argument to lie between {min} and {max}.");
 		}
 
 		/// <summary>
@@ -367,16 +330,15 @@ namespace OrbsHavoc.Utilities
 		///   Throws a FatalErrorException if the object is not the same as or subtype of the given type.
 		/// </summary>
 		/// <param name="obj">The object to check.</param>
-		/// <param name="formatMessage">An error message explaining the exception to the user.</param>
-		/// <param name="parameters">The parameters for the error message.</param>
-		[Conditional("DEBUG"), DebuggerHidden, StringFormatMethod("formatMessage")]
-		public static void OfType<T>([NoEnumeration] object obj, string formatMessage, params object[] parameters)
+		/// <param name="message">An error message explaining the exception to the user.</param>
+		[Conditional("DEBUG"), DebuggerHidden]
+		public static void OfType<T>([NoEnumeration] object obj, string message)
 		{
 			ArgumentNotNull(obj, nameof(obj));
-			ArgumentNotNull(formatMessage, nameof(formatMessage));
+			ArgumentNotNull(message, nameof(message));
 
 			if (!(obj is T))
-				throw new FatalErrorException(formatMessage, parameters);
+				throw new FatalErrorException(message);
 		}
 
 		/// <summary>
@@ -388,7 +350,7 @@ namespace OrbsHavoc.Utilities
 			where T : DisposableObject
 		{
 			if (obj != null && !obj.IsDisposed)
-				throw new FatalErrorException("The '{0}' instance has not been disposed.", typeof(T).FullName);
+				throw new FatalErrorException($"The '{typeof(T).FullName}' instance has not been disposed.");
 		}
 
 		/// <summary>
@@ -401,7 +363,7 @@ namespace OrbsHavoc.Utilities
 			ArgumentNotNull(obj, nameof(obj));
 
 			if (obj.IsDisposed)
-				throw new FatalErrorException("The object of type '{0}' has already been disposed.", obj.GetType().FullName);
+				throw new FatalErrorException($"The object of type '{obj.GetType().FullName}' has already been disposed.");
 		}
 
 		/// <summary>
@@ -414,7 +376,7 @@ namespace OrbsHavoc.Utilities
 			ArgumentNotNull(obj, nameof(obj));
 
 			if (!obj.InUse)
-				throw new FatalErrorException("The object of type '{0}' is currently pooled.", obj.GetType().FullName);
+				throw new FatalErrorException($"The object of type '{obj.GetType().FullName}' is currently pooled.");
 		}
 	}
 }

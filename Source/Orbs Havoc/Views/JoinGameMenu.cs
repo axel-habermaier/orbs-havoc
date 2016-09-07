@@ -240,7 +240,7 @@ namespace OrbsHavoc.Views
 			catch (SocketException e)
 			{
 				_isFaulted = true;
-				Log.Error("Failed to initialize server discovery: {0}", e.GetMessage());
+				Log.Error($"Failed to initialize server discovery: {e.GetMessage()}");
 			}
 		}
 
@@ -267,7 +267,7 @@ namespace OrbsHavoc.Views
 				if (!_discoveredServers[i].HasTimedOut)
 					continue;
 
-				Log.Info("Server {0} is no longer running.", _discoveredServers[i].EndPoint);
+				Log.Info($"Server {_discoveredServers[i].EndPoint} is no longer running.");
 
 				_panelDirty = true;
 				_discoveredServers.RemoveAt(i);
@@ -292,7 +292,7 @@ namespace OrbsHavoc.Views
 			catch (SocketException e)
 			{
 				_isFaulted = true;
-				Log.Error("Server discovery service failure: {0}", e.GetMessage());
+				Log.Error($"Server discovery service failure: {e.GetMessage()}");
 			}
 
 			UpdatePanel();
@@ -356,7 +356,7 @@ namespace OrbsHavoc.Views
 		{
 			if (!reader.CanRead(sizeof(uint) + sizeof(byte) + sizeof(ushort)))
 			{
-				Log.Debug("Ignored invalid discovery message from {0}.", endPoint);
+				Log.Debug($"Ignored invalid discovery message from {endPoint}.");
 				return;
 			}
 
@@ -368,7 +368,7 @@ namespace OrbsHavoc.Views
 
 			if (applicationIdentifier != NetworkProtocol.AppIdentifier || revision != NetworkProtocol.Revision)
 			{
-				Log.Debug("Ignored invalid discovery message from {0}.", endPoint);
+				Log.Debug($"Ignored invalid discovery message from {endPoint}.");
 				return;
 			}
 
@@ -382,7 +382,7 @@ namespace OrbsHavoc.Views
 				_discoveredServers.Add(server);
 				_panelDirty = true;
 
-				Log.Info("Discovered server '{1}' at {0}.", ipEndPoint, name);
+				Log.Info($"Discovered server '{name}' at {ipEndPoint}.");
 			}
 			else
 				server.DiscoveryTime = Clock.GetTime();

@@ -150,33 +150,5 @@ namespace OrbsHavoc.Platform.Logging
 		{
 			return !left.Equals(right);
 		}
-
-		/// <summary>
-		///   Raises the appropriate log event for the log entries.
-		/// </summary>
-		[DebuggerHidden]
-		public void RaiseLogEvent()
-		{
-			switch (LogType)
-			{
-				case LogType.Fatal:
-					Log.Die("{0}", Message);
-					break;
-				case LogType.Error:
-					Log.Error("{0}", Message);
-					break;
-				case LogType.Warning:
-					Log.Warn("{0}", Message);
-					break;
-				case LogType.Info:
-					Log.Info("{0}", Message);
-					break;
-				case LogType.Debug:
-					Log.Debug("{0}", Message);
-					break;
-				default:
-					throw new InvalidOperationException("Unknown log entry type.");
-			}
-		}
 	}
 }

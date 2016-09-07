@@ -180,7 +180,7 @@ namespace OrbsHavoc.UserInterface.Controls
 					{
 						var text = SDL_GetClipboardText();
 						if (text == null)
-							Log.Error("Failed to retrieve clipboard text from OS: {0}", SDL_GetError());
+							Log.Error($"Failed to retrieve clipboard text from OS: {SDL_GetError()}");
 
 						Insert(Interop.ToString(text));
 					}

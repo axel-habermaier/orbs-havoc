@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Utilities
 {
 	using System;
-	using JetBrains.Annotations;
 
 	/// <summary>
 	///   Represents a fatal error that causes the execution of the application to be aborted.
@@ -36,17 +35,6 @@ namespace OrbsHavoc.Utilities
 		/// <param name="message">A message explaining the fatal error.</param>
 		public FatalErrorException(string message)
 			: base(message)
-		{
-		}
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="message">A message explaining the fatal error.</param>
-		/// <param name="arguments">The arguments that should be used to format the message.</param>
-		[StringFormatMethod("message")]
-		public FatalErrorException(string message, params object[] arguments)
-			: base(String.Format(message, arguments))
 		{
 		}
 	}

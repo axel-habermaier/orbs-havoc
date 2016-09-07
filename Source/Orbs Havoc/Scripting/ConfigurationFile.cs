@@ -55,7 +55,7 @@ namespace OrbsHavoc.Scripting
 			if (FileSystem.IsValidFileName(fileName))
 				return true;
 
-			Log.Error("'{0}' is not a valid file name.", fileName);
+			Log.Error($"'{fileName}' is not a valid file name.");
 			return false;
 		}
 
@@ -71,7 +71,7 @@ namespace OrbsHavoc.Scripting
 			}
 			catch (FileSystemException e)
 			{
-				Log.Error("Unable to read '{0}': {1}", fileName, e.Message);
+				Log.Error($"Unable to read '{fileName}': {e.Message}");
 				yield break;
 			}
 
@@ -85,7 +85,7 @@ namespace OrbsHavoc.Scripting
 				}
 				catch (ParseException e)
 				{
-					Log.Error("{0}", e.Message);
+					Log.Error(e.Message);
 				}
 
 				if (instruction != null)
@@ -103,7 +103,7 @@ namespace OrbsHavoc.Scripting
 			if (!IsValidFileName(fileName))
 				return;
 
-			Log.Info("Processing '{0}'...", fileName);
+			Log.Info($"Processing '{fileName}'...");
 			foreach (var instruction in ParseInstructions(fileName))
 				instruction.Execute(executedByUser);
 		}
@@ -130,11 +130,11 @@ namespace OrbsHavoc.Scripting
 			try
 			{
 				FileSystem.WriteAllText(AutoExec, builder.ToString());
-				Log.Info("'{0}' has been written.", AutoExec);
+				Log.Info($"'{AutoExec}' has been written.");
 			}
 			catch (FileSystemException e)
 			{
-				Log.Error("Failed to write '{0}': {1}", AutoExec, e.Message);
+				Log.Error($"Failed to write '{AutoExec}': {e.Message}");
 			}
 		}
 	}

@@ -59,8 +59,8 @@ namespace OrbsHavoc.Scripting
 				// report an error and try again for the next argument.
 				if (!arguments[i].StartsWith(ArgumentSeparator))
 				{
-					Log.Error("Encountered unexpected token '{0}\\default' in command line at position {1}. " +
-							  "Expected the name of a cvar or command, prefixed with '{2}'.", arguments[i], i, ArgumentSeparator);
+					Log.Error($"Encountered unexpected token '{arguments[i]}\\default' in command line at position {i}. " +
+							  $"Expected the name of a cvar or command, prefixed with '{ArgumentSeparator}'.");
 
 					++i;
 					continue;
@@ -81,7 +81,7 @@ namespace OrbsHavoc.Scripting
 				}
 				catch (ParseException e)
 				{
-					Log.Error("{0}", e.Message);
+					Log.Error(e.Message);
 				}
 
 				i = position;

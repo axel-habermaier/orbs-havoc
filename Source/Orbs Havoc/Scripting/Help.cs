@@ -62,7 +62,7 @@ namespace OrbsHavoc.Scripting
 			else if (Commands.TryFind(name, out command))
 				PrintCommandHelp(command);
 			else
-				Log.Error("'{0}' is neither a cvar nor a command.", name);
+				Log.Error($"'{name}' is neither a cvar nor a command.");
 		}
 
 		/// <summary>

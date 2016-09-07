@@ -175,7 +175,7 @@ namespace OrbsHavoc.Gameplay.Server
 				}
 			}, token);
 
-			Log.Info("Server '{1}' started on port {0}.", port, serverName);
+			Log.Info($"Server '{serverName}' started on port {port}.");
 		}
 
 		/// <summary>
@@ -211,9 +211,9 @@ namespace OrbsHavoc.Gameplay.Server
 
 					foreach (var exception in exceptions)
 					{
-						Log.Error("Exception type: {0}", exception.GetType().FullName);
-						Log.Error("Exception message: {0}", exception.Message);
-						Log.Error("Stack trace: {0}", exception.StackTrace);
+						Log.Error($"Exception type: {exception.GetType().FullName}");
+						Log.Error($"Exception message: {exception.Message}");
+						Log.Error($"Stack trace: {exception.StackTrace}");
 					}
 
 					var messages = exceptions.Select(ex => ex.Message);
@@ -280,7 +280,7 @@ namespace OrbsHavoc.Gameplay.Server
 			_botNames.RemoveAt(nameIndex);
 			_bots.Add(bot);
 
-			Log.Info("Bot '{0}\\default' was added to the game session.", bot.Name);
+			Log.Info($"Bot '{bot.Name}\\default' was added to the game session.");
 		}
 
 		/// <summary>
@@ -299,7 +299,7 @@ namespace OrbsHavoc.Gameplay.Server
 			_serverLogic.RemovePlayer(_bots[index]);
 			_bots.RemoveAt(index);
 
-			Log.Info("Bot '{0}\\default' was removed from the game session.", name);
+			Log.Info($"Bot '{name}\\default' was removed from the game session.");
 		}
 
 		/// <summary>

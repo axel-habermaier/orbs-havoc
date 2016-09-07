@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Scripting.Parsing
 {
 	using System;
-	using JetBrains.Annotations;
 	using Utilities;
 
 	/// <summary>
@@ -34,11 +33,13 @@ namespace OrbsHavoc.Scripting.Parsing
 		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
-		[StringFormatMethod("format")]
-		public ParseException(InputStream inputStream, string format, params object[] args)
-			: base(String.Format(format, args))
+		/// <param name="inputStream">The input stream the exception is raised for.</param>
+		/// <param name="message">A message explaining the exception.</param>
+		public ParseException(InputStream inputStream, string message)
+			: base(message)
 		{
 			Assert.ArgumentNotNull(inputStream, nameof(inputStream));
+			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
 
 			InputStream = inputStream;
 		}

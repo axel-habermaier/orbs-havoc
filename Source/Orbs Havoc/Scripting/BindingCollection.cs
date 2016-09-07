@@ -110,7 +110,7 @@ namespace OrbsHavoc.Scripting
 				return;
 			}
 
-			Log.Info("{0}", builder);
+			Log.Info(builder.ToString());
 		}
 
 		/// <summary>
@@ -140,12 +140,14 @@ namespace OrbsHavoc.Scripting
 			}
 
 			if (removed == 1)
-				Log.Info("The command binding for '{0}' has been removed.", TypeRegistry.ToString(trigger));
+				Log.Info($"The command binding for '{TypeRegistry.ToString(trigger)}' has been removed.");
 			else if (removed != 0)
-				Log.Info("{0} command bindings for '{1}' have been removed.", removed, TypeRegistry.ToString(trigger));
+				Log.Info($"{removed} command bindings for '{TypeRegistry.ToString(trigger)}' have been removed.");
 			else
-				Log.Error("No binding could be found with trigger '{0}'. Use the 'list_bindings' command to view all active bindings.",
-					TypeRegistry.ToString(trigger));
+			{
+				Log.Error($"No binding could be found with trigger '{TypeRegistry.ToString(trigger)}'. " +
+						  "Use the 'list_bindings' command to view all active bindings.");
+			}
 		}
 
 		/// <summary>

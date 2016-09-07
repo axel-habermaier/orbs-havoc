@@ -98,7 +98,7 @@ namespace OrbsHavoc.UserInterface.Controls
 					CleanFocusedElements();
 				}
 
-				Log.DebugIf(false, "Focused element: {0}", _focusedElement?.GetType().Name);
+				Log.DebugIf(false, $"Focused element: {_focusedElement?.GetType().Name}");
 				Log.DebugIf(_focusedElements.Count > 32, "Unusually large focused elements history stack.");
 			}
 		}
@@ -232,7 +232,7 @@ namespace OrbsHavoc.UserInterface.Controls
 				OnMouseLeave(_hoveredElement, args);
 
 			_hoveredElement = hoveredElement;
-			Log.DebugIf(false, "Hovered element: {0}", _hoveredElement?.GetType().Name);
+			Log.DebugIf(false, $"Hovered element: {_hoveredElement?.GetType().Name}");
 
 			if (_hoveredElement != null)
 				OnMouseEnter(_hoveredElement, args);

@@ -140,7 +140,7 @@ namespace OrbsHavoc.Scripting
 			Assert.ArgumentNotNull(value, nameof(value));
 
 			if (setByUser && SystemOnly)
-				Log.Warn("'{0}' can only be set by the application.", Name);
+				Log.Warn($"'{Name}' can only be set by the application.");
 			else
 				SetValue((T)value, setByUser);
 		}
@@ -179,8 +179,8 @@ namespace OrbsHavoc.Scripting
 				if (validator.Validate(value))
 					continue;
 
-				Log.Error("'{0}' could not be set to '{1}\\default': {2}", Name, TypeRegistry.ToString(value), validator.ErrorMessage);
-				Log.Info("{0}", Help.GetHint(Name));
+				Log.Error($"'{Name}' could not be set to '{TypeRegistry.ToString(value)}\\default': {validator.ErrorMessage}");
+				Log.Info(Help.GetHint(Name));
 				return false;
 			}
 
@@ -197,12 +197,12 @@ namespace OrbsHavoc.Scripting
 			if (_value.Equals(value))
 			{
 				if (setByUser)
-					Log.Warn("'{0}' has not been changed, because the new and the old value are the same.", Name);
+					Log.Warn($"'{Name}' has not been changed, because the new and the old value are the same.");
 			}
 			else
 			{
 				_value = value;
-				Log.Info("'{0}' is now '{1}\\default'.", Name, TypeRegistry.ToString(value));
+				Log.Info($"'{Name}' is now '{TypeRegistry.ToString(value)}\\default'.");
 
 				Changed?.Invoke();
 			}

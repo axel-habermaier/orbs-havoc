@@ -102,7 +102,7 @@ namespace OrbsHavoc.Platform.Input
 			_inputs.Add(input);
 			input.SetLogicalDevice(this);
 
-			Log.Debug("A logical input with trigger '{0}' has been registered.", input.Trigger);
+			Log.Debug($"A logical input with trigger '{input.Trigger}' has been registered.");
 		}
 
 		/// <summary>

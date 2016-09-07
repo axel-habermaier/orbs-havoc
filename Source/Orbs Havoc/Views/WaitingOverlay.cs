@@ -24,7 +24,6 @@ namespace OrbsHavoc.Views
 {
 	using System;
 	using Assets;
-	using Platform.Logging;
 	using Rendering;
 	using UserInterface;
 	using UserInterface.Controls;

@@ -114,7 +114,7 @@ namespace OrbsHavoc.Views
 			messageBox.Initialize(title, message, okButton, hiddenButton);
 			Show(messageBox);
 
-			Log.Error("{0}", message);
+			Log.Error(message);
 		}
 
 		/// <summary>

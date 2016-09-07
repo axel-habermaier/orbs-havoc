@@ -25,7 +25,6 @@ namespace AssetsCompiler
 	using System;
 	using System.Diagnostics;
 	using System.IO;
-	using JetBrains.Annotations;
 
 	/// <summary>
 	///   Represents external process.
@@ -42,14 +41,12 @@ namespace AssetsCompiler
 		/// </summary>
 		/// <param name="fileName">The file name of the external executable.</param>
 		/// <param name="commandLine">The command line arguments that should be passed to the executable.</param>
-		/// <param name="arguments">The arguments that should be copied into the command line.</param>
-		[StringFormatMethod("commandLine")]
-		public ExternalProcess(string fileName, string commandLine = "", params object[] arguments)
+		public ExternalProcess(string fileName, string commandLine = "")
 		{
 			_process = new Process
 			{
 				EnableRaisingEvents = true,
-				StartInfo = new ProcessStartInfo(fileName, String.Format(commandLine, arguments))
+				StartInfo = new ProcessStartInfo(fileName, commandLine)
 				{
 					UseShellExecute = false,
 					RedirectStandardError = true,
@@ -58,7 +55,7 @@ namespace AssetsCompiler
 					CreateNoWindow = true
 				}
 			};
-		
+
 			_process.OutputDataReceived += (o, e) => LogMessage(e.Data);
 			_process.ErrorDataReceived += (o, e) => LogMessage(e.Data);
 		}

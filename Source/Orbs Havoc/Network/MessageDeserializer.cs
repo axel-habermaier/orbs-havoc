@@ -146,7 +146,7 @@ namespace OrbsHavoc.Network
 					return true;
 
 				// Delivery might not be allowed for reliable messages, though.
-				Assert.That(message.Message.IsReliable, "A message of type '{0}' is neither reliable nor unreliable?", message.Message.MessageType);
+				Assert.That(message.Message.IsReliable, $"A message of type '{message.Message.MessageType}' is neither reliable nor unreliable?");
 				if (_deliveryManager.AllowReliableDelivery(message.SequenceNumber))
 					return true;
 
@@ -186,7 +186,7 @@ namespace OrbsHavoc.Network
 			message.Deserialize(ref reader);
 
 			if (message.IsReliable)
-				Log.DebugIf(EnableTracing, "(Client) {0}: {1}", sequenceNumber, message);
+				Log.DebugIf(EnableTracing, $"(Client) {sequenceNumber}: {message}");
 
 			return new SequencedMessage(message, sequenceNumber);
 		}

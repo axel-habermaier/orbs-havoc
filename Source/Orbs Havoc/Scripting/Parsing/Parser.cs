@@ -24,7 +24,6 @@ namespace OrbsHavoc.Scripting.Parsing
 {
 	using System;
 	using System.Linq;
-	using System.Net;
 	using System.Numerics;
 	using Platform.Input;
 	using Utilities;
@@ -168,7 +167,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			if (IsKeyword(inputStream, "false") || IsKeyword(inputStream, "0") || IsKeyword(inputStream, "off"))
 				return false;
 
-			throw new ParseException(inputStream, "Expected: {0}", TypeRegistry.GetDescription<bool>());
+			throw new ParseException(inputStream, $"Expected: {TypeRegistry.GetDescription<bool>()}");
 		}
 
 		/// <summary>
@@ -231,7 +230,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			}
 			catch (Exception)
 			{
-				throw new ParseException(inputStream, "Expected a valid '{0}' literal.", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, $"Expected a valid '{TypeRegistry.GetDescription<T>()}' literal.");
 			}
 		}
 
@@ -249,7 +248,7 @@ namespace OrbsHavoc.Scripting.Parsing
 				}
 				catch (Exception)
 				{
-					throw new ParseException(inputStream, "Expected a valid '{0}' literal.", TypeRegistry.GetDescription(type));
+					throw new ParseException(inputStream, $"Expected a valid '{TypeRegistry.GetDescription(type)}' literal.");
 				}
 			};
 		}
@@ -262,7 +261,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			var width = ParseFloat32(inputStream);
 
 			if (inputStream.Peek() != 'x')
-				throw new ParseException(inputStream, "Expected two values of type '{0}' separated by 'x'.", TypeRegistry.GetDescription<float>());
+				throw new ParseException(inputStream, $"Expected two values of type '{TypeRegistry.GetDescription<float>()}' separated by 'x'.");
 
 			inputStream.Skip(1);
 			var height = ParseFloat32(inputStream);
@@ -277,7 +276,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			var width = ParseFloat32(inputStream);
 
 			if (inputStream.Peek() != ';')
-				throw new ParseException(inputStream, "Expected two values of type '{0}' separated by ';'.", TypeRegistry.GetDescription<float>());
+				throw new ParseException(inputStream, $"Expected two values of type '{TypeRegistry.GetDescription<float>()}' separated by ';'.");
 
 			inputStream.Skip(1);
 			var height = ParseFloat32(inputStream);
@@ -328,7 +327,7 @@ namespace OrbsHavoc.Scripting.Parsing
 				var normalizedValue = value.ToLower().Trim();
 
 				if (normalizedValue == String.Empty)
-					throw new ParseException(inputStream, "Unexpected token '{0}\\default'.", inputStream.Peek());
+					throw new ParseException(inputStream, $"Unexpected token '{inputStream.Peek()}\\default'.");
 
 				switch (normalizedValue)
 				{
@@ -362,13 +361,13 @@ namespace OrbsHavoc.Scripting.Parsing
 							else
 							{
 								inputStream.Position = begin;
-								throw new ParseException(inputStream, "Input contains unrecognizable value '{0}\\default'.", value.Trim());
+								throw new ParseException(inputStream, $"Input contains unrecognizable value '{value.Trim()}\\default'.");
 							}
 						}
 						catch (ArgumentException)
 						{
 							inputStream.Position = begin;
-							throw new ParseException(inputStream, "Input contains unrecognizable value '{0}\\default'.", value.Trim());
+							throw new ParseException(inputStream, $"Input contains unrecognizable value '{value.Trim()}\\default'.");
 						}
 						break;
 				}
@@ -428,7 +427,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			}
 			catch (ParseException e)
 			{
-				throw new ParseException(e.InputStream, "{0}\\default\n{1}^\n{2}", e.Input, new string(' ', e.Position), e.Message);
+				throw new ParseException(e.InputStream, $"{e.Input}\\default\n{new string(' ', e.Position)}^\n{e.Message}");
 			}
 		}
 
@@ -453,8 +452,8 @@ namespace OrbsHavoc.Scripting.Parsing
 			}
 			catch (ParseException e)
 			{
-				throw new ParseException(inputStream, "{0}\\default\n{1}\n{2}",
-					e.Message, TypeRegistry.GetExampleString(cvar.ValueType), Help.GetHint(cvar.Name));
+				throw new ParseException(inputStream, $"{e.Message}\\default\n{TypeRegistry.GetExampleString(cvar.ValueType)}\n" +
+													  $"{Help.GetHint(cvar.Name)}");
 			}
 
 			if (!inputStream.WhiteSpaceUntilEndOfInput())
@@ -487,8 +486,8 @@ namespace OrbsHavoc.Scripting.Parsing
 				{
 					inputStream.SkipWhitespaces(); // To get the correct column in the error message
 
-					throw new ParseException(inputStream, "Expected a value of type '{0}'.\n{1}\n{2}",
-						TypeRegistry.GetDescription(parameters[i].Type), TypeRegistry.GetExampleString(parameters[i].Type), Help.GetHint(command.Name));
+					throw new ParseException(inputStream, $"Expected a value of type '{TypeRegistry.GetDescription(parameters[i].Type)}'.\n" +
+														  $"{TypeRegistry.GetExampleString(parameters[i].Type)}\n{Help.GetHint(command.Name)}");
 				}
 
 				// The argument must be separated from the previous one by at least one white space character
@@ -504,9 +503,9 @@ namespace OrbsHavoc.Scripting.Parsing
 				catch (ParseException e)
 				{
 					throw new ParseException(inputStream,
-						"Invalid value for parameter '{0}': {1}\\default\nParameter type: {2}\n{3}\n{4}",
-						parameters[i].Name, e.Message, TypeRegistry.GetDescription(parameters[i].Type),
-						TypeRegistry.GetExampleString(parameters[i].Type), Help.GetHint(command.Name));
+						$"Invalid value for parameter '{parameters[i].Name}': {e.Message}\\default\n" +
+						$"Parameter type: {TypeRegistry.GetDescription(parameters[i].Type)}\n" +
+						$"{TypeRegistry.GetExampleString(parameters[i].Type)}\n{Help.GetHint(command.Name)}");
 				}
 			}
 
@@ -531,7 +530,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			if (negative && !allowNegative)
 			{
 				inputStream.Position = position;
-				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, $"Expected a valid value of type '{TypeRegistry.GetDescription<T>()}'.");
 			}
 
 			if (negative || positive)
@@ -542,7 +541,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			if (count == 0 && (!allowDecimal || inputStream.Peek() != '.'))
 			{
 				inputStream.Position = position;
-				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, $"Expected a valid value of type '{TypeRegistry.GetDescription<T>()}'.");
 			}
 
 			// If a fractional part is allowed, parse it, but there must be at least one digit following
@@ -554,7 +553,7 @@ namespace OrbsHavoc.Scripting.Parsing
 				if (count == 0)
 				{
 					inputStream.Position = position;
-					throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
+					throw new ParseException(inputStream, $"Expected a valid value of type '{TypeRegistry.GetDescription<T>()}'.");
 				}
 			}
 
@@ -566,12 +565,12 @@ namespace OrbsHavoc.Scripting.Parsing
 			catch (FormatException)
 			{
 				inputStream.Position = position;
-				throw new ParseException(inputStream, "Expected a valid value of type '{0}'.", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, $"Expected a valid value of type '{TypeRegistry.GetDescription<T>()}'.");
 			}
 			catch (OverflowException)
 			{
 				inputStream.Position = position;
-				throw new ParseException(inputStream, "The value lies outside the range of type '{0}'.", TypeRegistry.GetDescription<T>());
+				throw new ParseException(inputStream, $"The value lies outside the range of type '{TypeRegistry.GetDescription<T>()}'.");
 			}
 		}
 	}

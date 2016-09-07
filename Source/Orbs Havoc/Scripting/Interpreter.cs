@@ -72,11 +72,11 @@ namespace OrbsHavoc.Scripting
 
 			ICvar cvar;
 			if (!Cvars.TryFind(name, out cvar))
-				Log.Warn("Unknown cvar '{0}'.", name);
+				Log.Warn($"Unknown cvar '{name}'.");
 			else
 			{
 				if (cvar.ValueType != typeof(bool))
-					Log.Warn("Cvar '{0}' is not of type {1}.", name, TypeRegistry.GetDescription<bool>());
+					Log.Warn($"Cvar '{name}' is not of type {TypeRegistry.GetDescription<bool>()}.");
 				else
 					cvar.SetValue(!(bool)cvar.Value, true);
 			}
@@ -92,7 +92,7 @@ namespace OrbsHavoc.Scripting
 
 			ICvar cvar;
 			if (!Cvars.TryFind(name, out cvar))
-				Log.Warn("Unknown cvar '{0}'.", name);
+				Log.Warn($"Unknown cvar '{name}'.");
 			else
 				cvar.SetValue(cvar.DefaultValue, true);
 		}
@@ -114,7 +114,7 @@ namespace OrbsHavoc.Scripting
 			}
 			catch (ParseException e)
 			{
-				Log.Error("{0}", e.Message);
+				Log.Error(e.Message);
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace OrbsHavoc.Scripting
 			var elements = source.OrderBy(name).ToArray();
 			if (elements.Length == 0)
 			{
-				Log.Warn("No elements found matching search pattern '{0}'.", pattern);
+				Log.Warn($"No elements found matching search pattern '{pattern}'.");
 				return;
 			}
 
@@ -175,7 +175,7 @@ namespace OrbsHavoc.Scripting
 			foreach (var element in elements)
 				builder.AppendFormat("'\\lightgrey{0}\\default': {1}\n", name(element), description(element));
 
-			Log.Info("{0}", builder);
+			Log.Info(builder.ToString());
 		}
 	}
 }

@@ -103,7 +103,7 @@ namespace OrbsHavoc.Scripting
 			Assert.ArgumentSatisfies(parameters.Length == 2, nameof(parameters), "Argument count mismatch.");
 
 			if (userInvoked && SystemOnly)
-				Log.Warn("'{0}' can only be invoked by the application.", Name);
+				Log.Warn($"'{Name}' can only be invoked by the application.");
 			else
 				Invoke((T1)parameters[0], (T2)parameters[1]);
 		}
@@ -136,7 +136,7 @@ namespace OrbsHavoc.Scripting
 		{
 			if (!_parameter1.Validate(value1) | !_parameter2.Validate(value2))
 			{
-				Log.Info("{0}", Help.GetHint(Name));
+				Log.Info(Help.GetHint(Name));
 				return;
 			}
 

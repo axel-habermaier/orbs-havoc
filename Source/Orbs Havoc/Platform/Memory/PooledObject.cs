@@ -24,7 +24,6 @@ namespace OrbsHavoc.Platform.Memory
 {
 	using System;
 	using System.Diagnostics;
-	using JetBrains.Annotations;
 	using Logging;
 	using Utilities;
 
@@ -86,14 +85,11 @@ namespace OrbsHavoc.Platform.Memory
 		///   In debug builds, sets a description for the instance in order to make debugging easier.
 		/// </summary>
 		/// <param name="description">The description of the instance.</param>
-		/// <param name="arguments">The arguments that should be copied into the description.</param>
-		[Conditional("DEBUG"), StringFormatMethod("description")]
-		public void SetDescription(string description, params object[] arguments)
+		[Conditional("DEBUG")]
+		public void SetDescription(string description)
 		{
-			Assert.ArgumentNotNullOrWhitespace(description, nameof(description));
-
 #if DEBUG
-			_description = String.Format(description, arguments);
+			_description = description;
 #endif
 		}
 
@@ -145,8 +141,8 @@ namespace OrbsHavoc.Platform.Memory
 			if (!InUse)
 				return;
 
-			Log.Error("A pooled object of type '{0}' was not returned to the pool.\nInstance description: '{1}'",
-				GetType().FullName, _description ?? "None");
+			Log.Error($"A pooled object of type '{GetType().FullName}' was not returned to the pool.\n" +
+					  $"Instance description: '{_description ?? "None"}'");
 		}
 #endif
 	}

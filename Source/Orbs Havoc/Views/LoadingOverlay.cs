@@ -86,7 +86,7 @@ namespace OrbsHavoc.Views
 			_clock.Reset();
 
 			Show();
-			Log.Info("Connecting to {0}...", serverEndPoint);
+			Log.Info($"Connecting to {serverEndPoint}...");
 
 			Views.Console.Hide();
 			Views.MessageBoxes.CloseAll();

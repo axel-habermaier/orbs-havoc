@@ -82,7 +82,7 @@ namespace OrbsHavoc
 				Commands.OnExit += () =>
 				{
 					running = false;
-					Log.Info("Exiting {0}...", Name);
+					Log.Info($"Exiting {Name}...");
 				};
 
 				while (running)

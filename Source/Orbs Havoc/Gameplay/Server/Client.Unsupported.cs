@@ -158,7 +158,7 @@ namespace OrbsHavoc.Gameplay.Server
 		[DebuggerHidden]
 		private void HandleUnsupportedMessage(Message message)
 		{
-			Assert.NotReached("Received an unexpected message of type '{0}' from client at '{1}'.", message.MessageType, _connection.RemoteEndPoint);
+			Assert.NotReached($"Received an unexpected message of type '{message.MessageType}' from client at '{_connection.RemoteEndPoint}'.");
 		}
 	}
 }

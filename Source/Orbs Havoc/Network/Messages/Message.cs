@@ -70,9 +70,9 @@ namespace OrbsHavoc.Network.Messages
 					.GetCustomAttributes(typeof(UnreliableTransmissionAttribute), false).FirstOrDefault();
 
 				Assert.That(reliable == null || unreliable == null,
-					"Cannot use both reliable and unreliable transmission for messages of type '{0}'.", messageType.FullName);
+					$"Cannot use both reliable and unreliable transmission for messages of type '{messageType.FullName}'.");
 				Assert.That(reliable != null || unreliable != null,
-					"No transmission type has been specified for messages of type '{0}'.", messageType.FullName);
+					$"No transmission type has been specified for messages of type '{messageType.FullName}'.");
 
 				if (reliable != null)
 				{

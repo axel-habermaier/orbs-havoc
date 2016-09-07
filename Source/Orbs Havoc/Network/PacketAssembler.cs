@@ -192,7 +192,7 @@ namespace OrbsHavoc.Network
 				_writer.WriteByte((byte)count);
 				_writer.WritePosition = position;
 
-				Log.DebugIf(EnableTracing, "   (b) {0}: {1} #{2}", sequenceNumber, batchedMessage.MessageType, count);
+				Log.DebugIf(EnableTracing, $"   (b) {sequenceNumber}: {batchedMessage.MessageType} #{count}");
 
 				// If there are any messages left, we've run out of space and have to allocate a new packet for the
 				// next fragment of the batched message.
@@ -235,8 +235,8 @@ namespace OrbsHavoc.Network
 			writer.WriteUInt32(sequencedMessage.SequenceNumber);
 
 			sequencedMessage.Message.Serialize(ref writer);
-			Log.DebugIf(EnableTracing, "   ({2}) {0}: {1}", sequencedMessage.SequenceNumber, sequencedMessage.Message,
-				sequencedMessage.Message.IsReliable ? "r" : "u");
+			Log.DebugIf(EnableTracing, $"   ({(sequencedMessage.Message.IsReliable ? "r" : "u")}) {sequencedMessage.SequenceNumber}: " +
+									   $"{sequencedMessage.Message}");
 		}
 
 		/// <summary>
@@ -256,7 +256,7 @@ namespace OrbsHavoc.Network
 		{
 			_writer = new BufferWriter(_buffer, Endianess.Big);
 
-			Log.DebugIf(EnableTracing, "Packet #{1},  ack: {0}", _acknowledgement, _packetCount + 1);
+			Log.DebugIf(EnableTracing, $"Packet #{_packetCount + 1},  ack: {_acknowledgement}");
 			PacketHeader.Write(ref _writer, _acknowledgement);
 		}
 
@@ -270,7 +270,7 @@ namespace OrbsHavoc.Network
 
 			PacketAssembled(_buffer, _writer.Count);
 
-			Log.DebugIf(EnableTracing, "Packet length: {0} bytes", _writer.Count);
+			Log.DebugIf(EnableTracing, $"Packet length: {_writer.Count} bytes");
 			++_packetCount;
 		}
 

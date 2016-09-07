@@ -90,7 +90,7 @@ namespace OrbsHavoc.Gameplay.Server
 			var message = EntityAddMessage.Create(_allocator, entity);
 			_gameSession.Broadcast(message);
 
-			Log.DebugIf(EnableTracing, "(Server) +{1} {0}", message.Entity, message.EntityType);
+			Log.DebugIf(EnableTracing, $"(Server) +{message.EntityType} {message.Entity}");
 			entity.OnAdded();
 		}
 
@@ -100,7 +100,7 @@ namespace OrbsHavoc.Gameplay.Server
 		/// <param name="entity">The entity that has been removed.</param>
 		private void OnEntityRemoved(Entity entity)
 		{
-			Log.DebugIf(EnableTracing, "(Server) -{1} {0}", entity.NetworkIdentity, entity.Type);
+			Log.DebugIf(EnableTracing, $"(Server) -{entity.Type} {entity.NetworkIdentity}");
 			entity.OnRemoved();
 
 			_gameSession.Broadcast(EntityRemoveMessage.Create(_allocator, entity.NetworkIdentity));
@@ -117,8 +117,8 @@ namespace OrbsHavoc.Gameplay.Server
 			Assert.ArgumentNotNull(connection, nameof(connection));
 			Assert.ArgumentNotNull(clientPlayer, nameof(clientPlayer));
 
-			Log.DebugIf(EnableTracing, "(Server) Sending game state snapshot to {0}, player '{1}' ({2}).",
-				connection.RemoteEndPoint, clientPlayer.Name, clientPlayer.Identity);
+			Log.DebugIf(EnableTracing,
+				$"(Server) Sending game state snapshot to {connection.RemoteEndPoint}, player '{clientPlayer.Name}' ({clientPlayer.Identity}).");
 
 			// Synchronize all players
 			foreach (var player in _gameSession.Players)
@@ -126,7 +126,7 @@ namespace OrbsHavoc.Gameplay.Server
 				var message = PlayerJoinMessage.Create(_allocator, player);
 				connection.EnqueueMessage(message);
 
-				Log.DebugIf(EnableTracing, "(Server)    {0}", message);
+				Log.DebugIf(EnableTracing, $"(Server)    {message}");
 			}
 
 			// Synchronize all entities
@@ -135,7 +135,7 @@ namespace OrbsHavoc.Gameplay.Server
 				var message = EntityAddMessage.Create(_allocator, entity);
 				connection.EnqueueMessage(message);
 
-				Log.DebugIf(EnableTracing, "(Server)    {0}", message);
+				Log.DebugIf(EnableTracing, $"(Server)    {message}");
 			}
 
 			// Mark the end of the synchronization
@@ -160,7 +160,7 @@ namespace OrbsHavoc.Gameplay.Server
 			// Broadcast the news about the new player to all clients (this message is not sent to the new client yet)
 			_gameSession.Broadcast(PlayerJoinMessage.Create(_allocator, player));
 
-			Log.DebugIf(EnableTracing, "(Server) Created player '{0}' ({1})", playerName, player.Identity);
+			Log.DebugIf(EnableTracing, $"(Server) Created player '{playerName}' ({player.Identity})");
 			return player;
 		}
 
@@ -182,7 +182,7 @@ namespace OrbsHavoc.Gameplay.Server
 			_gameSession.Broadcast(PlayerLeaveMessage.Create(_allocator, player.Identity, player.LeaveReason));
 			_gameSession.Players.Remove(player);
 
-			Log.DebugIf(EnableTracing, "(Server) Removed player '{0}' ({1}).", player.Name, player.Identity);
+			Log.DebugIf(EnableTracing, $"(Server) Removed player '{player.Name}' ({player.Identity}).");
 		}
 
 		/// <summary>
@@ -254,7 +254,7 @@ namespace OrbsHavoc.Gameplay.Server
 				if (isOccupied)
 					continue;
 
-				Log.DebugIf(EnableTracing, "(Server) Respawning player '{0}' ({1}).", player.Name, player.Identity);
+				Log.DebugIf(EnableTracing, $"(Server) Respawning player '{player.Name}' ({player.Identity}).");
 				player.Orb = Orb.Create(_gameSession, player, startArea.Center, 0);
 				break;
 			}
@@ -274,7 +274,7 @@ namespace OrbsHavoc.Gameplay.Server
 			if (TextString.DisplayEqual(player.Name, playerName))
 				return;
 
-			Log.DebugIf(EnableTracing, "(Server) Player '{0}' ({1}) is renamed to '{2}'.", player.Name, player.Identity, playerName);
+			Log.DebugIf(EnableTracing, $"(Server) Player '{player.Name}' ({player.Identity}) is renamed to '{playerName}'.");
 			player.Name = playerName;
 			_gameSession.Broadcast(PlayerNameMessage.Create(_allocator, player.Identity, player.Name));
 		}
@@ -290,7 +290,7 @@ namespace OrbsHavoc.Gameplay.Server
 			Assert.ArgumentNotNullOrWhitespace(message, nameof(message));
 
 			_gameSession.Broadcast(PlayerChatMessage.Create(_allocator, player.Identity, message));
-			Log.DebugIf(EnableTracing, "(Server) Player '{0}' ({1}): {2}", player.Name, player.Identity, message);
+			Log.DebugIf(EnableTracing, $"(Server) Player '{player.Name}' ({player.Identity}): {message}");
 		}
 
 		/// <summary>

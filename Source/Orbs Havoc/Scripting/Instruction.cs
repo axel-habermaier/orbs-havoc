@@ -74,8 +74,8 @@ namespace OrbsHavoc.Scripting
 
 			if (cvar != null && _parameter == null)
 			{
-				Log.Info("'{0}' is '{1}\\default', default '{2}\\default'.", cvar.Name, TypeRegistry.ToString(cvar.Value),
-					TypeRegistry.ToString(cvar.DefaultValue));
+				Log.Info($"'{cvar.Name}' is '{TypeRegistry.ToString(cvar.Value)}\\default', default " +
+						 $"'{TypeRegistry.ToString(cvar.DefaultValue)}\\default'.");
 			}
 
 			if (cvar != null && _parameter != null)

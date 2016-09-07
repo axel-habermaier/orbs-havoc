@@ -24,7 +24,6 @@ namespace OrbsHavoc.Platform.Memory
 {
 	using System;
 	using System.Diagnostics;
-	using JetBrains.Annotations;
 	using Logging;
 	using Utilities;
 
@@ -67,14 +66,11 @@ namespace OrbsHavoc.Platform.Memory
 		///   In debug builds, sets a description for the instance in order to make debugging easier.
 		/// </summary>
 		/// <param name="description">The description of the instance.</param>
-		/// <param name="arguments">The arguments that should be copied into the description.</param>
-		[Conditional("DEBUG"), StringFormatMethod("description")]
-		public void SetDescription(string description, params object[] arguments)
+		[Conditional("DEBUG")]
+		public void SetDescription(string description)
 		{
-			Assert.ArgumentNotNull(description, nameof(description));
-
 #if DEBUG
-			_description = String.Format(description, arguments);
+			_description = description;
 #endif
 		}
 
@@ -94,8 +90,7 @@ namespace OrbsHavoc.Platform.Memory
 		/// </summary>
 		~DisposableObject()
 		{
-			Log.Error("Finalizer runs for a disposable object of type '{0}'.\nInstance description: '{1}'",
-				GetType().FullName, _description ?? "None");
+			Log.Error($"Finalizer runs for a disposable object of type '{GetType().FullName}'.\nInstance description: '{_description ?? "None"}'");
 		}
 #endif
 	}

@@ -146,12 +146,12 @@ namespace OrbsHavoc.Platform.Memory
 			foreach (var obj in _pooledObjects.OfType<PooledObject>())
 				obj.Free();
 
-			Log.Debug("Released {1} pooled object(s) of type '{0}'.", typeof(T).FullName, _allocationCount);
+			Log.Debug($"Released {_allocationCount} pooled object(s) of type '{typeof(T).FullName}'.");
 
 #if DEBUG
 			var leakedObjects = _allocatedObjects.Except(_pooledObjects).ToArray();
 			if (leakedObjects.Length > 0)
-				Log.Error("Leaked {1} object(s) of type '{0}'.", typeof(T).FullName, leakedObjects.Length);
+				Log.Error($"Leaked {leakedObjects.Length} object(s) of type '{typeof(T).FullName}'.");
 
 			if (leakedObjects.Length > 0 && Debugger.IsAttached)
 				Debugger.Break();

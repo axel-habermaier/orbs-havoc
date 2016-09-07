@@ -175,7 +175,7 @@ namespace OrbsHavoc.Network
 			catch (SocketException e)
 			{
 				IsDropped = true;
-				throw new NetworkException("{0}", e.GetMessage());
+				throw new NetworkException(e.GetMessage());
 			}
 		}
 
@@ -204,7 +204,7 @@ namespace OrbsHavoc.Network
 			catch (SocketException e)
 			{
 				IsDropped = true;
-				throw new NetworkException("{0}", e.GetMessage());
+				throw new NetworkException(e.GetMessage());
 			}
 		}
 
@@ -239,7 +239,7 @@ namespace OrbsHavoc.Network
 			}
 			catch (SocketException e)
 			{
-				Log.Debug("Failed to send disconnect message: {0}", e.GetMessage());
+				Log.Debug($"Failed to send disconnect message: {e.GetMessage()}");
 			}
 
 			IsDropped = true;

@@ -113,7 +113,7 @@ namespace OrbsHavoc.Platform.Logging
 			}
 			catch (Exception e)
 			{
-				Log.Error("Failed to append to log file: {0}", e.Message);
+				Log.Error($"Failed to append to log file: {e.Message}");
 			}
 		}
 

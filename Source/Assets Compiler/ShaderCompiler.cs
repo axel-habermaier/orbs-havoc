@@ -170,7 +170,7 @@ namespace AssetsCompiler
 			{
 				File.WriteAllText(path, shader);
 
-				var process = new ExternalProcess("../../Dependencies/glslangValidator.exe", "\"{0}\"", path);
+				var process = new ExternalProcess("../../Dependencies/glslangValidator.exe", $"\"{path}\"");
 				if (process.Run() != 0)
 					throw new InvalidOperationException($"GLSL shader '{InFile}' contains errors.");
 			}

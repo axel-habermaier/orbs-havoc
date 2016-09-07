@@ -56,7 +56,7 @@ namespace OrbsHavoc.Assets
 			var assets = Decompress(FileSystem.ReadAllBytes("Assets.pak"));
 
 			LoadAssets(new BufferReader(assets, Endianess.Little));
-			Log.Info("Asset bundle loaded ({0:F2}ms).", (Clock.GetTime() - start) * 1000);
+			Log.Info($"Asset bundle loaded ({(Clock.GetTime() - start) * 1000:F2}ms).");
 		}
 
 		/// <summary>

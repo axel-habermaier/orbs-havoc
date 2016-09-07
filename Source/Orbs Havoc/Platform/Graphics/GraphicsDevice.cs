@@ -52,7 +52,7 @@ namespace OrbsHavoc.Platform.Graphics
 
 			_contextWindow = SDL_CreateWindow(title, 0, 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
 			if (_contextWindow == null)
-				Log.Die("Failed to create the OpenGL context window: {0}", SDL_GetError());
+				Log.Die($"Failed to create the OpenGL context window: {SDL_GetError()}");
 
 			_context = SDL_GL_CreateContext(_contextWindow);
 			if (_context == null)
@@ -68,7 +68,7 @@ namespace OrbsHavoc.Platform.Graphics
 
 					// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
 					if ((long)function >= -1 && (long)function <= 3)
-						Log.Die("Failed to load OpenGL entry point '{0}'.", entryPoint);
+						Log.Die($"Failed to load OpenGL entry point '{entryPoint}'.");
 
 					return new IntPtr(function);
 				}
@@ -79,12 +79,12 @@ namespace OrbsHavoc.Platform.Graphics
 			glGetIntegerv(GL_MINOR_VERSION, &minor);
 
 			if (major < 3 || (major == 3 && minor < 3))
-				Log.Die("Only OpenGL {0}.{1} seems to be supported. OpenGL 3.3 is required.", major, minor);
+				Log.Die($"Only OpenGL {major}.{minor} seems to be supported. OpenGL 3.3 is required.");
 
 			Func<int, string> getString = option => Interop.ToString(glGetString(option));
-			Log.Info("OpenGL renderer: {0} ({1})", getString(GL_RENDERER), getString(GL_VENDOR));
-			Log.Info("OpenGL version: {0}", getString(GL_VERSION));
-			Log.Info("OpenGL GLSL version: {0}", getString(GL_SHADING_LANGUAGE_VERSION));
+			Log.Info($"OpenGL renderer: {getString(GL_RENDERER)} ({getString(GL_VENDOR)})");
+			Log.Info($"OpenGL version: {getString(GL_VERSION)}");
+			Log.Info($"OpenGL GLSL version: {getString(GL_SHADING_LANGUAGE_VERSION)}");
 
 			SamplerState.Initialize();
 			glDisable(GL_DEPTH_TEST);
@@ -117,7 +117,7 @@ namespace OrbsHavoc.Platform.Graphics
 		public void MakeCurrent(Window window = null)
 		{
 			if (SDL_GL_MakeCurrent(window ?? _contextWindow, _context) != 0)
-				Log.Die("Failed to make OpenGL context current: {0}", SDL_GetError());
+				Log.Die($"Failed to make OpenGL context current: {SDL_GetError()}");
 		}
 
 		/// <summary>

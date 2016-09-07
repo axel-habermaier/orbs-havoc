@@ -103,7 +103,7 @@ namespace OrbsHavoc.Scripting
 			if (Input.IsTriggered && _errorMessage == null)
 				_instruction.Execute(true);
 			else if (Input.IsTriggered)
-				Log.Error("Error while parsing the command '{0}\\default':\n{1}", Command, _errorMessage);
+				Log.Error($"Error while parsing the command '{Command}\\default':\n{_errorMessage}");
 		}
 	}
 }

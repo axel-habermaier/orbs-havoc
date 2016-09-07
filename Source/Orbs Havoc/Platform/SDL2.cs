@@ -284,7 +284,7 @@ namespace OrbsHavoc.Platform
 			try
 			{
 				if (SDL_Init(SDL_INIT_VIDEO) != 0)
-					Log.Die("SDL2 initialization failed: {0}", SDL_GetError());
+					Log.Die($"SDL2 initialization failed: {SDL_GetError()}");
 
 				SDL_version version;
 				SDL_GetVersion(out version);
@@ -292,8 +292,8 @@ namespace OrbsHavoc.Platform
 				const int major = 2, minor = 0, patch = 2;
 				if (!SDL_VERSION_ATLEAST(major, minor, patch))
 				{
-					Log.Die("SDL2 is outdated: Version {0}.{1}.{2} is installed but at least version {3}.{4}.{5} is required.",
-						version.major, version.minor, version.patch, major, minor, patch);
+					Log.Die($"SDL2 is outdated: Version {version.major}.{version.minor}.{version.patch} is installed but at " +
+							$"least version {major}.{minor}.{patch} is required.");
 				}
 
 				SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -313,9 +313,9 @@ namespace OrbsHavoc.Platform
 
 				SDL_StopTextInput();
 				if (SDL_GL_LoadLibrary(null) != 0)
-					Log.Die("Failed to load the OpenGL library: {0}", SDL_GetError());
+					Log.Die($"Failed to load the OpenGL library: {SDL_GetError()}");
 
-				Log.Info("SDL {0}.{1}.{2} initialized.", version.major, version.minor, version.patch);
+				Log.Info($"SDL {version.major}.{version.minor}.{version.patch} initialized.");
 				return new PlatformCleanup();
 			}
 			catch (DllNotFoundException)

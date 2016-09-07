@@ -299,7 +299,7 @@ namespace OrbsHavoc.Gameplay.Server
 			if (_player != null && !_connection.IsDropped)
 				return true;
 
-			Log.Error("Received an unexpected message of type '{0}' from client at '{1}'.", message.MessageType, _connection.RemoteEndPoint);
+			Log.Error($"Received an unexpected message of type '{message.MessageType}' from client at '{_connection.RemoteEndPoint}'.");
 
 			DisconnectAfterMisbehavior();
 			return false;
@@ -319,8 +319,8 @@ namespace OrbsHavoc.Gameplay.Server
 			if (_player == null)
 				return false;
 
-			Log.Error("Client '{0}' has been kicked: Client message of type '{3}' references invalid player {1} instead of client's player {2}.",
-				_connection.RemoteEndPoint, player.Identifier, _player.Identity, message.MessageType);
+			Log.Error($"Client '{_connection.RemoteEndPoint}' has been kicked: Client message of type '{message.MessageType}' " +
+					  $"references invalid player {player.Identifier} instead of client's player {_player.Identity}.");
 
 			DisconnectAfterMisbehavior();
 			return false;

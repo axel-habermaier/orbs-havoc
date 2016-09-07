@@ -96,7 +96,7 @@ namespace OrbsHavoc.Gameplay.Server
 			}
 			catch (SocketException e)
 			{
-				throw new NetworkException("The server can no longer accept incoming connection requests: {0}", e.GetMessage());
+				throw new NetworkException($"The server can no longer accept incoming connection requests: {e.GetMessage()}");
 			}
 
 			RemoveDisconnectedClients();
