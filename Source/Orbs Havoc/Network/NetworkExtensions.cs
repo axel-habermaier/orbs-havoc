@@ -34,11 +34,12 @@ namespace OrbsHavoc.Network
 		/// <summary>
 		///   Gets the cleaned-up message of the given exception.
 		/// </summary>
-		public static string GetMessage(this SocketException e)
+		/// <param name="exception">The exception the message should be retrieved for.</param>
+		public static string GetMessage(this SocketException exception)
 		{
-			Assert.ArgumentNotNull(e, nameof(e));
+			Assert.ArgumentNotNull(exception, nameof(exception));
 
-			var message = e.Message.Trim();
+			var message = exception.Message.Trim();
 			if (!message.EndsWith("."))
 				message += ".";
 
@@ -48,15 +49,17 @@ namespace OrbsHavoc.Network
 		/// <summary>
 		///   Initializes the socket to support multicasting.
 		/// </summary>
-		public static void InitializeMulticasting(this Socket socket)
+		/// <param name="socket">The socket that should be initialized.</param>
+		/// <param name="multicastGroup">The IP address representing the multicast group.</param>
+		/// <param name="port">The port the socket should be bound to or 0 if the port is irrelevant.</param>
+		public static void InitializeMulticasting(this Socket socket, IPAddress multicastGroup, ushort port)
 		{
 			Assert.ArgumentNotNull(socket, nameof(socket));
+			Assert.ArgumentNotNull(multicastGroup, nameof(multicastGroup));
 
-			socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.AddMembership,
-				new IPv6MulticastOption(NetworkProtocol.MulticastGroup.Address));
+			socket.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
+			socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.AddMembership, new IPv6MulticastOption(multicastGroup));
 			socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.MulticastTimeToLive, 255);
-			socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-			socket.Bind(new IPEndPoint(IPAddress.IPv6Any, NetworkProtocol.MulticastGroup.Port));
 		}
 	}
 }

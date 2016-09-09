@@ -39,9 +39,9 @@ namespace OrbsHavoc.UserInterface
 		private Glyph[] _glyphs;
 
 		/// <summary>
-		///   Stores the kerning pairs in a space-efficient way.
+		///   Stores the kerning information in a space-efficient way.
 		/// </summary>
-		private KerningPair[] _kernings;
+		private KerningInfo[] _kernings;
 
 		/// <summary>
 		///   Gets a value indicating whether the font supports kerning.
@@ -130,7 +130,7 @@ namespace OrbsHavoc.UserInterface
 
 			for (var i = firstGlyph.KerningStart; i < end; ++i)
 			{
-				if (_kernings[i].SecondGlyph == second)
+				if (_kernings[i].Character == second)
 					return _kernings[i].Offset;
 			}
 
@@ -278,23 +278,26 @@ namespace OrbsHavoc.UserInterface
 				_glyphs[index].Area.Left = buffer.ReadInt16();
 				_glyphs[index].Area.Top = buffer.ReadInt16();
 				_glyphs[index].AdvanceX = buffer.ReadInt16();
+
+				// Indicate that there is kerning information for the glyph (yet)
+				_glyphs[index].KerningStart = -1;
 			}
 
 			// Load the kerning data
 			if (kerningCount == 0)
 				return;
 
-			_kernings = new KerningPair[kerningCount];
+			_kernings = new KerningInfo[kerningCount];
 
 			for (var i = 0; i < kerningCount; ++i)
 			{
-				var first = buffer.ReadUInt16();
-				var second = buffer.ReadUInt16();
+				var first = buffer.ReadCharacter();
+				var second = buffer.ReadCharacter();
 				var offset = buffer.ReadInt16();
 
-				_kernings[i] = new KerningPair((char)first, (char)second, offset);
+				_kernings[i] = new KerningInfo(second, offset);
 
-				if (_glyphs[first].KerningStart == 0)
+				if (_glyphs[first].KerningStart == -1)
 					_glyphs[first].KerningStart = i;
 
 				++_glyphs[first].KerningCount;
@@ -346,9 +349,9 @@ namespace OrbsHavoc.UserInterface
 		}
 
 		/// <summary>
-		///   A kerning pair stores an position offset for two glyphs.
+		///   Provides kerning information.
 		/// </summary>
-		private struct KerningPair
+		private struct KerningInfo
 		{
 			/// <summary>
 			///   The kerning offset.
@@ -356,25 +359,18 @@ namespace OrbsHavoc.UserInterface
 			public readonly short Offset;
 
 			/// <summary>
-			///   The second glyph of the kerning pair.
+			///   The character the offset is provided for.
 			/// </summary>
-			public readonly char SecondGlyph;
-
-			/// <summary>
-			///   The first glyph of the kerning pair.
-			/// </summary>
-			public char FirstGlyph;
+			public readonly char Character;
 
 			/// <summary>
 			///   Initializes a new instance.
 			/// </summary>
-			/// <param name="firstGlyph">The first glyph of the kerning pair.</param>
-			/// <param name="secondGlyph">The second glyph of the kerning pair.</param>
+			/// <param name="character">The character the offset is provided for.</param>
 			/// <param name="offset">The kerning offset.</param>
-			public KerningPair(char firstGlyph, char secondGlyph, short offset)
+			public KerningInfo(char character, short offset)
 			{
-				FirstGlyph = firstGlyph;
-				SecondGlyph = secondGlyph;
+				Character = character;
 				Offset = offset;
 			}
 		}

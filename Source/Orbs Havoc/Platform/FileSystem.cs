@@ -104,17 +104,6 @@ namespace OrbsHavoc.Platform
 		}
 
 		/// <summary>
-		///   Normalizes the line endings of the given input string to '\n', and replaces all tabs with spaces.
-		/// </summary>
-		/// <param name="input">The input whose line endings should be normalized.</param>
-		private static string Normalize(string input)
-		{
-			return input.Replace("\r\n", "\n")
-						.Replace("\r", "\n")
-						.Replace("\t", new string(' ', SpacesPerTab));
-		}
-
-		/// <summary>
 		///   Writes the UTF8-encoded content to the file. If the file does not yet exist, it is created. If it does exist, its
 		///   contents are overwritten. This method can only write files in the application's user directory.
 		/// </summary>
@@ -161,7 +150,25 @@ namespace OrbsHavoc.Platform
 		/// <param name="fileName">The name of the file in the application's user directory that should be deleted.</param>
 		public static void Delete(string fileName)
 		{
-			File.Delete(GetUserFileName(fileName));
+			try
+			{
+				File.Delete(GetUserFileName(fileName));
+			}
+			catch (Exception e)
+			{
+				throw new FileSystemException(e.Message);
+			}
+		}
+
+		/// <summary>
+		///   Normalizes the line endings of the given input string to '\n', and replaces all tabs with spaces.
+		/// </summary>
+		/// <param name="input">The input whose line endings should be normalized.</param>
+		private static string Normalize(string input)
+		{
+			return input.Replace("\r\n", "\n")
+						.Replace("\r", "\n")
+						.Replace("\t", new string(' ', SpacesPerTab));
 		}
 
 		/// <summary>

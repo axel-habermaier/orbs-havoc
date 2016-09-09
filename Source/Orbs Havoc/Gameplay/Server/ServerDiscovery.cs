@@ -45,16 +45,6 @@ namespace OrbsHavoc.Gameplay.Server
 		private readonly byte[] _buffer = new byte[8 + NetworkProtocol.ServerNameLength];
 
 		/// <summary>
-		///   The name of the server that is sent in the discovery message.
-		/// </summary>
-		private readonly string _serverName;
-
-		/// <summary>
-		///   The port that the server is using to communicate with its clients.
-		/// </summary>
-		private readonly ushort _serverPort;
-
-		/// <summary>
 		///   The number of times the socket has faulted and has been recreated.
 		/// </summary>
 		private int _faultCount;
@@ -78,17 +68,15 @@ namespace OrbsHavoc.Gameplay.Server
 		{
 			Assert.ArgumentNotNull(serverName, nameof(serverName));
 
-			_serverName = String.IsNullOrWhiteSpace(serverName) ? "Unnamed Server" : serverName.Trim();
-			if (_serverName.Length > NetworkProtocol.ServerNameLength)
-				_serverName = _serverName.Substring(0, NetworkProtocol.ServerNameLength);
-
-			_serverPort = serverPort;
+			serverName = String.IsNullOrWhiteSpace(serverName) ? "Unnamed Server" : serverName.Trim();
+			if (serverName.Length > NetworkProtocol.ServerNameLength)
+				serverName = serverName.Substring(0, NetworkProtocol.ServerNameLength);
 
 			var writer = new BufferWriter(_buffer, Endianess.Big);
 			writer.WriteUInt32(NetworkProtocol.AppIdentifier);
 			writer.WriteByte(NetworkProtocol.Revision);
-			writer.WriteUInt16(_serverPort);
-			writer.WriteString(_serverName, NetworkProtocol.ServerNameLength);
+			writer.WriteUInt16(serverPort);
+			writer.WriteString(serverName, NetworkProtocol.ServerNameLength);
 		}
 
 		/// <summary>
@@ -105,7 +93,7 @@ namespace OrbsHavoc.Gameplay.Server
 				if (_socket == null)
 				{
 					_socket = new Socket(SocketType.Dgram, ProtocolType.Udp);
-					_socket.InitializeMulticasting();
+					_socket.InitializeMulticasting(NetworkProtocol.MulticastGroup.Address, port: 0);
 					_socket.Connect(NetworkProtocol.MulticastGroup);
 				}
 

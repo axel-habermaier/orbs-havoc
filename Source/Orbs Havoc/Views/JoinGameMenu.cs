@@ -232,7 +232,7 @@ namespace OrbsHavoc.Views
 			try
 			{
 				_socket = new Socket(SocketType.Dgram, ProtocolType.Udp);
-				_socket.InitializeMulticasting();
+				_socket.InitializeMulticasting(NetworkProtocol.MulticastGroup.Address, (ushort)NetworkProtocol.MulticastGroup.Port);
 				_socket.Blocking = false;
 
 				Log.Info("Server discovery started.");
