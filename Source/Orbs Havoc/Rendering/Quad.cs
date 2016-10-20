@@ -89,10 +89,10 @@ namespace OrbsHavoc.Rendering
 			}
 			set
 			{
-				Assert.InRange(value.Left, 0, UInt16.MaxValue);
-				Assert.InRange(value.Top, 0, UInt16.MaxValue);
-				Assert.InRange(value.Width, 0, UInt16.MaxValue);
-				Assert.InRange(value.Height, 0, UInt16.MaxValue);
+				Assert.InRange(value.Left, 0, 1);
+				Assert.InRange(value.Top, 0, 1);
+				Assert.InRange(value.Width, 0, 1);
+				Assert.InRange(value.Height, 0, 1);
 
 				_texOffsetX = (ushort)(value.Left * UInt16.MaxValue);
 				_texOffsetY = (ushort)(value.Top * UInt16.MaxValue);

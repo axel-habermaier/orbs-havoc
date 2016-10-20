@@ -140,7 +140,7 @@ namespace OrbsHavoc.Rendering
 			// Check whether we would overflow if we added the given batch.
 			var tooManyQuads = Count + quadCount >= MaxQuads;
 			if (tooManyQuads)
-				Log.Die($"Out of memory while trying to {quadCount} add additional quads.");
+				Log.Die($"Out of memory while trying to add {quadCount} additional quads.");
 		}
 	}
 }

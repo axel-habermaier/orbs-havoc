@@ -24,7 +24,6 @@ namespace OrbsHavoc.Rendering
 {
 	using System.Collections.Generic;
 	using System.Numerics;
-	using Assets;
 	using Platform;
 	using Platform.Graphics;
 	using Utilities;
@@ -34,21 +33,13 @@ namespace OrbsHavoc.Rendering
 	/// </summary>
 	public sealed unsafe class SpriteBatch : RenderOperation
 	{
-		private readonly LayerComparer _layerComparer = new LayerComparer();
+		private static readonly LayerComparer _layerComparer = new LayerComparer();
 		private readonly List<QuadPartition> _partitions = new List<QuadPartition>();
 
 		/// <summary>
 		///   The current render state of the sprite batch that determines how all subsequently added sprites are rendered.
 		/// </summary>
-		public RenderState RenderState;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		public SpriteBatch()
-		{
-			RenderState.Reset();
-		}
+		public RenderState RenderState = RenderState.Default;
 
 		/// <summary>
 		///   Executes the render operation.
@@ -57,35 +48,16 @@ namespace OrbsHavoc.Rendering
 		{
 			Assert.NotPooled(this);
 
-			// Sort the partitions by layer so that we handle overdraw and transparency correctly
-			_partitions.Sort(_layerComparer);
-
-			// Set the shared GPU state
 			Renderer.RenderBuffer.Bind();
 
-			// Draw the quads, starting with the lowest layer
+			// Sort the partitions by layer so that we handle overdraw and transparency correctly then
+			// draw the quads, starting with the lowest layer
+			_partitions.Sort(_layerComparer);
+
 			foreach (var partition in _partitions)
 			{
-				// Set the partition-specific GPU state
-				var state = partition.RenderState;
-
-				state.Texture.Bind(0);
-				state.SamplerState.Bind(0);
-				state.BlendOperation.Bind();
-				(state.Camera ?? Renderer.DefaultCamera).Bind();
-
-				if (state.BlendOperation == BlendOperation.Additive)
-					AssetBundle.AdditiveSpriteShader.Bind();
-				else
-					AssetBundle.SpriteShader.Bind();
-
-				// Enable or disable the scissor test
-				if (state.ScissorArea == null)
-					Renderer.GraphicsDevice.DisableScissorTest();
-				else
-					Renderer.GraphicsDevice.EnableScissorTest(state.RenderTarget, state.ScissorArea.Value);
-
-				Renderer.Draw(state.RenderTarget, partition.Count, partition.Offset, PrimitiveType.Points);
+				partition.RenderState.Bind(Renderer.GraphicsDevice, Renderer.DefaultCamera);
+				Renderer.Draw(partition.RenderState.RenderTarget, partition.Count, partition.Offset, PrimitiveType.Points);
 			}
 
 			// Make sure we don't "leak out" the scissor rasterizer state
@@ -321,7 +293,7 @@ namespace OrbsHavoc.Rendering
 		protected override void OnReturning()
 		{
 			_partitions.Clear();
-			RenderState.Reset();
+			RenderState = RenderState.Default;
 		}
 
 		/// <summary>

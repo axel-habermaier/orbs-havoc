@@ -23,14 +23,24 @@
 namespace OrbsHavoc.Rendering
 {
 	using System.Diagnostics;
+	using Assets;
 	using Platform.Graphics;
 	using Utilities;
 
 	/// <summary>
 	///   Contains the GPU render state information required for sprite rendering.
 	/// </summary>
-	public struct RenderState
+	internal struct RenderState
 	{
+		/// <summary>
+		///   Resets the render state to its default values.
+		/// </summary>
+		public static readonly RenderState Default = new RenderState
+		{
+			BlendOperation = BlendOperation.Premultiplied,
+			SamplerState = SamplerState.Bilinear,
+		};
+
 		/// <summary>
 		///   The blend operation that is used when rendering the sprites.
 		/// </summary>
@@ -70,7 +80,7 @@ namespace OrbsHavoc.Rendering
 		///   In debug builds, validates the render state.
 		/// </summary>
 		[Conditional("DEBUG")]
-		public void Validate()
+		internal void Validate()
 		{
 			Assert.InRange(BlendOperation);
 			Assert.NotNull(SamplerState);
@@ -81,7 +91,7 @@ namespace OrbsHavoc.Rendering
 		/// <summary>
 		///   Checks whether the this render state matches the given one.
 		/// </summary>
-		public bool Matches(ref RenderState renderState)
+		internal bool Matches(ref RenderState renderState)
 		{
 			return
 				BlendOperation == renderState.BlendOperation &&
@@ -94,17 +104,26 @@ namespace OrbsHavoc.Rendering
 		}
 
 		/// <summary>
-		///   Resets the render state to its default values.
+		///   Binds the render state.
 		/// </summary>
-		public void Reset()
+		/// <param name="graphicsDevice">The graphics device the render state should be bound for.</param>
+		/// <param name="defaultCamera">The default camera that should be used if no other camera is set.</param>
+		internal void Bind(GraphicsDevice graphicsDevice, Camera defaultCamera)
 		{
-			BlendOperation = BlendOperation.Premultiplied;
-			SamplerState = SamplerState.Bilinear;
-			Layer = 0;
-			ScissorArea = null;
-			Texture = null;
-			RenderTarget = null;
-			Camera = null;
+			Texture.Bind(0);
+			SamplerState.Bind(0);
+			BlendOperation.Bind();
+			(Camera ?? defaultCamera).Bind();
+
+			if (BlendOperation == BlendOperation.Additive)
+				AssetBundle.AdditiveSpriteShader.Bind();
+			else
+				AssetBundle.SpriteShader.Bind();
+
+			if (ScissorArea == null)
+				graphicsDevice.DisableScissorTest();
+			else
+				graphicsDevice.EnableScissorTest(RenderTarget, ScissorArea.Value);
 		}
 	}
 }
