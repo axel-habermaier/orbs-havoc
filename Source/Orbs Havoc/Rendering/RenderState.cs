@@ -30,12 +30,12 @@ namespace OrbsHavoc.Rendering
 	/// <summary>
 	///   Contains the GPU render state information required for sprite rendering.
 	/// </summary>
-	internal struct RenderState
+	public struct RenderState
 	{
 		/// <summary>
 		///   Resets the render state to its default values.
 		/// </summary>
-		public static readonly RenderState Default = new RenderState
+		internal static readonly RenderState Default = new RenderState
 		{
 			BlendOperation = BlendOperation.Premultiplied,
 			SamplerState = SamplerState.Bilinear,
