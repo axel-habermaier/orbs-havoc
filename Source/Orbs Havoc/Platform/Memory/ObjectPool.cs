@@ -33,12 +33,12 @@ namespace OrbsHavoc.Platform.Memory
 		/// <summary>
 		///   The object pools with global lifetime that should be disposed automatically during application shutdown.
 		/// </summary>
-		private static readonly List<ObjectPool> GlobalPools = new List<ObjectPool>();
+		private static readonly List<ObjectPool> _globalPools = new List<ObjectPool>();
 
 		/// <summary>
 		///   Used for thread synchronization.
 		/// </summary>
-		private static readonly object LockObject = new object();
+		private static readonly object _lockObject = new object();
 
 		/// <summary>
 		///   Adds the given pool to the list of global pools that are disposed automatically during application shutdown.
@@ -48,10 +48,10 @@ namespace OrbsHavoc.Platform.Memory
 		{
 			Assert.ArgumentNotNull(objectPool, nameof(objectPool));
 
-			lock (LockObject)
+			lock (_lockObject)
 			{
-				Assert.That(!GlobalPools.Contains(objectPool), "The object pool has already been added.");
-				GlobalPools.Add(objectPool);
+				Assert.That(!_globalPools.Contains(objectPool), "The object pool has already been added.");
+				_globalPools.Add(objectPool);
 			}
 		}
 
@@ -60,8 +60,8 @@ namespace OrbsHavoc.Platform.Memory
 		/// </summary>
 		internal static void DisposeGlobalPools()
 		{
-			lock (LockObject)
-				GlobalPools.SafeDisposeAll();
+			lock (_lockObject)
+				_globalPools.SafeDisposeAll();
 		}
 
 		/// <summary>

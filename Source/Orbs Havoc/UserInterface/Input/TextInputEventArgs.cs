@@ -30,7 +30,7 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.
 		/// </summary>
-		private static readonly TextInputEventArgs CachedInstance = new TextInputEventArgs();
+		private static readonly TextInputEventArgs _cachedInstance = new TextInputEventArgs();
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -50,10 +50,10 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <param name="text">The text that was entered.</param>
 		internal static TextInputEventArgs Create(string text)
 		{
-			CachedInstance.Handled = false;
-			CachedInstance.Text = text;
+			_cachedInstance.Handled = false;
+			_cachedInstance.Text = text;
 
-			return CachedInstance;
+			return _cachedInstance;
 		}
 	}
 }

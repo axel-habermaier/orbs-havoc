@@ -32,7 +32,7 @@ namespace OrbsHavoc.UserInterface.Controls
 	/// </summary>
 	public class Button : Control
 	{
-		private static readonly ControlTemplate DefaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
+		private static readonly ControlTemplate _defaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
 		{
 			contentPresenter = new ContentPresenter
 			{
@@ -61,7 +61,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		///   Initializes a new instance.
 		/// </summary>
 		public Button()
-			: base(DefaultTemplate)
+			: base(_defaultTemplate)
 		{
 		}
 

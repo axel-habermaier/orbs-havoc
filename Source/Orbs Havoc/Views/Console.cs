@@ -67,10 +67,11 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private const string HistoryFileName = "console.txt";
 
-		private static readonly Color ErrorColor = new Color(1.0f, 0.0f, 0.0f, 1.0f);
-		private static readonly Color WarningColor = new Color(1.0f, 1.0f, 0.0f, 1.0f);
-		private static readonly Color InfoColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-		private static readonly Color DebugInfoColor = new Color(1.0f, 0.0f, 1.0f, 1.0f);
+		private static readonly Color _errorColor = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+		private static readonly Color _warningColor = new Color(1.0f, 1.0f, 0.0f, 1.0f);
+		private static readonly Color _infoColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		private static readonly Color _debugInfoColor = new Color(1.0f, 0.0f, 1.0f, 1.0f);
+
 		private readonly StackPanel _contentPanel = new StackPanel { VerticalAlignment = VerticalAlignment.Bottom, MinWidth = 200 };
 		private readonly string[] _history = new string[MaxHistory];
 		private readonly TextBox _input = new TextBox { MaxLength = MaxLength, Dock = Dock.Bottom, AutoFocus = true };
@@ -128,17 +129,17 @@ namespace OrbsHavoc.Views
 			LogEntry logEntry;
 			while (_queuedLogEntries.TryDequeue(out logEntry))
 			{
-				var color = InfoColor;
+				var color = _infoColor;
 				switch (logEntry.LogType)
 				{
 					case LogType.Error:
-						color = ErrorColor;
+						color = _errorColor;
 						break;
 					case LogType.Warning:
-						color = WarningColor;
+						color = _warningColor;
 						break;
 					case LogType.Debug:
-						color = DebugInfoColor;
+						color = _debugInfoColor;
 						break;
 				}
 

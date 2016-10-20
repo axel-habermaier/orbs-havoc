@@ -30,7 +30,7 @@ namespace OrbsHavoc.UserInterface.Controls
 	/// </summary>
 	public abstract class Control : UIElement
 	{
-		private static readonly ControlTemplate DefaultTemplate =
+		private static readonly ControlTemplate _defaultTemplate =
 			(out UIElement templateRoot, out ContentPresenter contentPresenter) => templateRoot = contentPresenter = new ContentPresenter();
 
 		private object _content;
@@ -45,7 +45,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// <param name="template">The template that should be used by the control.</param>
 		protected Control(ControlTemplate template = null)
 		{
-			Template = template ?? DefaultTemplate;
+			Template = template ?? _defaultTemplate;
 		}
 
 		/// <summary>

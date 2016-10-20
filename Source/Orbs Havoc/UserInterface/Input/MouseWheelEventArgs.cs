@@ -33,7 +33,7 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.
 		/// </summary>
-		private static readonly MouseWheelEventArgs CachedInstance = new MouseWheelEventArgs();
+		private static readonly MouseWheelEventArgs _cachedInstance = new MouseWheelEventArgs();
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -58,12 +58,12 @@ namespace OrbsHavoc.UserInterface.Input
 			Assert.ArgumentNotNull(mouse, nameof(mouse));
 			Assert.ArgumentInRange(direction, nameof(direction));
 
-			CachedInstance.Handled = false;
-			CachedInstance.Mouse = mouse;
-			CachedInstance.Direction = direction;
-			CachedInstance.Modifiers = modifiers;
+			_cachedInstance.Handled = false;
+			_cachedInstance.Mouse = mouse;
+			_cachedInstance.Direction = direction;
+			_cachedInstance.Modifiers = modifiers;
 
-			return CachedInstance;
+			return _cachedInstance;
 		}
 	}
 }

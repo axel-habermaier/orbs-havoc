@@ -44,7 +44,7 @@ namespace OrbsHavoc.Scripting
 		/// <summary>
 		///   Stores the registered type information.
 		/// </summary>
-		private static readonly Dictionary<Type, TypeInfo> RegisteredTypes = new Dictionary<Type, TypeInfo>();
+		private static readonly Dictionary<Type, TypeInfo> _registeredTypes = new Dictionary<Type, TypeInfo>();
 
 		/// <summary>
 		///   Initializes the type and registers all built-in types.
@@ -94,7 +94,7 @@ namespace OrbsHavoc.Scripting
 				"The description cannot be empty.");
 			Assert.ArgumentSatisfies(examples.Length > 0 || typeof(T).GetTypeInfo().IsEnum, nameof(examples),
 				"The examples can be empty for enumeration types only.");
-			Assert.That(!RegisteredTypes.ContainsKey(typeof(T)), "The type has already been registered.");
+			Assert.That(!_registeredTypes.ContainsKey(typeof(T)), "The type has already been registered.");
 
 			description = description ?? typeof(T).Name;
 
@@ -110,7 +110,7 @@ namespace OrbsHavoc.Scripting
 			else
 				objToString = o => toString((T)o);
 
-			RegisteredTypes.Add(typeof(T), new TypeInfo(parser, description, examples, objToString));
+			_registeredTypes.Add(typeof(T), new TypeInfo(parser, description, examples, objToString));
 		}
 
 		/// <summary>
@@ -131,7 +131,7 @@ namespace OrbsHavoc.Scripting
 			Assert.ArgumentNotNull(type, nameof(type));
 
 			TypeInfo info;
-			if (RegisteredTypes.TryGetValue(type, out info))
+			if (_registeredTypes.TryGetValue(type, out info))
 				return info.Parser;
 
 			if (type.GetTypeInfo().IsEnum)
@@ -159,7 +159,7 @@ namespace OrbsHavoc.Scripting
 			Assert.ArgumentNotNull(type, nameof(type));
 
 			TypeInfo info;
-			if (RegisteredTypes.TryGetValue(type, out info))
+			if (_registeredTypes.TryGetValue(type, out info))
 				return info.Description;
 
 			if (type.GetTypeInfo().IsEnum)
@@ -187,7 +187,7 @@ namespace OrbsHavoc.Scripting
 			Assert.ArgumentNotNull(type, nameof(type));
 
 			TypeInfo info;
-			if (RegisteredTypes.TryGetValue(type, out info))
+			if (_registeredTypes.TryGetValue(type, out info))
 				return info.Examples;
 
 			if (type.GetTypeInfo().IsEnum)
@@ -215,7 +215,7 @@ namespace OrbsHavoc.Scripting
 			Assert.ArgumentNotNull(value, nameof(value));
 
 			TypeInfo info;
-			if (RegisteredTypes.TryGetValue(value.GetType(), out info))
+			if (_registeredTypes.TryGetValue(value.GetType(), out info))
 				return info.ToDisplayString(value);
 
 			if (value.GetType().GetTypeInfo().IsEnum)
@@ -225,7 +225,7 @@ namespace OrbsHavoc.Scripting
 			var baseType = value.GetType().GetTypeInfo().BaseType;
 			while (baseType != null && baseType != typeof(object))
 			{
-				if (RegisteredTypes.TryGetValue(baseType, out info))
+				if (_registeredTypes.TryGetValue(baseType, out info))
 					return info.ToDisplayString(value);
 
 				baseType = baseType.GetTypeInfo().BaseType;

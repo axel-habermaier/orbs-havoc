@@ -54,7 +54,7 @@ namespace OrbsHavoc.Utilities
 		/// <summary>
 		///   The application start time.
 		/// </summary>
-		private static readonly double StartTime = GetTime();
+		private static readonly double _startTime = GetTime();
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -92,7 +92,7 @@ namespace OrbsHavoc.Utilities
 		/// </summary>
 		public static double GetTime()
 		{
-			return SDL_GetPerformanceCounter() / (double)SDL_GetPerformanceFrequency() - StartTime;
+			return SDL_GetPerformanceCounter() / (double)SDL_GetPerformanceFrequency() - _startTime;
 		}
 
 		/// <summary>

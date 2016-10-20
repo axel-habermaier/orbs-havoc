@@ -33,7 +33,7 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.
 		/// </summary>
-		private static readonly KeyEventArgs CachedInstance = new KeyEventArgs();
+		private static readonly KeyEventArgs _cachedInstance = new KeyEventArgs();
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -86,14 +86,14 @@ namespace OrbsHavoc.UserInterface.Input
 			Assert.ArgumentInRange(scanCode, nameof(scanCode));
 			Assert.ArgumentInRange(kind, nameof(kind));
 
-			CachedInstance.Handled = false;
-			CachedInstance.Keyboard = keyboard;
-			CachedInstance.Key = key;
-			CachedInstance.ScanCode = scanCode;
-			CachedInstance.Modifiers = keyboard.GetModifiers();
-			CachedInstance.Kind = kind;
+			_cachedInstance.Handled = false;
+			_cachedInstance.Keyboard = keyboard;
+			_cachedInstance.Key = key;
+			_cachedInstance.ScanCode = scanCode;
+			_cachedInstance.Modifiers = keyboard.GetModifiers();
+			_cachedInstance.Kind = kind;
 
-			return CachedInstance;
+			return _cachedInstance;
 		}
 	}
 }

@@ -38,7 +38,7 @@ namespace OrbsHavoc.UserInterface.Controls
 	/// </summary>
 	public class TextBox : Control
 	{
-		private static readonly ControlTemplate DefaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
+		private static readonly ControlTemplate _defaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
 		{
 			contentPresenter = new ContentPresenter();
 			templateRoot = new Border
@@ -62,7 +62,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		///   Initializes a new instance.
 		/// </summary>
 		public TextBox()
-			: base(DefaultTemplate)
+			: base(_defaultTemplate)
 		{
 			_label = new Label { TextWrapping = TextWrapping.Wrap };
 			_caret = new Caret(this);

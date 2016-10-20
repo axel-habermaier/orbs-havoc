@@ -42,13 +42,13 @@ namespace OrbsHavoc.Utilities
 		/// <summary>
 		///   Pools list of color ranges.
 		/// </summary>
-		private static readonly ObjectPool<TextString> TextStringPool = new ObjectPool<TextString>(hasGlobalLifetime: true);
+		private static readonly ObjectPool<TextString> _textStringPool = new ObjectPool<TextString>(hasGlobalLifetime: true);
 
 		/// <summary>
 		///   Maps characters to colors. The character plus the color marker comprise a color specifier. For instance, 'white'
 		///   is mapped to the color white, so a text containing "\whiteA" prints a white 'A'.
 		/// </summary>
-		private static readonly ColorSpecifier[] Colors =
+		private static readonly ColorSpecifier[] _colors =
 		{
 			new ColorSpecifier(ColorMarker + "default", null),
 			new ColorSpecifier(ColorMarker + "red", new Color(255, 0, 0, 255)),
@@ -124,7 +124,7 @@ namespace OrbsHavoc.Utilities
 		/// </param>
 		public static TextString Create(string textString)
 		{
-			var text = TextStringPool.Allocate();
+			var text = _textStringPool.Allocate();
 			text._text.Clear();
 			text._colorRanges.Clear();
 
@@ -192,15 +192,15 @@ namespace OrbsHavoc.Utilities
 				return false;
 			}
 
-			for (var i = 0; i < Colors.Length; ++i)
+			for (var i = 0; i < _colors.Length; ++i)
 			{
-				if (Colors[i].Specifier.Length > source.Length - index)
+				if (_colors[i].Specifier.Length > source.Length - index)
 					continue;
 
 				var matches = true;
-				for (var j = 0; j < Colors[i].Specifier.Length && j + index < source.Length; ++j)
+				for (var j = 0; j < _colors[i].Specifier.Length && j + index < source.Length; ++j)
 				{
-					if (source[j + index] != Colors[i].Specifier[j])
+					if (source[j + index] != _colors[i].Specifier[j])
 					{
 						matches = false;
 						break;
@@ -209,7 +209,7 @@ namespace OrbsHavoc.Utilities
 
 				if (matches)
 				{
-					matchedColor = Colors[i];
+					matchedColor = _colors[i];
 					return true;
 				}
 			}

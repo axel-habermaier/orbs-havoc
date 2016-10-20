@@ -40,12 +40,12 @@ namespace OrbsHavoc.Network.Messages
 		/// <summary>
 		///   Maps a message type to its transmission information.
 		/// </summary>
-		private static readonly Dictionary<Type, TransmissionInfo> TransmissionInfos = new Dictionary<Type, TransmissionInfo>();
+		private static readonly Dictionary<Type, TransmissionInfo> _transmissionInfos = new Dictionary<Type, TransmissionInfo>();
 
 		/// <summary>
 		///   Maps a message type to a message instance allocator.
 		/// </summary>
-		private static readonly Dictionary<MessageType, Func<PoolAllocator, Message>> MessageConstructors =
+		private static readonly Dictionary<MessageType, Func<PoolAllocator, Message>> _messageConstructors =
 			new Dictionary<MessageType, Func<PoolAllocator, Message>>(new MessageTypeComparer());
 
 		/// <summary>
@@ -78,8 +78,8 @@ namespace OrbsHavoc.Network.Messages
 				{
 					Assert.That((int)reliable.MessageType < 100, "Invalid reliable transmission message type.");
 
-					MessageConstructors.Add(reliable.MessageType, allocator);
-					TransmissionInfos.Add(messageType.AsType(), new TransmissionInfo
+					_messageConstructors.Add(reliable.MessageType, allocator);
+					_transmissionInfos.Add(messageType.AsType(), new TransmissionInfo
 					{
 						BatchedTransmission = false,
 						MessageType = reliable.MessageType,
@@ -91,8 +91,8 @@ namespace OrbsHavoc.Network.Messages
 				{
 					Assert.That((int)unreliable.MessageType > 100, "Invalid unreliable transmission message type.");
 
-					MessageConstructors.Add(unreliable.MessageType, allocator);
-					TransmissionInfos.Add(messageType.AsType(), new TransmissionInfo
+					_messageConstructors.Add(unreliable.MessageType, allocator);
+					_transmissionInfos.Add(messageType.AsType(), new TransmissionInfo
 					{
 						BatchedTransmission = unreliable.EnableBatching,
 						MessageType = unreliable.MessageType,
@@ -109,7 +109,7 @@ namespace OrbsHavoc.Network.Messages
 		/// </summary>
 		protected Message()
 		{
-			var transmissionInfo = TransmissionInfos[GetType()];
+			var transmissionInfo = _transmissionInfos[GetType()];
 
 			MessageType = transmissionInfo.MessageType;
 			IsReliable = transmissionInfo.ReliableTransmission;
@@ -178,7 +178,7 @@ namespace OrbsHavoc.Network.Messages
 			Assert.ArgumentInRange(messageType, nameof(messageType));
 
 			Func<PoolAllocator, Message> constructor;
-			if (!MessageConstructors.TryGetValue(messageType, out constructor))
+			if (!_messageConstructors.TryGetValue(messageType, out constructor))
 				throw new InvalidOperationException("Unsupported message type.");
 
 			return constructor(allocator);

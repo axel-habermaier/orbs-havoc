@@ -38,7 +38,7 @@ namespace OrbsHavoc.Platform.Logging
 		/// <summary>
 		///   The object used for thread synchronization.
 		/// </summary>
-		private static readonly object LockObject = new object();
+		private static readonly object _lockObject = new object();
 
 		/// <summary>
 		///   Raised when a log message has been generated.
@@ -117,7 +117,7 @@ namespace OrbsHavoc.Platform.Logging
 		/// </summary>
 		private static void RaiseEvent(LogType logType, string message)
 		{
-			lock (LockObject)
+			lock (_lockObject)
 			{
 				OnLog?.Invoke(new LogEntry(logType, message));
 			}

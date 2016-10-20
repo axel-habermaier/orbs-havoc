@@ -33,7 +33,7 @@ namespace AssetsCompiler
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class GLGenerator : CompilationTask
 	{
-		private static readonly string[] Extensions = {};
+		private static readonly string[] _extensions = {};
 
 		[Option("input", Required = true, HelpText = "The path to the input OpenGL file.")]
 		public string InFile { get; set; }
@@ -139,7 +139,7 @@ namespace AssetsCompiler
 					return new { Funcs = requiredFuncs, Enums = requiredEnums };
 				});
 
-			foreach (var extension in Extensions)
+			foreach (var extension in _extensions)
 			{
 				gl.Enums.AddRange(spec
 					.Descendants("extension")

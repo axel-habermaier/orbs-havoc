@@ -43,12 +43,12 @@ namespace OrbsHavoc.Network
 		/// <summary>
 		///   A cached delegate of the sequenced message serialization function.
 		/// </summary>
-		private static readonly BufferWriter.Serializer<SequencedMessage> SequencedMessageSerializer = SerializeSequencedMessage;
+		private static readonly BufferWriter.Serializer<SequencedMessage> _sequencedMessageSerializer = SerializeSequencedMessage;
 
 		/// <summary>
 		///   A cached delegate of the batched message serialization function.
 		/// </summary>
-		private static readonly BufferWriter.Serializer<Message> BatchedMessageSerializer = SerializeBatchedMessage;
+		private static readonly BufferWriter.Serializer<Message> _batchedMessageSerializer = SerializeBatchedMessage;
 
 		/// <summary>
 		///   The packet that is currently being assembled.
@@ -170,7 +170,7 @@ namespace OrbsHavoc.Network
 					var message = batchedMessage.Messages.Peek();
 
 					// If the message doesn't fit, we have to write the remaining messages to the next packet.
-					if (!_writer.TryWrite(message, BatchedMessageSerializer))
+					if (!_writer.TryWrite(message, _batchedMessageSerializer))
 						break;
 
 					// If the message does fit, we can dispose of the message and start writing the next one.
@@ -212,7 +212,7 @@ namespace OrbsHavoc.Network
 		{
 			// Write the message into the packet. If all goes well, the message fits into the packet and we can continue
 			// writing the next one.
-			if (_writer.TryWrite(sequencedMessage, SequencedMessageSerializer))
+			if (_writer.TryWrite(sequencedMessage, _sequencedMessageSerializer))
 				return;
 
 			// Otherwise, the message did not fit into the packet; so, send the packet and allocate a new one.
@@ -220,7 +220,7 @@ namespace OrbsHavoc.Network
 			AllocatePacket();
 
 			// Write the message again. This really should not fail; if it does, something really bad has happened.
-			if (!_writer.TryWrite(sequencedMessage, SequencedMessageSerializer))
+			if (!_writer.TryWrite(sequencedMessage, _sequencedMessageSerializer))
 				throw new NetworkException("Failed to write message into newly allocated packet.");
 		}
 

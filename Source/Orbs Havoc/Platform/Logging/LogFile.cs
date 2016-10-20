@@ -44,7 +44,7 @@ namespace OrbsHavoc.Platform.Logging
 		/// <summary>
 		///   A cached string builder used to write the log file.
 		/// </summary>
-		private static readonly StringBuilder Builder = new StringBuilder();
+		private static readonly StringBuilder _builder = new StringBuilder();
 
 		/// <summary>
 		///   The name of the generated log file.
@@ -149,21 +149,21 @@ namespace OrbsHavoc.Platform.Logging
 		/// <param name="logEntries">The log entries that should be converted to a string.</param>
 		private static string ToString(LogEntry[] logEntries)
 		{
-			Builder.Clear();
+			_builder.Clear();
 
 			foreach (var entry in logEntries)
 			{
-				Builder.Append("[");
-				Builder.Append(entry.LogTypeString);
-				Builder.Append("]   ");
-				Builder.Append(entry.Time.ToString("F4").PadLeft(9));
+				_builder.Append("[");
+				_builder.Append(entry.LogTypeString);
+				_builder.Append("]   ");
+				_builder.Append(entry.Time.ToString("F4").PadLeft(9));
 
-				Builder.Append("s   ");
-				TextString.Write(Builder, entry.Message);
-				Builder.Append("\n");
+				_builder.Append("s   ");
+				TextString.Write(_builder, entry.Message);
+				_builder.Append("\n");
 			}
 
-			return Builder.ToString();
+			return _builder.ToString();
 		}
 
 		/// <summary>

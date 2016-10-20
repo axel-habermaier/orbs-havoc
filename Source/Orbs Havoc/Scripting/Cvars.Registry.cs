@@ -34,12 +34,12 @@ namespace OrbsHavoc.Scripting
 		/// <summary>
 		///   The registered cvars.
 		/// </summary>
-		private static readonly Dictionary<string, ICvar> RegisteredCvars = new Dictionary<string, ICvar>();
+		private static readonly Dictionary<string, ICvar> _registeredCvars = new Dictionary<string, ICvar>();
 
 		/// <summary>
 		///   Gets all registered cvars.
 		/// </summary>
-		internal static IEnumerable<ICvar> All => RegisteredCvars.Values;
+		internal static IEnumerable<ICvar> All => _registeredCvars.Values;
 
 		/// <summary>
 		///   Registers the given cvar.
@@ -49,11 +49,11 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNull(cvar, nameof(cvar));
 			Assert.NotNullOrWhitespace(cvar.Name, "The cvar cannot have an empty name.");
-			Assert.That(!RegisteredCvars.ContainsKey(cvar.Name), $"A cvar with the name '{cvar.Name}' has already been registered.");
+			Assert.That(!_registeredCvars.ContainsKey(cvar.Name), $"A cvar with the name '{cvar.Name}' has already been registered.");
 			Assert.That(Commands.All.All(command => command.Name != cvar.Name),
 				$"A command with the name '{cvar.Name}' has already been registered.");
 
-			RegisteredCvars.Add(cvar.Name, cvar);
+			_registeredCvars.Add(cvar.Name, cvar);
 		}
 
 		/// <summary>
@@ -64,7 +64,7 @@ namespace OrbsHavoc.Scripting
 		internal static bool TryFind(string name, out ICvar cvar)
 		{
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));
-			return RegisteredCvars.TryGetValue(name, out cvar);
+			return _registeredCvars.TryGetValue(name, out cvar);
 		}
 	}
 }
