@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Gameplay.Behaviors
 {
-	using System;
 	using System.Numerics;
 	using Platform.Memory;
 	using SceneNodes;
@@ -69,7 +68,6 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// <summary>
 		///   Gets the cooldown for the spawner's collectible.
 		/// </summary>
-		/// <returns></returns>
 		private float GetCooldown()
 		{
 			switch (_collectibleType)
@@ -87,7 +85,8 @@ namespace OrbsHavoc.Gameplay.Behaviors
 				case EntityType.Health:
 					return Collectible.Health.RespawnDelay;
 				default:
-					throw new InvalidOperationException("Unsupported collectible type.");
+					Assert.NotReached("Unsupported collectible type.");
+					return 0;
 			}
 		}
 

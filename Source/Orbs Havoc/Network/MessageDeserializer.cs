@@ -130,7 +130,7 @@ namespace OrbsHavoc.Network
 				{
 					// If we can't read the expected number of batched messages, something must be wrong with the packet.
 					if (continueWithOptimizedMessage)
-						Assert.That(false, "Received an invalid packet. Parts of the packet have been ignored.");
+						Assert.NotReached("Received an invalid packet. Parts of the packet have been ignored.");
 
 					message = default(SequencedMessage);
 					return false;

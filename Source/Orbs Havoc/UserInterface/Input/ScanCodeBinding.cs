@@ -78,7 +78,7 @@ namespace OrbsHavoc.UserInterface.Input
 				case TriggerMode.OnDeactivation:
 					return keyEventArgs.Kind == InputEventKind.Up && keyEventArgs.ScanCode == _scanCode && keyEventArgs.Modifiers == _modifiers;
 				default:
-					Log.Die("Unknown trigger mode.");
+					Assert.NotReached("Unknown trigger mode.");
 					return false;
 			}
 		}

@@ -325,7 +325,7 @@ namespace OrbsHavoc.UserInterface
 								StartNewLine(ref layoutInfo, ref line, ref offset);
 								break;
 							default:
-								Assert.That(false, "Unexpected token type.");
+								Assert.NotReached("Unexpected token type.");
 								break;
 						}
 

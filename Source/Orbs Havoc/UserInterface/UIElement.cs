@@ -469,7 +469,8 @@ namespace OrbsHavoc.UserInterface
 					offset.X = availableSize.Width - RenderSize.Width - Margin.Right;
 					break;
 				default:
-					throw new InvalidOperationException("Unexpected alignment.");
+					Assert.NotReached("Unexpected alignment.");
+					break;
 			}
 
 			switch (VerticalAlignment)
@@ -485,7 +486,8 @@ namespace OrbsHavoc.UserInterface
 					offset.Y = availableSize.Height - RenderSize.Height - Margin.Bottom;
 					break;
 				default:
-					throw new InvalidOperationException("Unexpected alignment.");
+					Assert.NotReached("Unexpected alignment.");
+					break;
 			}
 
 			offset.X = Math.Max(0, offset.X);
@@ -533,7 +535,7 @@ namespace OrbsHavoc.UserInterface
 		/// <param name="index">The zero-based index of the child that should be returned.</param>
 		protected virtual UIElement GetChild(int index)
 		{
-			Assert.That(false, "This visual does not have any children.");
+			Assert.NotReached("This visual does not have any children.");
 			return null;
 		}
 

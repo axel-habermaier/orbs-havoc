@@ -106,9 +106,8 @@ namespace OrbsHavoc.Rendering
 		/// <summary>
 		///   Binds the render state.
 		/// </summary>
-		/// <param name="graphicsDevice">The graphics device the render state should be bound for.</param>
 		/// <param name="defaultCamera">The default camera that should be used if no other camera is set.</param>
-		internal void Bind(GraphicsDevice graphicsDevice, Camera defaultCamera)
+		internal void Bind(Camera defaultCamera)
 		{
 			Texture.Bind(0);
 			SamplerState.Bind(0);
@@ -121,9 +120,9 @@ namespace OrbsHavoc.Rendering
 				AssetBundle.SpriteShader.Bind();
 
 			if (ScissorArea == null)
-				graphicsDevice.DisableScissorTest();
+				GraphicsDevice.DisableScissorTest();
 			else
-				graphicsDevice.EnableScissorTest(RenderTarget, ScissorArea.Value);
+				GraphicsDevice.EnableScissorTest(RenderTarget, ScissorArea.Value);
 		}
 	}
 }

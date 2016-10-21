@@ -56,12 +56,12 @@ namespace OrbsHavoc.Rendering
 
 			foreach (var partition in _partitions)
 			{
-				partition.RenderState.Bind(Renderer.GraphicsDevice, Renderer.DefaultCamera);
+				partition.RenderState.Bind(Renderer.DefaultCamera);
 				Renderer.Draw(partition.RenderState.RenderTarget, partition.Count, partition.Offset, PrimitiveType.Points);
 			}
 
 			// Make sure we don't "leak out" the scissor rasterizer state
-			Renderer.GraphicsDevice.DisableScissorTest();
+			GraphicsDevice.DisableScissorTest();
 		}
 
 		/// <summary>

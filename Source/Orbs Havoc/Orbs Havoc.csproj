@@ -70,7 +70,7 @@
     <Compile Include="Gameplay\Behaviors\CircleMovementBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\TrailMouseBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\WeaponBehavior.cs" />
-    <Compile Include="Gameplay\Client\EntityTypeRendering.cs" />
+    <Compile Include="Gameplay\Client\EntityTypeExtensions.cs" />
     <Compile Include="Gameplay\Client\InputManager.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
       <DependentUpon>ClientLogic.cs</DependentUpon>

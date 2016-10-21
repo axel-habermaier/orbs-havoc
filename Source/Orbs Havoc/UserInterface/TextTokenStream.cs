@@ -226,7 +226,7 @@ namespace OrbsHavoc.UserInterface
 					_lineWidth += width;
 					return Advance(_token.Sequence.LastCharacter);
 				default:
-					Assert.That(false, "Unexpected token type.");
+					Assert.NotReached("Unexpected token type.");
 					return TextToken.EndOfText;
 			}
 		}

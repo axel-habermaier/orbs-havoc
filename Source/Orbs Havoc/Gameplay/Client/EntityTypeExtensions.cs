@@ -32,7 +32,7 @@ namespace OrbsHavoc.Gameplay.Client
 	/// <summary>
 	///   Provides extension methods for the entity type enumeration.
 	/// </summary>
-	public static class EntityTypeRendering
+	public static class EntityTypeExtensions
 	{
 		/// <summary>
 		///   Gets the color for the given collectible.
@@ -55,7 +55,8 @@ namespace OrbsHavoc.Gameplay.Client
 				case EntityType.LightingGun:
 					return Colors.White;
 				default:
-					throw new InvalidOperationException("Unexpected entity type.");
+					Assert.NotReached("Unexpected entity type.");
+					return default(Color);
 			}
 		}
 
@@ -83,7 +84,8 @@ namespace OrbsHavoc.Gameplay.Client
 				case EntityType.Invisibility:
 					return AssetBundle.Invisibility;
 				default:
-					throw new InvalidOperationException("Unexpected entity type.");
+					Assert.NotReached("Unexpected entity type.");
+					return null;
 			}
 		}
 	}

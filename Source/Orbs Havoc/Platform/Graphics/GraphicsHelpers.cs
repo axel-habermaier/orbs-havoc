@@ -53,6 +53,26 @@ namespace OrbsHavoc.Platform.Graphics
 		public static GraphicsState State { get; } = new GraphicsState();
 
 		/// <summary>
+		///   Gets a human-readable message for the given OpenGL error.
+		/// </summary>
+		private static string GetErrorMessage(int error)
+		{
+			switch (error)
+			{
+				case GL_INVALID_ENUM:
+					return nameof(GL_INVALID_ENUM);
+				case GL_INVALID_VALUE:
+					return nameof(GL_INVALID_VALUE);
+				case GL_INVALID_OPERATION:
+					return nameof(GL_INVALID_OPERATION);
+				case GL_OUT_OF_MEMORY:
+					return nameof(GL_OUT_OF_MEMORY);
+				default:
+					return "Unknown OpenGL error.";
+			}
+		}
+
+		/// <summary>
 		///   In debug builds, checks for OpenGL errors.
 		/// </summary>
 		[Conditional("DEBUG"), DebuggerHidden]
@@ -61,27 +81,7 @@ namespace OrbsHavoc.Platform.Graphics
 			var glErrorOccurred = false;
 			for (var glError = glGetError(); glError != GL_NO_ERROR; glError = glGetError())
 			{
-				string msg;
-				switch (glError)
-				{
-					case GL_INVALID_ENUM:
-						msg = nameof(GL_INVALID_ENUM);
-						break;
-					case GL_INVALID_VALUE:
-						msg = nameof(GL_INVALID_VALUE);
-						break;
-					case GL_INVALID_OPERATION:
-						msg = nameof(GL_INVALID_OPERATION);
-						break;
-					case GL_OUT_OF_MEMORY:
-						msg = nameof(GL_OUT_OF_MEMORY);
-						break;
-					default:
-						msg = "Unknown OpenGL error.";
-						break;
-				}
-
-				Log.Error($"OpenGL error: {msg}");
+				Log.Error($"OpenGL error: {GetErrorMessage(glError)}");
 				glErrorOccurred = true;
 			}
 

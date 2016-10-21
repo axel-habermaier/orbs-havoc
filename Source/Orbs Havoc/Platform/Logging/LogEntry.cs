@@ -95,7 +95,8 @@ namespace OrbsHavoc.Platform.Logging
 					case LogType.Debug:
 						return "Debug  ";
 					default:
-						throw new InvalidOperationException("Unknown log type.");
+						Assert.NotReached("Unknown log type.");
+						return string.Empty;
 				}
 			}
 		}

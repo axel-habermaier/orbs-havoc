@@ -269,7 +269,7 @@ namespace OrbsHavoc.Utilities
 					return i;
 			}
 
-			Assert.That(false, "Failed to map logical index to source index.");
+			Assert.NotReached("Failed to map logical index to source index.");
 			return -1;
 		}
 

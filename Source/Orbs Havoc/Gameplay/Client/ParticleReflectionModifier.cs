@@ -55,7 +55,7 @@ namespace OrbsHavoc.Gameplay.Client
 			var velocities = particles.Velocities;
 			var scales = particles.Scales;
 			var size = particles.Emitter.Texture.Size;
-			var radius = size.Width < size.Height ? size.Height : size.Width;
+			var radius = (size.Width < size.Height ? size.Height : size.Width) / 2f;
 
 			while (count-- > 0)
 			{

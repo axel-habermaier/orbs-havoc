@@ -47,7 +47,7 @@ namespace OrbsHavoc.Platform.Graphics
 		/// </summary>
 		public GraphicsDevice()
 		{
-			byte* title = stackalloc byte[1];
+			var title = stackalloc byte[1];
 			title[0] = 0;
 
 			_contextWindow = SDL_CreateWindow(title, 0, 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
@@ -244,7 +244,7 @@ namespace OrbsHavoc.Platform.Graphics
 		/// </summary>
 		/// <param name="renderTarget">The render target the scissor test should be enabled for.</param>
 		/// <param name="area">The area that should be drawn.</param>
-		public void EnableScissorTest(RenderTarget renderTarget, Rectangle area)
+		public static void EnableScissorTest(RenderTarget renderTarget, Rectangle area)
 		{
 			Assert.ArgumentNotNull(renderTarget, nameof(renderTarget));
 
@@ -259,7 +259,7 @@ namespace OrbsHavoc.Platform.Graphics
 		/// <summary>
 		///   Disables the scissor test.
 		/// </summary>
-		public void DisableScissorTest()
+		public static void DisableScissorTest()
 		{
 			glDisable(GL_SCISSOR_TEST);
 		}

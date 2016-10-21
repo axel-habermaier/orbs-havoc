@@ -370,7 +370,8 @@ namespace OrbsHavoc.Gameplay
 						RemoveBehaviorImmediately(update.Behavior);
 						break;
 					default:
-						throw new InvalidOperationException("Unknown update type.");
+						Assert.NotReached("Unknown update type.");
+						break;
 				}
 			}
 		}

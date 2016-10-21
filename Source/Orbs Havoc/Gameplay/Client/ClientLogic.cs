@@ -81,7 +81,8 @@ namespace OrbsHavoc.Gameplay.Client
 				case RejectReason.VersionMismatch:
 					throw new ProtocolMismatchException();
 				default:
-					throw new InvalidOperationException("Unknown reject reason.");
+					Assert.NotReached("Unknown reject reason.");
+					throw new ServerQuitException();
 			}
 		}
 
