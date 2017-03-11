@@ -65,7 +65,7 @@ namespace AssetsCompiler
 						 {
 							 Name = p.Element("name").Value,
 							 Type = p.Value.Substring(0, p.Value.LastIndexOf(p.Element("name").Value)).Trim(),
-							 Group = p.Attribute("group") != null ? p.Attribute("group").Value : null
+							 Group = p.Attribute("group")?.Value
 						 })
 						 .ToArray();
 
