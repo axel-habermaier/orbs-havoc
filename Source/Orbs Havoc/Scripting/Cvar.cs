@@ -86,8 +86,8 @@ namespace OrbsHavoc.Scripting
 		/// </summary>
 		public T Value
 		{
-			get { return _value; }
-			set { SetValue(value, setByUser: false); }
+			get => _value;
+			set => SetValue(value, setByUser: false);
 		}
 
 		/// <summary>

@@ -63,8 +63,7 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <param name="args">The arguments of the event that should be checked.</param>
 		protected override bool IsTriggered(InputEventArgs args)
 		{
-			var keyEventArgs = args as KeyEventArgs;
-			if (keyEventArgs == null)
+			if (!(args is KeyEventArgs keyEventArgs))
 				return false;
 
 			switch (TriggerMode)

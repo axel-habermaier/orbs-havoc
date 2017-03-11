@@ -229,9 +229,7 @@ namespace AssetsCompiler
 				if (pair.Length != 2)
 					throw new InvalidOperationException($"'{InFile}': Invalid character range '{range}'.");
 
-				int begin;
-				int end;
-				if (!Int32.TryParse(pair[0], out begin) || !Int32.TryParse(pair[1], out end))
+				if (!Int32.TryParse(pair[0], out var begin) || !Int32.TryParse(pair[1], out var end))
 					throw new InvalidOperationException($"'{InFile}': Invalid character range '{range}'.");
 
 				for (var i = begin; i <= end; ++i)

@@ -126,8 +126,7 @@ namespace OrbsHavoc.Views
 			_input.Focus();
 
 			// Add all queued log entries to the console now that we're on the main thread
-			LogEntry logEntry;
-			while (_queuedLogEntries.TryDequeue(out logEntry))
+			while (_queuedLogEntries.TryDequeue(out var logEntry))
 			{
 				var color = _infoColor;
 				switch (logEntry.LogType)
@@ -146,12 +145,12 @@ namespace OrbsHavoc.Views
 				if (_contentPanel.Children.Count < MaxLabels)
 				{
 					_contentPanel.Children.Add(new Label
-								 {
-									 Text = logEntry.Message,
-									 Foreground = color,
-									 TextWrapping = TextWrapping.Wrap,
-									 Margin = new Thickness(0, 2, 0, 0)
-								 });
+						{
+							Text = logEntry.Message,
+							Foreground = color,
+							TextWrapping = TextWrapping.Wrap,
+							Margin = new Thickness(0, 2, 0, 0)
+						});
 				}
 				else
 				{

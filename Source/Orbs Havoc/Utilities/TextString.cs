@@ -159,9 +159,7 @@ namespace OrbsHavoc.Utilities
 			var colorRange = new ColorRange();
 			for (var i = 0; i < SourceString.Length; ++i)
 			{
-				ColorSpecifier color;
-
-				if (TryMatch(SourceString, i, out color))
+				if (TryMatch(SourceString, i, out var color))
 				{
 					colorRange.End = _text.Length;
 					_colorRanges.Add(colorRange);
@@ -232,9 +230,7 @@ namespace OrbsHavoc.Utilities
 			var logicalIndex = sourceIndex;
 			for (var i = 0; i < sourceIndex; ++i)
 			{
-				ColorSpecifier color;
-
-				if (TryMatch(SourceString, i, out color))
+				if (TryMatch(SourceString, i, out var color))
 				{
 					i += color.Specifier.Length - 1;
 					logicalIndex -= color.Specifier.Length;
@@ -258,9 +254,7 @@ namespace OrbsHavoc.Utilities
 			var index = -1;
 			for (var i = 0; i < SourceString.Length; ++i)
 			{
-				ColorSpecifier color;
-
-				if (TryMatch(SourceString, i, out color))
+				if (TryMatch(SourceString, i, out var color))
 					i += color.Specifier.Length - 1;
 				else
 					++index;
@@ -277,19 +271,15 @@ namespace OrbsHavoc.Utilities
 		///   Gets the text color at the given index.
 		/// </summary>
 		/// <param name="index">The index for which the color should be returned.</param>
-		/// <param name="color">The returned color.</param>
-		internal void GetColor(int index, out Color? color)
+		internal Color? GetColor(int index)
 		{
 			foreach (var range in _colorRanges)
 			{
 				if (range.Begin <= index && range.End > index)
-				{
-					color = range.Color;
-					return;
-				}
+					return range.Color;
 			}
 
-			color = null;
+			return null;
 		}
 
 		/// <summary>
@@ -304,9 +294,7 @@ namespace OrbsHavoc.Utilities
 
 			for (var i = 0; i < text.Length; ++i)
 			{
-				ColorSpecifier color;
-
-				if (TryMatch(text, i, out color))
+				if (TryMatch(text, i, out var color))
 					i += color.Specifier.Length - 1;
 				else
 					writer.Write(text[i]);
@@ -325,9 +313,7 @@ namespace OrbsHavoc.Utilities
 
 			for (var i = 0; i < text.Length; ++i)
 			{
-				ColorSpecifier color;
-
-				if (TryMatch(text, i, out color))
+				if (TryMatch(text, i, out var color))
 					i += color.Specifier.Length - 1;
 				else
 					writer.Append(text[i]);
@@ -355,11 +341,8 @@ namespace OrbsHavoc.Utilities
 
 			for (var i = 0; i < s1.Length; ++i)
 			{
-				ColorSpecifier color1;
-				ColorSpecifier color2;
-
-				var match1 = TryMatch(s1, i, out color1);
-				var match2 = TryMatch(s2, i, out color2);
+				var match1 = TryMatch(s1, i, out var color1);
+				var match2 = TryMatch(s2, i, out var color2);
 
 				if (match1 != match2)
 					return false;

@@ -49,8 +49,7 @@ namespace OrbsHavoc.UserInterface.Controls
 
 				var previousElement = _presentedElement;
 
-				var element = value as UIElement;
-				if (element != null)
+				if (value is UIElement element)
 					_presentedElement = element;
 				else if (value == null)
 					_presentedElement = null;

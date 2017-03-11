@@ -50,8 +50,7 @@ namespace OrbsHavoc.Platform.Memory
 			// Not using Linq for performance reasons
 			foreach (var pool in _objectPools)
 			{
-				var typedPool = pool as ObjectPool<T>;
-				if (typedPool != null)
+				if (pool is ObjectPool<T> typedPool)
 					return typedPool.Allocate();
 			}
 

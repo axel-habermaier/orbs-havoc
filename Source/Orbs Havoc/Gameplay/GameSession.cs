@@ -155,8 +155,7 @@ namespace OrbsHavoc.Gameplay
 		/// <param name="sceneNode">The scene node that has been added.</param>
 		private void OnNodeAdded(SceneNode sceneNode)
 		{
-			var entity = sceneNode as Entity;
-			if (entity != null)
+			if (sceneNode is Entity entity)
 				EntityAdded?.Invoke(entity);
 		}
 
@@ -166,8 +165,7 @@ namespace OrbsHavoc.Gameplay
 		/// <param name="sceneNode">The scene node that has been removed.</param>
 		private void OnNodeRemoved(SceneNode sceneNode)
 		{
-			var entity = sceneNode as Entity;
-			if (entity != null)
+			if (sceneNode is Entity entity)
 				EntityRemoved?.Invoke(entity);
 		}
 

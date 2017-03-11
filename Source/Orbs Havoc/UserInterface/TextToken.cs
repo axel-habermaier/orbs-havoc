@@ -117,17 +117,16 @@ namespace OrbsHavoc.UserInterface
 		/// <param name="font">The font that should be used to determine the width of tokens.</param>
 		/// <param name="text">The text the token was created for.</param>
 		/// <param name="allowedWidth">The maximum allowed with for the first split part.</param>
-		/// <param name="part1">Returns the token for the first split part.</param>
-		/// <param name="part2">Returns the token for the second split part.</param>
-		public void Split(Font font, TextString text, float allowedWidth, out TextToken part1, out TextToken part2)
+		public (TextToken part1, TextToken part2) Split(Font font, TextString text, float allowedWidth)
 		{
 			Assert.That(Type == TextTokenType.Word, "Wrong token type.");
 
-			TextSequence sequence1, sequence2;
-			Sequence.Split(font, text, allowedWidth, out sequence1, out sequence2);
+			var (sequence1, sequence2) = Sequence.Split(font, text, allowedWidth);
 
-			part1 = new TextToken { Type = TextTokenType.Word, Sequence = sequence1 };
-			part2 = new TextToken { Type = TextTokenType.Word, Sequence = sequence2 };
+			var part1 = new TextToken { Type = TextTokenType.Word, Sequence = sequence1 };
+			var part2 = new TextToken { Type = TextTokenType.Word, Sequence = sequence2 };
+
+			return (part1, part2);
 		}
 	}
 }

@@ -191,8 +191,7 @@ namespace OrbsHavoc.UserInterface
 				return false;
 			}
 
-			Color? textColor;
-			text.GetColor(index, out textColor);
+			var textColor = text.GetColor(index);
 
 			if (textColor.HasValue)
 				color = textColor.Value;

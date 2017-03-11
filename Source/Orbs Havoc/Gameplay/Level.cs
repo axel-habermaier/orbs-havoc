@@ -110,28 +110,32 @@ namespace OrbsHavoc.Gameplay
 		///   Gets the blocks covered by the circle at the given position with the given radius.
 		/// </summary>
 		/// <param name="circle">The circle the covered blocks should be returned for.</param>
-		/// <param name="xFirst">Gets the zero-based index in x-direction of the first covered block.</param>
-		/// <param name="yFirst">Gets the zero-based index in y-direction of the first covered block.</param>
-		/// <param name="xLast">Gets the zero-based index in x-direction of the last covered block.</param>
-		/// <param name="yLast">Gets the zero-based index in y-direction of the last covered block.</param>
-		public void GetCoveredBlocks(Circle circle, out int xFirst, out int yFirst, out int xLast, out int yLast)
+		/// <returns>
+		///   xFirst: Gets the zero-based index in x-direction of the first covered block.
+		///   yFirst: Gets the zero-based index in y-direction of the first covered block.
+		///   xLast: Gets the zero-based index in x-direction of the last covered block.
+		///   yLast: Gets the zero-based index in y-direction of the last covered block.
+		/// </returns>
+		public (int xFirst, int yFirst, int xLast, int yLast) GetCoveredBlocks(Circle circle)
 		{
-			GetBlock(circle.Position - new Vector2(circle.Radius, circle.Radius), out xFirst, out yFirst);
-			GetBlock(circle.Position + new Vector2(circle.Radius, circle.Radius), out xLast, out yLast);
+			var (xFirst, yFirst) = GetBlock(circle.Position - new Vector2(circle.Radius, circle.Radius));
+			var (xLast, yLast) = GetBlock(circle.Position + new Vector2(circle.Radius, circle.Radius));
+
+			return (xFirst, yFirst, xLast, yLast);
 		}
 
 		/// <summary>
 		///   Gets the block the given position lies within.
 		/// </summary>
 		/// <param name="position">The position the block should be returned for.</param>
-		/// <param name="x">Gets the zero-based index in x-direction of the block.</param>
-		/// <param name="y">Gets the zero-based index in y-direction of the block.</param>
-		public void GetBlock(Vector2 position, out int x, out int y)
+		public (int x, int y) GetBlock(Vector2 position)
 		{
 			position -= PositionOffset;
 
-			x = (int)(position.X / BlockSize);
-			y = (int)(position.Y / BlockSize);
+			var x = (int)(position.X / BlockSize);
+			var y = (int)(position.Y / BlockSize);
+
+			return (x, y);
 		}
 
 		/// <summary>
@@ -172,8 +176,7 @@ namespace OrbsHavoc.Gameplay
 
 			while (distanceToWall < length)
 			{
-				int x, y;
-				GetBlock(position, out x, out y);
+				var (x, y) = GetBlock(position);
 				var blockType = this[x, y];
 
 				if (blockType.IsWall())
@@ -203,8 +206,7 @@ namespace OrbsHavoc.Gameplay
 		/// <param name="collider">The collider that should be checked for wall collisions.</param>
 		public CollisionInfo? CheckWallCollision(Circle collider)
 		{
-			int x, y;
-			GetBlock(collider.Position, out x, out y);
+			var (x, y) = GetBlock(collider.Position);
 
 			var blockType = this[x, y];
 			Vector2 position;

@@ -139,9 +139,7 @@ namespace OrbsHavoc.Platform
 			{
 				Assert.NotDisposed(this);
 
-				int x, y;
-				SDL_GetWindowPosition(_window, out x, out y);
-
+				SDL_GetWindowPosition(_window, out var x, out var y);
 				return new Vector2(x, y);
 			}
 		}
@@ -155,9 +153,7 @@ namespace OrbsHavoc.Platform
 			{
 				Assert.NotDisposed(this);
 
-				int width, height;
-				SDL_GetWindowSize(_window, out width, out height);
-
+				SDL_GetWindowSize(_window, out var width, out var height);
 				return ClampSize(width, height);
 			}
 		}
@@ -318,9 +314,8 @@ namespace OrbsHavoc.Platform
 		public void HandleEvents()
 		{
 			var size = Size;
-			SDL_Event e;
 
-			while (SDL_PollEvent(out e) != 0)
+			while (SDL_PollEvent(out var e) != 0)
 			{
 				switch (e.type)
 				{
@@ -417,8 +412,7 @@ namespace OrbsHavoc.Platform
 
 			for (var i = 0; i < num; ++i)
 			{
-				SDL_Rect bounds;
-				if (SDL_GetDisplayBounds(i, out bounds) != 0)
+				if (SDL_GetDisplayBounds(i, out var bounds) != 0)
 					Log.Die($"Failed to retrieve display bounds of display {i}: {SDL_GetError()}");
 
 				left = bounds.x < left ? bounds.x : left;

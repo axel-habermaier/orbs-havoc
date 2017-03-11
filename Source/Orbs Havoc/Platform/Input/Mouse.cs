@@ -68,9 +68,7 @@ namespace OrbsHavoc.Platform.Input
 		{
 			get
 			{
-				int x, y;
-				SDL_GetMouseState(out x, out y);
-
+				SDL_GetMouseState(out var x, out var y);
 				return new Vector2(x, y);
 			}
 		}

@@ -147,8 +147,7 @@ namespace OrbsHavoc.UserInterface
 				return TextToken.Wrap;
 			}
 
-			TextToken part1, part2;
-			_token.Split(_font, _text, _maxLineWidth - _lineWidth, out part1, out part2);
+			var (part1, part2) = _token.Split(_font, _text, _maxLineWidth - _lineWidth);
 
 			Assert.That(!part1.Sequence.IsInvalid && !part2.Sequence.IsInvalid, "Unexpected invalid sequence(s).");
 			_token = part2;
@@ -214,12 +213,11 @@ namespace OrbsHavoc.UserInterface
 					// a new line instead of a space
 					if (nextFitsIntoAnyLine)
 						return ReplaceSpaceWithNewLineToken();
-
+				
 					// The next token has to be split. Only return the space if the first part is valid, i.e.,
 					// if there actually is at least one character of the next token that fits into the current line.
-					TextToken part1, part2;
-					nextToken.Split(_font, _text, _maxLineWidth - _lineWidth - width, out part1, out part2);
-
+					var (part1, _) = nextToken.Split(_font, _text, _maxLineWidth - _lineWidth - width);
+					
 					if (part1.Sequence.IsInvalid)
 						return ReplaceSpaceWithNewLineToken();
 

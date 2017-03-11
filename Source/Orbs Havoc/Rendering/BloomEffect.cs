@@ -73,7 +73,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public float BloomIntensity
 		{
-			get { return _bloomSettings.BloomIntensity; }
+			get => _bloomSettings.BloomIntensity;
 			set
 			{
 				_bloomSettings.BloomIntensity = value;
@@ -87,7 +87,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public float BloomSaturation
 		{
-			get { return _bloomSettings.BloomSaturation; }
+			get => _bloomSettings.BloomSaturation;
 			set
 			{
 				_bloomSettings.BloomSaturation = value;
@@ -101,7 +101,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public float BloomThreshold
 		{
-			get { return _bloomSettings.BloomThreshold; }
+			get => _bloomSettings.BloomThreshold;
 			set
 			{
 				_bloomSettings.BloomThreshold = value;
@@ -114,7 +114,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public int BlurSampleCount
 		{
-			get { return _bloomSettings.BlurSampleCount; }
+			get => _bloomSettings.BlurSampleCount;
 			set
 			{
 				_bloomSettings.BlurSampleCount = value;
@@ -127,7 +127,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public float SourceImageIntensity
 		{
-			get { return _bloomSettings.SourceImageIntensity; }
+			get => _bloomSettings.SourceImageIntensity;
 			set
 			{
 				_bloomSettings.SourceImageIntensity = value;
@@ -141,7 +141,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public float SourceImageSaturation
 		{
-			get { return _bloomSettings.SourceImageSaturation; }
+			get => _bloomSettings.SourceImageSaturation;
 			set
 			{
 				_bloomSettings.SourceImageSaturation = value;

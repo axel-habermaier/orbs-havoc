@@ -189,8 +189,7 @@ namespace OrbsHavoc.Gameplay.SceneNodes
 		{
 			for (var behavior = Behavior; behavior != null; behavior = behavior.Next)
 			{
-				var typedBehavior = behavior as T;
-				if (typedBehavior != null)
+				if (behavior is T typedBehavior)
 					return typedBehavior;
 			}
 

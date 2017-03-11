@@ -318,8 +318,7 @@ namespace OrbsHavoc.Gameplay.Server
 			_clients.SendQueuedMessages();
 
 			// Handle all bot commands, which come from the main thread
-			BotCommand command;
-			while (_botCommands.TryDequeue(out command))
+			while (_botCommands.TryDequeue(out var command))
 			{
 				if (command == BotCommand.Add)
 					AddBot();

@@ -286,8 +286,7 @@ namespace OrbsHavoc.Platform
 				if (SDL_Init(SDL_INIT_VIDEO) != 0)
 					Log.Die($"SDL2 initialization failed: {SDL_GetError()}");
 
-				SDL_version version;
-				SDL_GetVersion(out version);
+				SDL_GetVersion(out var version);
 
 				const int major = 2, minor = 0, patch = 2;
 				if (!SDL_VERSION_ATLEAST(major, minor, patch))

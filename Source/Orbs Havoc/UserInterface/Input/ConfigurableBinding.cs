@@ -57,8 +57,7 @@ namespace OrbsHavoc.UserInterface.Input
 		{
 			if (_cvar.Value.Key != null)
 			{
-				var keyEventArgs = args as KeyEventArgs;
-				if (keyEventArgs == null)
+				if (!(args is KeyEventArgs keyEventArgs))
 					return false;
 
 				switch (TriggerMode)
@@ -80,8 +79,7 @@ namespace OrbsHavoc.UserInterface.Input
 
 			if (_cvar.Value.MouseButton != null)
 			{
-				var mouseEventArgs = args as MouseButtonEventArgs;
-				if (mouseEventArgs == null)
+				if (!(args is MouseButtonEventArgs mouseEventArgs))
 					return false;
 
 				switch (TriggerMode)

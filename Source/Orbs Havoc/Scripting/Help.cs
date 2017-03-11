@@ -50,16 +50,13 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNull(name, nameof(name));
 
-			ICvar cvar;
-			ICommand command;
-
 			name = name.Trim();
 
 			if (String.IsNullOrWhiteSpace(name))
 				PrintHelp();
-			else if (Cvars.TryFind(name, out cvar))
+			else if (Cvars.TryFind(name, out var cvar))
 				PrintCvarHelp(cvar);
-			else if (Commands.TryFind(name, out command))
+			else if (Commands.TryFind(name, out var command))
 				PrintCommandHelp(command);
 			else
 				Log.Error($"'{name}' is neither a cvar nor a command.");

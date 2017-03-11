@@ -253,9 +253,8 @@ namespace OrbsHavoc.UserInterface
 					for (var i = 0; i < text.Length; ++i)
 					{
 						var area = _characterAreas[i].Offset(position);
-						Quad quad;
 
-						if (_arranged.Font.CreateGlyphQuad(text, i, ref area, color, out quad))
+						if (_arranged.Font.CreateGlyphQuad(text, i, ref area, color, out var quad))
 							_quads[_numQuads++] = quad;
 					}
 				}

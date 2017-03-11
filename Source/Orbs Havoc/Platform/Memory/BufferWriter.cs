@@ -103,7 +103,7 @@ namespace OrbsHavoc.Platform.Memory
 		/// </summary>
 		public int WritePosition
 		{
-			get { return _writePosition - _buffer.Offset; }
+			get => _writePosition - _buffer.Offset;
 			set
 			{
 				Assert.InRange(value, 0, _maxWritePosition - _buffer.Offset);

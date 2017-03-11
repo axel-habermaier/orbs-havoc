@@ -65,7 +65,7 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public Size Size
 		{
-			get { return new Size(_width, _height); }
+			get => new Size(_width, _height);
 			set
 			{
 				Assert.InRange(value.Width, 0, UInt16.MaxValue);

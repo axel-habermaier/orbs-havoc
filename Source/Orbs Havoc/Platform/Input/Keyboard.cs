@@ -73,7 +73,7 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		internal static bool TextInputEnabled
 		{
-			get { return SDL_IsTextInputActive() != 0; }
+			get => SDL_IsTextInputActive() != 0;
 			set
 			{
 				if (value && !TextInputEnabled)

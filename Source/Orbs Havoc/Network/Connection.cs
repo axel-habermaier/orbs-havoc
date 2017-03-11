@@ -253,8 +253,7 @@ namespace OrbsHavoc.Network
 		{
 			var buffer = new BufferReader(_buffer, 0, size, Endianess.Big);
 
-			uint acknowledgement;
-			if (!PacketHeader.TryRead(ref buffer, out acknowledgement))
+			if (!PacketHeader.TryRead(ref buffer, out var acknowledgement))
 				return;
 
 			_deliveryManager.UpdateLastAckedSequenceNumber(acknowledgement);
@@ -264,8 +263,7 @@ namespace OrbsHavoc.Network
 			{
 				readBytes = buffer.Count;
 
-				SequencedMessage message;
-				while (_deserializer.TryDeserialize(ref buffer, out message))
+				while (_deserializer.TryDeserialize(ref buffer, out var message))
 					_receivedMessages.Enqueue(message);
 			}
 

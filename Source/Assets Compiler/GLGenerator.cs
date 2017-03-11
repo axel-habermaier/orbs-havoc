@@ -266,8 +266,7 @@ namespace AssetsCompiler
 				value = value.Substring(2);
 			}
 
-			uint result;
-			if (isHex && UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out result))
+			if (isHex && UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var result))
 				return "int32";
 
 			if (UInt32.TryParse(value, out result))

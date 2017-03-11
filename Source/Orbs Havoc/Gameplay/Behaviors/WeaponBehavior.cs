@@ -55,8 +55,8 @@ namespace OrbsHavoc.Gameplay.Behaviors
 		/// </summary>
 		private int Energy
 		{
-			get { return SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()]; }
-			set { SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()] = value; }
+			get => SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()];
+			set => SceneNode.WeaponEnergyLevels[Template.WeaponType.GetWeaponSlot()] = value;
 		}
 
 		/// <summary>

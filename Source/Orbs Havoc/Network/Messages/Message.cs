@@ -177,8 +177,7 @@ namespace OrbsHavoc.Network.Messages
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentInRange(messageType, nameof(messageType));
 
-			Func<PoolAllocator, Message> constructor;
-			if (!_messageConstructors.TryGetValue(messageType, out constructor))
+			if (!_messageConstructors.TryGetValue(messageType, out var constructor))
 				throw new InvalidOperationException("Unsupported message type.");
 
 			return constructor(allocator);

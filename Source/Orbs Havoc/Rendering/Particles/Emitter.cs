@@ -85,7 +85,7 @@ namespace OrbsHavoc.Rendering.Particles
 		/// </summary>
 		public int Capacity
 		{
-			get { return _capacity; }
+			get => _capacity;
 			set
 			{
 				if (_capacity == value)

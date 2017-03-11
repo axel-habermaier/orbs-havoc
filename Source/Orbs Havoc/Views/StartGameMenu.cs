@@ -52,14 +52,7 @@ namespace OrbsHavoc.Views
 		/// <summary>
 		///   Gets the server port entered by the user or null if the port is invalid.
 		/// </summary>
-		private ushort? ServerPort
-		{
-			get
-			{
-				ushort port;
-				return UInt16.TryParse(_port.Text, out port) ? port : (ushort?)null;
-			}
-		}
+		private ushort? ServerPort => UInt16.TryParse(_port.Text, out var port) ? port : (ushort?)null;
 
 		/// <summary>
 		///   Initializes the view.

@@ -81,7 +81,7 @@ namespace OrbsHavoc.Platform.Graphics
 			if (major < 3 || (major == 3 && minor < 3))
 				Log.Die($"Only OpenGL {major}.{minor} seems to be supported. OpenGL 3.3 is required.");
 
-			Func<int, string> getString = option => Interop.ToString(glGetString(option));
+			string getString(int option) => Interop.ToString(glGetString(option));
 			Log.Info($"OpenGL renderer: {getString(GL_RENDERER)} ({getString(GL_VENDOR)})");
 			Log.Info($"OpenGL version: {getString(GL_VERSION)}");
 			Log.Info($"OpenGL GLSL version: {getString(GL_SHADING_LANGUAGE_VERSION)}");

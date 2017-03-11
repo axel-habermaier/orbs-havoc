@@ -121,8 +121,7 @@ namespace OrbsHavoc.Network.Messages
 			Assert.NotNull(entity.Player, "Entity has no player.");
 
 			var parentIdentity = NetworkProtocol.ReservedEntityIdentity;
-			var parentEntity = entity.Parent as Entity;
-			if (parentEntity != null)
+			if (entity.Parent is Entity parentEntity)
 				parentIdentity = parentEntity.NetworkIdentity;
 
 			var message = poolAllocator.Allocate<EntityAddMessage>();

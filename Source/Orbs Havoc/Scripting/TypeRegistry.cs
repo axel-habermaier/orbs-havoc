@@ -130,8 +130,7 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNull(type, nameof(type));
 
-			TypeInfo info;
-			if (_registeredTypes.TryGetValue(type, out info))
+			if (_registeredTypes.TryGetValue(type, out var info))
 				return info.Parser;
 
 			if (type.GetTypeInfo().IsEnum)
@@ -158,8 +157,7 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNull(type, nameof(type));
 
-			TypeInfo info;
-			if (_registeredTypes.TryGetValue(type, out info))
+			if (_registeredTypes.TryGetValue(type, out var info))
 				return info.Description;
 
 			if (type.GetTypeInfo().IsEnum)
@@ -186,8 +184,7 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNull(type, nameof(type));
 
-			TypeInfo info;
-			if (_registeredTypes.TryGetValue(type, out info))
+			if (_registeredTypes.TryGetValue(type, out var info))
 				return info.Examples;
 
 			if (type.GetTypeInfo().IsEnum)
@@ -214,8 +211,7 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNull(value, nameof(value));
 
-			TypeInfo info;
-			if (_registeredTypes.TryGetValue(value.GetType(), out info))
+			if (_registeredTypes.TryGetValue(value.GetType(), out var info))
 				return info.ToDisplayString(value);
 
 			if (value.GetType().GetTypeInfo().IsEnum)

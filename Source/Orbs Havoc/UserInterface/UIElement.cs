@@ -129,8 +129,7 @@ namespace OrbsHavoc.UserInterface
 		{
 			while (element != null)
 			{
-				var rootElement = element as RootUIElement;
-				if (rootElement != null)
+				if (element is RootUIElement rootElement)
 					return rootElement;
 
 				element = element.Parent;

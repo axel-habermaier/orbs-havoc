@@ -412,13 +412,11 @@ namespace OrbsHavoc.Scripting.Parsing
 				var name = ParseIdentifier(inputStream);
 
 				// Check if a cvar has been referenced and if so, return the appropriate instruction
-				ICvar cvar;
-				if (Cvars.TryFind(name, out cvar))
+				if (Cvars.TryFind(name, out var cvar))
 					return ParseCvar(inputStream, cvar);
 
 				// Check if a command has been referenced and if so, return the appropriate instruction
-				ICommand command;
-				if (Commands.TryFind(name, out command))
+				if (Commands.TryFind(name, out var command))
 					return ParseCommand(inputStream, command);
 
 				// If the name refers to neither a cvar nor a command, give up

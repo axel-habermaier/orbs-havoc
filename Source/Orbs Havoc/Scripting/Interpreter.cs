@@ -70,8 +70,7 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));
 
-			ICvar cvar;
-			if (!Cvars.TryFind(name, out cvar))
+			if (!Cvars.TryFind(name, out var cvar))
 				Log.Warn($"Unknown cvar '{name}'.");
 			else
 			{
@@ -90,8 +89,7 @@ namespace OrbsHavoc.Scripting
 		{
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));
 
-			ICvar cvar;
-			if (!Cvars.TryFind(name, out cvar))
+			if (!Cvars.TryFind(name, out var cvar))
 				Log.Warn($"Unknown cvar '{name}'.");
 			else
 				cvar.SetValue(cvar.DefaultValue, true);

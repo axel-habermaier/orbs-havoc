@@ -100,14 +100,14 @@ namespace OrbsHavoc.UserInterface
 		/// <param name="font">The font that should be used to determine the width of sequence.</param>
 		/// <param name="text">The text the sequence was created for.</param>
 		/// <param name="allowedWidth">The maximum allowed with for the first split part.</param>
-		/// <param name="part1">Returns the text sequence for the first split part.</param>
-		/// <param name="part2">Returns the text sequence for the second split part.</param>
-		public void Split(Font font, TextString text, float allowedWidth, out TextSequence part1, out TextSequence part2)
+		public (TextSequence part1, TextSequence part2) Split(Font font, TextString text, float allowedWidth)
 		{
 			var splitIndex = FindSplitIndex(font, text, allowedWidth);
 
-			part1 = new TextSequence { FirstCharacter = FirstCharacter, LastCharacter = splitIndex };
-			part2 = new TextSequence { FirstCharacter = splitIndex, LastCharacter = LastCharacter };
+			var part1 = new TextSequence { FirstCharacter = FirstCharacter, LastCharacter = splitIndex };
+			var part2 = new TextSequence { FirstCharacter = splitIndex, LastCharacter = LastCharacter };
+
+			return (part1, part2);
 		}
 
 		/// <param name="font">The font that should be used to determine the width of sequence.</param>

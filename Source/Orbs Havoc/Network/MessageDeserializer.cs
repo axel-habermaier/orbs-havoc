@@ -125,8 +125,7 @@ namespace OrbsHavoc.Network
 
 				// Read a message from the buffer, either an batched or a non-batched one. If deserialization fails,
 				// we're done.
-				SequencedMessage? deserializedMessage;
-				if (!reader.TryRead(out deserializedMessage, _cachedDeserializer))
+				if (!reader.TryRead(out var deserializedMessage, _cachedDeserializer))
 				{
 					// If we can't read the expected number of batched messages, something must be wrong with the packet.
 					if (continueWithOptimizedMessage)
