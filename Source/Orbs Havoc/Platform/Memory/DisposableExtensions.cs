@@ -137,8 +137,7 @@ namespace OrbsHavoc.Platform.Memory
 		public static void SafeDispose<T>(this T obj)
 			where T : class, IDisposable
 		{
-			var disposableObject = obj as DisposableObject;
-			if (disposableObject != null && disposableObject.IsDisposed)
+			if ((object)obj is DisposableObject disposableObject && disposableObject.IsDisposed)
 				return;
 
 			obj?.Dispose();
