@@ -18,7 +18,7 @@ if not exist "./Dependencies/NuGet.exe" (
 echo =====================================================================
 echo Compiling solution...
 echo =====================================================================
-"%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe" "Orbs Havoc.sln" /t:rebuild /p:Configuration=Release /nr:false /nologo /v:minimal /p:Platform=x64
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe" "Orbs Havoc.sln" /t:rebuild /p:Configuration=Release /nr:false /nologo /v:minimal /p:Platform=x64
 
 mkdir Binaries
 
@@ -26,7 +26,7 @@ echo =====================================================================
 echo Merging assemblies...
 echo =====================================================================
 cd Build\Release
-"..\..\Dependencies\Packages\ILRepack.2.0.10\tools\ILRepack.exe" /out:"Orbs Havoc.exe" /internalize "Orbs Havoc.exe" "Orbs Havoc.IL.dll"
+"..\..\Dependencies\Packages\ILRepack.2.0.10\tools\ILRepack.exe" /out:"Orbs Havoc.exe" /internalize "Orbs Havoc.exe" "Orbs Havoc.IL.dll" "System.ValueTuple.dll"
 cd ..\..\Binaries
 
 echo =====================================================================
