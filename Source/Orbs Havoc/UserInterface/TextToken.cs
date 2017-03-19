@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2012-2016, Axel Habermaier
+// Copyright (c) 2012-2017, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,6 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		/// <param name="text">The text for which the next token should be returned.</param>
 		/// <param name="offset">The offset into the text string.</param>
-		/// <returns></returns>
 		public static TextToken Next(TextString text, int offset)
 		{
 			Assert.ArgumentSatisfies(offset >= 0, nameof(offset), "Out of bounds.");

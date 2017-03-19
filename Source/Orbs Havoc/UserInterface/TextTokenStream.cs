@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 // 
-// Copyright (c) 2012-2016, Axel Habermaier
+// Copyright (c) 2012-2017, Axel Habermaier
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -159,7 +159,6 @@ namespace OrbsHavoc.UserInterface
 		///   Handles a space token. If the token doesn't fit into the current line or if no other tokens follow on the
 		///   current line, it is replaced by a new line token.
 		/// </summary>
-		/// <returns></returns>
 		private TextToken HandleSpaceToken()
 		{
 			Assert.That(_token.Type == TextTokenType.Space, "Wrong token type.");
@@ -247,7 +246,6 @@ namespace OrbsHavoc.UserInterface
 		///   Advances the token stream and returns the current token.
 		/// </summary>
 		/// <param name="offset">The offset into the text.</param>
-		/// <returns></returns>
 		private TextToken Advance(int offset)
 		{
 			var currentToken = _token;
