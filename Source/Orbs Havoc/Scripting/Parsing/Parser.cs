@@ -425,7 +425,7 @@ namespace OrbsHavoc.Scripting.Parsing
 			}
 			catch (ParseException e)
 			{
-				throw new ParseException(e.InputStream, $"{e.Input}\\default\n{new string(' ', e.Position)}^\n{e.Message}");
+				throw new ParseException(e.InputStream, $"{e.Input}\\default\n{new String(' ', e.Position)}^\n{e.Message}");
 			}
 		}
 
@@ -450,8 +450,8 @@ namespace OrbsHavoc.Scripting.Parsing
 			}
 			catch (ParseException e)
 			{
-				throw new ParseException(inputStream, $"{e.Message}\\default\n{TypeRegistry.GetExampleString(cvar.ValueType)}\n" +
-													  $"{Help.GetHint(cvar.Name)}");
+				throw new ParseException(inputStream, 
+					$"{e.Message}\\default\n{TypeRegistry.GetExampleString(cvar.ValueType)}\n{Help.GetHint(cvar.Name)}");
 			}
 
 			if (!inputStream.WhiteSpaceUntilEndOfInput())
@@ -484,8 +484,9 @@ namespace OrbsHavoc.Scripting.Parsing
 				{
 					inputStream.SkipWhitespaces(); // To get the correct column in the error message
 
-					throw new ParseException(inputStream, $"Expected a value of type '{TypeRegistry.GetDescription(parameters[i].Type)}'.\n" +
-														  $"{TypeRegistry.GetExampleString(parameters[i].Type)}\n{Help.GetHint(command.Name)}");
+					throw new ParseException(inputStream,
+						$"Expected a value of type '{TypeRegistry.GetDescription(parameters[i].Type)}'.\n" +
+						$"{TypeRegistry.GetExampleString(parameters[i].Type)}\n{Help.GetHint(command.Name)}");
 				}
 
 				// The argument must be separated from the previous one by at least one white space character

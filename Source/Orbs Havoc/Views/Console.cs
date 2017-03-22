@@ -145,12 +145,12 @@ namespace OrbsHavoc.Views
 				if (_contentPanel.Children.Count < MaxLabels)
 				{
 					_contentPanel.Children.Add(new Label
-						{
-							Text = logEntry.Message,
-							Foreground = color,
-							TextWrapping = TextWrapping.Wrap,
-							Margin = new Thickness(0, 2, 0, 0)
-						});
+					{
+						Text = logEntry.Message,
+						Foreground = color,
+						TextWrapping = TextWrapping.Wrap,
+						Margin = new Thickness(0, 2, 0, 0)
+					});
 				}
 				else
 				{
@@ -228,15 +228,15 @@ namespace OrbsHavoc.Views
 		{
 			_input.TextChanged += OnTextChanged;
 			_input.Template = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
-					templateRoot = contentPresenter = new ContentPresenter();
+				templateRoot = contentPresenter = new ContentPresenter();
 			_input.InputBindings.AddRange(new[]
-				  {
-					  new KeyBinding(ClearInput, Key.Escape),
-					  new KeyBinding(ShowNewerHistoryEntry, Key.Down) { TriggerMode = TriggerMode.Repeatedly },
-					  new KeyBinding(ShowOlderHistoryEntry, Key.Up) { TriggerMode = TriggerMode.Repeatedly },
-					  new KeyBinding(AutoCompleteNext, Key.Tab) { TriggerMode = TriggerMode.Repeatedly },
-					  new KeyBinding(AutoCompletePrevious, Key.Tab, KeyModifiers.Shift) { TriggerMode = TriggerMode.Repeatedly },
-				  });
+			{
+				new KeyBinding(ClearInput, Key.Escape),
+				new KeyBinding(ShowNewerHistoryEntry, Key.Down) { TriggerMode = TriggerMode.Repeatedly },
+				new KeyBinding(ShowOlderHistoryEntry, Key.Up) { TriggerMode = TriggerMode.Repeatedly },
+				new KeyBinding(AutoCompleteNext, Key.Tab) { TriggerMode = TriggerMode.Repeatedly },
+				new KeyBinding(AutoCompletePrevious, Key.Tab, KeyModifiers.Shift) { TriggerMode = TriggerMode.Repeatedly },
+			});
 
 			_scrollViewer = new ScrollViewer
 			{

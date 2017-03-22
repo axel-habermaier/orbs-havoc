@@ -47,7 +47,6 @@ namespace OrbsHavoc.Platform.Memory
 		{
 			Assert.NotDisposed(this);
 
-			// Not using Linq for performance reasons
 			foreach (var pool in _objectPools)
 			{
 				if (pool is ObjectPool<T> typedPool)

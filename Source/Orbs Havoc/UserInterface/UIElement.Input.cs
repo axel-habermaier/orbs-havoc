@@ -25,7 +25,7 @@ namespace OrbsHavoc.UserInterface
 	using Input;
 	using Utilities;
 
-	// Contains input handling method that would better fir into RootUIElement; however, that would require making
+	// Contains input handling method that would better fit into RootUIElement; however, that would require making
 	// certain methods and properties public, which we don't want to do. The reason is that RootUIElement is not
 	// allowed to call protected members of other UIElement instances... annoying
 	partial class UIElement

@@ -130,14 +130,13 @@ namespace OrbsHavoc.Rendering
 		}
 
 		/// <summary>
-		///   Check that adding the given number of quads does not overflow the buffer.
+		///   Checks that adding the given number of quads does not overflow the buffer.
 		/// </summary>
 		/// <param name="quadCount">The additional number of quads that should be drawn.</param>
 		private void CheckQuadCount(int quadCount)
 		{
 			Assert.ArgumentInRange(quadCount, 0, MaxQuads, nameof(quadCount));
 
-			// Check whether we would overflow if we added the given batch.
 			var tooManyQuads = Count + quadCount >= MaxQuads;
 			if (tooManyQuads)
 				Log.Die($"Out of memory while trying to add {quadCount} additional quads.");
