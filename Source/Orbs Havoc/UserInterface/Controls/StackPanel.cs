@@ -37,7 +37,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public Orientation Orientation
 		{
-			get { return _orientation; }
+			get => _orientation;
 			set
 			{
 				Assert.ArgumentInRange(value, nameof(value));

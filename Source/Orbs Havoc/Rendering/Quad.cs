@@ -81,12 +81,11 @@ namespace OrbsHavoc.Rendering
 		/// </summary>
 		public Rectangle TextureCoordinates
 		{
-			get
-			{
-				return new Rectangle(
-					_texOffsetX / (float)UInt16.MaxValue, _texOffsetY / (float)UInt16.MaxValue,
-					_texWidth / (float)UInt16.MaxValue, _texHeight / (float)UInt16.MaxValue);
-			}
+			get => new Rectangle(
+				_texOffsetX / (float)UInt16.MaxValue,
+				_texOffsetY / (float)UInt16.MaxValue,
+				_texWidth / (float)UInt16.MaxValue,
+				_texHeight / (float)UInt16.MaxValue);
 			set
 			{
 				Assert.InRange(value.Left, 0, 1);

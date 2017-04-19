@@ -46,7 +46,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		public UIElement RootElement
 		{
-			get { return _rootElement; }
+			get => _rootElement;
 			protected set
 			{
 				_rootElement = value;

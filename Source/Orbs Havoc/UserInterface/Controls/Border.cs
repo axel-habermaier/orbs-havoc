@@ -80,7 +80,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public Thickness BorderThickness
 		{
-			get { return _borderThickness; }
+			get => _borderThickness;
 			set
 			{
 				if (_borderThickness == value)

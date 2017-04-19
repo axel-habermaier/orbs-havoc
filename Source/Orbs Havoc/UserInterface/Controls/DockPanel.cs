@@ -38,7 +38,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public bool LastChildFill
 		{
-			get { return _lastChildFill; }
+			get => _lastChildFill;
 			set
 			{
 				if (_lastChildFill == value)

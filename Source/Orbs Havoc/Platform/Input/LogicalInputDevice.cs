@@ -76,8 +76,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action LostFocus
 		{
-			add { Window.LostFocus += value; }
-			remove { Window.LostFocus -= value; }
+			add => Window.LostFocus += value;
+			remove => Window.LostFocus -= value;
 		}
 
 		/// <summary>
@@ -85,8 +85,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action GainedFocus
 		{
-			add { Window.GainedFocus += value; }
-			remove { Window.GainedFocus -= value; }
+			add => Window.GainedFocus += value;
+			remove => Window.GainedFocus -= value;
 		}
 
 		/// <summary>

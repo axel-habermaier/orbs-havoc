@@ -82,7 +82,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public string Text
 		{
-			get { return _label.Text; }
+			get => _label.Text;
 			set
 			{
 				Assert.ArgumentNotNull(value, nameof(value));

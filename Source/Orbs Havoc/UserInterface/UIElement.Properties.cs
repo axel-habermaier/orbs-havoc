@@ -60,7 +60,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Action<UIElement> NormalStyle
 		{
-			get { return _normalStyle; }
+			get => _normalStyle;
 			set
 			{
 				_normalStyle = value;
@@ -73,7 +73,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Action<UIElement> HoveredStyle
 		{
-			get { return _hoveredStyle; }
+			get => _hoveredStyle;
 			set
 			{
 				_hoveredStyle = value;
@@ -88,7 +88,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Action<UIElement> ActiveStyle
 		{
-			get { return _activeStyle; }
+			get => _activeStyle;
 			set
 			{
 				_activeStyle = value;
@@ -115,7 +115,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Font Font
 		{
-			get { return _font ?? (_font = Parent.Font); }
+			get => _font ?? (_font = Parent.Font);
 			set
 			{
 				if (_font == value)
@@ -140,7 +140,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Color Foreground
 		{
-			get { return _foreground == Colors.Transparent ? (_foreground = Parent.Foreground) : _foreground; }
+			get => _foreground == Colors.Transparent ? (_foreground = Parent.Foreground) : _foreground;
 			set
 			{
 				if (_foreground == value)
@@ -164,7 +164,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float Width
 		{
-			get { return _width; }
+			get => _width;
 			set
 			{
 				// NaN is used to represent automatic width or height
@@ -183,7 +183,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float Height
 		{
-			get { return _height; }
+			get => _height;
 			set
 			{
 				// NaN is used to represent automatic width or height
@@ -202,7 +202,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float MinWidth
 		{
-			get { return _minWidth; }
+			get => _minWidth;
 			set
 			{
 				Assert.That(!Single.IsNaN(value) && value >= 0.0 && !Single.IsPositiveInfinity(value), "Invalid value");
@@ -220,7 +220,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float MinHeight
 		{
-			get { return _minHeight; }
+			get => _minHeight;
 			set
 			{
 				Assert.That(!Single.IsNaN(value) && value >= 0.0 && !Single.IsPositiveInfinity(value), "Invalid value");
@@ -238,7 +238,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float MaxWidth
 		{
-			get { return _maxWidth; }
+			get => _maxWidth;
 			set
 			{
 				Assert.That(!Single.IsNaN(value) && value >= 0.0, "Invalid value");
@@ -256,7 +256,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float MaxHeight
 		{
-			get { return _maxHeight; }
+			get => _maxHeight;
 			set
 			{
 				Assert.That(!Single.IsNaN(value) && value >= 0.0, "Invalid value");
@@ -284,7 +284,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Thickness Margin
 		{
-			get { return _margin; }
+			get => _margin;
 			set
 			{
 				if (_margin == value)
@@ -300,7 +300,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public HorizontalAlignment HorizontalAlignment
 		{
-			get { return _horizontalAlignment; }
+			get => _horizontalAlignment;
 			set
 			{
 				Assert.ArgumentInRange(value, nameof(value));
@@ -318,7 +318,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public VerticalAlignment VerticalAlignment
 		{
-			get { return _verticalAlignment; }
+			get => _verticalAlignment;
 			set
 			{
 				Assert.ArgumentInRange(value, nameof(value));
@@ -336,7 +336,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Visibility Visibility
 		{
-			get { return _visibility; }
+			get => _visibility;
 			set
 			{
 				Assert.ArgumentInRange(value, nameof(value));
@@ -355,7 +355,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public bool IsVisible
 		{
-			get { return (_state & State.IsVisible) == State.IsVisible; }
+			get => (_state & State.IsVisible) == State.IsVisible;
 			protected set
 			{
 				if (value)
@@ -388,7 +388,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public bool IsFocused
 		{
-			get { return (_state & State.IsFocused) == State.IsFocused; }
+			get => (_state & State.IsFocused) == State.IsFocused;
 			set
 			{
 				if (IsFocused == value)
@@ -448,7 +448,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		protected internal bool IsAttachedToRoot
 		{
-			get { return (_state & State.AttachedToRoot) == State.AttachedToRoot; }
+			get => (_state & State.AttachedToRoot) == State.AttachedToRoot;
 			set
 			{
 				if (IsAttachedToRoot == value)
@@ -476,7 +476,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float Left
 		{
-			get { return _left; }
+			get => _left;
 			set
 			{
 				Assert.That(!Single.IsInfinity(value), "Invalid value.");
@@ -494,7 +494,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float Top
 		{
-			get { return _top; }
+			get => _top;
 			set
 			{
 				Assert.That(!Single.IsInfinity(value), "Invalid value.");
@@ -512,7 +512,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float Right
 		{
-			get { return _right; }
+			get => _right;
 			set
 			{
 				Assert.That(!Single.IsInfinity(value), "Invalid value.");
@@ -530,7 +530,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public float Bottom
 		{
-			get { return _bottom; }
+			get => _bottom;
 			set
 			{
 				Assert.That(!Single.IsInfinity(value), "Invalid value.");
@@ -548,7 +548,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public Dock Dock
 		{
-			get { return _dock; }
+			get => _dock;
 			set
 			{
 				Assert.ArgumentInRange(value, nameof(value));
@@ -567,7 +567,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public int Column
 		{
-			get { return _column; }
+			get => _column;
 			set
 			{
 				if (_column == value)
@@ -585,7 +585,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public int Row
 		{
-			get { return _row; }
+			get => _row;
 			set
 			{
 				if (_row == value)
@@ -733,7 +733,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public bool AutoFocus
 		{
-			get { return (_state & State.AutoFocus) == State.AutoFocus; }
+			get => (_state & State.AutoFocus) == State.AutoFocus;
 			set
 			{
 				if (value)

@@ -88,8 +88,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action<string> TextEntered
 		{
-			add { _window.TextEntered += value; }
-			remove { _window.TextEntered -= value; }
+			add => _window.TextEntered += value;
+			remove => _window.TextEntered -= value;
 		}
 
 		/// <summary>
@@ -97,8 +97,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action<Key, ScanCode, KeyModifiers> KeyPressed
 		{
-			add { _window.KeyPressed += value; }
-			remove { _window.KeyPressed -= value; }
+			add => _window.KeyPressed += value;
+			remove => _window.KeyPressed -= value;
 		}
 
 		/// <summary>
@@ -106,8 +106,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action<Key, ScanCode, KeyModifiers> KeyReleased
 		{
-			add { _window.KeyReleased += value; }
-			remove { _window.KeyReleased -= value; }
+			add => _window.KeyReleased += value;
+			remove => _window.KeyReleased -= value;
 		}
 
 		/// <summary>

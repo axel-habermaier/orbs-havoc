@@ -96,8 +96,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action<MouseWheelDirection> Wheel
 		{
-			add { _window.MouseWheel += value; }
-			remove { _window.MouseWheel -= value; }
+			add => _window.MouseWheel += value;
+			remove => _window.MouseWheel -= value;
 		}
 
 		/// <summary>
@@ -105,8 +105,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action<MouseButton, Vector2, bool> Pressed
 		{
-			add { _window.MousePressed += value; }
-			remove { _window.MousePressed -= value; }
+			add => _window.MousePressed += value;
+			remove => _window.MousePressed -= value;
 		}
 
 		/// <summary>
@@ -114,8 +114,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action<MouseButton, Vector2> Released
 		{
-			add { _window.MouseReleased += value; }
-			remove { _window.MouseReleased -= value; }
+			add => _window.MouseReleased += value;
+			remove => _window.MouseReleased -= value;
 		}
 
 		/// <summary>
@@ -123,8 +123,8 @@ namespace OrbsHavoc.Platform.Input
 		/// </summary>
 		public event Action<Vector2> Moved
 		{
-			add { _window.MouseMoved += value; }
-			remove { _window.MouseMoved -= value; }
+			add => _window.MouseMoved += value;
+			remove => _window.MouseMoved -= value;
 		}
 
 		/// <summary>

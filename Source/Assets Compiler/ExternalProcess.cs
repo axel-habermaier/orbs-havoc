@@ -65,8 +65,8 @@ namespace AssetsCompiler
 		/// </summary>
 		public string WorkingDirectory
 		{
-			get { return _process.StartInfo.WorkingDirectory; }
-			set { _process.StartInfo.WorkingDirectory = value; }
+			get => _process.StartInfo.WorkingDirectory;
+			set => _process.StartInfo.WorkingDirectory = value;
 		}
 
 		/// <summary>

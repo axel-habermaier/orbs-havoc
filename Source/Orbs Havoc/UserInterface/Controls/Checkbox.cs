@@ -85,7 +85,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public bool IsChecked
 		{
-			get { return _isChecked; }
+			get => _isChecked;
 			set
 			{
 				if (_isChecked == value)

@@ -75,7 +75,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public int Position
 		{
-			get { return _position; }
+			get => _position;
 			set
 			{
 				using (var text = GetText())

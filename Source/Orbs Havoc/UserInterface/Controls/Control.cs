@@ -58,7 +58,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public Thickness Padding
 		{
-			get { return _padding; }
+			get => _padding;
 			set
 			{
 				if (_padding == value)
@@ -115,7 +115,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public object Content
 		{
-			get { return _content; }
+			get => _content;
 			set
 			{
 				if (_content == value)

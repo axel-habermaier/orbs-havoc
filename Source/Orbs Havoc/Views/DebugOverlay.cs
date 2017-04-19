@@ -80,7 +80,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		internal int DrawCalls
 		{
-			set { _drawCalls.AddMeasurement(value); }
+			set => _drawCalls.AddMeasurement(value);
 		}
 
 		/// <summary>
@@ -88,7 +88,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		internal int VertexCount
 		{
-			set { _vertexCount.AddMeasurement(value); }
+			set => _vertexCount.AddMeasurement(value);
 		}
 
 		/// <summary>
@@ -96,7 +96,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		internal double GpuFrameTime
 		{
-			set { _gpuFrameTime.AddMeasurement(value); }
+			set => _gpuFrameTime.AddMeasurement(value);
 		}
 
 		/// <summary>
@@ -104,7 +104,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		internal double CpuFrameTime
 		{
-			set { _cpuFrameTime.AddMeasurement(value); }
+			set => _cpuFrameTime.AddMeasurement(value);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		internal double CpuUpdateTime
 		{
-			set { _cpuUpdateTime.AddMeasurement(value); }
+			set => _cpuUpdateTime.AddMeasurement(value);
 		}
 
 		/// <summary>
@@ -120,7 +120,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		internal double CpuRenderTime
 		{
-			set { _cpuRenderTime.AddMeasurement(value); }
+			set => _cpuRenderTime.AddMeasurement(value);
 		}
 
 		/// <summary>

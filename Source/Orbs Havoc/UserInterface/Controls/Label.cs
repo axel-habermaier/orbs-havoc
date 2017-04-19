@@ -42,7 +42,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public TextWrapping TextWrapping
 		{
-			get { return _wrapping; }
+			get => _wrapping;
 			set
 			{
 				Assert.ArgumentInRange(value, nameof(value));
@@ -61,7 +61,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public TextAlignment TextAlignment
 		{
-			get { return _alignment; }
+			get => _alignment;
 			set
 			{
 				Assert.ArgumentInRange(value, nameof(value));
@@ -79,7 +79,7 @@ namespace OrbsHavoc.UserInterface.Controls
 		/// </summary>
 		public string Text
 		{
-			get { return _text; }
+			get => _text;
 			set
 			{
 				Assert.ArgumentNotNull(value, nameof(value));
