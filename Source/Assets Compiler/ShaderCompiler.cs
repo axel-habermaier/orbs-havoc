@@ -102,7 +102,7 @@ namespace AssetsCompiler
 			}
 		}
 
-		private static void WriteMetadata(BinaryWriter writer, List<Tuple<string, int>> items)
+		private static void WriteMetadata(BinaryWriter writer, List<(string, int)> items)
 		{
 			writer.Write(items.Count);
 			foreach (var item in items)
@@ -128,16 +128,16 @@ namespace AssetsCompiler
 				.Aggregate(String.Empty, (s, line) => s + line.Trim() + Environment.NewLine);
 		}
 
-		private static List<Tuple<string, int>> ExtractSamplers(ref string shader)
+		private static List<(string sampler, int block)> ExtractSamplers(ref string shader)
 		{
 			const string regex = @"layout\s*\(\s*binding\s*=\s*(?<slot>\d*)\s*\)\s*uniform\s*sampler2D\s*(?<sampler>.*)\s*;";
 
-			var samplers = new List<Tuple<string, int>>();
+			var samplers = new List<(string sampler, int block)>();
 			var match = Regex.Match(shader, regex, RegexOptions.Multiline);
 
 			while (match.Success)
 			{
-				samplers.Add(Tuple.Create(match.Groups["sampler"].Value, Int32.Parse(match.Groups["slot"].Value)));
+				samplers.Add((match.Groups["sampler"].Value, Int32.Parse(match.Groups["slot"].Value)));
 				match = match.NextMatch();
 			}
 
@@ -145,16 +145,16 @@ namespace AssetsCompiler
 			return samplers;
 		}
 
-		private static List<Tuple<string, int>> ExtractUniformBlocks(ref string shader)
+		private static List<(string block, int slot)> ExtractUniformBlocks(ref string shader)
 		{
 			const string regex = @"layout\s*\(std140\s*,\s*binding\s*=\s*(?<binding>\d*)\s*\)\s*uniform\s*(?<block>\S*)\s*\{";
 
 			var match = Regex.Match(shader, regex, RegexOptions.Multiline);
-			var blocks = new List<Tuple<string, int>>();
+			var blocks = new List<(string block, int slot)>();
 
 			while (match.Success)
 			{
-				blocks.Add(Tuple.Create(match.Groups["block"].Value, Int32.Parse(match.Groups["binding"].Value)));
+				blocks.Add((match.Groups["block"].Value, Int32.Parse(match.Groups["binding"].Value)));
 				match = match.NextMatch();
 			}
 

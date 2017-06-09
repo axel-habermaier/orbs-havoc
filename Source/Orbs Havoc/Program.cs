@@ -49,7 +49,7 @@ namespace OrbsHavoc
 			try
 			{
 				Thread.CurrentThread.Name = "Main Thread";
-				TaskScheduler.UnobservedTaskException += (o, e) => { throw e.Exception.InnerException; };
+				TaskScheduler.UnobservedTaskException += (o, e) => throw e.Exception.InnerException;
 				CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 				CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
