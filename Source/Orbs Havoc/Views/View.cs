@@ -76,7 +76,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		public bool IsShown
 		{
-			get { return _isShown; }
+			get => _isShown;
 			set
 			{
 				if (value)

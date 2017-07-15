@@ -373,7 +373,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public bool IsFocusable
 		{
-			get { return (_state & State.IsFocusable) == State.IsFocusable; }
+			get => (_state & State.IsFocusable) == State.IsFocusable;
 			set
 			{
 				if (value)
@@ -408,7 +408,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public bool IsHitTestVisible
 		{
-			get { return (_state & State.IsHitTestVisible) == State.IsHitTestVisible; }
+			get => (_state & State.IsHitTestVisible) == State.IsHitTestVisible;
 			set
 			{
 				if (value)
@@ -613,7 +613,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		private bool IsMeasureDataDirty
 		{
-			get { return (_state & State.MeasureDirty) == State.MeasureDirty; }
+			get => (_state & State.MeasureDirty) == State.MeasureDirty;
 			set
 			{
 				if (value)
@@ -628,7 +628,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		private bool IsArrangeDataDirty
 		{
-			get { return (_state & State.ArrangeDirty) == State.ArrangeDirty; }
+			get => (_state & State.ArrangeDirty) == State.ArrangeDirty;
 			set
 			{
 				if (value)
@@ -643,7 +643,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		private bool IsVisualOffsetDirty
 		{
-			get { return (_state & State.VisualOffsetDirty) == State.VisualOffsetDirty; }
+			get => (_state & State.VisualOffsetDirty) == State.VisualOffsetDirty;
 			set
 			{
 				if (value)
@@ -658,7 +658,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		private bool HasInheritedFont
 		{
-			get { return (_state & State.InheritsFont) == State.InheritsFont; }
+			get => (_state & State.InheritsFont) == State.InheritsFont;
 			set
 			{
 				if (value)
@@ -673,7 +673,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		private bool HasInheritedForeground
 		{
-			get { return (_state & State.InheritsForeground) == State.InheritsForeground; }
+			get => (_state & State.InheritsForeground) == State.InheritsForeground;
 			set
 			{
 				if (value)
@@ -688,7 +688,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		private bool IsMouseOver
 		{
-			get { return (_state & State.IsMouseOver) == State.IsMouseOver; }
+			get => (_state & State.IsMouseOver) == State.IsMouseOver;
 			set
 			{
 				if (value)
@@ -703,7 +703,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		private bool IsActive
 		{
-			get { return (_state & State.IsActive) == State.IsActive; }
+			get => (_state & State.IsActive) == State.IsActive;
 			set
 			{
 				if (value)
@@ -718,7 +718,7 @@ namespace OrbsHavoc.UserInterface
 		/// </summary>
 		public bool CapturesInput
 		{
-			get { return (_state & State.CapturesInput) == State.CapturesInput; }
+			get => (_state & State.CapturesInput) == State.CapturesInput;
 			set
 			{
 				if (value)

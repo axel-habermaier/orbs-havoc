@@ -49,7 +49,7 @@ namespace AssetsCompiler
 			var enums = spec
 				.Root.Descendants("enum")
 				.Where(e => e.Attribute("value") != null && (e.Attribute("api") == null || e.Attribute("api").Value == "gl"))
-				.Select(e => new { Name = e.Attribute("name").Value, Value = e.Attribute("value").Value, Element = e })
+				.Select(e => new { Name = e.Attribute("name").Value, e.Attribute("value").Value, Element = e })
 				.ToDictionary(e => e.Name);
 			var funcs = spec
 				.Root.Descendants("commands")
@@ -64,7 +64,7 @@ namespace AssetsCompiler
 						 .Select(p => new
 						 {
 							 Name = p.Element("name").Value,
-							 Type = p.Value.Substring(0, p.Value.LastIndexOf(p.Element("name").Value)).Trim(),
+							 Type = p.Value.Substring(0, p.Value.LastIndexOf(p.Element("name").Value, StringComparison.Ordinal)).Trim(),
 							 Group = p.Attribute("group")?.Value
 						 })
 						 .ToArray();

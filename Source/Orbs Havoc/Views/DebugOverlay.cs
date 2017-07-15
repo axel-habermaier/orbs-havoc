@@ -30,17 +30,17 @@ namespace OrbsHavoc.Views
 	using Utilities;
 
 	/// <summary>
-	///   Shows statistics about the performance of the application and other information useful for debugging.
+	///     Shows statistics about the performance of the application and other information useful for debugging.
 	/// </summary>
 	internal sealed class DebugOverlay : View
 	{
 		/// <summary>
-		///   The update frequency of the statistics in Hz.
+		///     The update frequency of the statistics in Hz.
 		/// </summary>
 		private const int UpdateFrequency = 30;
 
 		/// <summary>
-		///   The number of measurements that are used to calculate an average.
+		///     The number of measurements that are used to calculate an average.
 		/// </summary>
 		private const int AverageSampleCount = 32;
 
@@ -62,7 +62,7 @@ namespace OrbsHavoc.Views
 		private AveragedDouble _vertexCount = new AveragedDouble(AverageSampleCount);
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		public DebugOverlay()
 		{
@@ -76,7 +76,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Sets number of draw calls drawn during the last frame that is displayed by the debug overlay.
+		///     Sets number of draw calls drawn during the last frame that is displayed by the debug overlay.
 		/// </summary>
 		internal int DrawCalls
 		{
@@ -84,7 +84,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Sets the number of vertices drawn during the last frame that is displayed by the debug overlay.
+		///     Sets the number of vertices drawn during the last frame that is displayed by the debug overlay.
 		/// </summary>
 		internal int VertexCount
 		{
@@ -92,7 +92,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Sets the GPU frame time in milliseconds that is displayed by the debug overlay.
+		///     Sets the GPU frame time in milliseconds that is displayed by the debug overlay.
 		/// </summary>
 		internal double GpuFrameTime
 		{
@@ -100,7 +100,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Sets the CPU frame time in milliseconds that is displayed by the debug overlay.
+		///     Sets the CPU frame time in milliseconds that is displayed by the debug overlay.
 		/// </summary>
 		internal double CpuFrameTime
 		{
@@ -108,7 +108,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Sets the CPU update time in milliseconds that is displayed by the debug overlay.
+		///     Sets the CPU update time in milliseconds that is displayed by the debug overlay.
 		/// </summary>
 		internal double CpuUpdateTime
 		{
@@ -116,7 +116,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Sets the CPU render time in milliseconds that is displayed by the debug overlay.
+		///     Sets the CPU render time in milliseconds that is displayed by the debug overlay.
 		/// </summary>
 		internal double CpuRenderTime
 		{
@@ -124,7 +124,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Initializes the view.
+		///     Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
@@ -179,7 +179,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Creates a debug output line.
+		///     Creates a debug output line.
 		/// </summary>
 		private static UIElement CreateLine(string text, UIElement element, float marginBottom)
 		{
@@ -192,7 +192,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Creates a debug output line.
+		///     Creates a debug output line.
 		/// </summary>
 		private static UIElement CreateLine(string text, UIElement element, string suffix, float marginBottom)
 		{
@@ -205,7 +205,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Updates the view's state.
+		///     Updates the view's state.
 		/// </summary>
 		public override void Update()
 		{
@@ -214,7 +214,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Updates the statistics.
+		///     Updates the statistics.
 		/// </summary>
 		private void UpdateStatistics()
 		{
@@ -234,7 +234,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Shows the new vsync value.
+		///     Shows the new vsync value.
 		/// </summary>
 		private void OnVsyncChanged()
 		{
@@ -242,7 +242,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
@@ -251,37 +251,42 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Represents a measurement that is averaged over a certain number of samples.
+		///     Represents a measurement that is averaged over a certain number of samples.
 		/// </summary>
 		private struct AveragedDouble
 		{
 			/// <summary>
-			///   The last couple of values for a more stable average.
+			///     The last couple of values for a more stable average.
 			/// </summary>
 			private readonly double[] _values;
 
 			/// <summary>
-			///   The current write index in the average array (circular writes).
+			///     The current write index in the average array (circular writes).
 			/// </summary>
 			private int _averageIndex;
 
 			/// <summary>
-			///   A value indicating whether the entire average array has been filled at least once.
+			///     A value indicating whether the entire average array has been filled at least once.
 			/// </summary>
 			private bool _averageIsFilled;
 
 			/// <summary>
-			///   The maximum supported value.
+			///     The maximum supported value.
 			/// </summary>
 			private double _max;
 
 			/// <summary>
-			///   The minimum supported value.
+			///     The minimum supported value.
 			/// </summary>
 			private double _min;
 
 			/// <summary>
-			///   Initializes a new instance.
+			///   The last value that has been measured.
+			/// </summary>
+			private double _lastValue;
+
+			/// <summary>
+			///     Initializes a new instance.
 			/// </summary>
 			/// <param name="sampleCount">The number of samples for the computation of the average.</param>
 			public AveragedDouble(int sampleCount)
@@ -293,12 +298,7 @@ namespace OrbsHavoc.Views
 			}
 
 			/// <summary>
-			///   Gets the last value that has been measured.
-			/// </summary>
-			internal double LastValue { get; private set; }
-
-			/// <summary>
-			///   Gets the averaged value.
+			///     Gets the averaged value.
 			/// </summary>
 			internal double Average
 			{
@@ -316,19 +316,19 @@ namespace OrbsHavoc.Views
 			}
 
 			/// <summary>
-			///   Adds the given measured value to the statistics.
+			///     Adds the given measured value to the statistics.
 			/// </summary>
 			/// <param name="value">The value that should be added.</param>
 			internal void AddMeasurement(double value)
 			{
-				LastValue = value;
+				_lastValue = value;
 
-				if (LastValue > _max)
-					_max = LastValue;
-				if (LastValue < _min)
-					_min = LastValue;
+				if (_lastValue > _max)
+					_max = _lastValue;
+				if (_lastValue < _min)
+					_min = _lastValue;
 
-				_values[_averageIndex] = LastValue;
+				_values[_averageIndex] = _lastValue;
 				_averageIndex = (_averageIndex + 1) % _values.Length;
 
 				if (_averageIndex == 0)

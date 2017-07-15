@@ -45,6 +45,6 @@ namespace OrbsHavoc.Network
 		/// <summary>
 		///   Gets the network message type of the reliable message.
 		/// </summary>
-		public MessageType MessageType { get; private set; }
+		public MessageType MessageType { get; }
 	}
 }

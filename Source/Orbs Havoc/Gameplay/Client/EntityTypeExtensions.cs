@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Gameplay.Client
 {
-	using System;
 	using Assets;
 	using Platform.Graphics;
 	using Rendering;

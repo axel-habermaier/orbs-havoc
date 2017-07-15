@@ -46,7 +46,7 @@ namespace OrbsHavoc.Network
 		/// <summary>
 		///   Gets the network message type of the unreliable message.
 		/// </summary>
-		public MessageType MessageType { get; private set; }
+		public MessageType MessageType { get; }
 
 		/// <summary>
 		///   Gets or sets a value indicating whether as many messages of the type as possible should be batched together for

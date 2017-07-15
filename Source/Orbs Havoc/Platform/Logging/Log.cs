@@ -118,9 +118,7 @@ namespace OrbsHavoc.Platform.Logging
 		private static void RaiseEvent(LogType logType, string message)
 		{
 			lock (_lockObject)
-			{
 				OnLog?.Invoke(new LogEntry(logType, message));
-			}
 		}
 
 		/// <summary>

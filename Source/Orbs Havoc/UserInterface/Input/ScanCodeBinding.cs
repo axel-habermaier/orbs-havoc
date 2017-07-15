@@ -24,7 +24,6 @@ namespace OrbsHavoc.UserInterface.Input
 {
 	using System;
 	using Platform.Input;
-	using Platform.Logging;
 	using Utilities;
 
 	/// <summary>

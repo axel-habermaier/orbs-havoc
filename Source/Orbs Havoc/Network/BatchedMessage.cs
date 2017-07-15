@@ -46,11 +46,11 @@ namespace OrbsHavoc.Network
 		/// <summary>
 		///   Gets the type of the batched messages.
 		/// </summary>
-		public MessageType MessageType { get; private set; }
+		public MessageType MessageType { get; }
 
 		/// <summary>
 		///   Gets the messages that the batched message contains.
 		/// </summary>
-		public Queue<Message> Messages { get; private set; }
+		public Queue<Message> Messages { get; }
 	}
 }

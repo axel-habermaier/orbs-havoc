@@ -119,13 +119,13 @@ namespace OrbsHavoc.Network.Messages
 		/// <summary>
 		///   Gets the type of the message.
 		/// </summary>
-		public MessageType MessageType { get; private set; }
+		public MessageType MessageType { get; }
 
 		/// <summary>
 		///   Gets a value indicating whether as many messages of this type as possible are batched together into a
 		///   single network transmission.
 		/// </summary>
-		public bool UseBatchedTransmission { get; private set; }
+		public bool UseBatchedTransmission { get; }
 
 		/// <summary>
 		///   Gets a value indicating whether the message is reliable.

@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Platform.Graphics
 {
-	using System;
 	using Logging;
 	using Memory;
 	using Utilities;

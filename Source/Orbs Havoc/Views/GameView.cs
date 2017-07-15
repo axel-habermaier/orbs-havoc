@@ -160,7 +160,7 @@ namespace OrbsHavoc.Views
 				Commands.Disconnect();
 
 				if (!wasSynced)
-					Views.MessageBoxes.ShowError("Connection Failed", $"Unable to connect to the server. The connection attempt timed out.");
+					Views.MessageBoxes.ShowError("Connection Failed", "Unable to connect to the server. The connection attempt timed out.");
 				else
 					Views.MessageBoxes.ShowError("Connection Lost", "The connection to the server has been lost.");
 			}
