@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2012-2017, Axel Habermaier
 // 
@@ -22,16 +22,19 @@
 
 namespace OrbsHavoc.Platform.Graphics
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Runtime.CompilerServices;
+	using System.Runtime.InteropServices;
 	using Logging;
 	using Utilities;
-	using static OpenGL3;
+	using static SDL2;
 
 	/// <summary>
 	///   Provides OpenGL helper methods.
 	/// </summary>
-	public static unsafe class GraphicsHelpers
+	internal static unsafe partial class OpenGL3
 	{
 		/// <summary>
 		///   Represents a pointer to an OpenGL allocation function.
@@ -76,12 +79,12 @@ namespace OrbsHavoc.Platform.Graphics
 		///   In debug builds, checks for OpenGL errors.
 		/// </summary>
 		[Conditional("DEBUG"), DebuggerHidden]
-		public static void CheckErrors()
+		private static void CheckErrors([CallerMemberName] string entryPoint = "")
 		{
 			var glErrorOccurred = false;
 			for (var glError = glGetError(); glError != GL_NO_ERROR; glError = glGetError())
 			{
-				Log.Error($"OpenGL error: {GetErrorMessage(glError)}");
+				Log.Error($"OpenGL error after invocation of '{entryPoint}': {GetErrorMessage(glError)}");
 				glErrorOccurred = true;
 			}
 
@@ -185,6 +188,20 @@ namespace OrbsHavoc.Platform.Graphics
 			{
 				if (stateValues[i] == value)
 					stateValues[i] = null;
+			}
+		}
+
+		private static T Load<T>(string entryPoint)
+		{
+			using (var entryPointPtr = Interop.ToPointer(entryPoint))
+			{
+				var function = SDL_GL_GetProcAddress(entryPointPtr);
+
+				// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
+				if ((long)function >= -1 && (long)function <= 3)
+					Log.Die($"Failed to load OpenGL entry point '{entryPoint}'.");
+
+				return Marshal.GetDelegateForFunctionPointer<T>(new IntPtr(function));
 			}
 		}
 	}

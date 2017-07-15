@@ -24,7 +24,6 @@ namespace OrbsHavoc.Platform.Graphics
 {
 	using Memory;
 	using Utilities;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 
 	/// <summary>
@@ -44,7 +43,6 @@ namespace OrbsHavoc.Platform.Graphics
 			Assert.ArgumentSatisfies(attributes.Length > 0, nameof(attributes), "Expected at least one vertex attribute.");
 
 			glBindVertexArray(_vertexLayout);
-			CheckErrors();
 
 			var index = 1;
 			byte* offset = null;
@@ -52,7 +50,6 @@ namespace OrbsHavoc.Platform.Graphics
 				AddAttribute(attribute, ref offset, ref index);
 
 			glBindVertexArray(0);
-			CheckErrors();
 		}
 
 		/// <summary>
@@ -61,17 +58,13 @@ namespace OrbsHavoc.Platform.Graphics
 		private static void AddAttribute(VertexAttribute attribute, ref byte* offset, ref int index)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, attribute.Buffer);
-			CheckErrors();
-
 			glEnableVertexAttribArray(index);
 			glVertexAttribPointer(index, attribute.ComponentCount, (int)attribute.DataFormat, attribute.Normalize, attribute.StrideInBytes, offset);
-			CheckErrors();
 
 			index += 1;
 			offset += attribute.ComponentCount * attribute.SizeInBytes;
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			CheckErrors();
 		}
 
 		/// <summary>

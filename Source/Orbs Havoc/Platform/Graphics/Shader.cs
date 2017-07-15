@@ -27,7 +27,6 @@ namespace OrbsHavoc.Platform.Graphics
 	using Logging;
 	using Memory;
 	using Utilities;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 
 	/// <summary>
@@ -50,8 +49,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 			if (Change(ref State.Shader, this))
 				glUseProgram(_program);
-
-			CheckErrors();
 		}
 
 		/// <summary>
@@ -89,14 +86,12 @@ namespace OrbsHavoc.Platform.Graphics
 			glAttachShader(_program, _vertexShader);
 			glAttachShader(_program, _fragmentShader);
 			glLinkProgram(_program);
-			CheckErrors();
 
 			int success, logLength;
 			byte* log = stackalloc byte[LogBufferLength];
 
 			glGetProgramiv(_program, GL_LINK_STATUS, &success);
 			glGetProgramInfoLog(_program, LogBufferLength, &logLength, log);
-			CheckErrors();
 
 			if (success == GL_FALSE)
 				Log.Die($"Program linking failed: {Interop.ToString(log).Trim()}");
@@ -121,7 +116,6 @@ namespace OrbsHavoc.Platform.Graphics
 				using (var name = buffer.Pointer)
 				{
 					var index = getIndex(name);
-					CheckErrors();
 
 					buffer.Skip(nameLength);
 					var binding = buffer.ReadInt32();
@@ -131,7 +125,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 					Bind();
 					setBinding(index, binding);
-					CheckErrors();
 				}
 			}
 		}
@@ -163,7 +156,6 @@ namespace OrbsHavoc.Platform.Graphics
 			glCompileShader(shader);
 			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 			glGetShaderInfoLog(shader, LogBufferLength, &logLength, log);
-			CheckErrors();
 
 			if (success == GL_FALSE)
 				Log.Die($"Shader compilation failed: {Interop.ToString(log).Trim()}");

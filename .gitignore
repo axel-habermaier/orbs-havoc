@@ -1,7 +1,6 @@
 Binaries
 Build
 Deploy
-Build
 ipch
 obj
 bin
@@ -27,5 +26,3 @@ packages
 *.assets
 *.*~*
 *.g.*
-NuGet.exe
-ILRepack.exe

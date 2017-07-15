@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Platform.Graphics
 {
 	using Utilities;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 
 	/// <summary>

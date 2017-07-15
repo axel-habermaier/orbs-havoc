@@ -26,7 +26,6 @@ namespace OrbsHavoc.Platform.Graphics
 	using Memory;
 	using Rendering;
 	using Utilities;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 
 	/// <summary>
@@ -69,7 +68,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _renderTarget);
 			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
-			CheckErrors();
 
 			switch (glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER))
 			{
@@ -103,7 +101,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 			var buffer = GL_COLOR_ATTACHMENT0;
 			glDrawBuffers(1, &buffer);
-			CheckErrors();
 
 			State.RenderTarget = null;
 		}
@@ -185,8 +182,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 			glClearColor(color.Red / 255.0f, color.Green / 255.0f, color.Blue / 255.0f, color.Alpha / 255.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
-
-			CheckErrors();
 		}
 
 		/// <summary>

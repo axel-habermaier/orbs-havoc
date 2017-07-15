@@ -25,7 +25,6 @@ namespace OrbsHavoc.Platform.Graphics
 	using System;
 	using Memory;
 	using Utilities;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 
 	/// <summary>
@@ -58,7 +57,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 			glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
 			glBufferData(GL_UNIFORM_BUFFER, _sizeInBytes, data, GL_DYNAMIC_DRAW);
-			CheckErrors();
 		}
 
 		/// <summary>
@@ -75,8 +73,6 @@ namespace OrbsHavoc.Platform.Graphics
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			CheckErrors();
-
 			Deallocate(glDeleteBuffers, _buffer);
 			Unset(State.UniformBuffers, this);
 		}
@@ -93,7 +89,6 @@ namespace OrbsHavoc.Platform.Graphics
 				return;
 
 			glBindBufferBase(GL_UNIFORM_BUFFER, slot, _buffer);
-			CheckErrors();
 		}
 
 		/// <summary>
@@ -107,7 +102,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 			glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
 			glBufferSubData(GL_UNIFORM_BUFFER, null, _sizeInBytes, data);
-			CheckErrors();
 		}
 	}
 }

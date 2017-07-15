@@ -57,8 +57,8 @@
 		<Message Importance="High" Text="Generated code for '%(Compile.Identity)'." Condition="%(Compile.Registry) == 'true'" />
 	</Target>
 	
-	<Target Name="GenerateBindings" BeforeTargets="GenerateILAssembly" Inputs="%(OpenGL.FullPath);$(AssetsCompiler)" Outputs="$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.il">
-		<Exec Command="$(AssetsCompiler) opengl --input &quot;%(OpenGL.FullPath)&quot; --output &quot;$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.il&quot;" WorkingDirectory="$(OutDir)" />
+	<Target Name="GenerateBindings" BeforeTargets="BeforeBuild" Inputs="%(OpenGL.FullPath);$(AssetsCompiler)" Outputs="$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.cs">
+		<Exec Command="$(AssetsCompiler) opengl --input &quot;%(OpenGL.FullPath)&quot; --output &quot;$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.cs&quot;" WorkingDirectory="$(OutDir)" />
 		<Message Importance="High" Text="Generated code for '%(OpenGL.Identity)'." />
 	</Target>
 	

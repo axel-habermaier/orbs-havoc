@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Platform.Graphics
 {
 	using Memory;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 
 	/// <summary>
@@ -45,8 +44,6 @@ namespace OrbsHavoc.Platform.Graphics
 			glSamplerParameteri(_state, GL_TEXTURE_WRAP_S, addressMode);
 			glSamplerParameteri(_state, GL_TEXTURE_WRAP_T, addressMode);
 			glSamplerParameteri(_state, GL_TEXTURE_WRAP_R, addressMode);
-
-			CheckErrors();
 		}
 
 		/// <summary>

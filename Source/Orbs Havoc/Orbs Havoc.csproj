@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <Features>strict</Features>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile /> 
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -42,23 +42,15 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=10.2.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\..\Dependencies\Packages\JetBrains.Annotations.10.2.1\lib\net\JetBrains.Annotations.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="OrbsHavoc.IL">
-      <HintPath>$(OutDir)\Orbs Havoc.IL.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\Dependencies\Packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
+	<PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+	<PackageReference Include="System.ValueTuple" Version="4.3.1" />
+	<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\AssetBundle.g.cs">
-      <DependentUpon>AssetBundle.cs</DependentUpon>
     </Compile>
     <Level Include="Assets\Levels\TestLevel.txt" />
     <Compile Include="Gameplay\Behaviors\Behavior`1.cs" />
@@ -162,7 +154,7 @@
     <Compile Include="Platform\Graphics\VertexAttribute.cs" />
     <Compile Include="Platform\Graphics\VertexLayout.cs" />
     <Compile Include="Platform\Graphics\UniformBuffer.cs" />
-    <Compile Include="Platform\Graphics\GraphicsHelpers.cs" />
+    <Compile Include="Platform\Graphics\OpenGL3.cs" />
     <Compile Include="Platform\Input\TriggerType.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
     <Compile Include="Platform\Memory\BufferOverflowException.cs" />
@@ -326,7 +318,6 @@
       <DependentUpon>Commands.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\Commands.g.cs">
-      <DependentUpon>Commands.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\Command`0.cs" />
     <Compile Include="Scripting\Command`1.cs" />
@@ -338,7 +329,6 @@
       <DependentUpon>Cvars.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\Cvars.g.cs">
-      <DependentUpon>Cvars.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\Help.cs" />
     <Compile Include="Scripting\ICommand.cs" />
@@ -372,9 +362,6 @@
     <Compile Include="Utilities\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <IL Include="Properties\AssemblyInfo.il" />
-  </ItemGroup>
-  <ItemGroup>
     <Font Include="Assets\Fonts\DefaultFont.font" />
   </ItemGroup>
   <ItemGroup>
@@ -384,9 +371,8 @@
     <Compile Include="UserInterface\UIElement.Input.cs" />
   </ItemGroup>
   <ItemGroup>
-    <IL Include="Platform\Graphics\OpenGL3.g.il">
-      <DependentUpon>OpenGL.xml</DependentUpon>
-    </IL>
+    <Compile Include="Platform\Graphics\OpenGL3.g.cs">
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <OpenGL Include="Platform\Graphics\OpenGL.xml" />
@@ -416,9 +402,6 @@
   <ItemGroup>
     <Font Include="Assets\Fonts\HudFont.font" />
     <None Include="Assets\Shaders\Effects\BloomSettings.glsl" />
-    <IL Include="Platform\Interop.il">
-      <DependentUpon>Interop.cs</DependentUpon>
-    </IL>
     <Shader Include="Assets\Shaders\Sprites\AdditiveSpriteShader.glsl" />
     <Shader Include="Assets\Shaders\Effects\CopyShader.glsl" />
     <None Include="Assets\Shaders\Sprites\Vertices.glsl" />
@@ -459,15 +442,7 @@
     <Texture Include="Assets\Textures\LightingGun.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="IL.targets" />
   <Import Project="Assets.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)Dependencies/SDL2.dll" DestinationFolder="$(OutDir)" Condition="'$(OS)' == 'Windows_NT'" />
   </Target>

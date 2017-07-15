@@ -26,7 +26,6 @@ namespace OrbsHavoc.Platform.Graphics
 	using Logging;
 	using Memory;
 	using Utilities;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 	using static SDL2;
 
@@ -59,20 +58,7 @@ namespace OrbsHavoc.Platform.Graphics
 				Log.Die("Failed to initialize the OpenGL context. OpenGL 3.3 is not supported by your graphics card.");
 
 			MakeCurrent();
-
-			Load(entryPoint =>
-			{
-				using (var entryPointPtr = Interop.ToPointer(entryPoint))
-				{
-					var function = SDL_GL_GetProcAddress(entryPointPtr);
-
-					// Stupid, but might be necessary; see also https://www.opengl.org/wiki/Load_OpenGL_Functions
-					if ((long)function >= -1 && (long)function <= 3)
-						Log.Die($"Failed to load OpenGL entry point '{entryPoint}'.");
-
-					return new IntPtr(function);
-				}
-			});
+			LoadGraphicsEntryPoints();
 
 			int major, minor;
 			glGetIntegerv(GL_MAJOR_VERSION, &major);
@@ -91,8 +77,6 @@ namespace OrbsHavoc.Platform.Graphics
 			glDisable(GL_CULL_FACE);
 			glBlendEquation(GL_FUNC_ADD);
 
-			CheckErrors();
-
 			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
 			{
 				_beginQueries[i] = Allocate(glGenQueries, "TimestampQuery");
@@ -101,8 +85,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 				glQueryCounter(_beginQueries[i], GL_TIMESTAMP);
 				glQueryCounter(_endQueries[i], GL_TIMESTAMP);
-
-				CheckErrors();
 			}
 		}
 
@@ -145,8 +127,6 @@ namespace OrbsHavoc.Platform.Graphics
 			// Issue timing query for the current frame and allow drawing
 			glQueryCounter(_beginQueries[_syncedIndex], GL_TIMESTAMP);
 			State.CanDraw = true;
-
-			CheckErrors();
 		}
 
 		/// <summary>
@@ -165,8 +145,6 @@ namespace OrbsHavoc.Platform.Graphics
 			// Drawing is no longer allowed, but all frame-dependant resources can now be updated again
 			State.CanDraw = false;
 			State.FrameNumber += 1;
-
-			CheckErrors();
 		}
 
 		/// <summary>
@@ -175,9 +153,7 @@ namespace OrbsHavoc.Platform.Graphics
 		private static void BeforeDraw()
 		{
 			State.Validate();
-
 			glBindVertexArray(State.VertexLayout);
-			CheckErrors();
 		}
 
 		/// <summary>
@@ -186,7 +162,6 @@ namespace OrbsHavoc.Platform.Graphics
 		private static void AfterDraw()
 		{
 			glBindVertexArray(0);
-			CheckErrors();
 		}
 
 		/// <summary>

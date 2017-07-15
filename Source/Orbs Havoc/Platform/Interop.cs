@@ -23,6 +23,7 @@
 namespace OrbsHavoc.Platform
 {
 	using System;
+	using System.Runtime.CompilerServices;
 	using System.Text;
 	using Memory;
 	using Utilities;
@@ -70,7 +71,7 @@ namespace OrbsHavoc.Platform
 				(destination < source && (byte*)destination + byteCount <= source),
 				nameof(source), "The memory regions overlap.");
 
-			MemCopy.Copy(destination, source, byteCount);
+			Unsafe.CopyBlock(destination, source, (uint)byteCount);
 		}
 	}
 }

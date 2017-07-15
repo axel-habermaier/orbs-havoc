@@ -33,7 +33,7 @@ namespace AssetsCompiler
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 	public class GLGenerator : CompilationTask
 	{
-		private static readonly string[] _extensions = {};
+		private static readonly string[] _extensions = { };
 
 		[Option("input", Required = true, HelpText = "The path to the input OpenGL file.")]
 		public string InFile { get; set; }
@@ -129,12 +129,12 @@ namespace AssetsCompiler
 								.Where(f => f.Attribute("profile") == null || f.Attribute("profile").Value == "core")
 								.SelectMany(f => f.Descendants("enum"))
 								.Select(f => f.Attribute("name").Value)
-							)
-							.Union(info.Enums.Select(f => f.Name))
-							.Except(removedEnums)
-							.Distinct()
-							.Select(f => enums[f])
-							.ToList();
+						)
+						.Union(info.Enums.Select(f => f.Name))
+						.Except(removedEnums)
+						.Distinct()
+						.Select(f => enums[f])
+						.ToList();
 
 					return new { Funcs = requiredFuncs, Enums = requiredEnums };
 				});
@@ -159,57 +159,64 @@ namespace AssetsCompiler
 			var writer = new CodeWriter();
 			writer.WriterHeader();
 
-			writer.AppendLine(".class public auto ansi abstract sealed beforefieldinit OrbsHavoc.Platform.Graphics.OpenGL3 extends System.Object");
+			writer.AppendLine("namespace OrbsHavoc.Platform.Graphics");
 			writer.AppendBlockStatement(() =>
 			{
-				foreach (var e in gl.Enums)
-				{
-					var constantType = GetConstantType(e.Value);
-					writer.AppendLine($".field public static literal {constantType} {e.Name} = {constantType}({e.Value})");
-				}
-
+				writer.AppendLine("using System.Diagnostics;");
+				writer.AppendLine("using System.Runtime.CompilerServices;");
 				writer.NewLine();
-				foreach (var func in gl.Funcs)
-					writer.AppendLine($".field private initonly static native int _{func.Name}");
 
-				writer.NewLine();
-				foreach (var func in gl.Funcs)
-				{
-					writer.Append($".method public hidebysig static {MapType(func.ReturnType)} {func.Name}");
-					var parameters = String.Join(", ", func.Params.Select(p => $"{MapType(p.Type)} '{p.Name}'"));
-					writer.AppendLine($"({parameters}) cil managed aggressiveinlining");
-					writer.AppendBlockStatement(() =>
-					{
-						writer.AppendLine(".custom instance void [mscorlib]System.Diagnostics.DebuggerHiddenAttribute::.ctor() = (01 00 00 00)");
-						writer.AppendLine($".maxstack {func.Params.Length + 1}");
-						writer.NewLine();
-
-						for (var i = 0; i < func.Params.Length; ++i)
-							writer.AppendLine($"ldarg.s {i}");
-
-						writer.AppendLine($"ldsfld native int OrbsHavoc.Platform.Graphics.OpenGL3::_{func.Name}");
-						var types = String.Join(", ", func.Params.Select(p => MapType(p.Type)));
-						writer.AppendLine($"calli unmanaged stdcall {MapType(func.ReturnType)}({types})");
-						writer.AppendLine("ret");
-					});
-					writer.NewLine();
-				}
-
-				writer.AppendLine(".method public hidebysig static void Load(class [mscorlib]System.Func`2<string, native int> loader) cil managed");
+				writer.AppendLine("internal unsafe static partial class OpenGL3");
 				writer.AppendBlockStatement(() =>
 				{
-					writer.AppendLine(".maxstack 2");
-					writer.NewLine();
+					foreach (var e in gl.Enums)
+					{
+						var constantType = GetConstantType(e.Value);
+						writer.AppendLine($"public const {constantType} {e.Name} = unchecked(({constantType}){e.Value});");
+					}
 
+					writer.NewLine();
 					foreach (var func in gl.Funcs)
 					{
-						writer.AppendLine("ldarg.0");
-						writer.AppendLine($"ldstr \"{func.Name}\"");
-						writer.AppendLine("call instance !1 class [mscorlib]System.Func`2<string, native int>::Invoke(!0)");
-						writer.AppendLine($"stsfld native int OrbsHavoc.Platform.Graphics.OpenGL3::_{func.Name}");
+						var parameters = String.Join(", ", func.Params.Select(p => $"{MapType(p.Type)} @{p.Name}"));
+						writer.AppendLine($"private delegate {MapType(func.ReturnType)} {func.Name}Func({parameters});");
+					}
+
+					writer.NewLine();
+					foreach (var func in gl.Funcs)
+						writer.AppendLine($"private static {func.Name}Func _{func.Name};");
+
+					writer.NewLine();
+					foreach (var func in gl.Funcs)
+					{
+						writer.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining), DebuggerHidden]");
+						writer.Append($"public static {MapType(func.ReturnType)} {func.Name}");
+						var parameters = String.Join(", ", func.Params.Select(p => $"{MapType(p.Type)} @{p.Name}"));
+						writer.AppendLine($"({parameters})");
+						writer.AppendBlockStatement(() =>
+						{
+							if (func.ReturnType != "void")
+								writer.Append("var _result = ");
+
+							writer.Append($"_{func.Name}(");
+							writer.AppendSeparated(func.Params, ", ", p => writer.Append("@" + p.Name));
+							writer.AppendLine(");");
+
+							if (func.Name != "glGetError")
+								writer.AppendLine("CheckErrors();");
+
+							if (func.ReturnType != "void")
+								writer.AppendLine("return _result;");
+						});
 						writer.NewLine();
 					}
-					writer.AppendLine("ret");
+
+					writer.AppendLine("public static void LoadGraphicsEntryPoints()");
+					writer.AppendBlockStatement(() =>
+					{
+						foreach (var func in gl.Funcs)
+							writer.AppendLine($"_{func.Name} = Load<{func.Name}Func>(\"{func.Name}\");");
+					});
 				});
 			});
 
@@ -231,27 +238,27 @@ namespace AssetsCompiler
 				case "GLsizei":
 				case "GLfixed":
 				case "GLclampx":
-					return "int32";
+					return "int";
 				case "GLsync":
 				case "GLintptr":
 				case "GLDEBUGPROC":
 					return "void*";
 				case "GLfloat":
 				case "GLclampf":
-					return "float32";
+					return "float";
 				case "GLdouble":
-					return "float64";
+					return "double";
 				case "GLubyte":
 				case "GLbyte":
 				case "GLchar":
-					return "uint8";
+					return "byte";
 				case "GLushort":
 				case "GLshort":
-					return "int16";
+					return "short";
 				case "GLuint64":
 				case "GLint64":
 				case "GLsizeiptr":
-					return "int64";
+					return "long";
 				default:
 					return glType;
 			}
@@ -267,12 +274,12 @@ namespace AssetsCompiler
 			}
 
 			if (isHex && UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var result))
-				return "int32";
+				return "int";
 
 			if (UInt32.TryParse(value, out result))
-				return "int32";
+				return "int";
 
-			return "int64";
+			return "long";
 		}
 	}
 }

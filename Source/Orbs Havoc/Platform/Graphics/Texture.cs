@@ -24,7 +24,6 @@ namespace OrbsHavoc.Platform.Graphics
 {
 	using Memory;
 	using Utilities;
-	using static GraphicsHelpers;
 	using static OpenGL3;
 
 	/// <summary>
@@ -103,7 +102,6 @@ namespace OrbsHavoc.Platform.Graphics
 
 			glBindTexture(GL_TEXTURE_2D, _texture);
 			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, (int)format, GL_UNSIGNED_BYTE, data);
-			CheckErrors();
 
 			if (State.ActiveTextureSlot != -1)
 				State.Textures[State.ActiveTextureSlot] = null;
@@ -123,7 +121,6 @@ namespace OrbsHavoc.Platform.Graphics
 				glActiveTexture(GL_TEXTURE0 + slot);
 
 			glBindTexture(GL_TEXTURE_2D, _texture);
-			CheckErrors();
 		}
 
 		/// <summary>

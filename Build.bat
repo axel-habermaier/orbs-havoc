@@ -4,16 +4,15 @@ if exist Binaries (
     rd Binaries /S /Q
 )
 
-echo =====================================================================
-echo Installing NuGet packages...
-echo =====================================================================
-
-if not exist "./Dependencies/NuGet.exe" (
-	powershell -Command "Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile ./Dependencies/NuGet.exe"
+if exist Build (
+    rd Build /S /Q
 )
 
-"Dependencies/NuGet.exe" restore "Orbs Havoc.sln" -OutputDirectory "Dependencies/Packages"
-"Dependencies/NuGet.exe" install ILRepack -OutputDirectory "Dependencies/Packages" -Version 2.0.10
+echo =====================================================================
+echo Restoring packages...
+echo =====================================================================
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe" "Source/Assets Compiler/Assets Compiler.csproj" /t:restore /p:Configuration=Release /nr:false /nologo /v:minimal /p:Platform=x64
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe" "Source/Orbs Havoc/Orbs Havoc.csproj" /t:restore /p:Configuration=Release /nr:false /nologo /v:minimal /p:Platform=x64
 
 echo =====================================================================
 echo Compiling solution...
@@ -26,7 +25,7 @@ echo =====================================================================
 echo Merging assemblies...
 echo =====================================================================
 cd Build\Release
-"..\..\Dependencies\Packages\ILRepack.2.0.10\tools\ILRepack.exe" /out:"Orbs Havoc.exe" /internalize "Orbs Havoc.exe" "Orbs Havoc.IL.dll" "System.ValueTuple.dll"
+"..\..\Dependencies\ILRepack.exe" /out:"Orbs Havoc.exe" /internalize "Orbs Havoc.exe" "System.ValueTuple.dll" "System.Runtime.CompilerServices.Unsafe.dll"
 cd ..\..\Binaries
 
 echo =====================================================================
