@@ -61,7 +61,7 @@ namespace OrbsHavoc.Gameplay
 		/// <summary>
 		///   Gets the player start positions within the
 		/// </summary>
-		public List<BlockIndex> PlayerStarts { get; } = new List<BlockIndex>();
+		public List<(int x, int y)> PlayerStarts { get; } = new List<(int x, int y)>();
 
 		/// <summary>
 		///   Gets the level's blocks.
@@ -93,7 +93,7 @@ namespace OrbsHavoc.Gameplay
 				{
 					Blocks[x * Height + y] = (EntityType)buffer.ReadByte();
 					if (Blocks[x * Height + y] == EntityType.PlayerStart)
-						PlayerStarts.Add(new BlockIndex(x, y));
+						PlayerStarts.Add((x, y));
 				}
 			}
 		}
@@ -142,9 +142,9 @@ namespace OrbsHavoc.Gameplay
 		///   Gets the area occupied by the block with the given index.
 		/// </summary>
 		/// <param name="index">The index of the block whose area should be returned.</param>
-		public Rectangle GetBlockArea(BlockIndex index)
+		public Rectangle GetBlockArea((int x, int y) index)
 		{
-			return GetBlockArea(index.X, index.Y);
+			return GetBlockArea(index.x, index.y);
 		}
 
 		/// <summary>
@@ -345,33 +345,6 @@ namespace OrbsHavoc.Gameplay
 				Offset = offset;
 				Normal = normal;
 				IsSubmerged = isSubmerged;
-			}
-		}
-
-		/// <summary>
-		///   Represents the 2-dimensional index of a block.
-		/// </summary>
-		public struct BlockIndex
-		{
-			/// <summary>
-			///   The zero-based block index in x-direction.
-			/// </summary>
-			public readonly int X;
-
-			/// <summary>
-			///   The zero-based block index in Y-direction.
-			/// </summary>
-			public readonly int Y;
-
-			/// <summary>
-			///   Initializes a instance.
-			/// </summary>
-			/// <param name="x">The zero-based block index in x-direction.</param>
-			/// <param name="y">The zero-based block index in y-direction.</param>
-			public BlockIndex(int x, int y)
-			{
-				X = x;
-				Y = y;
 			}
 		}
 	}
