@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <Features>strict</Features>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile /> 
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -45,9 +45,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-	<PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
-	<PackageReference Include="System.ValueTuple" Version="4.3.1" />
-	<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.3.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\AssetBundle.g.cs">
@@ -378,11 +378,11 @@
     <OpenGL Include="Platform\Graphics\OpenGL.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Cursor Include="Assets\Textures\PointerCursor.png">
+    <Cursor Include="Assets\Cursors\PointerCursor.png">
       <HotSpotX>0</HotSpotX>
       <HotSpotY>0</HotSpotY>
     </Cursor>
-    <Cursor Include="Assets\Textures\TextCursor.png">
+    <Cursor Include="Assets\Cursors\TextCursor.png">
       <HotSpotX>7</HotSpotX>
       <HotSpotY>7</HotSpotY>
     </Cursor>
@@ -426,7 +426,7 @@
     <Texture Include="Assets\Textures\HealthParticle.png" />
   </ItemGroup>
   <ItemGroup>
-    <Cursor Include="Assets\Textures\Crosshair.png">
+    <Cursor Include="Assets\Cursors\Crosshair.png">
       <HotSpotX>32</HotSpotX>
       <HotSpotY>38</HotSpotY>
     </Cursor>
