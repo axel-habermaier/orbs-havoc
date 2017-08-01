@@ -59,7 +59,7 @@ namespace OrbsHavoc.Gameplay
 		public int Height { get; private set; }
 
 		/// <summary>
-		///   Gets the player start positions within the
+		///   Gets the player start positions within the level.
 		/// </summary>
 		public List<(int x, int y)> PlayerStarts { get; } = new List<(int x, int y)>();
 
