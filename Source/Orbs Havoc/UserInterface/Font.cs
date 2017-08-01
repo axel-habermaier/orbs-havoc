@@ -193,8 +193,8 @@ namespace OrbsHavoc.UserInterface
 
 			var textColor = text.GetColor(index);
 
-			if (textColor.HasValue)
-				color = textColor.Value;
+			if (textColor is Color c)
+				color = c;
 
 			var glyph = GetGlyph(character);
 			quad = new Quad

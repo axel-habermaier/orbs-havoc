@@ -212,11 +212,11 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private void StartGame()
 		{
-			if (String.IsNullOrWhiteSpace(ServerName) || ServerPort == null)
+			if (String.IsNullOrWhiteSpace(ServerName) || !(ServerPort is ushort port))
 				return;
 
-			if (Views.TryStartHost(ServerName, ServerPort.Value))
-				Commands.Connect("::1", ServerPort.Value);
+			if (Views.TryStartHost(ServerName, port))
+				Commands.Connect("::1", port);
 		}
 	}
 }

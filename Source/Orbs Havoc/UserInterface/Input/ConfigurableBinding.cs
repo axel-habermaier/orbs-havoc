@@ -55,7 +55,7 @@ namespace OrbsHavoc.UserInterface.Input
 		/// <param name="args">The arguments of the event that should be checked.</param>
 		protected override bool IsTriggered(InputEventArgs args)
 		{
-			if (_cvar.Value.Key != null)
+			if (_cvar.Value.Key is Key key)
 			{
 				if (!(args is KeyEventArgs keyEventArgs))
 					return false;
@@ -63,13 +63,13 @@ namespace OrbsHavoc.UserInterface.Input
 				switch (TriggerMode)
 				{
 					case TriggerMode.OnActivation:
-						return keyEventArgs.Key == _cvar.Value.Key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
+						return keyEventArgs.Key == key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
 							   keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.KeyState.WentDown;
 					case TriggerMode.Repeatedly:
-						return keyEventArgs.Key == _cvar.Value.Key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
+						return keyEventArgs.Key == key && keyEventArgs.Modifiers == _cvar.Value.Modifiers &&
 							   keyEventArgs.Kind == InputEventKind.Down && keyEventArgs.KeyState.IsRepeated;
 					case TriggerMode.OnDeactivation:
-						return keyEventArgs.Kind == InputEventKind.Up && keyEventArgs.Key == _cvar.Value.Key &&
+						return keyEventArgs.Kind == InputEventKind.Up && keyEventArgs.Key == key &&
 							   keyEventArgs.Modifiers == _cvar.Value.Modifiers;
 					default:
 						Assert.NotReached("Unknown trigger mode.");
@@ -77,7 +77,7 @@ namespace OrbsHavoc.UserInterface.Input
 				}
 			}
 
-			if (_cvar.Value.MouseButton != null)
+			if (_cvar.Value.MouseButton is MouseButton button)
 			{
 				if (!(args is MouseButtonEventArgs mouseEventArgs))
 					return false;
@@ -87,10 +87,10 @@ namespace OrbsHavoc.UserInterface.Input
 					case TriggerMode.OnActivation:
 					case TriggerMode.Repeatedly:
 						return mouseEventArgs.Kind == InputEventKind.Down &&
-							   (mouseEventArgs.Button == _cvar.Value.MouseButton && mouseEventArgs.Modifiers == _cvar.Value.Modifiers);
+							   (mouseEventArgs.Button == button && mouseEventArgs.Modifiers == _cvar.Value.Modifiers);
 					case TriggerMode.OnDeactivation:
 						return mouseEventArgs.Kind == InputEventKind.Up &&
-							   (mouseEventArgs.Button == _cvar.Value.MouseButton || mouseEventArgs.Modifiers != _cvar.Value.Modifiers);
+							   (mouseEventArgs.Button == button || mouseEventArgs.Modifiers != _cvar.Value.Modifiers);
 					default:
 						Assert.NotReached("Unknown trigger mode.");
 						return false;

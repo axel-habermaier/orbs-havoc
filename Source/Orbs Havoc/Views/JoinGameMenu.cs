@@ -299,11 +299,11 @@ namespace OrbsHavoc.Views
 			if (_connecting)
 				return;
 
-			if (!String.IsNullOrWhiteSpace(_address.Text) && ServerPort != null)
+			if (!String.IsNullOrWhiteSpace(_address.Text) && ServerPort is ushort port)
 			{
 				_connecting = true;
 				Close();
-				Commands.Connect(_address.Text, ServerPort.Value);
+				Commands.Connect(_address.Text, port);
 			}
 			else
 				_invalidAddress.Visibility = String.IsNullOrWhiteSpace(_address.Text) ? Visibility.Visible : Visibility.Collapsed;

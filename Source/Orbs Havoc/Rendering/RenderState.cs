@@ -119,10 +119,10 @@ namespace OrbsHavoc.Rendering
 			else
 				AssetBundle.SpriteShader.Bind();
 
-			if (ScissorArea == null)
-				GraphicsDevice.DisableScissorTest();
+			if (ScissorArea is Rectangle area)
+				GraphicsDevice.EnableScissorTest(RenderTarget, area); 
 			else
-				GraphicsDevice.EnableScissorTest(RenderTarget, ScissorArea.Value);
+				GraphicsDevice.DisableScissorTest();
 		}
 	}
 }

@@ -181,14 +181,14 @@ namespace OrbsHavoc.Platform.Input
 			var builder = new StringBuilder();
 			builder.Append("[");
 
-			if (MouseWheelDirection != null)
-				builder.Append("MouseWheel." + MouseWheelDirection.Value);
+			if (MouseWheelDirection is MouseWheelDirection direction)
+				builder.Append("MouseWheel." + direction);
 
-			if (Key != null)
-				builder.Append("Key." + Key.Value);
+			if (Key is Key key)
+				builder.Append("Key." + key);
 
-			if (MouseButton != null)
-				builder.Append("Mouse." + MouseButton.Value);
+			if (MouseButton is MouseButton button)
+				builder.Append("Mouse." + button);
 
 			if ((Modifiers & KeyModifiers.Alt) != 0)
 				builder.Append("+Alt");

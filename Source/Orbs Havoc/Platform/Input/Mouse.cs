@@ -49,6 +49,11 @@ namespace OrbsHavoc.Platform.Input
 		private readonly Window _window;
 
 		/// <summary>
+		///   The direction the mouse wheel was turned in.
+		/// </summary>
+		private MouseWheelDirection? _wheelDirection;
+
+		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window that generates the mouse events.</param>
@@ -59,6 +64,7 @@ namespace OrbsHavoc.Platform.Input
 			_window = window;
 			_window.MousePressed += ButtonPressed;
 			_window.MouseReleased += ButtonReleased;
+			_window.MouseWheel += WheelTurned;
 		}
 
 		/// <summary>
@@ -145,12 +151,21 @@ namespace OrbsHavoc.Platform.Input
 		}
 
 		/// <summary>
+		///   Invoked when the mouse wheel has been turned.
+		/// </summary>
+		private void WheelTurned(MouseWheelDirection direction)
+		{
+			_wheelDirection = direction;
+		}
+
+		/// <summary>
 		///   Updates the mouse state.
 		/// </summary>
 		internal void Update()
 		{
 			for (var i = 0; i < _states.Length; ++i)
 			{
+				_wheelDirection = null;
 				_states[i].Update();
 				_doubleClicked[i] = false;
 			}
@@ -189,12 +204,23 @@ namespace OrbsHavoc.Platform.Input
 		}
 
 		/// <summary>
+		///   Gets a value indicating whether the mouse wheel has been turned into the indicated direction.
+		/// </summary>
+		/// <param name="direction">The direction that should be checked.</param>
+		public bool WasTurned(MouseWheelDirection direction)
+		{
+			Assert.ArgumentInRange(direction, nameof(direction));
+			return _wheelDirection == direction;
+		}
+
+		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
 			_window.MousePressed -= ButtonPressed;
 			_window.MouseReleased -= ButtonReleased;
+			_window.MouseWheel -= WheelTurned;
 		}
 	}
 }

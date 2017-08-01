@@ -46,11 +46,6 @@ namespace OrbsHavoc.Platform.Input
 		private LogicalInputDevice _device;
 
 		/// <summary>
-		///   Indicates whether the mouse wheel has been moved since the last update.
-		/// </summary>
-		private bool _mouseWheelMoved;
-
-		/// <summary>
 		///   Initializes a new instance.
 		/// </summary>
 		/// <param name="trigger">The trigger that triggers the logical input.</param>
@@ -106,7 +101,7 @@ namespace OrbsHavoc.Platform.Input
 			else if (_cvar != null && _device == null)
 				_cvar.Changed -= OnCvarChanged;
 
-			OnTriggerOrDeviceChanged();
+			Validate();
 		}
 
 		/// <summary>
@@ -115,33 +110,16 @@ namespace OrbsHavoc.Platform.Input
 		private void OnCvarChanged()
 		{
 			Trigger = _cvar.Value;
-			OnTriggerOrDeviceChanged();
+			Validate();
 		}
 
 		/// <summary>
-		///   Handles trigger or input device changes.
+		///   Checks whether the input configuration is valid.
 		/// </summary>
-		private void OnTriggerOrDeviceChanged()
+		private void Validate()
 		{
 			Assert.That(Trigger.Key != null || Trigger.MouseButton != null || Trigger.MouseWheelDirection != null,
 				"Invalid trigger: Neither key nor mouse button nor mouse wheel is set.");
-
-			if (_device == null)
-				return;
-
-			_device.Mouse.Wheel -= OnMouseWheel;
-
-			if (Trigger.MouseWheelDirection != null)
-				_device.Mouse.Wheel += OnMouseWheel;
-		}
-
-		/// <summary>
-		///   Handles mouse wheel inputs.
-		/// </summary>
-		private void OnMouseWheel(MouseWheelDirection direction)
-		{
-			if (Trigger.MouseWheelDirection != null)
-				_mouseWheelMoved = direction == Trigger.MouseWheelDirection.Value;
 		}
 
 		/// <summary>
@@ -151,28 +129,28 @@ namespace OrbsHavoc.Platform.Input
 		{
 			IsTriggered = false;
 
-			if (Trigger.Key != null)
+			if (Trigger.Key is Key key)
 			{
 				switch (_triggerType)
 				{
 					case TriggerType.Released:
-						if (_device.Keyboard.IsPressed(Trigger.Key.Value))
+						if (_device.Keyboard.IsPressed(key))
 							return;
 						break;
 					case TriggerType.WentDown:
-						if (!_device.Keyboard.WentDown(Trigger.Key.Value))
+						if (!_device.Keyboard.WentDown(key))
 							return;
 						break;
 					case TriggerType.Pressed:
-						if (!_device.Keyboard.IsPressed(Trigger.Key.Value))
+						if (!_device.Keyboard.IsPressed(key))
 							return;
 						break;
 					case TriggerType.WentUp:
-						if (!_device.Keyboard.WentUp(Trigger.Key.Value))
+						if (!_device.Keyboard.WentUp(key))
 							return;
 						break;
 					case TriggerType.Repeated:
-						if (!_device.Keyboard.IsRepeated(Trigger.Key.Value))
+						if (!_device.Keyboard.IsRepeated(key))
 							return;
 						break;
 					default:
@@ -181,24 +159,24 @@ namespace OrbsHavoc.Platform.Input
 				}
 			}
 
-			if (Trigger.MouseButton != null)
+			if (Trigger.MouseButton is MouseButton button)
 			{
 				switch (_triggerType)
 				{
 					case TriggerType.Released:
-						if (_device.Mouse.IsPressed(Trigger.MouseButton.Value))
+						if (_device.Mouse.IsPressed(button))
 							return;
 						break;
 					case TriggerType.WentDown:
-						if (!_device.Mouse.WentDown(Trigger.MouseButton.Value))
+						if (!_device.Mouse.WentDown(button))
 							return;
 						break;
 					case TriggerType.Pressed:
-						if (!_device.Mouse.IsPressed(Trigger.MouseButton.Value))
+						if (!_device.Mouse.IsPressed(button))
 							return;
 						break;
 					case TriggerType.WentUp:
-						if (!_device.Mouse.WentUp(Trigger.MouseButton.Value))
+						if (!_device.Mouse.WentUp(button))
 							return;
 						break;
 					default:
@@ -207,12 +185,10 @@ namespace OrbsHavoc.Platform.Input
 				}
 			}
 
-			if (Trigger.MouseWheelDirection != null)
+			if (Trigger.MouseWheelDirection is MouseWheelDirection direction)
 			{
-				if (!_mouseWheelMoved)
+				if (!_device.Mouse.WasTurned(direction))
 					return;
-
-				_mouseWheelMoved = false;
 			}
 
 			var modifiers = Trigger.Modifiers;

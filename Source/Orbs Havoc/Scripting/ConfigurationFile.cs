@@ -88,8 +88,8 @@ namespace OrbsHavoc.Scripting
 					Log.Error(e.Message);
 				}
 
-				if (instruction != null)
-					yield return instruction.Value;
+				if (instruction is Instruction value)
+					yield return value;
 			}
 		}
 
