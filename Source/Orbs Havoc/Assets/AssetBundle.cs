@@ -25,7 +25,7 @@ namespace OrbsHavoc.Assets
 	using System;
 	using System.IO;
 	using System.IO.Compression;
-	using Platform;
+	using System.Reflection;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Scripting;
@@ -53,7 +53,7 @@ namespace OrbsHavoc.Assets
 		private static void Load()
 		{
 			var start = Clock.GetTime();
-			var assets = Decompress(FileSystem.ReadAllBytes("Assets.pak"));
+			var assets = Decompress(Assembly.GetExecutingAssembly().GetManifestResourceStream(ResourceName));
 
 			LoadAssets(new BufferReader(assets, Endianess.Little));
 			Log.Info($"Asset bundle loaded ({(Clock.GetTime() - start) * 1000:F2}ms).");
@@ -62,20 +62,24 @@ namespace OrbsHavoc.Assets
 		/// <summary>
 		///   Decompresses the compressed content.
 		/// </summary>
-		private static byte[] Decompress(byte[] compressedContent)
+		private static byte[] Decompress(Stream compressedContent)
 		{
-			var buffer = new BufferReader(compressedContent, Endianess.Little);
-
 			// Validate the header
-			if (!buffer.CanRead(16))
+			if (compressedContent.Length < 16)
 				Log.Die("Asset bundle is corrupted: Header information missing.");
 
-			if (Guid != new Guid(buffer.ReadByteArray(16)))
+			var guid = new byte[16];
+			compressedContent.Read(guid, 0, guid.Length);
+
+			if (Guid != new Guid(guid))
 				Log.Die("Asset bundle is corrupted: The header contains an invalid hash.");
 
 			// Decompress the bundle's content
-			var content = new byte[buffer.ReadInt32()];
-			using (var stream = new GZipStream(new MemoryStream(buffer.ReadByteArray()), CompressionMode.Decompress))
+			var contentLength = new byte[4];
+			compressedContent.Read(contentLength, 0, contentLength.Length);
+			
+			var content = new byte[BitConverter.ToInt32(contentLength, 0)];
+			using (var stream = new GZipStream(compressedContent, CompressionMode.Decompress))
 				stream.Read(content, 0, content.Length);
 
 			return content;
