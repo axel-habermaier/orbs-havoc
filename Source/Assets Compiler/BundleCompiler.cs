@@ -73,11 +73,10 @@ namespace AssetsCompiler
 				.OrderBy(asset => asset.Name)
 				.ToArray();
 
-			// bundles with the same sequence of asset types and names should have the same hash
 			byte[] hash;
 			using (var cryptoProvider = new MD5CryptoServiceProvider())
 			{
-				var types = $"{shaders.Length}-{fonts.Length}-{textures.Length}";
+				var types = String.Join("\n", assets.GroupBy(asset => asset.Type).Select(group => group.Count()));
 				var names = String.Join("\n", assets.Select(asset => asset.Name));
 				hash = cryptoProvider.ComputeHash(Encoding.UTF8.GetBytes($"{types};{names}"));
 			}
