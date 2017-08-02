@@ -56,6 +56,7 @@ namespace OrbsHavoc
 			Commands.Bind(new InputTrigger(Key.B, KeyModifiers.Control | KeyModifiers.Shift), "remove_bot");
 			Commands.Bind(new InputTrigger(Key.Escape, KeyModifiers.LeftShift), "exit");
 			Commands.Bind(Key.F10, "toggle show_debug_overlay");
+
 			Commands.Help();
 		}
 

@@ -22,26 +22,20 @@
 
 namespace OrbsHavoc.Platform.Input
 {
-	using System;
 	using System.Collections.Generic;
 	using Logging;
 	using Memory;
 	using Utilities;
 
 	/// <summary>
-	///   Manages logical inputs that are triggered by input triggers. A logical input device has support for 32 unique and
-	///   prioritized input layers that determine which inputs can be triggered. Higher-numbered layers take priority over
-	///   lower-numbered ones, effectively disabling all input to lower layers. Layers are activated and deactivated using the
-	///   ActivateLayer and DeactivateLayer methods, where the number of calls to DeactivateLayer for a given layer n must
-	///   match the number of calls to ActivateLayer for n before n is considered inactive again. This way, the order of
-	///   activation and deactivation is not important. The actual layer activation and deactivation is deferred one frame.
+	///   Manages logical inputs that are triggered by input triggers.
 	/// </summary>
 	public class LogicalInputDevice : DisposableObject
 	{
 		/// <summary>
 		///   The logical inputs that are currently registered on the device.
 		/// </summary>
-		private readonly List<LogicalInput> _inputs = new List<LogicalInput>(256);
+		private readonly List<LogicalInput> _inputs = new List<LogicalInput>();
 
 		/// <summary>
 		///   Initializes a new instance.

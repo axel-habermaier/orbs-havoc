@@ -34,15 +34,7 @@ namespace OrbsHavoc.Platform.Logging
 		/// <summary>
 		///   Used to measure the time since the start of the application.
 		/// </summary>
-		private static readonly Stopwatch _stopwatch = new Stopwatch();
-
-		/// <summary>
-		///   Initializes the type.
-		/// </summary>
-		static LogEntry()
-		{
-			_stopwatch.Start();
-		}
+		private static readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
 		/// <summary>
 		///   Initializes a new instance.

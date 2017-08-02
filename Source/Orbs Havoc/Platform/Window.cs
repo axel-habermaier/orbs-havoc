@@ -304,36 +304,10 @@ namespace OrbsHavoc.Platform
 			{
 				switch (e.type)
 				{
-					case SDL_WINDOWEVENT:
-					{
-						switch (e.window.windowEvent)
-						{
-							case SDL_WINDOWEVENT_SHOWN:
-							case SDL_WINDOWEVENT_HIDDEN:
-							case SDL_WINDOWEVENT_EXPOSED:
-							case SDL_WINDOWEVENT_RESIZED:
-							case SDL_WINDOWEVENT_ENTER:
-							case SDL_WINDOWEVENT_LEAVE:
-							case SDL_WINDOWEVENT_MOVED:
-							case SDL_WINDOWEVENT_SIZE_CHANGED:
-							case SDL_WINDOWEVENT_MINIMIZED:
-							case SDL_WINDOWEVENT_MAXIMIZED:
-							case SDL_WINDOWEVENT_RESTORED:
-							case SDL_WINDOWEVENT_FOCUS_GAINED:
-							case SDL_WINDOWEVENT_FOCUS_LOST:
-									// Don't care
-									break;
-							case SDL_WINDOWEVENT_CLOSE:
-								_shouldClose = true;
-								Closing?.Invoke();
-								break;
-							default:
-								Log.Debug("Unsupported SDL event.");
-								break;
-						}
-
+					case SDL_WINDOWEVENT when e.window.windowEvent == SDL_WINDOWEVENT_CLOSE:
+						_shouldClose = true;
+						Closing?.Invoke();
 						break;
-					}
 					case SDL_KEYDOWN:
 						KeyPressed?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);
 						break;
