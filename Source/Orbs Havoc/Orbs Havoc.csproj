@@ -59,7 +59,6 @@
     <Compile Include="Gameplay\Behaviors\RocketLauncherBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\MiniGunBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\AiBehavior.cs" />
-    <Compile Include="Gameplay\Behaviors\InterpolateTransformBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerInputBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\ColliderBehavior.cs" />
     <Compile Include="Gameplay\Behaviors\CircleMovementBehavior.cs" />

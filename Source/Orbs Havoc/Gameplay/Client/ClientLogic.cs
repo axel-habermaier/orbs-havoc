@@ -322,7 +322,7 @@ namespace OrbsHavoc.Gameplay.Client
 		{
 			// Get the entity, if we know it; since the message is unreliable, it might
 			// arrive sooner than the reliable entity add message for the message's entity
-			_entityMap[message.Entity]?.TransformationInterpolator.UpdateTransform(message.Position, message.Orientation, sequenceNumber);
+			_entityMap[message.Entity]?.UpdateTransform(message.Position, message.Orientation, sequenceNumber);
 		}
 
 		/// <summary>

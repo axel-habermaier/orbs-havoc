@@ -23,7 +23,6 @@
 namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 {
 	using System.Numerics;
-	using Behaviors;
 	using Network;
 	using Network.Messages;
 	using Platform.Logging;
@@ -33,6 +32,8 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 	/// </summary>
 	internal abstract class Entity : SceneNode
 	{
+		private uint _lastTransformUpdateSequenceNumber;
+
 		/// <summary>
 		///   Gets the type of the entity.
 		/// </summary>
@@ -59,23 +60,6 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 		public Player Player { get; protected set; }
 
 		/// <summary>
-		///   Gets the entity's transformation interpolation behavior.
-		/// </summary>
-		public InterpolateTransformBehavior TransformationInterpolator { get; private set; }
-
-		/// <summary>
-		///   Invoked when the scene node is attached to a parent scene node.
-		/// </summary>
-		/// <remarks>
-		///   The method is intentionally hidden from deriving types; deriving entities should use the OnAdded method instead.
-		/// </remarks>
-		protected sealed override void OnAttached()
-		{
-			if (!GameSession.ServerMode)
-				AddBehavior(TransformationInterpolator = InterpolateTransformBehavior.Create(GameSession.Allocator));
-		}
-
-		/// <summary>
 		///   Invoked when the scene node is detached from its scene graph.
 		/// </summary>
 		/// <remarks>This method is not called when the scene graph is disposed.</remarks>
@@ -87,7 +71,6 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 			Velocity = Vector2.Zero;
 			Player = null;
 			GameSession = null;
-			TransformationInterpolator = null;
 		}
 
 		/// <summary>
@@ -160,6 +143,20 @@ namespace OrbsHavoc.Gameplay.SceneNodes.Entities
 
 			lastSequenceNumber = sequenceNumber;
 			return true;
+		}
+
+		/// <summary>
+		///   Updates the entity's transformation based on the data in the given message.
+		/// </summary>
+		/// <param name="position">The updated position.</param>
+		/// <param name="orientation">The updated orientation.</param>
+		/// <param name="sequenceNumber">The sequence number of the dispatched message.</param>
+		public void UpdateTransform(Vector2 position, float orientation, uint sequenceNumber)
+		{
+			if (!AcceptUpdate(ref _lastTransformUpdateSequenceNumber, sequenceNumber))
+				return;
+
+			ChangeLocalTransformation(position, orientation);
 		}
 
 		/// <summary>
