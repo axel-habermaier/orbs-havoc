@@ -72,24 +72,6 @@ namespace OrbsHavoc.Platform.Input
 		public Mouse Mouse { get; }
 
 		/// <summary>
-		///   Raised when the input device's associated window lost the focus.
-		/// </summary>
-		public event Action LostFocus
-		{
-			add => Window.LostFocus += value;
-			remove => Window.LostFocus -= value;
-		}
-
-		/// <summary>
-		///   Raised when the input device's associated window gained the focus.
-		/// </summary>
-		public event Action GainedFocus
-		{
-			add => Window.GainedFocus += value;
-			remove => Window.GainedFocus -= value;
-		}
-
-		/// <summary>
 		///   Registers a logical input on the logical input device. Subsequently, the logical input's IsTriggered
 		///   property can be used to determine whether the logical input is currently triggered.
 		/// </summary>

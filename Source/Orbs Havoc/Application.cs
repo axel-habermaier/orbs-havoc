@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc
 {
-	using System.Threading;
 	using Assets;
 	using Platform;
 	using Platform.Graphics;
@@ -125,10 +124,6 @@ namespace OrbsHavoc
 
 						// Present the contents of the window's backbuffer
 						window.Present();
-
-						// Save CPU when the window is not focused
-						if (!window.HasFocus)
-							Thread.Sleep(10);
 
 						// Update the debug overlay
 						views.DebugOverlay.GpuFrameTime = graphicsDevice.FrameTime;

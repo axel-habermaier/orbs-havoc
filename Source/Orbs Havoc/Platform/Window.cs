@@ -111,11 +111,6 @@ namespace OrbsHavoc.Platform
 		public RenderTarget BackBuffer { get; }
 
 		/// <summary>
-		///   Gets a value indicating whether the window currently has the focus.
-		/// </summary>
-		internal bool HasFocus { get; private set; }
-
-		/// <summary>
 		///   Gets a value indicating whether the user requested to close the window.
 		/// </summary>
 		internal bool ShouldClose
@@ -257,16 +252,6 @@ namespace OrbsHavoc.Platform
 		public event Action Closing;
 
 		/// <summary>
-		///   Raised when the window lost the focus.
-		/// </summary>
-		public event Action LostFocus;
-
-		/// <summary>
-		///   Raised when the window gained the focus.
-		/// </summary>
-		public event Action GainedFocus;
-
-		/// <summary>
 		///   Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
@@ -334,16 +319,10 @@ namespace OrbsHavoc.Platform
 							case SDL_WINDOWEVENT_MINIMIZED:
 							case SDL_WINDOWEVENT_MAXIMIZED:
 							case SDL_WINDOWEVENT_RESTORED:
-								// Don't care
-								break;
 							case SDL_WINDOWEVENT_FOCUS_GAINED:
-								HasFocus = true;
-								GainedFocus?.Invoke();
-								break;
 							case SDL_WINDOWEVENT_FOCUS_LOST:
-								HasFocus = false;
-								LostFocus?.Invoke();
-								break;
+									// Don't care
+									break;
 							case SDL_WINDOWEVENT_CLOSE:
 								_shouldClose = true;
 								Closing?.Invoke();
