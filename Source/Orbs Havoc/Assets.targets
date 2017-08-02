@@ -2,7 +2,7 @@
 
 	<ItemGroup>
 		<AvailableItemName Include="Shader" />  
-		<AvailableItemName Include="BitmapFont" /> 
+		<AvailableItemName Include="Font" /> 
 		<AvailableItemName Include="Texture" /> 
 		<AvailableItemName Include="Cursor" /> 
 		<AvailableItemName Include="OpenGL" /> 
@@ -10,13 +10,13 @@
 	</ItemGroup>
 	
 	<PropertyGroup>
-		<AssetBundle>$(TargetDir)obj\Assets.pak</AssetBundle>
+		<AssetBundle>$(TargetDir)Assets.pak</AssetBundle>
 		<AssetsCompiler>$(OutDir)AssetsCompiler.exe</AssetsCompiler>
 	</PropertyGroup>
 	
 	<ItemGroup> 
 		<CompiledShaders Include="@(Shader->'$(TargetDir)obj\%(Identity)')" />
-		<CompiledFonts Include="@(BitmapFont->'$(TargetDir)obj\%(Identity)')" />
+		<CompiledFonts Include="@(Font->'$(TargetDir)obj\%(Identity)')" />
 		<CompiledTextures Include="@(Texture->'$(TargetDir)obj\%(Identity)')" />
 		<CompiledCursors Include="@(Cursor->'$(TargetDir)obj\%(Identity)')" />
 		<CompiledLevels Include="@(Level->'$(TargetDir)obj\%(Identity)')" />
@@ -27,9 +27,9 @@
 		<Message Importance="High" Text="Compiled shader '%(Shader.Identity)'." />
 	</Target>
 	
-	<Target Name="CompileFonts" BeforeTargets="BeforeBuild" Inputs="@(BitmapFont);$(AssetsCompiler)" Outputs="@(BitmapFont->'$(TargetDir)obj\%(Identity)')">
-		<Exec Command="$(AssetsCompiler) font --input &quot;%(BitmapFont.FullPath)&quot; --output &quot;$(TargetDir)obj\%(BitmapFont.Identity)&quot;" WorkingDirectory="$(OutDir)" />
-		<Message Importance="High" Text="Compiled font '%(BitmapFont.Identity)'." />
+	<Target Name="CompileFonts" BeforeTargets="BeforeBuild" Inputs="@(Font);$(AssetsCompiler)" Outputs="@(Font->'$(TargetDir)obj\%(Identity)')">
+		<Exec Command="$(AssetsCompiler) font --input &quot;%(Font.FullPath)&quot; --output &quot;$(TargetDir)obj\%(Font.Identity)&quot;" WorkingDirectory="$(OutDir)" />
+		<Message Importance="High" Text="Compiled font '%(Font.Identity)'." />
 	</Target>
 	
 	<Target Name="CompileTextures" BeforeTargets="BeforeBuild" Inputs="@(Texture);$(AssetsCompiler)" Outputs="@(Texture->'$(TargetDir)obj\%(Identity)')">
@@ -61,9 +61,5 @@
 		<Exec Command="$(AssetsCompiler) opengl --input &quot;%(OpenGL.FullPath)&quot; --output &quot;$(ProjectDir)%(OpenGL.RelativeDir)OpenGL3.g.cs&quot;" WorkingDirectory="$(OutDir)" />
 		<Message Importance="High" Text="Generated code for '%(OpenGL.Identity)'." />
 	</Target>
-	
-	<ItemGroup>
-		<EmbeddedResource Include="$(AssetBundle)" />
-	</ItemGroup>
 	
 </Project>

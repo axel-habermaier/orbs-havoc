@@ -99,6 +99,7 @@ namespace AssetsCompiler
 			{
 				pakWriter.Write(hash);
 				pakWriter.Write(contentArray.Length);
+				pakWriter.Write(compressedContent.Length);
 				pakWriter.Write(compressedContent);
 			}
 
@@ -120,7 +121,6 @@ namespace AssetsCompiler
 				{
 					var hashBytes = String.Join(", ", hash.Select(b => b.ToString()));
 					writer.AppendLine($"private static readonly Guid Guid = new Guid(new byte[] {{ {hashBytes} }});");
-					writer.AppendLine($"private const string ResourceName = \"OrbsHavoc.{Path.GetFileName(PakFile)}\";");
 					writer.NewLine();
 
 					foreach (var asset in assets)

@@ -362,12 +362,12 @@
     <Compile Include="Utilities\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <BitmapFont Include="Assets\Fonts\DefaultFont.font" />
+    <Font Include="Assets\Fonts\DefaultFont.font" />
   </ItemGroup>
   <ItemGroup>
-    <BitmapFont Include="Assets\Fonts\Moonhouse24.font" />
-    <BitmapFont Include="Assets\Fonts\Moonhouse80.font" />
-    <BitmapFont Include="Assets\Fonts\Roboto14.font" />
+    <Font Include="Assets\Fonts\Moonhouse24.font" />
+    <Font Include="Assets\Fonts\Moonhouse80.font" />
+    <Font Include="Assets\Fonts\Roboto14.font" />
     <Compile Include="UserInterface\UIElement.Input.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -400,7 +400,7 @@
     <Shader Include="Assets\Shaders\Effects\ExtractBloomShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <BitmapFont Include="Assets\Fonts\HudFont.font" />
+    <Font Include="Assets\Fonts\HudFont.font" />
     <None Include="Assets\Shaders\Effects\BloomSettings.glsl" />
     <Shader Include="Assets\Shaders\Sprites\AdditiveSpriteShader.glsl" />
     <Shader Include="Assets\Shaders\Effects\CopyShader.glsl" />
