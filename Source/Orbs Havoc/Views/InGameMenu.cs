@@ -22,79 +22,31 @@
 
 namespace OrbsHavoc.Views
 {
-	using System;
-	using Assets;
 	using Platform.Input;
-	using Rendering;
 	using Scripting;
-	using UserInterface;
-	using UserInterface.Controls;
+	using UI;
 	using UserInterface.Input;
 
-	/// <summary>
-	///   Represents the application's in-game menu when a game session is active.
-	/// </summary>
-	internal sealed class InGameMenu : View
+	internal sealed class InGameMenu : View<InGameMenuUI>
 	{
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
+		public override void InitializeUI()
 		{
-			RootElement = new Border
+			base.InitializeUI();
+
+			UI.InputBindings.Add(new KeyBinding(Hide, Key.Escape));
+			UI.Continue.Click += Hide;
+			UI.Options.Click += () =>
 			{
-				Background = new Color(0xAA000000),
-				CapturesInput = true,
-				AutoFocus = true,
-				InputBindings = { new KeyBinding(Hide, Key.Escape) },
-				Child = new StackPanel
-				{
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Center,
-					Children =
-					{
-						new Label
-						{
-							Text = "Paused",
-							Font = AssetBundle.Moonhouse80,
-							Margin = new Thickness(0, 0, 0, 30),
-						},
-						CreateButton("Continue", Hide),
-						CreateButton("Options", () =>
-						{
-							Hide();
-							Views.OptionsMenu.Show();
-						}),
-						CreateButton("Leave", Leave),
-						CreateButton("Exit", Views.Exit)
-					}
-				}
+				Hide();
+				Views.OptionsMenu.Show();
 			};
+			UI.Leave.Click += Leave;
+			UI.Exit.Click += Views.Exit;
 		}
 
-		/// <summary>
-		///   Leaves the game session after asking the user for confirmation.
-		/// </summary>
 		private void Leave()
 		{
 			Views.MessageBoxes.ShowYesNo("Leave Game", "Do you really want to leave the game?", Commands.Disconnect);
-		}
-
-		/// <summary>
-		///   Creates a menu button.
-		/// </summary>
-		private static UIElement CreateButton(string label, Action onClick)
-		{
-			var button = new Button
-			{
-				Font = AssetBundle.Moonhouse24,
-				Width = 200,
-				Content = label,
-				Margin = new Thickness(4),
-			};
-
-			button.Click += onClick;
-			return button;
 		}
 	}
 }

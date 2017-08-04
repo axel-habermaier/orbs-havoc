@@ -30,23 +30,23 @@ namespace OrbsHavoc.Utilities
 	using Rendering;
 
 	/// <summary>
-	///   Represents a text that may optionally contain color specifiers.
+	///     Represents a text that may optionally contain color specifiers.
 	/// </summary>
 	public sealed class TextString : PooledObject
 	{
 		/// <summary>
-		///   The marker that introduces a color specifier.
+		///     The marker that introduces a color specifier.
 		/// </summary>
 		private const char ColorMarker = '\\';
 
 		/// <summary>
-		///   Pools list of color ranges.
+		///     Pools list of color ranges.
 		/// </summary>
 		private static readonly ObjectPool<TextString> _textStringPool = new ObjectPool<TextString>(hasGlobalLifetime: true);
 
 		/// <summary>
-		///   Maps characters to colors. The character plus the color marker comprise a color specifier. For instance, 'white'
-		///   is mapped to the color white, so a text containing "\whiteA" prints a white 'A'.
+		///     Maps characters to colors. The character plus the color marker comprise a color specifier. For instance, 'white'
+		///     is mapped to the color white, so a text containing "\whiteA" prints a white 'A'.
 		/// </summary>
 		private static readonly ColorSpecifier[] _colors =
 		{
@@ -62,32 +62,32 @@ namespace OrbsHavoc.Utilities
 		};
 
 		/// <summary>
-		///   The color ranges defined by the text.
+		///     The color ranges defined by the text.
 		/// </summary>
 		private readonly List<ColorRange> _colorRanges = new List<ColorRange>();
 
 		/// <summary>
-		///   The text with the color specifiers removed.
+		///     The text with the color specifiers removed.
 		/// </summary>
 		private readonly StringBuilder _text = new StringBuilder();
 
 		/// <summary>
-		///   Gets the source string that might contain color specifiers.
+		///     Gets the source string that might contain color specifiers.
 		/// </summary>
 		public string SourceString { get; private set; }
 
 		/// <summary>
-		///   Gets the length of the text, excluding all color specifiers.
+		///     Gets the length of the text, excluding all color specifiers.
 		/// </summary>
 		public int Length => _text.Length;
 
 		/// <summary>
-		///   Gets the length of the text's source string.
+		///     Gets the length of the text's source string.
 		/// </summary>
 		public int SourceLength => SourceString.Length;
 
 		/// <summary>
-		///   Gets the character at the specified index. Color specifier are not returned and do not increase the index count.
+		///     Gets the character at the specified index. Color specifier are not returned and do not increase the index count.
 		/// </summary>
 		/// <param name="index">The index of the character that should be returned.</param>
 		public char this[int index]
@@ -100,7 +100,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the text consists of white space only.
+		///     Gets a value indicating whether the text consists of white space only.
 		/// </summary>
 		public bool IsWhitespaceOnly
 		{
@@ -117,13 +117,27 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Creates a new text instance.
+		///     Gets a value indicating whether the text is null or consists of white space only.
+		/// </summary>
+		public static bool IsNullOrWhiteSpace(string textString)
+		{
+			if (String.IsNullOrWhiteSpace(textString))
+				return true;
+
+			using (var text = Create(textString))
+				return text.IsWhitespaceOnly;
+		}
+
+		/// <summary>
+		///     Creates a new text instance.
 		/// </summary>
 		/// <param name="textString">
-		///   The string, possibly containing color specifiers, that is the source for the text.
+		///     The string, possibly containing color specifiers, that is the source for the text.
 		/// </param>
 		public static TextString Create(string textString)
 		{
+			Assert.ArgumentNotNull(textString, nameof(textString));
+
 			var text = _textStringPool.Allocate();
 			text._text.Clear();
 			text._colorRanges.Clear();
@@ -135,7 +149,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Checks whether this text is equal to the given one, ignoring all color specifiers.
+		///     Checks whether this text is equal to the given one, ignoring all color specifiers.
 		/// </summary>
 		public bool Equals(TextString other)
 		{
@@ -152,7 +166,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Processes the source text: Removes all color specifiers, using them to build up the color range list.
+		///     Processes the source text: Removes all color specifiers, using them to build up the color range list.
 		/// </summary>
 		private void ProcessSourceText()
 		{
@@ -176,8 +190,8 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Tries to match all color specifiers at the current input position and returns the first match. Returns false to
-		///   indicate that no match has been found.
+		///     Tries to match all color specifiers at the current input position and returns the first match. Returns false to
+		///     indicate that no match has been found.
 		/// </summary>
 		/// <param name="source">The source string on which the matching should be performed.</param>
 		/// <param name="index">The index of the first character that should be used for the match.</param>
@@ -217,7 +231,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Maps the given source index to the corresponding logical text index.
+		///     Maps the given source index to the corresponding logical text index.
 		/// </summary>
 		/// <param name="sourceIndex">The source index that should be mapped.</param>
 		internal int MapToText(int sourceIndex)
@@ -241,7 +255,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Maps the given logical text index to the corresponding source index.
+		///     Maps the given logical text index to the corresponding source index.
 		/// </summary>
 		/// <param name="logicalIndex">The index that should be mapped.</param>
 		internal int MapToSource(int logicalIndex)
@@ -268,7 +282,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Gets the text color at the given index.
+		///     Gets the text color at the given index.
 		/// </summary>
 		/// <param name="index">The index for which the color should be returned.</param>
 		internal Color? GetColor(int index)
@@ -283,7 +297,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Writes the given string into the given text writer, removing all color specifiers.
+		///     Writes the given string into the given text writer, removing all color specifiers.
 		/// </summary>
 		/// <param name="writer">The text writer that the text should be written to.</param>
 		/// <param name="text">The text that should be written.</param>
@@ -302,7 +316,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Writes the given string into the given string builder, removing all color specifiers.
+		///     Writes the given string into the given string builder, removing all color specifiers.
 		/// </summary>
 		/// <param name="writer">The string builder that the text should be written to.</param>
 		/// <param name="text">The text that should be written.</param>
@@ -321,7 +335,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Returns the string with all color specifiers removed.
+		///     Returns the string with all color specifiers removed.
 		/// </summary>
 		public override string ToString()
 		{
@@ -329,7 +343,7 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Checks whether the two strings are equal when displayed.
+		///     Checks whether the two strings are equal when displayed.
 		/// </summary>
 		public static bool DisplayEqual(string s1, string s2)
 		{
@@ -361,27 +375,27 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Provides color information for a range of characters.
+		///     Provides color information for a range of characters.
 		/// </summary>
 		private struct ColorRange
 		{
 			/// <summary>
-			///   The index of the first character that belongs to the range.
+			///     The index of the first character that belongs to the range.
 			/// </summary>
 			public readonly int Begin;
 
 			/// <summary>
-			///   The color of the range, if any.
+			///     The color of the range, if any.
 			/// </summary>
 			public readonly Color? Color;
 
 			/// <summary>
-			///   The index of the first character that does not belong to the range anymore.
+			///     The index of the first character that does not belong to the range anymore.
 			/// </summary>
 			public int End;
 
 			/// <summary>
-			///   Initializes a new instance.
+			///     Initializes a new instance.
 			/// </summary>
 			/// <param name="color">The color of the range, if any.</param>
 			/// <param name="begin">The index of the first character that belongs to the range.</param>
@@ -394,22 +408,22 @@ namespace OrbsHavoc.Utilities
 		}
 
 		/// <summary>
-		///   Represents a color specifier, mapping a character to a color.
+		///     Represents a color specifier, mapping a character to a color.
 		/// </summary>
 		private struct ColorSpecifier
 		{
 			/// <summary>
-			///   The color that the specifier represents.
+			///     The color that the specifier represents.
 			/// </summary>
 			public readonly Color? Color;
 
 			/// <summary>
-			///   The specifier that indicates which color should be used.
+			///     The specifier that indicates which color should be used.
 			/// </summary>
 			public readonly string Specifier;
 
 			/// <summary>
-			///   Initializes a new instance.
+			///     Initializes a new instance.
 			/// </summary>
 			/// <param name="specifier">The specifier that indicates which color should be used.</param>
 			/// <param name="color">The color that the specifier represents.</param>

@@ -27,200 +27,65 @@ namespace OrbsHavoc.Views
 	using System.Linq;
 	using System.Net;
 	using System.Net.Sockets;
-	using Assets;
 	using Network;
 	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
-	using Rendering;
 	using Scripting;
+	using UI;
 	using UserInterface;
-	using UserInterface.Controls;
 	using UserInterface.Input;
 	using Utilities;
 
-	/// <summary>
-	///   Lets the user select a server to connect to.
-	/// </summary>
-	internal sealed class JoinGameMenu : View
+	internal sealed class JoinGameMenu : View<JoinGameMenuUI>
 	{
 		private readonly byte[] _buffer = new byte[NetworkProtocol.MaxPacketSize];
 		private readonly List<ServerInfo> _discoveredServers = new List<ServerInfo>();
-		private readonly Panel _serversPanel = new StackPanel();
-		private TextBox _address;
 		private bool _connecting;
-		private UIElement _invalidAddress;
-		private UIElement _invalidPort;
 		private bool _isFaulted;
-		private bool _panelDirty;
-		private TextBox _port;
+		private bool _serversDirty = true;
 		private Socket _socket;
 
-		/// <summary>
-		///   Gets the server port entered by the user or null if the port is invalid.
-		/// </summary>
-		private ushort? ServerPort => UInt16.TryParse(_port.Text, out ushort port) ? port : (ushort?)null;
+		private ushort? ServerPort => UInt16.TryParse(UI.Port.Text, out ushort port) ? port : (ushort?)null;
 
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
+		public override void InitializeUI()
 		{
-			RootElement = new Border
+			base.InitializeUI();
+
+			UI.InputBindings.AddRange(
+				new KeyBinding(Close, Key.Escape),
+				new KeyBinding(Connect, Key.Enter),
+				new KeyBinding(Connect, Key.NumpadEnter)
+			);
+
+			UI.Address.TextChanged = OnServerAddressChanged;
+			UI.Port.TextChanged = OnPortChanged;
+			UI.Connect.Click = Connect;
+			UI.Return.Click = () =>
 			{
-				CapturesInput = true,
-				IsFocusable = true,
-				Font = AssetBundle.Roboto14,
-				AutoFocus = true,
-				InputBindings =
-				{
-					new KeyBinding(Close, Key.Escape),
-					new KeyBinding(Connect, Key.Enter),
-					new KeyBinding(Connect, Key.NumpadEnter)
-				},
-				Child = new StackPanel
-				{
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Center,
-					Children =
-					{
-						new Label
-						{
-							Text = "Join Game",
-							Font = AssetBundle.Moonhouse80,
-							Margin = new Thickness(0, 0, 0, 30),
-						},
-						new Grid(columns: 2, rows: 5)
-						{
-							HorizontalAlignment = HorizontalAlignment.Center,
-							Children =
-							{
-								new Label
-								{
-									Width = 120,
-									Row = 0,
-									Column = 0,
-									VerticalAlignment = VerticalAlignment.Center,
-									Text = "Server Address:"
-								},
-								(_address = new TextBox
-								{
-									Row = 0,
-									Column = 1,
-									Margin = new Thickness(5, 0, 0, 5),
-									Width = 200,
-									MaxLength = NetworkProtocol.ServerNameLength,
-									TextChanged = OnServerAddressChanged
-								}),
-								(_invalidAddress = new Label
-								{
-									Row = 1,
-									Column = 1,
-									Text = "Expected a valid server name.",
-									Margin = new Thickness(5, 0, 0, 5),
-									Foreground = Colors.Red,
-									VerticalAlignment = VerticalAlignment.Center,
-									Visibility = Visibility.Collapsed,
-									Width = 200,
-									TextWrapping = TextWrapping.Wrap
-								}),
-								new Label
-								{
-									Row = 2,
-									Column = 0,
-									Width = 120,
-									VerticalAlignment = VerticalAlignment.Center,
-									Text = "Server Port:"
-								},
-								(_port = new TextBox
-								{
-									Row = 2,
-									Column = 1,
-									Margin = new Thickness(5, 0, 0, 5),
-									Width = 200,
-									MaxLength = 5,
-									TextChanged = OnPortChanged
-								}),
-								(_invalidPort = new Label
-								{
-									Width = 200,
-									Row = 3,
-									Column = 1,
-									Text = "Expected a valid server port.",
-									Margin = new Thickness(5, 0, 0, 5),
-									Foreground = Colors.Red,
-									TextWrapping = TextWrapping.Wrap,
-									VerticalAlignment = VerticalAlignment.Center,
-									Visibility = Visibility.Collapsed
-								}),
-								new Button
-								{
-									Row = 4,
-									Column = 1,
-									Content = "Connect",
-									HorizontalAlignment = HorizontalAlignment.Left,
-									Margin = new Thickness(5, 10, 0, 50),
-									Click = Connect
-								}
-							}
-						},
-						new StackPanel
-						{
-							Width = 330,
-							Children =
-							{
-								new Label
-								{
-									TextWrapping = TextWrapping.Wrap,
-									Text = "Click on one of the following servers to join a game:"
-								},
-								_serversPanel
-							}
-						},
-						new Button
-						{
-							Content = "Return",
-							HorizontalAlignment = HorizontalAlignment.Center,
-							Margin = new Thickness(0, 10, 0, 0),
-							Click = () =>
-							{
-								Hide();
-								Views.MainMenu.Show();
-							}
-						}
-					}
-				}
+				Hide();
+				Views.MainMenu.Show();
 			};
 		}
 
-		/// <summary>
-		///   Invoked when the user entered another port.
-		/// </summary>
 		private void OnPortChanged(string port)
 		{
-			_invalidPort.Visibility = ServerPort == null ? Visibility.Visible : Visibility.Collapsed;
+			UI.InvalidPort.Visibility = ServerPort == null ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		/// <summary>
-		///   Invoked when the user entered another server address.
-		/// </summary>
 		private void OnServerAddressChanged(string port)
 		{
-			_invalidAddress.Visibility = String.IsNullOrWhiteSpace(_address.Text) ? Visibility.Visible : Visibility.Collapsed;
+			UI.InvalidAddress.Visibility = TextString.IsNullOrWhiteSpace(UI.Address.Text) ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		/// <summary>
-		///   Invoked when the view should be activated.
-		/// </summary>
 		protected override void Activate()
 		{
 			_connecting = false;
-			_port.Text = NetworkProtocol.DefaultServerPort.ToString();
-			_invalidAddress.Visibility = Visibility.Collapsed;
-			_invalidPort.Visibility = Visibility.Collapsed;
+			_serversDirty = true;
 
-			_panelDirty = true;
-			UpdatePanel();
+			UI.Port.Text = NetworkProtocol.DefaultServerPort.ToString();
+			UI.InvalidAddress.Visibility = Visibility.Collapsed;
+			UI.InvalidPort.Visibility = Visibility.Collapsed;
 
 			try
 			{
@@ -237,9 +102,6 @@ namespace OrbsHavoc.Views
 			}
 		}
 
-		/// <summary>
-		///   Invoked when the view should be deactivated.
-		/// </summary>
 		protected override void Deactivate()
 		{
 			_socket.SafeDispose();
@@ -249,12 +111,88 @@ namespace OrbsHavoc.Views
 			Log.Info("Server discovery stopped.");
 		}
 
-		/// <summary>
-		///   Updates the view's state.
-		/// </summary>
 		public override void Update()
 		{
-			// Remove all servers that have timed out
+			RemoveTimedOutServers();
+
+			if (!_isFaulted)
+				CheckForDiscoveryMessages();
+
+			if (!_serversDirty)
+				return;
+
+			UI.SetServers(_discoveredServers.Select(s => (Name:s.Name, EndPoint: s.EndPoint)));
+			_serversDirty = false;
+		}
+
+		private void Connect()
+		{
+			if (_connecting)
+				return;
+
+			if (!TextString.IsNullOrWhiteSpace(UI.Address.Text) && ServerPort is ushort port)
+			{
+				_connecting = true;
+				Close();
+				Commands.Connect(UI.Address.Text, port);
+			}
+			else
+				UI.InvalidAddress.Visibility = TextString.IsNullOrWhiteSpace(UI.Address.Text) ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		private void Close()
+		{
+			Hide();
+			Views.MainMenu.Show();
+		}
+
+		private void HandleDiscoveryMessage(BufferReader reader, EndPoint endPoint)
+		{
+			if (!TryParseDiscoveryMessage(reader, endPoint, out var name, out var port))
+				return;
+
+			var ipEndPoint = new IPEndPoint(((IPEndPoint)endPoint).Address, port);
+
+			// Check if we already know this server; if not add it, otherwise update the server's discovery time
+			var server = _discoveredServers.SingleOrDefault(s => s.EndPoint.Equals(ipEndPoint) && s.Name == name);
+			if (server == null)
+			{
+				server = new ServerInfo { EndPoint = ipEndPoint, Name = name, DiscoveryTime = Clock.GetTime() };
+				_discoveredServers.Add(server);
+				_serversDirty = true;
+
+				Log.Info($"Discovered server '{name}' at {ipEndPoint}.");
+			}
+			else
+				server.DiscoveryTime = Clock.GetTime();
+		}
+
+		private static bool TryParseDiscoveryMessage(BufferReader reader, EndPoint endPoint, out string name, out ushort port)
+		{
+			port = 0;
+			name = String.Empty;
+
+			if (!reader.CanRead(sizeof(uint) + sizeof(byte) + sizeof(ushort)))
+			{
+				Log.Debug($"Ignored invalid discovery message from {endPoint}.");
+				return false;
+			}
+
+			var applicationIdentifier = reader.ReadUInt32();
+			var revision = reader.ReadByte();
+
+			port = reader.ReadUInt16();
+			name = reader.ReadString(NetworkProtocol.ServerNameLength);
+
+			if (applicationIdentifier == NetworkProtocol.AppIdentifier && revision == NetworkProtocol.Revision)
+				return true;
+
+			Log.Debug($"Ignored invalid discovery message from {endPoint}.");
+			return false;
+		}
+
+		private void RemoveTimedOutServers()
+		{
 			for (var i = 0; i < _discoveredServers.Count; ++i)
 			{
 				if (!_discoveredServers[i].HasTimedOut)
@@ -262,17 +200,16 @@ namespace OrbsHavoc.Views
 
 				Log.Info($"Server {_discoveredServers[i].EndPoint} is no longer running.");
 
-				_panelDirty = true;
+				_serversDirty = true;
 				_discoveredServers.RemoveAt(i);
 				--i;
 			}
+		}
 
-			if (_isFaulted)
-				return;
-
+		private void CheckForDiscoveryMessages()
+		{
 			try
 			{
-				// Check for incoming discovery messages
 				EndPoint endPoint = new IPEndPoint(IPAddress.IPv6Any, 0);
 				while (_socket.Available != 0)
 				{
@@ -287,131 +224,18 @@ namespace OrbsHavoc.Views
 				_isFaulted = true;
 				Log.Error($"Server discovery service failure: {e.GetMessage()}");
 			}
-
-			UpdatePanel();
 		}
 
-		/// <summary>
-		///   Connects to the server with the endpoint entered by the user.
-		/// </summary>
-		private void Connect()
-		{
-			if (_connecting)
-				return;
-
-			if (!String.IsNullOrWhiteSpace(_address.Text) && ServerPort is ushort port)
-			{
-				_connecting = true;
-				Close();
-				Commands.Connect(_address.Text, port);
-			}
-			else
-				_invalidAddress.Visibility = String.IsNullOrWhiteSpace(_address.Text) ? Visibility.Visible : Visibility.Collapsed;
-		}
-
-		/// <summary>
-		///   Closes the view.
-		/// </summary>
-		private void Close()
-		{
-			Hide();
-			Views.MainMenu.Show();
-		}
-
-		/// <summary>
-		///   Updates the server panel.
-		/// </summary>
-		private void UpdatePanel()
-		{
-			if (!_panelDirty)
-				return;
-
-			_panelDirty = false;
-			_serversPanel.Clear();
-
-			foreach (var server in _discoveredServers.OrderBy(s => s.Name))
-			{
-				_serversPanel.Add(new Button
-				{
-					Content = new Label { Text = $"{server.Name} @ {server.EndPoint}", TextWrapping = TextWrapping.Wrap },
-					Margin = new Thickness(0, 2, 0, 2),
-					Click = () => Commands.Connect(server.EndPoint.Address.ToString(), (ushort)server.EndPoint.Port)
-				});
-			}
-		}
-
-		/// <summary>
-		///   Handles the discovery message that has just been received.
-		/// </summary>
-		/// <param name="reader">The reader that should be used to read the contents of the discovery message.</param>
-		/// <param name="endPoint">The endpoint of the sender of the discovery message.</param>
-		private void HandleDiscoveryMessage(BufferReader reader, EndPoint endPoint)
-		{
-			if (!reader.CanRead(sizeof(uint) + sizeof(byte) + sizeof(ushort)))
-			{
-				Log.Debug($"Ignored invalid discovery message from {endPoint}.");
-				return;
-			}
-
-			var applicationIdentifier = reader.ReadUInt32();
-			var revision = reader.ReadByte();
-
-			var port = reader.ReadUInt16();
-			var name = reader.ReadString(NetworkProtocol.ServerNameLength);
-
-			if (applicationIdentifier != NetworkProtocol.AppIdentifier || revision != NetworkProtocol.Revision)
-			{
-				Log.Debug($"Ignored invalid discovery message from {endPoint}.");
-				return;
-			}
-
-			var ipEndPoint = new IPEndPoint(((IPEndPoint)endPoint).Address, port);
-
-			// Check if we already know this server; if not add it, otherwise update the server's discovery time
-			var server = _discoveredServers.SingleOrDefault(s => s.EndPoint.Equals(ipEndPoint) && s.Name == name);
-			if (server == null)
-			{
-				server = new ServerInfo { EndPoint = ipEndPoint, Name = name, DiscoveryTime = Clock.GetTime() };
-				_discoveredServers.Add(server);
-				_panelDirty = true;
-
-				Log.Info($"Discovered server '{name}' at {ipEndPoint}.");
-			}
-			else
-				server.DiscoveryTime = Clock.GetTime();
-		}
-
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
 		protected override void OnDisposing()
 		{
 			_socket.SafeDispose();
 		}
 
-		/// <summary>
-		///   Stores information about a discovered server.
-		/// </summary>
 		private class ServerInfo
 		{
-			/// <summary>
-			///   Gets or sets the last time a discovery message has been received from the server.
-			/// </summary>
 			public double DiscoveryTime { get; set; }
-
-			/// <summary>
-			///   Gets or sets the end point of the server.
-			/// </summary>
 			public IPEndPoint EndPoint { get; set; }
-
-			/// <summary>
-			///   Gets or sets the name of the server.
-			/// </summary>
 			public string Name { get; set; }
-
-			/// <summary>
-			///   Gets a value indicating whether the server has timed out and is presumably no longer running.
-			/// </summary>
 			public bool HasTimedOut => (Clock.GetTime() - DiscoveryTime) > NetworkProtocol.DiscoveryTimeout;
 		}
 	}

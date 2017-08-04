@@ -20,48 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Views
+namespace OrbsHavoc.Views.UI
 {
-	using System.Net;
-	using Platform.Input;
-	using Platform.Logging;
-	using Scripting;
-	using UI;
-	using UserInterface.Input;
-	using Utilities;
+	using System;
+	using Assets;
+	using Rendering;
+	using UserInterface;
+	using UserInterface.Controls;
 
-	internal sealed class LoadingOverlay : View<LoadingOverlayUI>
+	internal sealed class WaitingOverlayUI : Border
 	{
-		private Clock _clock = new Clock();
-		private IPEndPoint _serverEndPoint;
+		private readonly Label _label = new Label();
+		private int _timeout;
 
-		public override void InitializeUI()
+		public WaitingOverlayUI()
 		{
-			base.InitializeUI();
-			UI.InputBindings.Add(new KeyBinding(Commands.Disconnect, Key.Escape));
+			IsHitTestVisible = false;
+			Background = new Color(0xAA000000);
+			Font = AssetBundle.Roboto14;
+			Child = new Border
+			{
+				Margin = new Thickness(0, 0, 0, 400),
+				Background = new Color(0x5F00588B),
+				Padding = new Thickness(10),
+				BorderColor = new Color(0xFF055674),
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				Child = _label
+			};
 		}
 
-		public void Load(IPEndPoint serverEndPoint)
+		public void Update(double secondsLeft)
 		{
-			Assert.ArgumentNotNull(serverEndPoint, nameof(serverEndPoint));
+			var timeout = (int)Math.Round(secondsLeft);
+			if (_timeout == timeout)
+				return;
 
-			_serverEndPoint = serverEndPoint;
-			_clock.Reset();
-
-			Show();
-			Log.Info($"Connecting to {serverEndPoint}...");
-
-			Views.Console.Hide();
-			Views.MessageBoxes.CloseAll();
-			Views.JoinGameMenu.Hide();
-			Views.StartGameMenu.Hide();
-			Views.OptionsMenu.Hide();
-			Views.MainMenu.Hide();
-		}
-
-		public override void Update()
-		{
-			UI.Update(_serverEndPoint, _clock.Seconds);
+			_timeout = timeout;
+			_label.Text = $"Waiting for server ({timeout} seconds left)...";
 		}
 	}
 }

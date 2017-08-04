@@ -20,48 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Views
+namespace OrbsHavoc.Views.UI
 {
+	using System;
 	using System.Net;
-	using Platform.Input;
-	using Platform.Logging;
-	using Scripting;
-	using UI;
-	using UserInterface.Input;
-	using Utilities;
+	using Assets;
+	using UserInterface;
+	using UserInterface.Controls;
 
-	internal sealed class LoadingOverlay : View<LoadingOverlayUI>
+	internal sealed class LoadingOverlayUI : Border
 	{
-		private Clock _clock = new Clock();
-		private IPEndPoint _serverEndPoint;
+		private readonly Label _infoLabel = new Label { HorizontalAlignment = HorizontalAlignment.Center };
 
-		public override void InitializeUI()
+		public LoadingOverlayUI()
 		{
-			base.InitializeUI();
-			UI.InputBindings.Add(new KeyBinding(Commands.Disconnect, Key.Escape));
+			CapturesInput = true;
+			IsFocusable = true;
+			Font = AssetBundle.Roboto14;
+			AutoFocus = true;
+
+			Child = new StackPanel
+			{
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				Children =
+				{
+					new Label
+					{
+						Text = "Loading",
+						Font = AssetBundle.Moonhouse80,
+						Margin = new Thickness(0, 0, 0, 30),
+					},
+					_infoLabel
+				}
+			};
 		}
 
-		public void Load(IPEndPoint serverEndPoint)
+		public void Update(IPEndPoint serverEndPoint, double remainingSeconds)
 		{
-			Assert.ArgumentNotNull(serverEndPoint, nameof(serverEndPoint));
-
-			_serverEndPoint = serverEndPoint;
-			_clock.Reset();
-
-			Show();
-			Log.Info($"Connecting to {serverEndPoint}...");
-
-			Views.Console.Hide();
-			Views.MessageBoxes.CloseAll();
-			Views.JoinGameMenu.Hide();
-			Views.StartGameMenu.Hide();
-			Views.OptionsMenu.Hide();
-			Views.MainMenu.Hide();
-		}
-
-		public override void Update()
-		{
-			UI.Update(_serverEndPoint, _clock.Seconds);
+			_infoLabel.Text = $"Connecting to {serverEndPoint} ({Math.Round(remainingSeconds)} seconds)...";
 		}
 	}
 }

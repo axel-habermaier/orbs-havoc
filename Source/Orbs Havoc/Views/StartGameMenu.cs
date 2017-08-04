@@ -24,195 +24,63 @@ namespace OrbsHavoc.Views
 {
 	using System;
 	using System.Text;
-	using Assets;
 	using Gameplay.Server;
 	using Network;
 	using Platform.Input;
-	using Rendering;
 	using Scripting;
+	using UI;
 	using UserInterface;
-	using UserInterface.Controls;
 	using UserInterface.Input;
+	using Utilities;
 
-	/// <summary>
-	///   Lets the user start a new game.
-	/// </summary>
-	internal sealed class StartGameMenu : View
+	internal sealed class StartGameMenu : View<StartGameMenuUI>
 	{
-		private UIElement _invalidName;
-		private UIElement _invalidPort;
-		private TextBox _name;
-		private TextBox _port;
+		private string ServerName => Encoding.UTF8.GetByteCount(UI.Name.Text) > NetworkProtocol.ServerNameLength ? null : UI.Name.Text;
+		private ushort? ServerPort => UInt16.TryParse(UI.Port.Text, out var port) ? port : (ushort?)null;
 
-		/// <summary>
-		///   Gets the server name entered by the user or null if the name is invalid.
-		/// </summary>
-		private string ServerName => Encoding.UTF8.GetByteCount(_name.Text) > NetworkProtocol.ServerNameLength ? null : _name.Text;
-
-		/// <summary>
-		///   Gets the server port entered by the user or null if the port is invalid.
-		/// </summary>
-		private ushort? ServerPort => UInt16.TryParse(_port.Text, out var port) ? port : (ushort?)null;
-
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
+		public override void InitializeUI()
 		{
-			RootElement = new Border
+			base.InitializeUI();
+
+			UI.InputBindings.AddRange(
+				new KeyBinding(() =>
+				{
+					Hide();
+					Views.MainMenu.Show();
+				}, Key.Escape),
+				new KeyBinding(StartGame, Key.Enter),
+				new KeyBinding(StartGame, Key.NumpadEnter)
+			);
+
+			UI.Name.TextChanged = OnNameChanged;
+			UI.Port.TextChanged = OnPortChanged;
+			UI.StartGame.Click = StartGame;
+			UI.Return.Click = () =>
 			{
-				CapturesInput = true,
-				IsFocusable = true,
-				Font = AssetBundle.Roboto14,
-				AutoFocus = true,
-				InputBindings =
-				{
-					new KeyBinding(() =>
-					{
-						Hide();
-						Views.MainMenu.Show();
-					}, Key.Escape),
-					new KeyBinding(StartGame, Key.Enter),
-					new KeyBinding(StartGame, Key.NumpadEnter)
-				},
-				Child = new StackPanel
-				{
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Center,
-					Children =
-					{
-						new Label
-						{
-							Text = "Start Game",
-							Font = AssetBundle.Moonhouse80,
-							Margin = new Thickness(0, 0, 0, 30),
-						},
-						new Grid(columns: 2, rows: 4)
-						{
-							HorizontalAlignment = HorizontalAlignment.Center,
-							Children =
-							{
-								new Label
-								{
-									Width = 120,
-									Row = 0,
-									Column = 0,
-									VerticalAlignment = VerticalAlignment.Center,
-									Text = "Server Name:"
-								},
-								(_name = new TextBox
-								{
-									Row = 0,
-									Column = 1,
-									Margin = new Thickness(5, 0, 0, 5),
-									Width = 200,
-									MaxLength = NetworkProtocol.ServerNameLength,
-									TextChanged = OnNameChanged
-								}),
-								(_invalidName = new Label
-								{
-									Row = 1,
-									Column = 1,
-									Text = $"Expected a non-empty string with a maximum length of {NetworkProtocol.ServerNameLength} characters.",
-									Margin = new Thickness(5, 0, 0, 5),
-									Foreground = Colors.Red,
-									VerticalAlignment = VerticalAlignment.Center,
-									Visibility = Visibility.Collapsed,
-									Width = 200,
-									TextWrapping = TextWrapping.Wrap
-								}),
-								new Label
-								{
-									Row = 2,
-									Column = 0,
-									Width = 120,
-									VerticalAlignment = VerticalAlignment.Center,
-									Text = "Server Port:"
-								},
-								(_port = new TextBox
-								{
-									Row = 2,
-									Column = 1,
-									Margin = new Thickness(5, 0, 0, 5),
-									Width = 200,
-									MaxLength = NetworkProtocol.ServerNameLength,
-									TextChanged = OnPortChanged
-								}),
-								(_invalidPort = new Label
-								{
-									Width = 200,
-									Row = 3,
-									Column = 1,
-									Text = $"Expected a value of type {TypeRegistry.GetDescription<ushort>()} (e.g., " +
-										   $"{String.Join(", ", TypeRegistry.GetExamples<ushort>())})",
-									Margin = new Thickness(5, 0, 0, 5),
-									Foreground = Colors.Red,
-									TextWrapping = TextWrapping.Wrap,
-									VerticalAlignment = VerticalAlignment.Center,
-									Visibility = Visibility.Collapsed
-								})
-							}
-						},
-						new StackPanel
-						{
-							Orientation = Orientation.Horizontal,
-							Margin = new Thickness(0, 20, 0, 0),
-							HorizontalAlignment = HorizontalAlignment.Center,
-							Children =
-							{
-								new Button
-								{
-									Content = "Start Game",
-									Margin = new Thickness(0, 0, 10, 0),
-									Click = StartGame
-								},
-								new Button
-								{
-									Content = "Return",
-									Click = () =>
-									{
-										Hide();
-										Views.MainMenu.Show();
-									}
-								}
-							}
-						}
-					}
-				}
+				Hide();
+				Views.MainMenu.Show();
 			};
 		}
 
-		/// <summary>
-		///   Invoked when the view should be activated.
-		/// </summary>
 		protected override void Activate()
 		{
-			_name.Text = GameSessionHost.DefaultServerName;
-			_port.Text = NetworkProtocol.DefaultServerPort.ToString();
+			UI.Name.Text = GameSessionHost.DefaultServerName;
+			UI.Port.Text = NetworkProtocol.DefaultServerPort.ToString();
 		}
 
-		/// <summary>
-		///   Invoked when the user entered another name.
-		/// </summary>
 		private void OnNameChanged(string address)
 		{
-			_invalidName.Visibility = ServerName == null ? Visibility.Visible : Visibility.Collapsed;
+			UI.InvalidName.Visibility = TextString.IsNullOrWhiteSpace(ServerName) ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		/// <summary>
-		///   Invoked when the user entered another port.
-		/// </summary>
 		private void OnPortChanged(string port)
 		{
-			_invalidPort.Visibility = ServerPort == null ? Visibility.Visible : Visibility.Collapsed;
+			UI.InvalidPort.Visibility = ServerPort == null ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		/// <summary>
-		///   Starts a local game server.
-		/// </summary>
 		private void StartGame()
 		{
-			if (String.IsNullOrWhiteSpace(ServerName) || !(ServerPort is ushort port))
+			if (TextString.IsNullOrWhiteSpace(ServerName) || !(ServerPort is ushort port))
 				return;
 
 			if (Views.TryStartHost(ServerName, port))

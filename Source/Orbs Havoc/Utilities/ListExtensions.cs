@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2012-2017, Axel Habermaier
 // 
@@ -20,48 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Views
+namespace OrbsHavoc.Utilities
 {
-	using System.Net;
-	using Platform.Input;
-	using Platform.Logging;
-	using Scripting;
-	using UI;
-	using UserInterface.Input;
-	using Utilities;
+	using System.Collections.Generic;
 
-	internal sealed class LoadingOverlay : View<LoadingOverlayUI>
+	public static class ListExtensions
 	{
-		private Clock _clock = new Clock();
-		private IPEndPoint _serverEndPoint;
-
-		public override void InitializeUI()
+		public static void AddRange<T>(this List<T> list, T item1)
 		{
-			base.InitializeUI();
-			UI.InputBindings.Add(new KeyBinding(Commands.Disconnect, Key.Escape));
+			Assert.ArgumentNotNull(list, nameof(list));
+			list.Add(item1);
 		}
 
-		public void Load(IPEndPoint serverEndPoint)
+		public static void AddRange<T>(this List<T> list, T item1, T item2)
 		{
-			Assert.ArgumentNotNull(serverEndPoint, nameof(serverEndPoint));
+			Assert.ArgumentNotNull(list, nameof(list));
 
-			_serverEndPoint = serverEndPoint;
-			_clock.Reset();
-
-			Show();
-			Log.Info($"Connecting to {serverEndPoint}...");
-
-			Views.Console.Hide();
-			Views.MessageBoxes.CloseAll();
-			Views.JoinGameMenu.Hide();
-			Views.StartGameMenu.Hide();
-			Views.OptionsMenu.Hide();
-			Views.MainMenu.Hide();
+			list.Add(item1);
+			list.Add(item2);
 		}
 
-		public override void Update()
+		public static void AddRange<T>(this List<T> list, T item1, T item2, T item3)
 		{
-			UI.Update(_serverEndPoint, _clock.Seconds);
+			Assert.ArgumentNotNull(list, nameof(list));
+
+			list.Add(item1);
+			list.Add(item2);
+			list.Add(item3);
+		}
+
+		public static void AddRange<T>(this List<T> list, T item1, T item2, T item3, T item4)
+		{
+			Assert.ArgumentNotNull(list, nameof(list));
+
+			list.Add(item1);
+			list.Add(item2);
+			list.Add(item3);
+			list.Add(item4);
+		}
+
+		public static void AddRange<T>(this List<T> list, params T[] items)
+		{
+			Assert.ArgumentNotNull(list, nameof(list));
+			list.AddRange(items);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2012-2017, Axel Habermaier
 // 
@@ -20,48 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Views
+namespace OrbsHavoc.Utilities
 {
-	using System.Net;
-	using Platform.Input;
-	using Platform.Logging;
-	using Scripting;
-	using UI;
-	using UserInterface.Input;
-	using Utilities;
+	using System;
 
-	internal sealed class LoadingOverlay : View<LoadingOverlayUI>
+	public static class StringExtensions
 	{
-		private Clock _clock = new Clock();
-		private IPEndPoint _serverEndPoint;
-
-		public override void InitializeUI()
+		public static string Truncate(this string value, int maxLength)
 		{
-			base.InitializeUI();
-			UI.InputBindings.Add(new KeyBinding(Commands.Disconnect, Key.Escape));
-		}
+			Assert.ArgumentNotNull(value, nameof(value));
 
-		public void Load(IPEndPoint serverEndPoint)
-		{
-			Assert.ArgumentNotNull(serverEndPoint, nameof(serverEndPoint));
+			if (String.IsNullOrEmpty(value))
+				return value;
 
-			_serverEndPoint = serverEndPoint;
-			_clock.Reset();
-
-			Show();
-			Log.Info($"Connecting to {serverEndPoint}...");
-
-			Views.Console.Hide();
-			Views.MessageBoxes.CloseAll();
-			Views.JoinGameMenu.Hide();
-			Views.StartGameMenu.Hide();
-			Views.OptionsMenu.Hide();
-			Views.MainMenu.Hide();
-		}
-
-		public override void Update()
-		{
-			UI.Update(_serverEndPoint, _clock.Seconds);
+			return value.Length <= maxLength ? value : value.Substring(0, maxLength);
 		}
 	}
 }

@@ -24,122 +24,48 @@ namespace OrbsHavoc.Views
 {
 	using System;
 	using System.Text;
-	using Assets;
 	using Network;
 	using Platform.Input;
-	using Rendering;
 	using Scripting;
+	using UI;
 	using UserInterface;
-	using UserInterface.Controls;
 	using UserInterface.Input;
+	using Utilities;
 
-	/// <summary>
-	///   Represents the in-game chat input.
-	/// </summary>
-	internal class Chat : View
+	internal class Chat : View<ChatUI>
 	{
-		private readonly TextBox _input = new TextBox
+		public override void InitializeUI()
 		{
-			AutoFocus = true,
-			MaxLength = NetworkProtocol.ChatMessageLength,
-			Row = 0,
-			Column = 1,
-			HorizontalAlignment = HorizontalAlignment.Stretch
-		};
+			base.InitializeUI();
 
-		private readonly Label _validationLabel = new Label
-		{
-			Text = "The message exceeds the maximum allowed length of a chat message and cannot be sent.",
-			Margin = new Thickness(0, 10, 0, 0),
-			Foreground = Colors.Red,
-			Row = 1,
-			Column = 1
-		};
-
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
-		{
-			_input.TextChanged += _ => CheckLength();
-
-			RootElement = new Border
-			{
-				CapturesInput = true,
-				Font = AssetBundle.Roboto14,
-				InputBindings =
-				{
-					new KeyBinding(Send, Key.Enter),
-					new KeyBinding(Send, Key.NumpadEnter),
-					new KeyBinding(Hide, Key.Escape)
-				},
-				Child = new StackPanel
-				{
-					Height = 200,
-					VerticalAlignment = VerticalAlignment.Bottom,
-					HorizontalAlignment = HorizontalAlignment.Center,
-					Children =
-					{
-						new Border
-						{
-							Background = new Color(0x5F00588B),
-							BorderColor = new Color(0xFF055674),
-							Padding = new Thickness(5),
-							Child = new Grid
-							{
-								Margin = new Thickness(5),
-								VerticalAlignment = VerticalAlignment.Top,
-								Columns = { new ColumnDefinition { Width = 40 }, new ColumnDefinition { Width = 600 } },
-								Rows = { new RowDefinition { Height = Single.NaN }, new RowDefinition { Height = Single.NaN } },
-								Children =
-								{
-									new Label
-									{
-										Text = "Say:",
-										Column = 0,
-										Row = 0,
-										Margin = new Thickness(0, 4, 0, 0)
-									},
-									_input,
-									_validationLabel
-								}
-							}
-						}
-					}
-				}
-			};
+			UI.ChatMessage.TextChanged += _ => CheckMessageLength();
+			UI.InputBindings.AddRange(
+				new KeyBinding(SendMessage, Key.Enter),
+				new KeyBinding(SendMessage, Key.NumpadEnter),
+				new KeyBinding(Hide, Key.Escape));
 		}
 
-		/// <summary>
-		///   Checks whether the chat message entered by the user exceeds the maximum allowed length.
-		/// </summary>
-		private bool CheckLength()
+		private bool CheckMessageLength()
 		{
-			var tooLong = Encoding.UTF8.GetByteCount(_input.Text) > NetworkProtocol.ChatMessageLength;
-			_validationLabel.Visibility = tooLong ? Visibility.Visible : Visibility.Collapsed;
+			var tooLong = Encoding.UTF8.GetByteCount(UI.ChatMessage.Text) > NetworkProtocol.ChatMessageLength;
+			UI.ValidationLabel.Visibility = tooLong ? Visibility.Visible : Visibility.Collapsed;
 
 			return !tooLong;
 		}
 
-		/// <summary>
-		///   Invoked when the view should be activated.
-		/// </summary>
 		protected override void Activate()
 		{
-			_input.Text = String.Empty;
-			_validationLabel.Visibility = Visibility.Collapsed;
+			UI.ChatMessage.Text = String.Empty;
+			UI.ValidationLabel.Visibility = Visibility.Collapsed;
 		}
 
-		/// <summary>
-		///   Sends the message, if any, and closes the chat input.
-		/// </summary>
-		private void Send()
+		private void SendMessage()
 		{
-			if (!CheckLength())
+			if (!CheckMessageLength())
 				return;
 
-			if (!String.IsNullOrWhiteSpace(_input.Text))
-				Commands.Say(_input.Text.Trim());
+			if (!TextString.IsNullOrWhiteSpace(UI.ChatMessage.Text))
+				Commands.Say(UI.ChatMessage.Text.Trim());
 
 			Hide();
 		}

@@ -28,6 +28,7 @@ namespace OrbsHavoc.Platform
 	using System;
 	using System.Diagnostics;
 	using System.Runtime.InteropServices;
+	using System.Security;
 	using Input;
 	using JetBrains.Annotations;
 	using Logging;
@@ -42,6 +43,7 @@ namespace OrbsHavoc.Platform
 	///   zlib license
 	/// </remarks>
 	[UsedImplicitly(ImplicitUseTargetFlags.Members)]
+	[SuppressUnmanagedCodeSecurity]
 	public static unsafe class SDL2
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]

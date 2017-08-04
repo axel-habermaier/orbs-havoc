@@ -28,7 +28,7 @@ namespace OrbsHavoc.Views
 	using UserInterface;
 
 	/// <summary>
-	///   Represents a view of the application.
+	///     Represents a view of the application.
 	/// </summary>
 	internal abstract class View : DisposableObject
 	{
@@ -37,12 +37,12 @@ namespace OrbsHavoc.Views
 		private UIElement _rootElement;
 
 		/// <summary>
-		///   Gets or sets the view collection the view belongs to.
+		///     Gets or sets the view collection the view belongs to.
 		/// </summary>
 		public ViewCollection Views { get; set; }
 
 		/// <summary>
-		///   Gets or sets the root UI element of the view.
+		///     Gets or sets the root UI element of the view.
 		/// </summary>
 		public UIElement RootElement
 		{
@@ -62,17 +62,17 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Gets the window the view is drawn in.
+		///     Gets the window the view is drawn in.
 		/// </summary>
 		protected Window Window => Views.Window;
 
 		/// <summary>
-		///   Gets the input device that should be used by the view.
+		///     Gets the input device that should be used by the view.
 		/// </summary>
 		protected LogicalInputDevice InputDevice => Views.InputDevice;
 
 		/// <summary>
-		///   Gets or sets a value indicating whether the view is currently shown.
+		///     Gets or sets a value indicating whether the view is currently shown.
 		/// </summary>
 		public bool IsShown
 		{
@@ -87,7 +87,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Shows the view by making it active.
+		///     Shows the view by making it active.
 		/// </summary>
 		public void Show()
 		{
@@ -102,7 +102,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Hides the view by making it inactive.
+		///     Hides the view by making it inactive.
 		/// </summary>
 		public void Hide()
 		{
@@ -117,30 +117,22 @@ namespace OrbsHavoc.Views
 			_activationChanged = !_activationChanged;
 		}
 
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
 		public virtual void Initialize()
 		{
 		}
 
-		/// <summary>
-		///   Invoked when the view should be activated.
-		/// </summary>
+		public virtual void InitializeUI()
+		{
+		}
+
 		protected virtual void Activate()
 		{
 		}
 
-		/// <summary>
-		///   Invoked when the view should be deactivated.
-		/// </summary>
 		protected virtual void Deactivate()
 		{
 		}
 
-		/// <summary>
-		///   Handles activation changes.
-		/// </summary>
 		public void HandleActivationChange()
 		{
 			if (!_activationChanged)
@@ -154,16 +146,10 @@ namespace OrbsHavoc.Views
 				Deactivate();
 		}
 
-		/// <summary>
-		///   Updates the view's state.
-		/// </summary>
 		public virtual void Update()
 		{
 		}
 
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
 		protected override void OnDisposing()
 		{
 		}

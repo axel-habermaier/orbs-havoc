@@ -331,6 +331,7 @@ namespace OrbsHavoc.Platform
 						break;
 					case SDL_TEXTEDITING:
 					case SDL_QUIT:
+					case SDL_WINDOWEVENT:
 						// Don't care
 						break;
 					default:

@@ -22,70 +22,38 @@
 
 namespace OrbsHavoc.Views
 {
-	using System;
-	using Assets;
-	using UserInterface;
-	using UserInterface.Controls;
+	using UI;
 
-	/// <summary>
-	///   Represents the application's main menu when no game session is active.
-	/// </summary>
-	internal sealed class MainMenu : View
+	internal sealed class MainMenu : View<MainMenuUI>
 	{
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
 		public override void Initialize()
 		{
 			Show();
-
-			RootElement = new StackPanel
-			{
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				Children =
-				{
-					new Label
-					{
-						Text = Application.Name,
-						Font = AssetBundle.Moonhouse80,
-						Margin = new Thickness(0, 0, 0, 30),
-					},
-					CreateButton("Start Game", () =>
-					{
-						Views.StartGameMenu.Show();
-						Hide();
-					}),
-					CreateButton("Join Game", () =>
-					{
-						Views.JoinGameMenu.Show();
-						Hide();
-					}),
-					CreateButton("Options", () =>
-					{
-						Views.OptionsMenu.Show();
-						Hide();
-					}),
-					CreateButton("Exit", Views.Exit)
-				}
-			};
 		}
 
-		/// <summary>
-		///   Creates a menu button.
-		/// </summary>
-		private static UIElement CreateButton(string label, Action onClick)
+		public override void InitializeUI()
 		{
-			var button = new Button
+			base.InitializeUI();
+
+			UI.Start.Click = () =>
 			{
-				Font = AssetBundle.Moonhouse24,
-				Width = 200,
-				Content = label,
-				Margin = new Thickness(4)
+				Views.StartGameMenu.Show();
+				Hide();
 			};
 
-			button.Click += onClick;
-			return button;
+			UI.Join.Click = () =>
+			{
+				Views.JoinGameMenu.Show();
+				Hide();
+			};
+
+			UI.Options.Click = () =>
+			{
+				Views.OptionsMenu.Show();
+				Hide();
+			};
+
+			UI.Exit.Click = Views.Exit;
 		}
 	}
 }

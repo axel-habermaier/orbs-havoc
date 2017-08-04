@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 // 
 // Copyright (c) 2012-2017, Axel Habermaier
 // 
@@ -20,48 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Views
+namespace OrbsHavoc.Views.UI
 {
-	using System.Net;
-	using Platform.Input;
-	using Platform.Logging;
-	using Scripting;
-	using UI;
-	using UserInterface.Input;
-	using Utilities;
+	using Assets;
+	using UserInterface;
+	using UserInterface.Controls;
 
-	internal sealed class LoadingOverlay : View<LoadingOverlayUI>
+	internal sealed class MainMenuUI : StackPanel
 	{
-		private Clock _clock = new Clock();
-		private IPEndPoint _serverEndPoint;
-
-		public override void InitializeUI()
+		public MainMenuUI()
 		{
-			base.InitializeUI();
-			UI.InputBindings.Add(new KeyBinding(Commands.Disconnect, Key.Escape));
+			HorizontalAlignment = HorizontalAlignment.Center;
+			VerticalAlignment = VerticalAlignment.Center;
+
+			Children.AddRange(
+				new Label
+				{
+					Text = Application.Name,
+					Font = AssetBundle.Moonhouse80,
+					Margin = new Thickness(0, 0, 0, 30)
+				},
+				Start = CreateButton("Start Game"),
+				Join = CreateButton("Join Game"),
+				Options = CreateButton("Options"),
+				Exit = CreateButton("Exit")
+			);
 		}
 
-		public void Load(IPEndPoint serverEndPoint)
+		public Button Start { get; }
+		public Button Join { get; }
+		public Button Options { get; }
+		public Button Exit { get; }
+
+		private static Button CreateButton(string label)
 		{
-			Assert.ArgumentNotNull(serverEndPoint, nameof(serverEndPoint));
-
-			_serverEndPoint = serverEndPoint;
-			_clock.Reset();
-
-			Show();
-			Log.Info($"Connecting to {serverEndPoint}...");
-
-			Views.Console.Hide();
-			Views.MessageBoxes.CloseAll();
-			Views.JoinGameMenu.Hide();
-			Views.StartGameMenu.Hide();
-			Views.OptionsMenu.Hide();
-			Views.MainMenu.Hide();
-		}
-
-		public override void Update()
-		{
-			UI.Update(_serverEndPoint, _clock.Seconds);
+			return new Button
+			{
+				Font = AssetBundle.Moonhouse24,
+				Width = 200,
+				Content = label,
+				Margin = new Thickness(4)
+			};
 		}
 	}
 }

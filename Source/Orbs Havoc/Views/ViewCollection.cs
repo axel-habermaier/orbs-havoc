@@ -220,6 +220,7 @@ namespace OrbsHavoc.Views
 			for (var i = _views.Length - 1; i >= 0; --i)
 			{
 				_views[i].Views = this;
+				_views[i].InitializeUI();
 				_views[i].Initialize();
 			}
 		}
@@ -378,7 +379,7 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private void StartHost(string serverName, ushort serverPort)
 		{
-			TryStartHost(String.IsNullOrWhiteSpace(serverName) ? GameSessionHost.DefaultServerName : serverName, serverPort);
+			TryStartHost(TextString.IsNullOrWhiteSpace(serverName) ? GameSessionHost.DefaultServerName : serverName, serverPort);
 		}
 	}
 }

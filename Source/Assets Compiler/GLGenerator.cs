@@ -159,6 +159,9 @@ namespace AssetsCompiler
 			var writer = new CodeWriter();
 			writer.WriterHeader();
 
+			var orderedEnums = gl.Enums.OrderBy(e => e.Name);
+			var orderedFuncs = gl.Funcs.OrderBy(f => f.Name);
+
 			writer.AppendLine("namespace OrbsHavoc.Platform.Graphics");
 			writer.AppendBlockStatement(() =>
 			{
@@ -169,25 +172,25 @@ namespace AssetsCompiler
 				writer.AppendLine("internal unsafe static partial class OpenGL3");
 				writer.AppendBlockStatement(() =>
 				{
-					foreach (var e in gl.Enums)
+					foreach (var e in orderedEnums)
 					{
 						var constantType = GetConstantType(e.Value);
 						writer.AppendLine($"public const {constantType} {e.Name} = unchecked(({constantType}){e.Value});");
 					}
 
 					writer.NewLine();
-					foreach (var func in gl.Funcs)
+					foreach (var func in orderedFuncs)
 					{
 						var parameters = String.Join(", ", func.Params.Select(p => $"{MapType(p.Type)} @{p.Name}"));
 						writer.AppendLine($"private delegate {MapType(func.ReturnType)} {func.Name}Func({parameters});");
 					}
 
 					writer.NewLine();
-					foreach (var func in gl.Funcs)
+					foreach (var func in orderedFuncs)
 						writer.AppendLine($"private static {func.Name}Func _{func.Name};");
 
 					writer.NewLine();
-					foreach (var func in gl.Funcs)
+					foreach (var func in orderedFuncs)
 					{
 						writer.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining), DebuggerHidden]");
 						writer.Append($"public static {MapType(func.ReturnType)} {func.Name}");
@@ -214,7 +217,7 @@ namespace AssetsCompiler
 					writer.AppendLine("public static void LoadGraphicsEntryPoints()");
 					writer.AppendBlockStatement(() =>
 					{
-						foreach (var func in gl.Funcs)
+						foreach (var func in orderedFuncs)
 							writer.AppendLine($"_{func.Name} = Load<{func.Name}Func>(\"{func.Name}\");");
 					});
 				});

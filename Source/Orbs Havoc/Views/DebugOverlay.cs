@@ -23,16 +23,12 @@
 namespace OrbsHavoc.Views
 {
 	using System;
-	using Rendering;
 	using Scripting;
+	using UI;
 	using UserInterface;
-	using UserInterface.Controls;
 	using Utilities;
 
-	/// <summary>
-	///     Shows statistics about the performance of the application and other information useful for debugging.
-	/// </summary>
-	internal sealed class DebugOverlay : View
+	internal sealed class DebugOverlay : View<DebugOverlayUI>
 	{
 		/// <summary>
 		///     The update frequency of the statistics in Hz.
@@ -44,15 +40,6 @@ namespace OrbsHavoc.Views
 		/// </summary>
 		private const int AverageSampleCount = 32;
 
-		private readonly Label _cpuTimeLabel = new Label();
-		private readonly Label _drawCallsLabel = new Label();
-		private readonly Label _fpsLabel = new Label();
-		private readonly Label[] _gcLabels = new Label[GC.MaxGeneration + 1];
-		private readonly Label _gpuTimeLabel = new Label();
-		private readonly Label _renderTimeLabel = new Label();
-		private readonly Label _updateTimeLabel = new Label();
-		private readonly Label _vertexCountLabel = new Label();
-		private readonly Label _vsyncLabel = new Label { Text = Cvars.Vsync.ToString().ToLower() };
 		private AveragedDouble _cpuFrameTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuRenderTime = new AveragedDouble(AverageSampleCount);
 		private AveragedDouble _cpuUpdateTime = new AveragedDouble(AverageSampleCount);
@@ -61,18 +48,12 @@ namespace OrbsHavoc.Views
 		private Timer _timer = new Timer(1000.0 / UpdateFrequency);
 		private AveragedDouble _vertexCount = new AveragedDouble(AverageSampleCount);
 
-		/// <summary>
-		///     Initializes a new instance.
-		/// </summary>
 		public DebugOverlay()
 		{
 			_cpuFrameTime.AddMeasurement(0.016);
 			_cpuRenderTime.AddMeasurement(0.016);
 			_cpuUpdateTime.AddMeasurement(0.016);
 			_gpuFrameTime.AddMeasurement(0.016);
-
-			for (var i = 0; i < _gcLabels.Length; ++i)
-				_gcLabels[i] = new Label { Text = "0" };
 		}
 
 		/// <summary>
@@ -123,53 +104,8 @@ namespace OrbsHavoc.Views
 			set => _cpuRenderTime.AddMeasurement(value);
 		}
 
-		/// <summary>
-		///     Initializes the view.
-		/// </summary>
 		public override void Initialize()
 		{
-			const float margin = 3;
-
-			var gcPanel = new StackPanel { Orientation = Orientation.Horizontal };
-			for (var i = 0; i < _gcLabels.Length; ++i)
-			{
-				gcPanel.Children.Add(_gcLabels[i]);
-
-				if (i < _gcLabels.Length - 1)
-					gcPanel.Children.Add(new Label { Text = "/" });
-			}
-
-			RootElement = new Border
-			{
-				MinWidth = 170,
-				IsHitTestVisible = false,
-				Margin = new Thickness(5),
-				Background = new Color(0xAA000000),
-				Padding = new Thickness(10),
-				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Bottom,
-				Child = new StackPanel
-				{
-					Children =
-					{
-#if DEBUG
-						CreateLine("Debug Build:  ", new Label { Text = "true" }, margin),
-#else
-						CreateLine("Debug Build:  ", new Label { Text = "false" }, margin),
-#endif
-						CreateLine("VSync:        ", _vsyncLabel, margin),
-						CreateLine("# GCs:        ", gcPanel, margin),
-						CreateLine("# Draw Calls: ", _drawCallsLabel, margin),
-						CreateLine("# Vertices:   ", _vertexCountLabel, 5 * margin),
-						CreateLine("FPS:          ", _fpsLabel, margin),
-						CreateLine("GPU Time:     ", _gpuTimeLabel, "ms", margin),
-						CreateLine("CPU Time:     ", _cpuTimeLabel, "ms", margin),
-						CreateLine("Update Time:  ", _updateTimeLabel, "ms", margin),
-						CreateLine("Render Time:  ", _renderTimeLabel, "ms", 0)
-					}
-				}
-			};
-
 			Cvars.VsyncChanged += OnVsyncChanged;
 
 			Show();
@@ -178,72 +114,34 @@ namespace OrbsHavoc.Views
 			_timer.Timeout += UpdateStatistics;
 		}
 
-		/// <summary>
-		///     Creates a debug output line.
-		/// </summary>
-		private static UIElement CreateLine(string text, UIElement element, float marginBottom)
-		{
-			return new StackPanel
-			{
-				Orientation = Orientation.Horizontal,
-				Children = { new Label { Text = text }, element },
-				Margin = new Thickness(0, 0, 0, marginBottom)
-			};
-		}
-
-		/// <summary>
-		///     Creates a debug output line.
-		/// </summary>
-		private static UIElement CreateLine(string text, UIElement element, string suffix, float marginBottom)
-		{
-			return new StackPanel
-			{
-				Orientation = Orientation.Horizontal,
-				Children = { new Label { Text = text }, element, new Label { Text = suffix } },
-				Margin = new Thickness(0, 0, 0, marginBottom)
-			};
-		}
-
-		/// <summary>
-		///     Updates the view's state.
-		/// </summary>
 		public override void Update()
 		{
 			_timer.Update();
 			RootElement.Visibility = Cvars.ShowDebugOverlay ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		/// <summary>
-		///     Updates the statistics.
-		/// </summary>
 		private void UpdateStatistics()
 		{
 			if (!Cvars.ShowDebugOverlay)
 				return;
 
-			_fpsLabel.Text = StringCache.GetString((int)Math.Round(1.0 / _cpuFrameTime.Average * 1000));
-			_gpuTimeLabel.Text = StringCache.GetString(_gpuFrameTime.Average);
-			_cpuTimeLabel.Text = StringCache.GetString(_cpuFrameTime.Average);
-			_updateTimeLabel.Text = StringCache.GetString(_cpuUpdateTime.Average);
-			_renderTimeLabel.Text = StringCache.GetString(_cpuRenderTime.Average);
-			_drawCallsLabel.Text = StringCache.GetString((int)Math.Round(_drawCalls.Average));
-			_vertexCountLabel.Text = StringCache.GetString((int)Math.Round(_vertexCount.Average));
+			UI.FpsLabel.Text = StringCache.GetString((int)Math.Round(1.0 / _cpuFrameTime.Average * 1000));
+			UI.GpuTimeLabel.Text = StringCache.GetString(_gpuFrameTime.Average);
+			UI.CpuTimeLabel.Text = StringCache.GetString(_cpuFrameTime.Average);
+			UI.UpdateTimeLabel.Text = StringCache.GetString(_cpuUpdateTime.Average);
+			UI.RenderTimeLabel.Text = StringCache.GetString(_cpuRenderTime.Average);
+			UI.DrawCallsLabel.Text = StringCache.GetString((int)Math.Round(_drawCalls.Average));
+			UI.VertexCountLabel.Text = StringCache.GetString((int)Math.Round(_vertexCount.Average));
 
-			for (var i = 0; i < _gcLabels.Length; ++i)
-				_gcLabels[i].Text = StringCache.GetString(GC.CollectionCount(i));
+			for (var i = 0; i < UI.GcLabels.Length; ++i)
+				UI.GcLabels[i].Text = StringCache.GetString(GC.CollectionCount(i));
 		}
 
-		/// <summary>
-		///     Shows the new vsync value.
-		/// </summary>
 		private void OnVsyncChanged()
 		{
-			_vsyncLabel.Text = Cvars.Vsync.ToString().ToLower();
+			UI.VsyncLabel.Text = Cvars.Vsync.ToString().ToLower();
 		}
 
-		/// <summary>
-		///     Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
 		protected override void OnDisposing()
 		{
 			Cvars.VsyncChanged -= OnVsyncChanged;
@@ -270,25 +168,10 @@ namespace OrbsHavoc.Views
 			/// </summary>
 			private bool _averageIsFilled;
 
-			/// <summary>
-			///     The maximum supported value.
-			/// </summary>
 			private double _max;
-
-			/// <summary>
-			///     The minimum supported value.
-			/// </summary>
 			private double _min;
-
-			/// <summary>
-			///   The last value that has been measured.
-			/// </summary>
 			private double _lastValue;
 
-			/// <summary>
-			///     Initializes a new instance.
-			/// </summary>
-			/// <param name="sampleCount">The number of samples for the computation of the average.</param>
 			public AveragedDouble(int sampleCount)
 				: this()
 			{
@@ -297,9 +180,6 @@ namespace OrbsHavoc.Views
 				_min = Double.MaxValue;
 			}
 
-			/// <summary>
-			///     Gets the averaged value.
-			/// </summary>
 			internal double Average
 			{
 				get
@@ -318,7 +198,6 @@ namespace OrbsHavoc.Views
 			/// <summary>
 			///     Adds the given measured value to the statistics.
 			/// </summary>
-			/// <param name="value">The value that should be added.</param>
 			internal void AddMeasurement(double value)
 			{
 				_lastValue = value;

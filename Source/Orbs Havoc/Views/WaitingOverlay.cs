@@ -22,57 +22,17 @@
 
 namespace OrbsHavoc.Views
 {
-	using System;
-	using Assets;
-	using Rendering;
-	using UserInterface;
-	using UserInterface.Controls;
+	using UI;
 
 	/// <summary>
-	///   Represents waiting-for-server overlay during a game session.
+	///     Represents waiting-for-server overlay during a game session.
 	/// </summary>
-	internal sealed class WaitingOverlay : View
+	internal sealed class WaitingOverlay : View<WaitingOverlayUI>
 	{
-		private readonly Label _label = new Label();
-		private int _timeout;
-
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
-		{
-			RootElement = new Border
-			{
-				IsHitTestVisible = false,
-				Background = new Color(0xAA000000),
-				Font = AssetBundle.Roboto14,
-				Child = new Border
-				{
-					Margin = new Thickness(0, 0, 0, 400),
-					Background = new Color(0x5F00588B),
-					Padding = new Thickness(10),
-					BorderColor = new Color(0xFF055674),
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Center,
-					Child = _label
-				}
-			};
-		}
-
-		/// <summary>
-		///   Updates the view's state.
-		/// </summary>
 		public override void Update()
 		{
 			if (Views.Game.Connection.IsLagging)
-			{
-				var timeout = (int)Math.Round(Views.Game.Connection.TimeToDrop / 1000);
-				if (_timeout == timeout)
-					return;
-
-				_timeout = timeout;
-				_label.Text = $"Waiting for server ({_timeout} seconds left)...";
-			}
+				UI.Update(Views.Game.Connection.TimeToDrop / 1000);
 			else
 				Hide();
 		}
