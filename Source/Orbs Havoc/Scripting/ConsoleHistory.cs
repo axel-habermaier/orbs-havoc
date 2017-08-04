@@ -80,9 +80,6 @@ namespace OrbsHavoc.Scripting
 
 		public void AddToHistory(string entry)
 		{
-			if (String.IsNullOrWhiteSpace(entry))
-				return;
-
 			// Store the input in the input history, if it differs from the last entry
 			if (_history.Count > 0 && _history[0] == entry)
 				return;

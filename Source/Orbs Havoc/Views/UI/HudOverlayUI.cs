@@ -20,52 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace OrbsHavoc.Views
+namespace OrbsHavoc.Views.UI
 {
-	using System;
-	using System.Text;
-	using Network;
-	using Platform.Input;
-	using Scripting;
-	using UI;
+	using Assets;
 	using UserInterface;
-	using UserInterface.Input;
-	using Utilities;
+	using UserInterface.Controls;
 
-	internal class Chat : View<ChatUI>
+	internal class HudOverlayUI : StackPanel
 	{
-		public override void InitializeUI()
+		public HudOverlayUI()
 		{
-			UI.ChatMessage.TextChanged += _ => CheckMessageLength();
-			UI.InputBindings.AddRange(
-				new KeyBinding(SendMessage, Key.Enter),
-				new KeyBinding(SendMessage, Key.NumpadEnter),
-				new KeyBinding(Hide, Key.Escape));
+			IsHitTestVisible = false;
+			Orientation = Orientation.Horizontal;
+			Font = AssetBundle.HudFont;
+			VerticalAlignment = VerticalAlignment.Bottom;
+			HorizontalAlignment = HorizontalAlignment.Left;
+			MinHeight = 70;
+			Margin = new Thickness(30, 0, 0, 20);
+
+			Children.AddRange(
+				HealthIcon, HealthLabel,
+				WeaponIcon, AmmoLabel,
+				PowerUpIcon, PowerUpLabel
+			);
+
+			foreach (var child in Children)
+				child.VerticalAlignment = VerticalAlignment.Center;
 		}
 
-		private bool CheckMessageLength()
-		{
-			var tooLong = Encoding.UTF8.GetByteCount(UI.ChatMessage.Text) > NetworkProtocol.ChatMessageLength;
-			UI.ValidationLabel.Visibility = tooLong ? Visibility.Visible : Visibility.Collapsed;
+		public Image HealthIcon { get; } = new Image { Texture = AssetBundle.HudHealthIcon, Margin = new Thickness(0, 0, 20, 0) };
+		public Image PowerUpIcon { get; } = new Image { Texture = AssetBundle.RoundParticle, Margin = new Thickness(0, 0, 20, 0) };
+		public Image WeaponIcon { get; } = new Image { Texture = AssetBundle.RoundParticle, Margin = new Thickness(0, 0, 20, 0) };
 
-			return !tooLong;
-		}
-
-		protected override void Activate()
-		{
-			UI.ChatMessage.Text = String.Empty;
-			UI.ValidationLabel.Visibility = Visibility.Collapsed;
-		}
-
-		private void SendMessage()
-		{
-			if (!CheckMessageLength())
-				return;
-
-			if (!TextString.IsNullOrWhiteSpace(UI.ChatMessage.Text))
-				Commands.Say(UI.ChatMessage.Text.Trim());
-
-			Hide();
-		}
+		public Label AmmoLabel { get; } = new Label { MinWidth = 200 };
+		public Label HealthLabel { get; } = new Label { MinWidth = 200 };
+		public Label PowerUpLabel { get; } = new Label { MinWidth = 200 };
 	}
 }

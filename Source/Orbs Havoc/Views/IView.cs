@@ -22,16 +22,19 @@
 
 namespace OrbsHavoc.Views
 {
+	using System;
 	using UserInterface;
 
-	internal abstract class View<T> : View
-		where T : UIElement, new()
+	internal interface IView : IDisposable
 	{
-		public T UI => (T)RootElement;
+		bool IsShown { get; set; }
 
-		public override void InitializeUI()
-		{
-			RootElement = new T();
-		}
+		UIElement UI { get; }
+		void Hide();
+		void Show();
+
+		void HandleActivationChange();
+		void Initialize(ViewCollection views);
+		void Update();
 	}
 }

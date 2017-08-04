@@ -22,97 +22,68 @@
 
 namespace OrbsHavoc.Views
 {
-	using Assets;
 	using Gameplay.Client;
 	using Gameplay.SceneNodes.Entities;
 	using Rendering;
+	using UI;
 	using UserInterface;
-	using UserInterface.Controls;
 	using Utilities;
 
-	/// <summary>
-	///   Shows the HUD while a game is active and the local player is alive.
-	/// </summary>
-	internal class HudOverlay : View
+	internal class HudOverlay : View<HudOverlayUI>
 	{
 		private const int HealthBlinkingFrequency = 2;
-		private readonly Label _ammoLabel = new Label { MinWidth = 200 };
-		private readonly Image _healthIcon = new Image { Texture = AssetBundle.HudHealthIcon, Margin = new Thickness(0, 0, 20, 0) };
-		private readonly Label _healthLabel = new Label { MinWidth = 200 };
-		private readonly Image _powerUpIcon = new Image { Texture = AssetBundle.RoundParticle, Margin = new Thickness(0, 0, 20, 0) };
-		private readonly Label _powerUpLabel = new Label { MinWidth = 200 };
-		private readonly Image _weaponIcon = new Image { Texture = AssetBundle.RoundParticle, Margin = new Thickness(0, 0, 20, 0) };
-		private StackPanel _layoutRoot;
 
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
-		{
-			RootElement = _layoutRoot = new StackPanel
-			{
-				IsHitTestVisible = false,
-				Orientation = Orientation.Horizontal,
-				Font = AssetBundle.HudFont,
-				VerticalAlignment = VerticalAlignment.Bottom,
-				HorizontalAlignment = HorizontalAlignment.Left,
-				MinHeight = 70,
-				Margin = new Thickness(30, 0, 0, 20)
-			};
-
-			_layoutRoot.Add(_healthIcon);
-			_layoutRoot.Add(_healthLabel);
-
-			_layoutRoot.Add(_weaponIcon);
-			_layoutRoot.Add(_ammoLabel);
-
-			_layoutRoot.Add(_powerUpIcon);
-			_layoutRoot.Add(_powerUpLabel);
-
-			foreach (var child in _layoutRoot.Children)
-				child.VerticalAlignment = VerticalAlignment.Center;
-		}
-
-		/// <summary>
-		///   Updates the view's state.
-		/// </summary>
 		public override void Update()
 		{
 			var orb = Views.Game.GameSession.Players.LocalPlayer?.Orb;
 			if (orb == null)
 				return;
 
-			_healthLabel.Text = StringCache.GetString(MathUtils.RoundIntegral(orb.Health));
-			_ammoLabel.Text = StringCache.GetString(orb.WeaponEnergyLevels[orb.PrimaryWeapon.GetWeaponSlot()]);
-			_powerUpLabel.Text = StringCache.GetString(MathUtils.RoundIntegral(orb.RemainingPowerUpTime));
+			UpdateHealth(orb);
+			UpdateWeapon(orb);
+			UpdatePowerUp(orb);
+		}
 
-			_weaponIcon.Texture = orb.PrimaryWeapon.GetTexture();
-			_weaponIcon.Foreground = orb.PrimaryWeapon.GetColor();
+		private void UpdateHealth(Orb orb)
+		{
+			UI.HealthLabel.Text = StringCache.GetString(MathUtils.RoundIntegral(orb.Health));
 
 			var healthColor = new Color(0, 255, 0, 255);
 			if (orb.HasCriticalHealth)
 				healthColor = Colors.Red;
 
-			_healthIcon.Foreground = healthColor;
-			_healthLabel.Foreground = healthColor;
+			UI.HealthIcon.Foreground = healthColor;
+			UI.HealthLabel.Foreground = healthColor;
 
-			_healthIcon.Visibility = orb.HasCriticalHealth && MathUtils.RoundIntegral((float)Clock.GetTime() * HealthBlinkingFrequency) % 2 != 0
+			UI.HealthIcon.Visibility = orb.HasCriticalHealth && MathUtils.RoundIntegral((float)Clock.GetTime() * HealthBlinkingFrequency) % 2 != 0
 				? Visibility.Hidden
 				: Visibility.Visible;
+		}
 
-			var powerUpVisibility = orb.PowerUp == EntityType.None ? Visibility.Hidden : Visibility.Visible;
-			_powerUpLabel.Visibility = powerUpVisibility;
-			_powerUpIcon.Visibility = powerUpVisibility;
+		private void UpdateWeapon(Orb orb)
+		{
+			UI.AmmoLabel.Text = StringCache.GetString(orb.WeaponEnergyLevels[orb.PrimaryWeapon.GetWeaponSlot()]);
+
+			UI.WeaponIcon.Texture = orb.PrimaryWeapon.GetTexture();
+			UI.WeaponIcon.Foreground = orb.PrimaryWeapon.GetColor();
 
 			var ammoVisibility = orb.PrimaryWeapon == EntityType.MiniGun ? Visibility.Hidden : Visibility.Visible;
-			_weaponIcon.Visibility = ammoVisibility;
-			_ammoLabel.Visibility = ammoVisibility;
+			UI.WeaponIcon.Visibility = ammoVisibility;
+			UI.AmmoLabel.Visibility = ammoVisibility;
+		}
 
-			if (orb.PowerUp != EntityType.None)
-			{
-				_powerUpIcon.Texture = orb.PowerUp.GetTexture();
-				_powerUpIcon.Foreground = orb.PowerUp.GetColor();
-			}
+		private void UpdatePowerUp(Orb orb)
+		{
+			var powerUpVisibility = orb.PowerUp == EntityType.None ? Visibility.Hidden : Visibility.Visible;
+			UI.PowerUpLabel.Visibility = powerUpVisibility;
+			UI.PowerUpIcon.Visibility = powerUpVisibility;
+
+			if (orb.PowerUp == EntityType.None)
+				return;
+
+			UI.PowerUpLabel.Text = StringCache.GetString(MathUtils.RoundIntegral(orb.RemainingPowerUpTime));
+			UI.PowerUpIcon.Texture = orb.PowerUp.GetTexture();
+			UI.PowerUpIcon.Foreground = orb.PowerUp.GetColor();
 		}
 	}
 }

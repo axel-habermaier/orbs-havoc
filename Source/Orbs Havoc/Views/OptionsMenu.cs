@@ -24,207 +24,58 @@ namespace OrbsHavoc.Views
 {
 	using System.Collections.Generic;
 	using System.Text;
-	using Assets;
 	using Network;
 	using Platform.Input;
-	using Rendering;
 	using Scripting;
+	using UI;
 	using UserInterface;
-	using UserInterface.Controls;
 	using UserInterface.Input;
+	using Utilities;
 
-	/// <summary>
-	///   Lets the player set some options.
-	/// </summary>
-	internal sealed class OptionsMenu : View
+	internal sealed class OptionsMenu : View<OptionsMenuUI>
 	{
-		private CheckBox _bloom;
-		private CheckBox _debugOverlay;
-		private UIElement _invalidName;
-		private TextBox _name;
-		private CheckBox _vsync;
+		private string PlayerName => Encoding.UTF8.GetByteCount(UI.Name.Text) > NetworkProtocol.PlayerNameLength ? null : UI.Name.Text;
 
-		/// <summary>
-		///   Gets the player name entered by the user or null if the name is invalid.
-		/// </summary>
-		private string PlayerName => Encoding.UTF8.GetByteCount(_name.Text) > NetworkProtocol.PlayerNameLength ? null : _name.Text;
-
-		/// <summary>
-		///   Initializes the view.
-		/// </summary>
-		public override void Initialize()
+		public override void InitializeUI()
 		{
-			RootElement = new Border
-			{
-				CapturesInput = true,
-				Background = new Color(0xAA000000),
-				IsFocusable = true,
-				Font = AssetBundle.Roboto14,
-				AutoFocus = true,
-				InputBindings =
-				{
-					new KeyBinding(ShowPreviousMenu, Key.Escape)
-				},
-				Child = new StackPanel
-				{
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Center,
-					Children =
-					{
-						new Label
-						{
-							Text = "Options",
-							Font = AssetBundle.Moonhouse80,
-							Margin = new Thickness(0, 0, 0, 30),
-						},
-						new Grid(columns: 2, rows: 5)
-						{
-							HorizontalAlignment = HorizontalAlignment.Center,
-							Children =
-							{
-								new Label
-								{
-									Text = "Player Name:",
-									Margin = new Thickness(0, 4, 15, 0),
-									Row = 0,
-									Column = 0
-								},
-								(_name = new TextBox
-								{
-									MaxLength = NetworkProtocol.PlayerNameLength,
-									Text = Cvars.PlayerName,
-									Row = 0,
-									Column = 1,
-									Width = 200,
-									TextChanged = OnNameChanged
-								}),
-								(_invalidName = new Label
-								{
-									Row = 1,
-									Column = 1,
-									Foreground = Colors.Red,
-									Margin = new Thickness(0, 10, 0, 10),
-									TextWrapping = TextWrapping.Wrap,
-									Width = 200,
-									Visibility = Visibility.Collapsed,
-									Text = $"Expected a non-empty string with a maximum length of {NetworkProtocol.PlayerNameLength} characters."
-								}),
-								new Label
-								{
-									Text = "VSync:",
-									Margin = new Thickness(0, 4, 15, 0),
-									Row = 2,
-									Column = 0
-								},
-								(_vsync = new CheckBox
-								{
-									Row = 2,
-									Column = 1,
-									HorizontalAlignment = HorizontalAlignment.Left,
-									Margin = new Thickness(0, 1, 0, 1)
-								}),
-								new Label
-								{
-									Text = "Debug Overlay:",
-									Margin = new Thickness(0, 4, 15, 0),
-									Row = 3,
-									Column = 0
-								},
-								(_debugOverlay = new CheckBox
-								{
-									Row = 3,
-									Column = 1,
-									HorizontalAlignment = HorizontalAlignment.Left,
-									Margin = new Thickness(0, 1, 0, 1)
-								}),
-								new Label
-								{
-									Text = "Bloom:",
-									Margin = new Thickness(0, 4, 15, 0),
-									Row = 4,
-									Column = 0
-								},
-								(_bloom = new CheckBox
-								{
-									Row = 4,
-									Column = 1,
-									HorizontalAlignment = HorizontalAlignment.Left,
-									Margin = new Thickness(0, 1, 0, 1)
-								}),
-							}
-						},
-						new StackPanel
-						{
-							Orientation = Orientation.Horizontal,
-							Margin = new Thickness(0, 20, 0, 0),
-							HorizontalAlignment = HorizontalAlignment.Center,
-							Children =
-							{
-								new Button
-								{
-									Content = "Save",
-									Margin = new Thickness(0, 0, 10, 0),
-									Click = Save
-								},
-								new Button
-								{
-									Content = "Return",
-									Click = ShowPreviousMenu
-								}
-							}
-						}
-					}
-				}
-			};
+			UI.InputBindings.Add(new KeyBinding(ShowPreviousMenu, Key.Escape));
+			UI.Name.TextChanged = OnNameChanged;
+			UI.Save.Click = Save;
+			UI.Return.Click = ShowPreviousMenu;
 		}
 
-		/// <summary>
-		///   Invoked when the view should be activated.
-		/// </summary>
 		protected override void Activate()
 		{
-			_name.Text = Cvars.PlayerName;
-			_vsync.IsChecked = Cvars.Vsync;
-			_debugOverlay.IsChecked = Cvars.ShowDebugOverlay;
-			_bloom.IsChecked = Cvars.BloomEnabled;
+			UI.Name.Text = Cvars.PlayerName;
+			UI.Vsync.IsChecked = Cvars.Vsync;
+			UI.DebugOverlay.IsChecked = Cvars.ShowDebugOverlay;
+			UI.Bloom.IsChecked = Cvars.BloomEnabled;
 		}
 
-		/// <summary>
-		///   Invoked when the user entered another name.
-		/// </summary>
 		private void OnNameChanged(string name)
 		{
-			_invalidName.Visibility = PlayerName == null ? Visibility.Visible : Visibility.Collapsed;
+			UI.InvalidName.Visibility = TextString.IsNullOrWhiteSpace(PlayerName) ? Visibility.Visible : Visibility.Collapsed;
 		}
 
-		/// <summary>
-		///   Saves the changes and returns.
-		/// </summary>
 		private void Save()
 		{
-			if (PlayerName == null)
+			if (TextString.IsNullOrWhiteSpace(PlayerName))
 				return;
 
 			ChangeValue(Cvars.PlayerNameCvar, PlayerName);
-			ChangeValue(Cvars.VsyncCvar, _vsync.IsChecked);
-			ChangeValue(Cvars.ShowDebugOverlayCvar, _debugOverlay.IsChecked);
-			ChangeValue(Cvars.BloomEnabledCvar, _bloom.IsChecked);
+			ChangeValue(Cvars.VsyncCvar, UI.Vsync.IsChecked);
+			ChangeValue(Cvars.ShowDebugOverlayCvar, UI.DebugOverlay.IsChecked);
+			ChangeValue(Cvars.BloomEnabledCvar, UI.Bloom.IsChecked);
 
 			ShowPreviousMenu();
 		}
 
-		/// <summary>
-		///   Updates the cvar's value, if necessary.
-		/// </summary>
 		private static void ChangeValue<T>(Cvar<T> cvar, T value)
 		{
 			if (!EqualityComparer<T>.Default.Equals(cvar.Value, value))
 				cvar.Value = value;
 		}
 
-		/// <summary>
-		///   Shows the previously active menu.
-		/// </summary>
 		private void ShowPreviousMenu()
 		{
 			Hide();

@@ -31,8 +31,6 @@ namespace OrbsHavoc.Views
 	{
 		public override void InitializeUI()
 		{
-			base.InitializeUI();
-
 			UI.InputBindings.Add(new KeyBinding(Hide, Key.Escape));
 			UI.Continue.Click += Hide;
 			UI.Options.Click += () =>

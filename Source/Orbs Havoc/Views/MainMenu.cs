@@ -33,8 +33,6 @@ namespace OrbsHavoc.Views
 
 		public override void InitializeUI()
 		{
-			base.InitializeUI();
-
 			UI.Start.Click = () =>
 			{
 				Views.StartGameMenu.Show();

@@ -242,6 +242,7 @@
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\StringCache.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
+    <Compile Include="Views\IView.cs" />
     <Compile Include="Views\UI\ChatUI.cs" />
     <Compile Include="Views\HudOverlay.cs" />
     <Compile Include="Views\OptionsMenu.cs" />
@@ -250,14 +251,17 @@
     <Compile Include="Views\UI\ConsoleUI.cs" />
     <Compile Include="Views\UI\DebugOverlayUI.cs" />
     <Compile Include="Views\UI\EventMessagesUI.cs" />
+    <Compile Include="Views\UI\HudOverlayUI.cs" />
     <Compile Include="Views\UI\InGameMenuUI.cs" />
     <Compile Include="Views\UI\JoinGameMenuUI.cs" />
     <Compile Include="Views\UI\LoadingOverlayUI.cs" />
     <Compile Include="Views\UI\MainMenuUI.cs" />
     <Compile Include="Views\UI\MessageBoxUI.cs" />
+    <Compile Include="Views\UI\OptionsMenuUI.cs" />
+    <Compile Include="Views\UI\RespawnOverlayUI.cs" />
+    <Compile Include="Views\UI\ScoreboardUI.cs" />
     <Compile Include="Views\UI\StartGameMenuUI.cs" />
     <Compile Include="Views\UI\WaitingOverlayUI.cs" />
-    <Compile Include="Views\View`1.cs" />
     <Compile Include="Views\WaitingOverlay.cs" />
     <Compile Include="Views\Scoreboard.cs" />
     <Compile Include="Views\Chat.cs" />

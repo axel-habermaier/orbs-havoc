@@ -43,9 +43,9 @@ namespace OrbsHavoc.Views
 	using Utilities;
 
 	/// <summary>
-	///   Represents the application view of playing a game session.
+	///     Represents the application view of playing a game session.
 	/// </summary>
-	internal sealed class GameView : View
+	internal sealed class GameView : View<Border>
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
 
@@ -55,27 +55,27 @@ namespace OrbsHavoc.Views
 		private LogicalInput _showScoreboard;
 
 		/// <summary>
-		///   The camera that is used to draw the game session.
+		///     The camera that is used to draw the game session.
 		/// </summary>
 		public Camera Camera { get; } = new Camera();
 
 		/// <summary>
-		///   Gets the currently active server connection.
+		///     Gets the currently active server connection.
 		/// </summary>
 		public Connection Connection { get; private set; }
 
 		/// <summary>
-		///   Gets the currently active game session.
+		///     Gets the currently active game session.
 		/// </summary>
 		public GameSession GameSession { get; private set; }
 
 		/// <summary>
-		///   Gets a value indicating whether a game session is currently running.
+		///     Gets a value indicating whether a game session is currently running.
 		/// </summary>
 		public bool IsRunning => GameSession != null;
 
 		/// <summary>
-		///   Initializes the view.
+		///     Initializes the view.
 		/// </summary>
 		public override void Initialize()
 		{
@@ -86,22 +86,21 @@ namespace OrbsHavoc.Views
 
 			_showScoreboard = new LogicalInput(Cvars.InputShowScoreboardCvar);
 			InputDevice.Add(_showScoreboard);
+		}
 
-			RootElement = new Border
-			{
-				CapturesInput = true,
-				AutoFocus = true,
-				Cursor = AssetBundle.Crosshair,
-				InputBindings =
-				{
-					new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar),
-					new KeyBinding(Views.InGameMenu.Show, Key.Escape)
-				}
-			};
+		public override void InitializeUI()
+		{
+			UI.CapturesInput = true;
+			UI.AutoFocus = true;
+			UI.Cursor = AssetBundle.Crosshair;
+			UI.InputBindings.AddRange(
+				new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar),
+				new KeyBinding(Views.InGameMenu.Show, Key.Escape)
+			);
 		}
 
 		/// <summary>
-		///   Updates the view's state.
+		///     Updates the view's state.
 		/// </summary>
 		public override void Update()
 		{
@@ -141,7 +140,7 @@ namespace OrbsHavoc.Views
 						Views.WaitingOverlay.Show();
 
 					// Always send the input state, but update it only when the game session is focused 
-					if (RootElement.IsFocused)
+					if (UI.IsFocused)
 					{
 						_inputManager.Update();
 						_inputManager.SendInput(GameSession, Connection);
@@ -151,7 +150,7 @@ namespace OrbsHavoc.Views
 
 					Views.Hud.IsShown = !GameSession.IsLocalPlayerDead;
 					Views.RespawnOverlay.IsShown = GameSession.IsLocalPlayerDead;
-					Views.Scoreboard.IsShown = RootElement.IsFocused && (_showScoreboard.IsTriggered || GameSession.IsLocalPlayerDead);
+					Views.Scoreboard.IsShown = UI.IsFocused && (_showScoreboard.IsTriggered || GameSession.IsLocalPlayerDead);
 				}
 			}
 			catch (ConnectionDroppedException)
@@ -192,7 +191,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Draws the game session.
+		///     Draws the game session.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the view.</param>
 		public void Draw(SpriteBatch spriteBatch)
@@ -221,7 +220,7 @@ namespace OrbsHavoc.Views
 
 			foreach (var particleNode in GameSession.SceneGraph.EnumeratePostOrder<ParticleEffectNode>())
 			{
-				if (RootElement.IsFocused || particleNode != GameSession.MouseEffect)
+				if (UI.IsFocused || particleNode != GameSession.MouseEffect)
 					particleNode.Draw(spriteBatch);
 			}
 
@@ -229,7 +228,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Invoked when the client should connect to a game session.
+		///     Invoked when the client should connect to a game session.
 		/// </summary>
 		private void Connect(string serverAddress, ushort serverPort)
 		{
@@ -277,7 +276,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Invoked when the client should disconnect from a game session.
+		///     Invoked when the client should disconnect from a game session.
 		/// </summary>
 		private void Disconnect()
 		{
@@ -300,7 +299,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
@@ -318,7 +317,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Invoked when the local player changed his or her name.
+		///     Invoked when the local player changed his or her name.
 		/// </summary>
 		private void OnPlayerNameChanged()
 		{
@@ -326,7 +325,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Invoked when the local player entered a chat message.
+		///     Invoked when the local player entered a chat message.
 		/// </summary>
 		/// <param name="message">The message that the local player wants to send.</param>
 		private void OnSay(string message)

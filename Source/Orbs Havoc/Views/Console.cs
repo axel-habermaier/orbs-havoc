@@ -69,8 +69,6 @@ namespace OrbsHavoc.Views
 
 		public override void InitializeUI()
 		{
-			base.InitializeUI();
-
 			UI.Prompt.TextChanged += OnTextChanged;
 			UI.Prompt.InputBindings.AddRange(
 				new KeyBinding(ClearInput, Key.Escape),
@@ -105,10 +103,10 @@ namespace OrbsHavoc.Views
 
 		private void SubmitInput()
 		{
-			_history.AddToHistory(UI.Prompt.Text);
-
 			if (!TextString.IsNullOrWhiteSpace(UI.Prompt.Text))
 			{
+				_history.AddToHistory(UI.Prompt.Text);
+
 				Log.Info(ConsoleUI.PromptToken + UI.Prompt.Text);
 				Commands.Execute(UI.Prompt.Text);
 

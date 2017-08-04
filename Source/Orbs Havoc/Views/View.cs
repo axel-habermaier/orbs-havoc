@@ -27,53 +27,19 @@ namespace OrbsHavoc.Views
 	using Platform.Memory;
 	using UserInterface;
 
-	/// <summary>
-	///     Represents a view of the application.
-	/// </summary>
-	internal abstract class View : DisposableObject
+	internal abstract class View<TRootElement> : DisposableObject, IView
+		where TRootElement : UIElement, new()
 	{
 		private bool _activationChanged;
 		private bool _isShown;
-		private UIElement _rootElement;
 
-		/// <summary>
-		///     Gets or sets the view collection the view belongs to.
-		/// </summary>
 		public ViewCollection Views { get; set; }
-
-		/// <summary>
-		///     Gets or sets the root UI element of the view.
-		/// </summary>
-		public UIElement RootElement
-		{
-			get => _rootElement;
-			protected set
-			{
-				_rootElement = value;
-
-				if (_rootElement != null)
-				{
-					Views.RootElement.Add(_rootElement);
-					_rootElement.Visibility = IsShown ? Visibility.Visible : Visibility.Collapsed;
-				}
-				else
-					Views.RootElement.Remove(_rootElement);
-			}
-		}
-
-		/// <summary>
-		///     Gets the window the view is drawn in.
-		/// </summary>
+		public TRootElement UI { get; private set; }
 		protected Window Window => Views.Window;
-
-		/// <summary>
-		///     Gets the input device that should be used by the view.
-		/// </summary>
 		protected LogicalInputDevice InputDevice => Views.InputDevice;
 
-		/// <summary>
-		///     Gets or sets a value indicating whether the view is currently shown.
-		/// </summary>
+		UIElement IView.UI => UI;
+
 		public bool IsShown
 		{
 			get => _isShown;
@@ -86,24 +52,18 @@ namespace OrbsHavoc.Views
 			}
 		}
 
-		/// <summary>
-		///     Shows the view by making it active.
-		/// </summary>
 		public void Show()
 		{
 			if (IsShown)
 				return;
 
 			_isShown = true;
-			if (RootElement != null)
-				RootElement.Visibility = Visibility.Visible;
+			if (UI != null)
+				UI.Visibility = Visibility.Visible;
 
 			_activationChanged = !_activationChanged;
 		}
 
-		/// <summary>
-		///     Hides the view by making it inactive.
-		/// </summary>
 		public void Hide()
 		{
 			if (!IsShown)
@@ -111,26 +71,10 @@ namespace OrbsHavoc.Views
 
 			_isShown = false;
 
-			if (RootElement != null)
-				RootElement.Visibility = Visibility.Collapsed;
+			if (UI != null)
+				UI.Visibility = Visibility.Collapsed;
 
 			_activationChanged = !_activationChanged;
-		}
-
-		public virtual void Initialize()
-		{
-		}
-
-		public virtual void InitializeUI()
-		{
-		}
-
-		protected virtual void Activate()
-		{
-		}
-
-		protected virtual void Deactivate()
-		{
 		}
 
 		public void HandleActivationChange()
@@ -147,6 +91,33 @@ namespace OrbsHavoc.Views
 		}
 
 		public virtual void Update()
+		{
+		}
+
+		public void Initialize(ViewCollection views)
+		{
+			Views = views;
+			UI = new TRootElement { Visibility = Visibility.Collapsed };
+
+			Views.RootElement.Add(UI);
+
+			Initialize();
+			InitializeUI();
+		}
+
+		public virtual void Initialize()
+		{
+		}
+
+		public virtual void InitializeUI()
+		{
+		}
+
+		protected virtual void Activate()
+		{
+		}
+
+		protected virtual void Deactivate()
 		{
 		}
 

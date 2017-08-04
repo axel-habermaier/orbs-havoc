@@ -50,8 +50,6 @@ namespace OrbsHavoc.Views
 
 		public override void InitializeUI()
 		{
-			base.InitializeUI();
-
 			UI.InputBindings.AddRange(
 				new KeyBinding(Close, Key.Escape),
 				new KeyBinding(Connect, Key.Enter),

@@ -79,11 +79,11 @@ namespace OrbsHavoc.UserInterface.Controls
 			}
 			internal set
 			{
-				if (_focusedElement == value)
-					return;
-
 				if (value == null)
 					value = this;
+
+				if (_focusedElement == value)
+					return;
 
 				if (_focusedElement != null)
 					_focusedElement.IsFocused = false;

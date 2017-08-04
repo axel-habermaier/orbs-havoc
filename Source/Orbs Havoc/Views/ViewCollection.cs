@@ -22,7 +22,6 @@
 
 namespace OrbsHavoc.Views
 {
-	using System;
 	using System.Net.Sockets;
 	using Assets;
 	using Gameplay.Server;
@@ -44,7 +43,7 @@ namespace OrbsHavoc.Views
 	/// </summary>
 	internal class ViewCollection : DisposableObject
 	{
-		private readonly View[] _views;
+		private readonly IView[] _views;
 		private bool _exitMessageBoxOpen;
 		private RenderTarget _gameRenderTarget;
 
@@ -71,7 +70,7 @@ namespace OrbsHavoc.Views
 
 			OnResized(Window.Size);
 
-			_views = new View[]
+			_views = new IView[]
 			{
 				Console,
 				DebugOverlay,
@@ -218,11 +217,7 @@ namespace OrbsHavoc.Views
 		public void Initialize()
 		{
 			for (var i = _views.Length - 1; i >= 0; --i)
-			{
-				_views[i].Views = this;
-				_views[i].InitializeUI();
-				_views[i].Initialize();
-			}
+				_views[i].Initialize(this);
 		}
 
 		/// <summary>

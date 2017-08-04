@@ -117,7 +117,7 @@ namespace OrbsHavoc.Views
 		public override void Update()
 		{
 			_timer.Update();
-			RootElement.Visibility = Cvars.ShowDebugOverlay ? Visibility.Visible : Visibility.Collapsed;
+			UI.Visibility = Cvars.ShowDebugOverlay ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		private void UpdateStatistics()
