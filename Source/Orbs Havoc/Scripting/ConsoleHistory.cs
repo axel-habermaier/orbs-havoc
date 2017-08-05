@@ -28,7 +28,7 @@ namespace OrbsHavoc.Scripting
 									 .Take(MaxHistory)
 									 .ToList();
 			}
-			catch (FileSystemException e)
+			catch (Exception e)
 			{
 				_history = new List<string>();
 				Log.Error($"Failed to load console history: {e.Message}");
@@ -50,7 +50,7 @@ namespace OrbsHavoc.Scripting
 				FileSystem.WriteAllText(HistoryFileName, builder.ToString());
 				Log.Info("Console history has been persisted.");
 			}
-			catch (FileSystemException e)
+			catch (Exception e)
 			{
 				Log.Error($"Failed to persist console history: {e.Message}");
 			}

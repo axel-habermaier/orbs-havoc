@@ -301,7 +301,6 @@
     <Compile Include="Utilities\Rectangle.cs" />
     <Compile Include="Utilities\Size.cs" />
     <Compile Include="Platform\FileSystem.cs" />
-    <Compile Include="Platform\FileSystemException.cs" />
     <Compile Include="Platform\Input\Key.cs" />
     <Compile Include="Platform\Input\KeyModifiers.cs" />
     <Compile Include="Platform\Input\MouseButton.cs" />

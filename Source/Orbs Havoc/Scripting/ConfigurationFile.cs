@@ -47,7 +47,7 @@
 			{
 				input = FileSystem.ReadAllText(fileName);
 			}
-			catch (FileSystemException e)
+			catch (Exception e)
 			{
 				Log.Error($"Unable to read '{fileName}': {e.Message}");
 				yield break;
@@ -110,7 +110,7 @@
 				FileSystem.WriteAllText(AutoExec, builder.ToString());
 				Log.Info($"'{AutoExec}' has been written.");
 			}
-			catch (FileSystemException e)
+			catch (Exception e)
 			{
 				Log.Error($"Failed to write '{AutoExec}': {e.Message}");
 			}

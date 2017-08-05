@@ -1,57 +1,57 @@
 ﻿namespace OrbsHavoc.Assets
 {
 	using System;
+	using System.Diagnostics;
 	using System.IO;
 	using System.IO.Compression;
-	using Platform;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Scripting;
 	using Utilities;
 
-	/// <summary>
-	///   Provides access to assets used throughout the application.
-	/// </summary>
 	public sealed partial class AssetBundle : DisposableObject
 	{
-		/// <summary>
-		///   Initializes the assets.
-		/// </summary>
 		public AssetBundle()
 		{
-			InitializeAssets();
 			Load();
-
 			Commands.OnReloadAssets += Load;
 		}
 
-		/// <summary>
-		///   Loads the assets from disk.
-		/// </summary>
 		private static void Load()
 		{
-			var start = Clock.GetTime();
-			var assets = Decompress(FileSystem.ReadAllBytes("Assets.pak"));
+			try
+			{
+				var stopwatch = Stopwatch.StartNew();
+				var data = LoadAssetsData(File.ReadAllBytes("Assets.pak"));
 
-			LoadAssets(new BufferReader(assets, Endianess.Little));
-			Log.Info($"Asset bundle loaded ({(Clock.GetTime() - start) * 1000:F2}ms).");
+				LoadAssets(new BufferReader(data, Endianess.Little));
+				Log.Info($"Asset bundle loaded ({stopwatch.Elapsed.TotalMilliseconds:F2}ms).");
+			}
+			catch (Exception e)
+			{
+				throw new FatalErrorException($"Failed to load assets bundle: {e.Message.EnsureEndsWithDot()}");
+			}
 		}
 
-		/// <summary>
-		///   Decompresses the compressed content.
-		/// </summary>
-		private static byte[] Decompress(byte[] compressedContent)
+		private static byte[] LoadAssetsData(byte[] compressedContent)
 		{
 			var buffer = new BufferReader(compressedContent, Endianess.Little);
 
-			// Validate the header
+			ValidateHeader(ref buffer);
+			return DecompressContent(ref buffer);
+		}
+
+		private static void ValidateHeader(ref BufferReader buffer)
+		{
 			if (!buffer.CanRead(16))
 				Log.Die("Asset bundle is corrupted: Header information missing.");
 
 			if (Guid != new Guid(buffer.ReadByteArray(16)))
 				Log.Die("Asset bundle is corrupted: The header contains an invalid hash.");
+		}
 
-			// Decompress the bundle's content
+		private static byte[] DecompressContent(ref BufferReader buffer)
+		{
 			var content = new byte[buffer.ReadInt32()];
 			using (var stream = new GZipStream(new MemoryStream(buffer.ReadByteArray()), CompressionMode.Decompress))
 				stream.Read(content, 0, content.Length);
@@ -59,9 +59,6 @@
 			return content;
 		}
 
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
 		protected override void OnDisposing()
 		{
 			DisposeAssets();

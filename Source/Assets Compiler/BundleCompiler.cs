@@ -48,7 +48,8 @@
 				.Concat(textures.Select(texture => new { Type = "Texture", Name = Path.GetFileNameWithoutExtension(texture), File = texture }))
 				.Concat(levels.Select(level => new { Type = "Level", Name = Path.GetFileNameWithoutExtension(level), File = level }))
 				.Concat(cursors.Select(cursor => new { Type = "Cursor", Name = Path.GetFileNameWithoutExtension(cursor), File = cursor }))
-				.OrderBy(asset => asset.Name)
+				.OrderBy(asset => asset.Type)
+				.ThenBy(asset => asset.Name)
 				.ToArray();
 
 			byte[] hash;
@@ -102,15 +103,7 @@
 					writer.NewLine();
 
 					foreach (var asset in assets)
-						writer.AppendLine($"public static {asset.Type} {asset.Name} {{ get; private set; }}");
-
-					writer.NewLine();
-					writer.AppendLine("private static void InitializeAssets()");
-					writer.AppendBlockStatement(() =>
-					{
-						foreach (var asset in assets)
-							writer.AppendLine($"{asset.Name} = new {asset.Type}();");
-					});
+						writer.AppendLine($"public static {asset.Type} {asset.Name} {{ get; }} = new {asset.Type}();");
 
 					writer.NewLine();
 					writer.AppendLine("private static void LoadAssets(BufferReader reader)");

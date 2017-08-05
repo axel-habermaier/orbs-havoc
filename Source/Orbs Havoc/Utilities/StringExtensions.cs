@@ -13,5 +13,10 @@
 
 			return value.Length <= maxLength ? value : value.Substring(0, maxLength);
 		}
+
+		public static string EnsureEndsWithDot(this string str)
+		{
+			return !str.EndsWith(".") && !str.EndsWith("!") && !str.EndsWith("?") ? str + "." : str;
+		}
 	}
 }

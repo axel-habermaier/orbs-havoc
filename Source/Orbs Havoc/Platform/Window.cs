@@ -158,7 +158,7 @@
 		/// <summary>
 		///   Makes the OpenGL context for the window the current one on the calling thread.
 		/// </summary>
-		public void MakeCurrent(Window window = null)
+		public void MakeCurrent()
 		{
 			_graphicsDevice.MakeCurrent(this);
 		}
