@@ -3,7 +3,7 @@
 	using System;
 	using System.Numerics;
 	using Graphics;
-	using Input;
+	using UserInterface.Input;
 	using Logging;
 	using Memory;
 	using Rendering;
@@ -192,12 +192,12 @@
 		/// <summary>
 		///   Raised when a key was pressed.
 		/// </summary>
-		public event Action<Key, ScanCode, KeyModifiers> KeyPressed;
+		public event Action<Key, ScanCode> KeyPressed;
 
 		/// <summary>
 		///   Raised when a key was released.
 		/// </summary>
-		public event Action<Key, ScanCode, KeyModifiers> KeyReleased;
+		public event Action<Key, ScanCode> KeyReleased;
 
 		/// <summary>
 		///   Raised when a mouse button was pressed.
@@ -287,10 +287,10 @@
 						Closing?.Invoke();
 						break;
 					case SDL_KEYDOWN:
-						KeyPressed?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);
+						KeyPressed?.Invoke(e.key.keysym.sym, e.key.keysym.scancode);
 						break;
 					case SDL_KEYUP:
-						KeyReleased?.Invoke(e.key.keysym.sym, e.key.keysym.scancode, e.key.keysym.mod);
+						KeyReleased?.Invoke(e.key.keysym.sym, e.key.keysym.scancode);
 						break;
 					case SDL_TEXTINPUT:
 						TextEntered?.Invoke(Interop.ToString(e.text.text));

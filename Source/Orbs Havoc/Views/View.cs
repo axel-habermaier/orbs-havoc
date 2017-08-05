@@ -1,7 +1,6 @@
 ﻿namespace OrbsHavoc.Views
 {
 	using Platform;
-	using Platform.Input;
 	using Platform.Memory;
 	using UserInterface;
 
@@ -14,7 +13,6 @@
 		public ViewCollection Views { get; set; }
 		public TRootElement UI { get; private set; }
 		protected Window Window => Views.Window;
-		protected LogicalInputDevice InputDevice => Views.InputDevice;
 
 		UIElement IView.UI => UI;
 
@@ -76,8 +74,6 @@
 		{
 			Views = views;
 			UI = new TRootElement { Visibility = Visibility.Collapsed };
-
-			Views.RootElement.Add(UI);
 
 			Initialize();
 			InitializeUI();

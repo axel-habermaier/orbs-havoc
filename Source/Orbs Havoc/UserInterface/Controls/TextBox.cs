@@ -5,7 +5,6 @@
 	using Assets;
 	using Input;
 	using Platform;
-	using Platform.Input;
 	using Platform.Logging;
 	using Rendering;
 	using Utilities;

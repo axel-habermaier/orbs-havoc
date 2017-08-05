@@ -37,7 +37,7 @@
 					Log.OnLog += WriteToConsole;
 
 					Log.Info($"Starting {Application.Name}...");
-					Log.Info($"User file directory: {FileSystem.UserDirectory}");
+					Log.Info($"User file directory: {UserFile.UserDirectory}");
 
 					Cvars.Initialize();
 					Commands.Initialize();

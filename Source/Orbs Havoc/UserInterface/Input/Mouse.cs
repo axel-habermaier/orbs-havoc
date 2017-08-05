@@ -1,38 +1,39 @@
-﻿namespace OrbsHavoc.Platform.Input
+﻿namespace OrbsHavoc.UserInterface.Input
 {
 	using System;
 	using System.Numerics;
-	using Memory;
+	using Platform;
+	using Platform.Memory;
 	using Utilities;
-	using static SDL2;
+	using static Platform.SDL2;
 
 	/// <summary>
-	///   Represents the state of the mouse.
+	///     Represents the state of the mouse.
 	/// </summary>
-	public class Mouse : DisposableObject
+	public sealed class Mouse : DisposableObject
 	{
 		/// <summary>
-		///   Stores whether a button is currently being double-clicked.
+		///     Stores whether a button is currently being double-clicked.
 		/// </summary>
 		private readonly bool[] _doubleClicked = new bool[Enum.GetValues(typeof(MouseButton)).Length + 1];
 
 		/// <summary>
-		///   The mouse button states.
+		///     The mouse button states.
 		/// </summary>
 		private readonly InputState[] _states = new InputState[Enum.GetValues(typeof(MouseButton)).Length + 1];
 
 		/// <summary>
-		///   The window that generates the mouse events.
+		///     The window that generates the mouse events.
 		/// </summary>
 		private readonly Window _window;
 
 		/// <summary>
-		///   The direction the mouse wheel was turned in.
+		///     The direction the mouse wheel was turned in.
 		/// </summary>
 		private MouseWheelDirection? _wheelDirection;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window that generates the mouse events.</param>
 		internal Mouse(Window window)
@@ -46,7 +47,7 @@
 		}
 
 		/// <summary>
-		///   Gets the position of the mouse.
+		///     Gets the position of the mouse.
 		/// </summary>
 		public Vector2 Position
 		{
@@ -58,12 +59,12 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the mouse is currently within the window.
+		///     Gets a value indicating whether the mouse is currently within the window.
 		/// </summary>
 		public unsafe bool InsideWindow => SDL_GetMouseFocus() != null;
 
 		/// <summary>
-		///   Gets the input state for the given button.
+		///     Gets the input state for the given button.
 		/// </summary>
 		/// <param name="button">The button the input state should be returned for.</param>
 		public InputState this[MouseButton button]
@@ -76,43 +77,7 @@
 		}
 
 		/// <summary>
-		///   Raised when the mouse wheel is scrolled.
-		/// </summary>
-		public event Action<MouseWheelDirection> Wheel
-		{
-			add => _window.MouseWheel += value;
-			remove => _window.MouseWheel -= value;
-		}
-
-		/// <summary>
-		///   Raised when a mouse button was pressed.
-		/// </summary>
-		public event Action<MouseButton, Vector2, bool> Pressed
-		{
-			add => _window.MousePressed += value;
-			remove => _window.MousePressed -= value;
-		}
-
-		/// <summary>
-		///   Raised when a mouse button was released.
-		/// </summary>
-		public event Action<MouseButton, Vector2> Released
-		{
-			add => _window.MouseReleased += value;
-			remove => _window.MouseReleased -= value;
-		}
-
-		/// <summary>
-		///   Raised when the mouse has been moved.
-		/// </summary>
-		public event Action<Vector2> Moved
-		{
-			add => _window.MouseMoved += value;
-			remove => _window.MouseMoved -= value;
-		}
-
-		/// <summary>
-		///   Invoked when a button has been pressed.
+		///     Invoked when a button has been pressed.
 		/// </summary>
 		private void ButtonPressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
@@ -121,7 +86,7 @@
 		}
 
 		/// <summary>
-		///   Invoked when a button has been released.
+		///     Invoked when a button has been released.
 		/// </summary>
 		private void ButtonReleased(MouseButton button, Vector2 position)
 		{
@@ -129,7 +94,7 @@
 		}
 
 		/// <summary>
-		///   Invoked when the mouse wheel has been turned.
+		///     Invoked when the mouse wheel has been turned.
 		/// </summary>
 		private void WheelTurned(MouseWheelDirection direction)
 		{
@@ -137,7 +102,7 @@
 		}
 
 		/// <summary>
-		///   Updates the mouse state.
+		///     Updates the mouse state.
 		/// </summary>
 		internal void Update()
 		{
@@ -150,7 +115,7 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the button is currently being pressed down.
+		///     Gets a value indicating whether the button is currently being pressed down.
 		/// </summary>
 		/// <param name="button">The button that should be checked.</param>
 		public bool IsPressed(MouseButton button)
@@ -160,8 +125,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the button was pressed during the current frame. WentDown is
-		///   only true during the single frame when IsPressed changed from false to true.
+		///     Gets a value indicating whether the button was pressed during the current frame. WentDown is
+		///     only true during the single frame when IsPressed changed from false to true.
 		/// </summary>
 		/// <param name="button">The button that should be checked.</param>
 		public bool WentDown(MouseButton button)
@@ -171,8 +136,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the button was released during the current frame. WentUp is
-		///   only true during the single frame when IsPressed changed from true to false.
+		///     Gets a value indicating whether the button was released during the current frame. WentUp is
+		///     only true during the single frame when IsPressed changed from true to false.
 		/// </summary>
 		/// <param name="button">The button that should be checked.</param>
 		public bool WentUp(MouseButton button)
@@ -182,7 +147,7 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the mouse wheel has been turned into the indicated direction.
+		///     Gets a value indicating whether the mouse wheel has been turned into the indicated direction.
 		/// </summary>
 		/// <param name="direction">The direction that should be checked.</param>
 		public bool WasTurned(MouseWheelDirection direction)
@@ -192,7 +157,7 @@
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{

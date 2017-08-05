@@ -28,7 +28,7 @@
 			Assert.ArgumentNotNull(value, nameof(value));
 			Assert.ArgumentSatisfies(value is string, nameof(value), "The value must be a string.");
 
-			return FileSystem.IsValidFileName((string)value);
+			return UserFile.IsValidFileName((string)value);
 		}
 	}
 }

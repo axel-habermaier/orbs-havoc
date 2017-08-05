@@ -93,7 +93,7 @@
 			effect.Emitters[0].ColorRange = player.ColorRange;
 
 			var effectNode = ParticleEffectNode.Create(_allocator, effect, Vector2.Zero);
-			effectNode.AddBehavior(TrailMouseBehavior.Create(_allocator, _views.InputDevice.Mouse, _views.Game.Camera));
+			effectNode.AddBehavior(TrailMouseBehavior.Create(_allocator, _views.Mouse, _views.Game.Camera));
 			effectNode.AttachTo(_gameSession.SceneGraph);
 
 			_gameSession.MouseEffect = effectNode;

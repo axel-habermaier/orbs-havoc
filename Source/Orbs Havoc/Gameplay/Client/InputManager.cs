@@ -5,7 +5,7 @@
 	using Network;
 	using Network.Messages;
 	using Platform;
-	using Platform.Input;
+	using UserInterface.Input;
 	using SceneNodes.Entities;
 	using Scripting;
 	using Utilities;

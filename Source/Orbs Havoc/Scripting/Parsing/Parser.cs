@@ -3,7 +3,7 @@ namespace OrbsHavoc.Scripting.Parsing
 	using System;
 	using System.Linq;
 	using System.Numerics;
-	using Platform.Input;
+	using UserInterface.Input;
 	using Utilities;
 
 	/// <summary>
@@ -281,7 +281,8 @@ namespace OrbsHavoc.Scripting.Parsing
 			inputStream.Position = position;
 			inputStream.Skip(1);
 
-			var modifiers = KeyModifiers.None;
+			var anyModifier = false;
+			KeyModifiers? modifiers = KeyModifiers.None;
 			Key? key = null;
 			MouseButton? button = null;
 			MouseWheelDirection? direction = null;
@@ -317,6 +318,9 @@ namespace OrbsHavoc.Scripting.Parsing
 						break;
 					case "shift":
 						modifiers |= KeyModifiers.Shift;
+						break;
+					case "any":
+						anyModifier = true;
 						break;
 					default:
 						try
@@ -358,6 +362,9 @@ namespace OrbsHavoc.Scripting.Parsing
 			}
 
 			inputStream.Skip(1);
+
+			if (anyModifier)
+				modifiers = null;
 
 			if (key != null)
 				return new InputTrigger(key.Value, modifiers);

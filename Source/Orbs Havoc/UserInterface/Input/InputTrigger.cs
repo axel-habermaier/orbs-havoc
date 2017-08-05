@@ -1,4 +1,4 @@
-namespace OrbsHavoc.Platform.Input
+namespace OrbsHavoc.UserInterface.Input
 {
 	using System;
 	using System.Text;
@@ -6,7 +6,7 @@ namespace OrbsHavoc.Platform.Input
 
 	public struct InputTrigger : IEquatable<InputTrigger>
 	{
-		public InputTrigger(Key key, KeyModifiers modifiers)
+		public InputTrigger(Key key, KeyModifiers? modifiers = KeyModifiers.None)
 			: this()
 		{
 			Assert.ArgumentInRange(key, nameof(key));
@@ -15,7 +15,7 @@ namespace OrbsHavoc.Platform.Input
 			Modifiers = modifiers;
 		}
 
-		public InputTrigger(MouseButton mouseButton, KeyModifiers modifiers)
+		public InputTrigger(MouseButton mouseButton, KeyModifiers? modifiers = KeyModifiers.None)
 			: this()
 		{
 			Assert.ArgumentInRange(mouseButton, nameof(mouseButton));
@@ -24,7 +24,7 @@ namespace OrbsHavoc.Platform.Input
 			Modifiers = modifiers;
 		}
 
-		public InputTrigger(MouseWheelDirection direction, KeyModifiers modifiers)
+		public InputTrigger(MouseWheelDirection direction, KeyModifiers? modifiers = KeyModifiers.None)
 			: this()
 		{
 			Assert.ArgumentInRange(direction, nameof(direction));
@@ -34,11 +34,8 @@ namespace OrbsHavoc.Platform.Input
 		}
 
 		public Key? Key { get; }
-
 		public MouseButton? MouseButton { get; }
-
-		public KeyModifiers Modifiers { get; }
-
+		public KeyModifiers? Modifiers { get; }
 		public MouseWheelDirection? MouseWheelDirection { get; }
 
 		public static implicit operator InputTrigger(Key key)
@@ -78,7 +75,7 @@ namespace OrbsHavoc.Platform.Input
 			{
 				var hashCode = Key.GetHashCode();
 				hashCode = (hashCode * 397) ^ MouseButton.GetHashCode();
-				hashCode = (hashCode * 397) ^ (int)Modifiers;
+				hashCode = (hashCode * 397) ^ (int)(Modifiers ?? 0);
 				return hashCode;
 			}
 		}
@@ -107,14 +104,19 @@ namespace OrbsHavoc.Platform.Input
 			if (MouseButton is MouseButton button)
 				builder.Append("Mouse." + button);
 
-			if ((Modifiers & KeyModifiers.Alt) != 0)
-				builder.Append("+Alt");
+			if (Modifiers is KeyModifiers modifiers)
+			{
+				if ((modifiers & KeyModifiers.Alt) != 0)
+					builder.Append("+Alt");
 
-			if ((Modifiers & KeyModifiers.Shift) != 0)
-				builder.Append("+Shift");
+				if ((modifiers & KeyModifiers.Shift) != 0)
+					builder.Append("+Shift");
 
-			if ((Modifiers & KeyModifiers.Control) != 0)
-				builder.Append("+Control");
+				if ((modifiers & KeyModifiers.Control) != 0)
+					builder.Append("+Control");
+			}
+			else
+				builder.Append("+Any");
 
 			builder.Append("]");
 			return builder.ToString();
@@ -161,7 +163,7 @@ namespace OrbsHavoc.Platform.Input
 			if (MouseWheelDirection is MouseWheelDirection direction && !mouse.WasTurned(direction))
 				return false;
 
-			return Modifiers == keyboard.GetModifiers();
+			return Modifiers == null || Modifiers == keyboard.Modifiers;
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿namespace OrbsHavoc.Scripting
 {
-	using Platform.Input;
+	using UserInterface.Input;
 	using Platform.Logging;
 	using Utilities;
 

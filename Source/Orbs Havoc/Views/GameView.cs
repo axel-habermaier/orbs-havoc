@@ -11,7 +11,6 @@ namespace OrbsHavoc.Views
 	using Network;
 	using Network.Messages;
 	using Platform.Graphics;
-	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Rendering;
@@ -96,7 +95,7 @@ namespace OrbsHavoc.Views
 					OnPlayerNameChanged();
 
 					_clock.Reset();
-					_inputManager = new InputManager(GameSession.Players.LocalPlayer, Window, InputDevice.Keyboard, InputDevice.Mouse);
+					_inputManager = new InputManager(GameSession.Players.LocalPlayer, Window, Views.Keyboard, Views.Mouse);
 
 					// Remove all event messages that have been added, e.g., for player joins
 					Views.EventMessages.Clear();

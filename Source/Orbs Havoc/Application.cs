@@ -3,26 +3,17 @@
 	using Assets;
 	using Platform;
 	using Platform.Graphics;
-	using Platform.Input;
+	using UserInterface.Input;
 	using Platform.Logging;
 	using Rendering;
 	using Scripting;
 	using Utilities;
 	using Views;
 
-	/// <summary>
-	///   Represents the application.
-	/// </summary>
 	internal static class Application
 	{
-		/// <summary>
-		///   The name of the application.
-		/// </summary>
 		public const string Name = "Orbs Havoc";
 
-		/// <summary>
-		///   Initializes the command subsystem.
-		/// </summary>
 		private static void InitializeCommands()
 		{
 			Commands.Bind(Key.F1, "start_server");
@@ -38,24 +29,18 @@
 			Commands.Help();
 		}
 
-		/// <summary>
-		///   Runs the application.
-		/// </summary>
 		public static unsafe void Run()
 		{
 			using (var graphicsDevice = new GraphicsDevice())
 			using (var window = new Window(graphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
-			using (var inputDevice = new LogicalInputDevice(window))
-			using (var bindings = new BindingCollection(inputDevice.Keyboard, inputDevice.Mouse))
 			using (new AssetBundle())
 			using (var renderer = new Renderer(graphicsDevice, window))
-			using (var views = new ViewCollection(window, inputDevice))
+			using (var views = new ViewCollection(window))
+			using (var bindings = new BindingCollection(views.Keyboard, views.Mouse))
 			{
-				// Initialize the views and the command subsystem
 				views.Initialize();
 				InitializeCommands();
 
-				// Abort when the exit command is invoked
 				var running = true;
 				Commands.OnExit += () =>
 				{
@@ -69,36 +54,9 @@
 
 					using (TimeMeasurement.Measure(&frameTime))
 					{
-						double updateTime, drawTime;
-
-						// Perform the necessary updates for the frame
-						using (TimeMeasurement.Measure(&updateTime))
-						{
-							inputDevice.Update();
-							window.HandleEvents();
-
-							bindings.Update();
-							views.Update();
-						}
-
-						// Ensure that CPU and GPU are synchronized after this point, i.e., the GPU lags behind by
-						// at most GraphicsDevice.FrameLag frames
+						var updateTime = Update(views, bindings);
 						graphicsDevice.SyncWithCpu();
-
-						// Draw the current frame
-						using (TimeMeasurement.Measure(&drawTime))
-						{
-							graphicsDevice.BeginFrame();
-
-							renderer.ClearRenderTarget(window.BackBuffer, Colors.Black);
-							views.Draw(renderer);
-							renderer.Render();
-
-							graphicsDevice.EndFrame();
-						}
-
-						// Present the contents of the window's backbuffer
-						window.Present();
+						var drawTime = Draw(graphicsDevice, renderer, window, views);
 
 						// Update the debug overlay
 						views.DebugOverlay.GpuFrameTime = graphicsDevice.FrameTime;
@@ -111,6 +69,41 @@
 					views.DebugOverlay.CpuFrameTime = frameTime;
 				}
 			}
+		}
+
+		private static unsafe double Update(ViewCollection views, BindingCollection bindings)
+		{
+			double updateTime;
+
+			using (TimeMeasurement.Measure(&updateTime))
+			{
+				views.HandleInput();
+
+				bindings.Update();
+				views.Update();
+			}
+
+			return updateTime;
+		}
+
+		private static unsafe double Draw(GraphicsDevice graphicsDevice, Renderer renderer, Window window, ViewCollection views)
+		{
+			double drawTime;
+
+			using (TimeMeasurement.Measure(&drawTime))
+			{
+				graphicsDevice.BeginFrame();
+
+				renderer.ClearRenderTarget(window.BackBuffer, Colors.Black);
+				views.Draw(renderer);
+				renderer.Render();
+
+				graphicsDevice.EndFrame();
+			}
+
+			window.Present();
+
+			return drawTime;
 		}
 	}
 }

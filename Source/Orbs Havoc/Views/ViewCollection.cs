@@ -6,7 +6,6 @@ namespace OrbsHavoc.Views
 	using Network;
 	using Platform;
 	using Platform.Graphics;
-	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Rendering;
@@ -17,31 +16,29 @@ namespace OrbsHavoc.Views
 	using Utilities;
 
 	/// <summary>
-	///   Represents a collection of application views.
+	///     Represents a collection of application views.
 	/// </summary>
 	internal class ViewCollection : DisposableObject
 	{
+		private readonly RootUIElement _rootElement;
 		private readonly IView[] _views;
 		private bool _exitMessageBoxOpen;
 		private RenderTarget _gameRenderTarget;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The application window the view is shown in.</param>
-		/// <param name="inputDevice">The input device that is used to control the view.</param>
-		public ViewCollection(Window window, LogicalInputDevice inputDevice)
+		public ViewCollection(Window window)
 		{
 			Assert.ArgumentNotNull(window, nameof(window));
-			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
 
 			Window = window;
-			InputDevice = inputDevice;
 
-			RootElement = new RootUIElement(InputDevice);
-			RootElement.InputBindings.Add(new ScanCodeBinding(ToggleConsole, ScanCode.Grave) { Preview = true });
-			RootElement.InputBindings.Add(new KeyBinding(Window.ToggleFullscreen, Key.Enter, KeyModifiers.Alt) { Preview = true });
-			RootElement.InputBindings.Add(new KeyBinding(Window.ToggleFullscreen, Key.NumpadEnter, KeyModifiers.Alt) { Preview = true });
+			_rootElement = new RootUIElement(Window);
+			_rootElement.InputBindings.Add(new ScanCodeBinding(ToggleConsole, ScanCode.Grave) { Preview = true });
+			_rootElement.InputBindings.Add(new KeyBinding(Window.ToggleFullscreen, Key.Enter, KeyModifiers.Alt) { Preview = true });
+			_rootElement.InputBindings.Add(new KeyBinding(Window.ToggleFullscreen, Key.NumpadEnter, KeyModifiers.Alt) { Preview = true });
 
 			Window.Closing += Exit;
 			Window.Resized += OnResized;
@@ -73,108 +70,97 @@ namespace OrbsHavoc.Views
 			Cvars.ResolutionChanged += OnResolutionChanged;
 		}
 
-		/// <summary>
-		///   Gets the application window the view is shown in.
-		/// </summary>
 		public Window Window { get; }
+		public Keyboard Keyboard => _rootElement.Keyboard;
+		public Mouse Mouse => _rootElement.Mouse;
 
 		/// <summary>
-		///   Gets the input device that is used to control the view.
-		/// </summary>
-		public LogicalInputDevice InputDevice { get; }
-
-		/// <summary>
-		///   Gets the event messages.
+		///     Gets the event messages.
 		/// </summary>
 		public EventMessages EventMessages { get; } = new EventMessages();
 
 		/// <summary>
-		///   Gets the root UI element of all views within the collection.
-		/// </summary>
-		public RootUIElement RootElement { get; }
-
-		/// <summary>
-		///   Gets the HUD overlay.
+		///     Gets the HUD overlay.
 		/// </summary>
 		public HudOverlay Hud { get; } = new HudOverlay();
 
 		/// <summary>
-		///   The in-game chat view.
+		///     The in-game chat view.
 		/// </summary>
 		public Chat Chat { get; } = new Chat();
 
 		/// <summary>
-		///   The in-game scoreboard.
+		///     The in-game scoreboard.
 		/// </summary>
 		public Scoreboard Scoreboard { get; } = new Scoreboard();
 
 		/// <summary>
-		///   Gets the local game session host.
+		///     Gets the local game session host.
 		/// </summary>
 		public GameSessionHost Host { get; } = new GameSessionHost();
 
 		/// <summary>
-		///   Gets the menu that lets the user join a game.
+		///     Gets the menu that lets the user join a game.
 		/// </summary>
 		public JoinGameMenu JoinGameMenu { get; } = new JoinGameMenu();
 
 		/// <summary>
-		///   Gets the menu that lets the user start a new game.
+		///     Gets the menu that lets the user start a new game.
 		/// </summary>
 		public StartGameMenu StartGameMenu { get; } = new StartGameMenu();
 
 		/// <summary>
-		///   Gets the waiting-for-server overlay.
+		///     Gets the waiting-for-server overlay.
 		/// </summary>
 		public WaitingOverlay WaitingOverlay { get; } = new WaitingOverlay();
 
 		/// <summary>
-		///   Gets the loading view.
+		///     Gets the loading view.
 		/// </summary>
 		public LoadingOverlay LoadingOverlay { get; } = new LoadingOverlay();
 
 		/// <summary>
-		///   Gets the main menu view.
+		///     Gets the main menu view.
 		/// </summary>
 		public MainMenu MainMenu { get; } = new MainMenu();
 
 		/// <summary>
-		///   Gets the in-game menu view.
+		///     Gets the in-game menu view.
 		/// </summary>
 		public InGameMenu InGameMenu { get; } = new InGameMenu();
 
 		/// <summary>
-		///   Gets the options menu view.
+		///     Gets the options menu view.
 		/// </summary>
 		public OptionsMenu OptionsMenu { get; } = new OptionsMenu();
 
 		/// <summary>
-		///   Gets the view containing the messages boxes.
+		///     Gets the view containing the messages boxes.
 		/// </summary>
 		public MessageBoxes MessageBoxes { get; } = new MessageBoxes();
 
 		/// <summary>
-		///   Gets the console view.
+		///     Gets the console view.
 		/// </summary>
 		public Console Console { get; } = new Console();
 
 		/// <summary>
-		///   Gets the debug overlay view.
+		///     Gets the debug overlay view.
 		/// </summary>
 		public DebugOverlay DebugOverlay { get; } = new DebugOverlay();
 
 		/// <summary>
-		///   Gets the game session view.
+		///     Gets the game session view.
 		/// </summary>
 		public GameView Game { get; } = new GameView();
 
 		/// <summary>
-		///   Gets the respawn overlay.
+		///     Gets the respawn overlay.
 		/// </summary>
 		public RespawnOverlay RespawnOverlay { get; } = new RespawnOverlay();
 
 		/// <summary>
-		///   Hides all views except for the console and the debug overlay.
+		///     Hides all views except for the console and the debug overlay.
 		/// </summary>
 		/// <param name="closeMessageBoxes">Indicates whether all message boxes should be closed.</param>
 		public void HideAllViews(bool closeMessageBoxes)
@@ -189,18 +175,22 @@ namespace OrbsHavoc.Views
 				MessageBoxes.CloseAll();
 		}
 
-		/// <summary>
-		///   Initializes the views.
-		/// </summary>
 		public void Initialize()
 		{
 			for (var i = _views.Length - 1; i >= 0; --i)
+			{
 				_views[i].Initialize(this);
+				_rootElement.Add(_views[i].UI);
+			}
 		}
 
-		/// <summary>
-		///   Updates the views' states.
-		/// </summary>
+		public void HandleInput()
+		{
+			Keyboard.Update();
+			Mouse.Update();
+			Window.HandleEvents();
+		}
+
 		public void Update()
 		{
 			foreach (var view in _views)
@@ -211,12 +201,12 @@ namespace OrbsHavoc.Views
 					view.Update();
 			}
 
-			RootElement.Update(Window.Size);
+			_rootElement.Update(Window.Size);
 			Host.CheckForErrors();
 		}
 
 		/// <summary>
-		///   Draws the views' contents.
+		///     Draws the views' contents.
 		/// </summary>
 		/// <param name="renderer">The renderer that should be used to draw the views.</param>
 		public void Draw(Renderer renderer)
@@ -234,18 +224,18 @@ namespace OrbsHavoc.Views
 					renderer.Copy(_gameRenderTarget, Window.BackBuffer);
 			}
 
-			RootElement.Draw(renderer.CreateSpriteBatch(Window.BackBuffer));
+			_rootElement.Draw(renderer.CreateSpriteBatch(Window.BackBuffer));
 			DrawCursor();
 		}
 
 		/// <summary>
-		///   Draws the mouse cursor.
+		///     Draws the mouse cursor.
 		/// </summary>
 		private void DrawCursor()
 		{
 			// Check if the hovered element or any of its parents override the default cursor
 			Cursor cursor = null;
-			var element = RootElement.HitTest(InputDevice.Mouse.Position, boundsTestOnly: true);
+			var element = _rootElement.HitTest(Mouse.Position, boundsTestOnly: true);
 
 			while (element != null && cursor == null)
 			{
@@ -258,7 +248,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
@@ -267,7 +257,7 @@ namespace OrbsHavoc.Views
 			Cvars.ResolutionChanged -= OnResolutionChanged;
 
 			// Remove all views from the root element so that they can execute cleanup logic
-			RootElement.Clear();
+			_rootElement.Clear();
 
 			Window.Closing -= Exit;
 			Window.Resized -= OnResized;
@@ -278,7 +268,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Changes the resolution of the game.
+		///     Changes the resolution of the game.
 		/// </summary>
 		private void OnResolutionChanged()
 		{
@@ -286,7 +276,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Resizes the render targets.
+		///     Resizes the render targets.
 		/// </summary>
 		private void OnResized(Size size)
 		{
@@ -307,7 +297,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Handles a request to exit the application.
+		///     Handles a request to exit the application.
 		/// </summary>
 		public void Exit()
 		{
@@ -320,7 +310,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Shows or hides the console.
+		///     Shows or hides the console.
 		/// </summary>
 		private void ToggleConsole()
 		{
@@ -328,7 +318,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Starts a new locally-hosted game session.
+		///     Starts a new locally-hosted game session.
 		/// </summary>
 		public bool TryStartHost(string serverName, ushort serverPort)
 		{
@@ -348,7 +338,7 @@ namespace OrbsHavoc.Views
 		}
 
 		/// <summary>
-		///   Starts a new locally-hosted game session.
+		///     Starts a new locally-hosted game session.
 		/// </summary>
 		private void StartHost(string serverName, ushort serverPort)
 		{

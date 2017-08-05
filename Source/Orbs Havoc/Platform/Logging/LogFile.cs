@@ -47,13 +47,13 @@
 			Log.OnLog += Enqueue;
 
 			// Delete any previously created log file
-			FileSystem.Delete(_fileName);
+			UserFile.Delete(_fileName);
 		}
 
 		/// <summary>
 		///   Gets the path of the log file.
 		/// </summary>
-		public string FilePath => Path.Combine(FileSystem.UserDirectory, _fileName).Replace("\\", "/");
+		public string FilePath => Path.Combine(UserFile.UserDirectory, _fileName).Replace("\\", "/");
 
 		/// <summary>
 		///   Enqueues the given log entry.
@@ -84,7 +84,7 @@
 				var logEntries = _logEntries.ToArray();
 				_logEntries.Clear();
 
-				_writeTask = Task.Run(() => FileSystem.AppendText(_fileName, ToString(logEntries)));
+				_writeTask = Task.Run(() => UserFile.AppendText(_fileName, ToString(logEntries)));
 
 				if (force)
 					WaitForCompletion();

@@ -7,11 +7,11 @@
 	using JetBrains.Annotations;
 	using Utilities;
 
-	internal static class FileSystem
+	internal static class UserFile
 	{
 		private const int SpacesPerTab = 4;
 
-		static FileSystem()
+		static UserFile()
 		{
 			UserDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.Name).Replace("\\", "/");
 			Directory.CreateDirectory(UserDirectory);
@@ -31,24 +31,24 @@
 
 		public static string ReadAllText(string fileName)
 		{
-			return Normalize(File.ReadAllText(GetUserFileName(fileName)));
+			return Normalize(File.ReadAllText(GetPath(fileName)));
 		}
 
 		public static void WriteAllText(string fileName, string content)
 		{
 			Assert.ArgumentNotNull(content, nameof(content));
-			File.WriteAllText(GetUserFileName(fileName), content, Encoding.UTF8);
+			File.WriteAllText(GetPath(fileName), content, Encoding.UTF8);
 		}
 
 		public static void AppendText(string fileName, string content)
 		{
 			Assert.ArgumentNotNull(content, nameof(content));
-			File.AppendAllText(GetUserFileName(fileName), content, Encoding.UTF8);
+			File.AppendAllText(GetPath(fileName), content, Encoding.UTF8);
 		}
 
 		public static void Delete(string fileName)
 		{
-			File.Delete(GetUserFileName(fileName));
+			File.Delete(GetPath(fileName));
 		}
 
 		private static string Normalize(string input)
@@ -58,7 +58,7 @@
 						.Replace("\t", new String(' ', SpacesPerTab));
 		}
 
-		private static string GetUserFileName([NotNull] string fileName)
+		private static string GetPath([NotNull] string fileName)
 		{
 			Assert.ArgumentNotNull(fileName, nameof(fileName));
 			Assert.That(IsValidFileName(fileName), "Invalid file name.");

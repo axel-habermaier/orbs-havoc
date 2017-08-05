@@ -1,4 +1,4 @@
-﻿namespace OrbsHavoc.Platform.Input
+﻿namespace OrbsHavoc.UserInterface.Input
 {
 	/// <summary>
 	///   Determines the type of a key or mouse button input trigger.

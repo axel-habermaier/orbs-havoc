@@ -3,7 +3,6 @@
 	using System;
 	using System.Numerics;
 	using Input;
-	using Platform.Input;
 	using Rendering;
 
 	/// <summary>

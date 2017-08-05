@@ -1,6 +1,6 @@
 ﻿namespace OrbsHavoc.UserInterface.Input
 {
-	using Platform.Input;
+	using Input;
 
 	/// <summary>
 	///     Provides information about input events.
@@ -15,7 +15,7 @@
 		/// <summary>
 		///     Gets the set of key modifiers that was pressed when the event was raised.
 		/// </summary>
-		public KeyModifiers Modifiers => Keyboard.GetModifiers();
+		public KeyModifiers Modifiers => Keyboard.Modifiers;
 
 		/// <summary>
 		///     Gets the keyboard that generated the event.

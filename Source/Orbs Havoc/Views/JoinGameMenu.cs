@@ -6,7 +6,6 @@
 	using System.Net;
 	using System.Net.Sockets;
 	using Network;
-	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Scripting;

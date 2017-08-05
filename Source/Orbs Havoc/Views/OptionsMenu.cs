@@ -3,7 +3,6 @@
 	using System.Collections.Generic;
 	using System.Text;
 	using Network;
-	using Platform.Input;
 	using Scripting;
 	using UI;
 	using UserInterface;

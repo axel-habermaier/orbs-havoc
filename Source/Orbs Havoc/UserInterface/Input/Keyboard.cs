@@ -1,14 +1,14 @@
-﻿namespace OrbsHavoc.Platform.Input
+﻿namespace OrbsHavoc.UserInterface.Input
 {
-	using System;
-	using Memory;
+	using Platform;
+	using Platform.Memory;
 	using Utilities;
-	using static SDL2;
+	using static Platform.SDL2;
 
 	/// <summary>
 	///     Represents the state of the keyboard.
 	/// </summary>
-	public class Keyboard : DisposableObject
+	public sealed class Keyboard : DisposableObject
 	{
 		/// <summary>
 		///     The key states.
@@ -62,31 +62,9 @@
 		}
 
 		/// <summary>
-		///     Raised when a text was entered.
+		///     Gets the modifiers that are currently set.
 		/// </summary>
-		public event Action<string> TextEntered
-		{
-			add => _window.TextEntered += value;
-			remove => _window.TextEntered -= value;
-		}
-
-		/// <summary>
-		///     Raised when a key was pressed.
-		/// </summary>
-		public event Action<Key, ScanCode, KeyModifiers> KeyPressed
-		{
-			add => _window.KeyPressed += value;
-			remove => _window.KeyPressed -= value;
-		}
-
-		/// <summary>
-		///     Raised when a key was released.
-		/// </summary>
-		public event Action<Key, ScanCode, KeyModifiers> KeyReleased
-		{
-			add => _window.KeyReleased += value;
-			remove => _window.KeyReleased -= value;
-		}
+		public KeyModifiers Modifiers { get; private set; }
 
 		/// <summary>
 		///     Disposes the object, releasing all managed and unmanaged resources.
@@ -100,7 +78,7 @@
 		/// <summary>
 		///     Invoked when a key has been released.
 		/// </summary>
-		private void OnKeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
+		private void OnKeyReleased(Key key, ScanCode scanCode)
 		{
 			Assert.ArgumentInRange(scanCode, nameof(scanCode));
 			_states[(int)scanCode].Released();
@@ -109,7 +87,7 @@
 		/// <summary>
 		///     Invoked when a key has been pressed.
 		/// </summary>
-		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
+		private void OnKeyPressed(Key key, ScanCode scanCode)
 		{
 			Assert.ArgumentInRange(scanCode, nameof(scanCode));
 			_states[(int)scanCode].Pressed();
@@ -137,6 +115,8 @@
 		{
 			for (var i = 0; i < _states.Length; ++i)
 				_states[i].Update();
+
+			Modifiers = GetModifiers();
 		}
 
 		/// <summary>
@@ -224,7 +204,7 @@
 		/// <summary>
 		///     Gets the set of key modifiers that are currently pressed.
 		/// </summary>
-		public KeyModifiers GetModifiers()
+		private KeyModifiers GetModifiers()
 		{
 			var modifiers = KeyModifiers.None;
 

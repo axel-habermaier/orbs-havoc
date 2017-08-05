@@ -1,7 +1,6 @@
 namespace OrbsHavoc.Views
 {
 	using System.Net;
-	using Platform.Input;
 	using Platform.Logging;
 	using Scripting;
 	using UI;

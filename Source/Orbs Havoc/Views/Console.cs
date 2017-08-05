@@ -2,7 +2,6 @@ namespace OrbsHavoc.Views
 {
 	using System;
 	using System.Collections.Concurrent;
-	using Platform.Input;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Scripting;

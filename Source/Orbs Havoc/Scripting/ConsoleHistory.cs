@@ -22,7 +22,7 @@ namespace OrbsHavoc.Scripting
 		{
 			try
 			{
-				_history = FileSystem.ReadAllText(HistoryFileName)
+				_history = UserFile.ReadAllText(HistoryFileName)
 									 .Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries)
 									 .Select(h => h.Truncate(ConsoleUI.MaxLogEntryLength))
 									 .Take(MaxHistory)
@@ -47,7 +47,7 @@ namespace OrbsHavoc.Scripting
 
 			try
 			{
-				FileSystem.WriteAllText(HistoryFileName, builder.ToString());
+				UserFile.WriteAllText(HistoryFileName, builder.ToString());
 				Log.Info("Console history has been persisted.");
 			}
 			catch (Exception e)

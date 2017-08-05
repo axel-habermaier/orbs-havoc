@@ -30,7 +30,7 @@
 				return false;
 			}
 
-			if (FileSystem.IsValidFileName(fileName))
+			if (UserFile.IsValidFileName(fileName))
 				return true;
 
 			Log.Error($"'{fileName}' is not a valid file name.");
@@ -45,7 +45,7 @@
 			string input;
 			try
 			{
-				input = FileSystem.ReadAllText(fileName);
+				input = UserFile.ReadAllText(fileName);
 			}
 			catch (Exception e)
 			{
@@ -107,7 +107,7 @@
 
 			try
 			{
-				FileSystem.WriteAllText(AutoExec, builder.ToString());
+				UserFile.WriteAllText(AutoExec, builder.ToString());
 				Log.Info($"'{AutoExec}' has been written.");
 			}
 			catch (Exception e)

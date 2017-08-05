@@ -6,7 +6,7 @@
 	using System.Reflection;
 	using Parsing;
 	using Platform;
-	using Platform.Input;
+	using UserInterface.Input;
 	using Platform.Logging;
 	using Rendering;
 	using Utilities;

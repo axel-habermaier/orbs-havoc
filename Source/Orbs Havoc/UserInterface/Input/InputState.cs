@@ -1,4 +1,4 @@
-﻿namespace OrbsHavoc.Platform.Input
+﻿namespace OrbsHavoc.UserInterface.Input
 {
 	/// <summary>
 	///   Represents the state of an input key or button.

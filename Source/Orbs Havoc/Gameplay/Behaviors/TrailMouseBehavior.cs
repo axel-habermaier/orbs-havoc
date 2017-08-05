@@ -1,6 +1,6 @@
 ﻿namespace OrbsHavoc.Gameplay.Behaviors
 {
-	using Platform.Input;
+	using UserInterface.Input;
 	using Platform.Memory;
 	using Rendering;
 	using SceneNodes;

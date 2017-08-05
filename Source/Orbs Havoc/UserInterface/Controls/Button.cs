@@ -2,7 +2,6 @@
 {
 	using System;
 	using Input;
-	using Platform.Input;
 	using Rendering;
 
 	/// <summary>

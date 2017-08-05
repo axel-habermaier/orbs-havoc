@@ -1,7 +1,7 @@
 ﻿namespace OrbsHavoc.Scripting
 {
 	using Network;
-	using Platform.Input;
+	using UserInterface.Input;
 	using Validators;
 
 	/// <summary>

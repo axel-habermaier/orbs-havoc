@@ -1,4 +1,4 @@
-﻿namespace OrbsHavoc.Platform.Input
+﻿namespace OrbsHavoc.UserInterface.Input
 {
 	/// <summary>
 	///   Indicates the direction the mouse wheel was turned in.

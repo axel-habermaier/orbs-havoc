@@ -5,8 +5,9 @@
 	using System.Numerics;
 	using Assets;
 	using Input;
-	using Platform.Input;
+	using Platform;
 	using Platform.Logging;
+	using Platform.Memory;
 	using Rendering;
 	using Utilities;
 
@@ -16,17 +17,13 @@
 	internal sealed class RootUIElement : AreaPanel, IDisposable
 	{
 		private readonly List<UIElement> _focusedElements = new List<UIElement>();
-		private readonly LogicalInputDevice _inputDevice;
+		private readonly Window _window;
 		private UIElement _focusedElement;
 		private UIElement _hoveredElement;
 
-		/// <summary>
-		///     Initializes a new instance.
-		/// </summary>
-		/// <param name="inputDevice">The input device that should be used for input handling.</param>
-		public RootUIElement(LogicalInputDevice inputDevice)
+		public RootUIElement(Window window)
 		{
-			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
+			Assert.ArgumentNotNull(window, nameof(window));
 
 			IsVisible = true;
 			IsFocusable = false;
@@ -35,14 +32,20 @@
 			Foreground = Colors.White;
 			FocusedElement = null;
 
-			_inputDevice = inputDevice;
-			_inputDevice.Mouse.Pressed += MousePressed;
-			_inputDevice.Mouse.Released += MouseReleased;
-			_inputDevice.Mouse.Wheel += MouseWheel;
-			_inputDevice.Keyboard.KeyPressed += KeyPressed;
-			_inputDevice.Keyboard.KeyReleased += KeyReleased;
-			_inputDevice.Keyboard.TextEntered += TextEntered;
+			_window = window;
+			Keyboard = new Keyboard(window);
+			Mouse = new Mouse(window);
+
+			_window.MousePressed += MousePressed;
+			_window.MouseReleased += MouseReleased;
+			_window.MouseWheel += MouseWheel;
+			_window.KeyPressed += KeyPressed;
+			_window.KeyReleased += KeyReleased;
+			_window.TextEntered += TextEntered;
 		}
+
+		public Keyboard Keyboard { get; }
+		public Mouse Mouse { get; }
 
 		/// <summary>
 		///     Gets the UI element that currently has the keyboard focus. Unless the focus has been shifted to another UI
@@ -86,12 +89,15 @@
 		/// </summary>
 		public void Dispose()
 		{
-			_inputDevice.Mouse.Pressed -= MousePressed;
-			_inputDevice.Mouse.Released -= MouseReleased;
-			_inputDevice.Mouse.Wheel -= MouseWheel;
-			_inputDevice.Keyboard.KeyPressed -= KeyPressed;
-			_inputDevice.Keyboard.KeyReleased -= KeyReleased;
-			_inputDevice.Keyboard.TextEntered -= TextEntered;
+			_window.MousePressed -= MousePressed;
+			_window.MouseReleased -= MouseReleased;
+			_window.MouseWheel -= MouseWheel;
+			_window.KeyPressed -= KeyPressed;
+			_window.KeyReleased -= KeyReleased;
+			_window.TextEntered -= TextEntered;
+
+			Keyboard.SafeDispose();
+			Mouse.SafeDispose();
 		}
 
 		/// <summary>
@@ -102,7 +108,7 @@
 		{
 			// We have to check every frame for a new hovered element, as the UI might change at any time
 			// (due to animations, UI elements becoming visible/invisible, etc.).
-			UpdateHoveredElement(_inputDevice.Mouse.Position);
+			UpdateHoveredElement(Mouse.Position);
 
 			// We have to check every frame whether the focused element must be reset; it could have been removed
 			// or hidden since the last frame, among other things.
@@ -123,7 +129,7 @@
 			if (_hoveredElement == null)
 				return;
 
-			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard, button, doubleClicked, InputEventKind.Down);
+			var args = MouseButtonEventArgs.Create(Mouse, Keyboard, button, doubleClicked, InputEventKind.Down);
 			OnMouseDown(_hoveredElement, args);
 		}
 
@@ -135,7 +141,7 @@
 			if (_hoveredElement == null)
 				return;
 
-			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard, button, false, InputEventKind.Up);
+			var args = MouseButtonEventArgs.Create(Mouse, Keyboard, button, false, InputEventKind.Up);
 			OnMouseUp(_hoveredElement, args);
 		}
 
@@ -147,31 +153,31 @@
 			if (_hoveredElement == null)
 				return;
 
-			var args = MouseWheelEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard, direction);
+			var args = MouseWheelEventArgs.Create(Mouse, Keyboard, direction);
 			OnMouseWheel(_hoveredElement, args);
 		}
 
 		/// <summary>
 		///     Handles a key pressed event.
 		/// </summary>
-		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
+		private void KeyPressed(Key key, ScanCode scanCode)
 		{
 			if (FocusedElement == null)
 				return;
 
-			var args = KeyEventArgs.Create(_inputDevice.Keyboard, _inputDevice.Mouse, key, scanCode, InputEventKind.Down);
+			var args = KeyEventArgs.Create(Keyboard, Mouse, key, scanCode, InputEventKind.Down);
 			OnKeyDown(FocusedElement, args);
 		}
 
 		/// <summary>
 		///     Handles a key released event.
 		/// </summary>
-		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
+		private void KeyReleased(Key key, ScanCode scanCode)
 		{
 			if (FocusedElement == null)
 				return;
 
-			var args = KeyEventArgs.Create(_inputDevice.Keyboard, _inputDevice.Mouse, key, scanCode, InputEventKind.Up);
+			var args = KeyEventArgs.Create(Keyboard, Mouse, key, scanCode, InputEventKind.Up);
 			OnKeyUp(FocusedElement, args);
 		}
 
@@ -194,13 +200,13 @@
 		private void UpdateHoveredElement(Vector2 position)
 		{
 			UIElement hoveredElement = this;
-			if (_inputDevice.Mouse.InsideWindow)
+			if (Mouse.InsideWindow)
 				hoveredElement = HitTest(new Vector2(position.X, position.Y), boundsTestOnly: false) ?? this;
 
 			if (hoveredElement == _hoveredElement)
 				return;
 
-			var args = MouseEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard);
+			var args = MouseEventArgs.Create(Mouse, Keyboard);
 
 			if (_hoveredElement != null)
 				OnMouseLeave(_hoveredElement, args);

@@ -4,7 +4,7 @@
 	using System.Numerics;
 	using Network;
 	using Platform;
-	using Platform.Input;
+	using UserInterface.Input;
 	using Rendering;
 	using Utilities;
 	using Validators;
@@ -72,7 +72,7 @@
 		/// <summary>
 		///   While the input is triggered in an active game session, shows the scoreboard.
 		/// </summary>
-		[DefaultValue(Key.Tab), Persistent]
+		[DefaultValue("new InputTrigger(Key.Tab, modifiers: null)"), Persistent]
 		InputTrigger InputShowScoreboard { get; set; }
 
 		/// <summary>

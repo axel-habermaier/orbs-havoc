@@ -1,4 +1,4 @@
-﻿namespace OrbsHavoc.Platform.Input
+﻿namespace OrbsHavoc.UserInterface.Input
 {
 	/// <summary>
 	///   Identifies a mouse button.

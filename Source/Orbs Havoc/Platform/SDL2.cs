@@ -7,7 +7,7 @@
 	using System.Diagnostics;
 	using System.Runtime.InteropServices;
 	using System.Security;
-	using Input;
+	using UserInterface.Input;
 	using JetBrains.Annotations;
 	using Logging;
 	using Memory;
