@@ -265,6 +265,7 @@ namespace OrbsHavoc.Views
 
 			_gameRenderTarget.SafeDispose();
 			_views.SafeDisposeAll();
+			_rootElement.SafeDispose();
 		}
 
 		/// <summary>
