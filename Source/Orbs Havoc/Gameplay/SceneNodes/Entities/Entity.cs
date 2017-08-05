@@ -49,6 +49,7 @@
 			Velocity = Vector2.Zero;
 			Player = null;
 			GameSession = null;
+			_lastTransformUpdateSequenceNumber = 0;
 		}
 
 		/// <summary>

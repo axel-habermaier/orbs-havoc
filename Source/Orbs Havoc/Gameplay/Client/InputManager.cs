@@ -1,27 +1,22 @@
 ﻿namespace OrbsHavoc.Gameplay.Client
 {
+	using System.Diagnostics;
 	using System.Numerics;
 	using Network;
 	using Network.Messages;
+	using Platform;
 	using Platform.Input;
-	using Platform.Memory;
 	using SceneNodes.Entities;
 	using Scripting;
 	using Utilities;
 
-	/// <summary>
-	///   Manages the input state of the local player.
-	/// </summary>
-	internal class InputManager : DisposableObject
+	internal class InputManager
 	{
-		private readonly LogicalInputDevice _inputDevice;
-		private readonly LogicalInput _lightingGun;
-		private readonly LogicalInput _miniGun;
-		private readonly LogicalInput _nextWeapon;
+		private readonly Keyboard _keyboard;
+		private readonly Mouse _mouse;
 		private readonly Player _player;
-		private readonly LogicalInput _previousWeapon;
-		private readonly LogicalInput _rocketLauncher;
-		private Clock _clock = new Clock();
+		private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+		private readonly Window _window;
 		private InputState _firePrimary;
 		private InputState _fireSecondary;
 		private uint _frameNumber;
@@ -31,77 +26,53 @@
 		private InputState _moveUp;
 		private EntityType _primaryWeapon = EntityType.MiniGun;
 
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="player">The local player whose input is managed.</param>
-		/// <param name="inputDevice">The input device that should be used to obtain the player input.</param>
-		public InputManager(Player player, LogicalInputDevice inputDevice)
+		public InputManager(Player player, Window window, Keyboard keyboard, Mouse mouse)
 		{
 			Assert.ArgumentNotNull(player, nameof(player));
+			Assert.ArgumentNotNull(window, nameof(window));
 			Assert.ArgumentSatisfies(player.IsLocalPlayer, nameof(player), "Expected the local player.");
-			Assert.ArgumentNotNull(inputDevice, nameof(inputDevice));
+			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
+			Assert.ArgumentNotNull(mouse, nameof(mouse));
 
-			_inputDevice = inputDevice;
 			_player = player;
+			_window = window;
+			_keyboard = keyboard;
+			_mouse = mouse;
 
-			_miniGun = new LogicalInput(Cvars.InputSelectMiniGunCvar);
-			_rocketLauncher = new LogicalInput(Cvars.InputSelectRocketLauncherCvar);
-			_lightingGun = new LogicalInput(Cvars.InputSelectLightingGunCvar);
-			_nextWeapon = new LogicalInput(Cvars.InputNextWeaponCvar);
-			_previousWeapon = new LogicalInput(Cvars.InputPreviousWeaponCvar);
-
-			_moveUp.Input = new LogicalInput(Cvars.InputMoveUpCvar);
-			_moveDown.Input = new LogicalInput(Cvars.InputMoveDownCvar);
-			_moveLeft.Input = new LogicalInput(Cvars.InputMoveLeftCvar);
-			_moveRight.Input = new LogicalInput(Cvars.InputMoveRightCvar);
-			_firePrimary.Input = new LogicalInput(Cvars.InputFirePrimaryCvar);
-			_fireSecondary.Input = new LogicalInput(Cvars.InputFireSecondaryCvar);
-
-			_inputDevice.Add(_moveUp.Input);
-			_inputDevice.Add(_moveDown.Input);
-			_inputDevice.Add(_moveLeft.Input);
-			_inputDevice.Add(_moveRight.Input);
-			_inputDevice.Add(_firePrimary.Input);
-			_inputDevice.Add(_fireSecondary.Input);
-
-			_inputDevice.Add(_miniGun);
-			_inputDevice.Add(_rocketLauncher);
-			_inputDevice.Add(_lightingGun);
-			_inputDevice.Add(_nextWeapon);
-			_inputDevice.Add(_previousWeapon);
+			_moveUp.Input = Cvars.InputMoveUpCvar;
+			_moveDown.Input = Cvars.InputMoveDownCvar;
+			_moveLeft.Input = Cvars.InputMoveLeftCvar;
+			_moveRight.Input = Cvars.InputMoveRightCvar;
+			_firePrimary.Input = Cvars.InputFirePrimaryCvar;
+			_fireSecondary.Input = Cvars.InputFireSecondaryCvar;
 		}
 
-		/// <summary>
-		///   Updates the current input state.
-		/// </summary>
+		public bool ShowScoreboard => Cvars.InputShowScoreboard.IsTriggered(_keyboard, _mouse);
+
 		public void Update()
 		{
-			_moveUp.Triggered |= _moveUp.Input.IsTriggered;
-			_moveDown.Triggered |= _moveDown.Input.IsTriggered;
-			_moveLeft.Triggered |= _moveLeft.Input.IsTriggered;
-			_moveRight.Triggered |= _moveRight.Input.IsTriggered;
-			_firePrimary.Triggered |= _firePrimary.Input.IsTriggered;
-			_fireSecondary.Triggered |= _fireSecondary.Input.IsTriggered;
+			_moveUp.UpdateTriggered(_keyboard, _mouse);
+			_moveDown.UpdateTriggered(_keyboard, _mouse);
+			_moveLeft.UpdateTriggered(_keyboard, _mouse);
+			_moveRight.UpdateTriggered(_keyboard, _mouse);
+			_firePrimary.UpdateTriggered(_keyboard, _mouse);
+			_fireSecondary.UpdateTriggered(_keyboard, _mouse);
 
-			if (_miniGun.IsTriggered)
+			if (Cvars.InputSelectMiniGun.IsTriggered(_keyboard, _mouse))
 				_primaryWeapon = EntityType.MiniGun;
-			else if (_rocketLauncher.IsTriggered)
+			else if (Cvars.InputSelectRocketLauncher.IsTriggered(_keyboard, _mouse))
 				_primaryWeapon = EntityType.RocketLauncher;
-			else if (_lightingGun.IsTriggered)
+			else if (Cvars.InputSelectLightingGun.IsTriggered(_keyboard, _mouse))
 				_primaryWeapon = EntityType.LightingGun;
-			else if (_nextWeapon.IsTriggered)
+			else if (Cvars.InputNextWeapon.IsTriggered(_keyboard, _mouse))
 				SelectPrimaryWeapon(1);
-			else if (_previousWeapon.IsTriggered)
+			else if (Cvars.InputPreviousWeapon.IsTriggered(_keyboard, _mouse))
 				SelectPrimaryWeapon(-1);
 
 			if (_player.Orb != null && _player.Orb.WeaponEnergyLevels[_primaryWeapon.GetWeaponSlot()] <= 0)
 				SelectBestPrimaryWeapon();
 		}
 
-		/// <summary>
-		///   Selects the bets available primary weapon.
-		/// </summary>
 		private void SelectBestPrimaryWeapon()
 		{
 			if (_player.Orb.WeaponEnergyLevels[EntityType.Bfg.GetWeaponSlot()] > 0)
@@ -116,14 +87,12 @@
 				_primaryWeapon = EntityType.MiniGun;
 		}
 
-		/// <summary>
-		///   Selects the next or previous available primary weapon.
-		/// </summary>
 		private void SelectPrimaryWeapon(int direction)
 		{
 			if (_player.Orb == null)
 				return;
 
+			// This loop is guaranteed to terminate because the minigun is always selectable
 			while (true)
 			{
 				var slot = _primaryWeapon.GetWeaponSlot();
@@ -136,31 +105,27 @@
 		}
 
 		/// <summary>
-		///   Sends the input state.
+		///     Sends the input state to the server while the player is actively playing.
 		/// </summary>
-		/// <param name="gameSession">The game session the input should be provided for.</param>
-		/// <param name="connection">The connection to the server the client input should be sent to.</param>
-		public void SendInput(GameSession gameSession, Connection connection)
+		public void SendActiveInput(GameSession gameSession, Connection connection)
 		{
 			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
 			Assert.ArgumentNotNull(connection, nameof(connection));
 
-			// Ensure we don't spam the server with input message
-			if (_clock.Milliseconds < 1000.0 / NetworkProtocol.InputUpdateFrequency)
+			if (!CheckSendInterval())
 				return;
 
-			_clock.Reset();
-
 			// Update the input states
-			_moveUp.Update();
-			_moveDown.Update();
-			_moveLeft.Update();
-			_moveRight.Update();
-			_firePrimary.Update();
-			_fireSecondary.Update();
+			_moveUp.UpdateSendState();
+			_moveDown.UpdateSendState();
+			_moveLeft.UpdateSendState();
+			_moveRight.UpdateSendState();
+			_firePrimary.UpdateSendState();
+			_fireSecondary.UpdateSendState();
 
 			// Get the coordinates the player currently targets and end the input message to the server
-			var target = _inputDevice.Mouse.Position - new Vector2(_inputDevice.Window.Size.Width / 2, _inputDevice.Window.Size.Height / 2);
+			var target = _mouse.Position - _window.Size / 2;
+
 			connection.EnqueueMessage(PlayerInputMessage.Create(
 				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, target,
 				_moveUp.State, _moveDown.State,
@@ -170,72 +135,45 @@
 		}
 
 		/// <summary>
-		///   Sends the input state when the local game session is inactive, i.e., when a menu is open.
+		///     Sends the input state when the local game session is inactive, i.e., when a menu is open.
 		/// </summary>
-		/// <param name="gameSession">The game session the input should be provided for.</param>
-		/// <param name="connection">The connection to the server the client input should be sent to.</param>
 		public void SendInactiveInput(GameSession gameSession, Connection connection)
 		{
 			Assert.ArgumentNotNull(gameSession, nameof(gameSession));
 			Assert.ArgumentNotNull(connection, nameof(connection));
 
-			// Ensure we don't spam the server with input message
-			if (_clock.Milliseconds < 1000.0 / NetworkProtocol.InputUpdateFrequency)
+			if (!CheckSendInterval())
 				return;
-
-			_clock.Reset();
 
 			connection.EnqueueMessage(PlayerInputMessage.Create(
 				gameSession.Allocator, gameSession.Players.LocalPlayer.Identity, ++_frameNumber, Vector2.Zero,
 				0, 0, 0, 0, 0, 0, _primaryWeapon));
 		}
 
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
-		protected override void OnDisposing()
+		private bool CheckSendInterval()
 		{
-			_inputDevice.Remove(_moveUp.Input);
-			_inputDevice.Remove(_moveDown.Input);
-			_inputDevice.Remove(_moveLeft.Input);
-			_inputDevice.Remove(_moveRight.Input);
-			_inputDevice.Remove(_firePrimary.Input);
-			_inputDevice.Remove(_fireSecondary.Input);
+			if (_stopwatch.Elapsed.TotalMilliseconds < 1000.0 / NetworkProtocol.InputUpdateFrequency)
+				return false;
 
-			_inputDevice.Remove(_miniGun);
-			_inputDevice.Remove(_rocketLauncher);
-			_inputDevice.Remove(_lightingGun);
-			_inputDevice.Remove(_nextWeapon);
-			_inputDevice.Remove(_previousWeapon);
+			_stopwatch.Restart();
+			return true;
 		}
 
-		/// <summary>
-		///   Stores the state of an input until it is sent to the server.
-		/// </summary>
 		private struct InputState
 		{
-			/// <summary>
-			///   The logical input that is used to determine whether the input is triggered.
-			/// </summary>
-			public LogicalInput Input;
-
-			/// <summary>
-			///   The current trigger state, also including the seven previous ones.
-			/// </summary>
+			public Cvar<InputTrigger> Input;
 			public byte State;
+			private bool _triggered;
 
-			/// <summary>
-			///   Indicates whether the state has been triggered since the last update of the server.
-			/// </summary>
-			public bool Triggered;
-
-			/// <summary>
-			///   Removes the oldest trigger state from the given input state and adds the current one.
-			/// </summary>
-			public void Update()
+			public void UpdateSendState()
 			{
-				State = (byte)((State << 1) | (Triggered ? 1 : 0));
-				Triggered = false;
+				State = (byte)((State << 1) | (_triggered ? 1 : 0));
+				_triggered = false;
+			}
+
+			public void UpdateTriggered(Keyboard keyboard, Mouse mouse)
+			{
+				_triggered |= Input.Value.IsTriggered(keyboard, mouse);
 			}
 		}
 	}

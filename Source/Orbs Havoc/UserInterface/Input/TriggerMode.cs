@@ -1,23 +1,23 @@
 ﻿namespace OrbsHavoc.UserInterface.Input
 {
 	/// <summary>
-	///   Describes the trigger mode of an input binding.
+	///     Describes the trigger mode of an input binding.
 	/// </summary>
 	public enum TriggerMode
 	{
 		/// <summary>
-		///   The input binding is triggered when the input is activated.
+		///     The input binding is triggered when the input is activated.
 		/// </summary>
 		OnActivation,
 
 		/// <summary>
-		///   The input binding is triggered when the input is activated or repeated.
+		///     The input binding is triggered when the input is activated or repeated.
 		/// </summary>
 		Repeatedly,
 
 		/// <summary>
-		///   The input binding is triggered when the input is deactivated.
+		///     The input binding is triggered when the input is deactivated.
 		/// </summary>
-		OnDeactivation
+		OnDeactivation,
 	}
 }

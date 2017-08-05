@@ -30,16 +30,17 @@
 		/// </summary>
 		/// <param name="mouse">The mouse device that raised the event.</param>
 		/// <param name="direction">The direction the mouse wheel has been turned in.</param>
-		/// <param name="modifiers">The key modifiers that were pressed when the event was raised.</param>
-		internal static MouseWheelEventArgs Create(Mouse mouse, MouseWheelDirection direction, KeyModifiers modifiers)
+		/// <param name="keyboard">The keyboard that raised the event.</param>
+		internal static MouseWheelEventArgs Create(Mouse mouse, Keyboard keyboard, MouseWheelDirection direction)
 		{
 			Assert.ArgumentNotNull(mouse, nameof(mouse));
+			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
 			Assert.ArgumentInRange(direction, nameof(direction));
 
 			_cachedInstance.Handled = false;
 			_cachedInstance.Mouse = mouse;
+			_cachedInstance.Keyboard = keyboard;
 			_cachedInstance.Direction = direction;
-			_cachedInstance.Modifiers = modifiers;
 
 			return _cachedInstance;
 		}

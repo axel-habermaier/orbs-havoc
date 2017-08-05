@@ -4,16 +4,8 @@ namespace OrbsHavoc.Platform.Input
 	using System.Text;
 	using Utilities;
 
-	/// <summary>
-	///   Represents a combination of keys and mouse buttons that trigger an input.
-	/// </summary>
 	public struct InputTrigger : IEquatable<InputTrigger>
 	{
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="key">The key that triggers the input.</param>
-		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
 		public InputTrigger(Key key, KeyModifiers modifiers)
 			: this()
 		{
@@ -23,11 +15,6 @@ namespace OrbsHavoc.Platform.Input
 			Modifiers = modifiers;
 		}
 
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="mouseButton">The mouse button that triggers the input.</param>
-		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
 		public InputTrigger(MouseButton mouseButton, KeyModifiers modifiers)
 			: this()
 		{
@@ -37,11 +24,6 @@ namespace OrbsHavoc.Platform.Input
 			Modifiers = modifiers;
 		}
 
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="direction">The direction the mouse wheel must be turned in that triggers the input.</param>
-		/// <param name="modifiers">The modifier keys that must be pressed for the input to trigger.</param>
 		public InputTrigger(MouseWheelDirection direction, KeyModifiers modifiers)
 			: this()
 		{
@@ -51,57 +33,29 @@ namespace OrbsHavoc.Platform.Input
 			Modifiers = modifiers;
 		}
 
-		/// <summary>
-		///   Gets the key that triggers the input, or null if a mouse button or the mouse wheel triggers the input.
-		/// </summary>
 		public Key? Key { get; }
 
-		/// <summary>
-		///   Gets the mouse button that triggers the input, or null if a key or the mouse wheel triggers the input.
-		/// </summary>
 		public MouseButton? MouseButton { get; }
 
-		/// <summary>
-		///   Gets the modifier keys that must be pressed for the input to trigger.
-		/// </summary>
 		public KeyModifiers Modifiers { get; }
 
-		/// <summary>
-		///   Gets the direction the mouse wheel must be turned in that triggers the input, or null if a key or mouse button triggers
-		///   the input.
-		/// </summary>
 		public MouseWheelDirection? MouseWheelDirection { get; }
 
-		/// <summary>
-		///   Implicitly creates a configurable input for the given key.
-		/// </summary>
-		/// <param name="key">The key the configurable input should be created for.</param>
 		public static implicit operator InputTrigger(Key key)
 		{
 			return new InputTrigger(key, KeyModifiers.None);
 		}
 
-		/// <summary>
-		///   Implicitly creates a configurable input for the given key.
-		/// </summary>
-		/// <param name="mouseButton">The mouse button the configurable input should be created for.</param>
 		public static implicit operator InputTrigger(MouseButton mouseButton)
 		{
 			return new InputTrigger(mouseButton, KeyModifiers.None);
 		}
 
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="direction">The direction the mouse wheel must be turned in that triggers the input.</param>
 		public static implicit operator InputTrigger(MouseWheelDirection direction)
 		{
 			return new InputTrigger(direction, KeyModifiers.None);
 		}
 
-		/// <summary>
-		///   Checks if the inputs are equal.
-		/// </summary>
 		public bool Equals(InputTrigger other)
 		{
 			return Modifiers == other.Modifiers &&
@@ -110,9 +64,6 @@ namespace OrbsHavoc.Platform.Input
 				   MouseWheelDirection == other.MouseWheelDirection;
 		}
 
-		/// <summary>
-		///   Checks if the inputs are equal.
-		/// </summary>
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj))
@@ -121,9 +72,6 @@ namespace OrbsHavoc.Platform.Input
 			return obj is InputTrigger && Equals((InputTrigger)obj);
 		}
 
-		/// <summary>
-		///   Gets a hash code.
-		/// </summary>
 		public override int GetHashCode()
 		{
 			unchecked
@@ -135,25 +83,16 @@ namespace OrbsHavoc.Platform.Input
 			}
 		}
 
-		/// <summary>
-		///   Checks if the inputs are equal.
-		/// </summary>
 		public static bool operator ==(InputTrigger left, InputTrigger right)
 		{
 			return left.Equals(right);
 		}
 
-		/// <summary>
-		///   Checks if the inputs are not equal.
-		/// </summary>
 		public static bool operator !=(InputTrigger left, InputTrigger right)
 		{
 			return !left.Equals(right);
 		}
 
-		/// <summary>
-		///   Returns a string representation of the configurable input.
-		/// </summary>
 		public override string ToString()
 		{
 			var builder = new StringBuilder();
@@ -179,6 +118,50 @@ namespace OrbsHavoc.Platform.Input
 
 			builder.Append("]");
 			return builder.ToString();
+		}
+
+		public bool IsTriggered(Keyboard keyboard, Mouse mouse, TriggerType triggerType = TriggerType.Pressed)
+		{
+			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
+			Assert.ArgumentNotNull(mouse, nameof(mouse));
+			Assert.ArgumentInRange(triggerType, nameof(triggerType));
+
+			if (Keyboard.TextInputEnabled)
+				return false;
+
+			if (Key is Key key)
+			{
+				switch (triggerType)
+				{
+					case TriggerType.Pressed when keyboard.IsPressed(key):
+					case TriggerType.WentDown when keyboard.WentDown(key):
+					case TriggerType.Released when !keyboard.IsPressed(key):
+					case TriggerType.WentUp when keyboard.WentUp(key):
+					case TriggerType.Repeated when keyboard.IsRepeated(key):
+						break;
+					default:
+						return false;
+				}
+			}
+
+			if (MouseButton is MouseButton button)
+			{
+				switch (triggerType)
+				{
+					case TriggerType.Pressed when mouse.IsPressed(button):
+					case TriggerType.WentDown when mouse.WentDown(button):
+					case TriggerType.Released when !mouse.IsPressed(button):
+					case TriggerType.WentUp when mouse.WentUp(button):
+						break;
+					default:
+						return false;
+				}
+			}
+
+			if (MouseWheelDirection is MouseWheelDirection direction && !mouse.WasTurned(direction))
+				return false;
+
+			return Modifiers == keyboard.GetModifiers();
 		}
 	}
 }

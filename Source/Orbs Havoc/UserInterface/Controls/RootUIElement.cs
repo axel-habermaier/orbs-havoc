@@ -11,7 +11,7 @@
 	using Utilities;
 
 	/// <summary>
-	///   Represents the root element of all visual trees within an application.
+	///     Represents the root element of all visual trees within an application.
 	/// </summary>
 	internal sealed class RootUIElement : AreaPanel, IDisposable
 	{
@@ -21,7 +21,7 @@
 		private UIElement _hoveredElement;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		/// <param name="inputDevice">The input device that should be used for input handling.</param>
 		public RootUIElement(LogicalInputDevice inputDevice)
@@ -45,8 +45,8 @@
 		}
 
 		/// <summary>
-		///   Gets the UI element that currently has the keyboard focus. Unless the focus has been shifted to another UI
-		///   element, it is the window itself.
+		///     Gets the UI element that currently has the keyboard focus. Unless the focus has been shifted to another UI
+		///     element, it is the window itself.
 		/// </summary>
 		public UIElement FocusedElement
 		{
@@ -82,7 +82,7 @@
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		public void Dispose()
 		{
@@ -95,7 +95,7 @@
 		}
 
 		/// <summary>
-		///   Layouts the UI's contents for the given size.
+		///     Layouts the UI's contents for the given size.
 		/// </summary>
 		/// <param name="availableSize">The size available to the UI.</param>
 		public void Update(Size availableSize)
@@ -116,71 +116,67 @@
 		}
 
 		/// <summary>
-		///   Handles a mouse pressed event.
+		///     Handles a mouse pressed event.
 		/// </summary>
 		private void MousePressed(MouseButton button, Vector2 position, bool doubleClicked)
 		{
 			if (_hoveredElement == null)
 				return;
 
-			var modifiers = _inputDevice.Keyboard.GetModifiers();
-			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, doubleClicked, modifiers, InputEventKind.Down);
-
+			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard, button, doubleClicked, InputEventKind.Down);
 			OnMouseDown(_hoveredElement, args);
 		}
 
 		/// <summary>
-		///   Handles a mouse released event.
+		///     Handles a mouse released event.
 		/// </summary>
 		private void MouseReleased(MouseButton button, Vector2 position)
 		{
 			if (_hoveredElement == null)
 				return;
 
-			var modifiers = _inputDevice.Keyboard.GetModifiers();
-			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, button, false, modifiers, InputEventKind.Up);
-
+			var args = MouseButtonEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard, button, false, InputEventKind.Up);
 			OnMouseUp(_hoveredElement, args);
 		}
 
 		/// <summary>
-		///   Handles a mouse wheel event.
+		///     Handles a mouse wheel event.
 		/// </summary>
 		private void MouseWheel(MouseWheelDirection direction)
 		{
 			if (_hoveredElement == null)
 				return;
 
-			var args = MouseWheelEventArgs.Create(_inputDevice.Mouse, direction, _inputDevice.Keyboard.GetModifiers());
+			var args = MouseWheelEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard, direction);
 			OnMouseWheel(_hoveredElement, args);
 		}
 
 		/// <summary>
-		///   Handles a key pressed event.
+		///     Handles a key pressed event.
 		/// </summary>
 		private void KeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
 			if (FocusedElement == null)
 				return;
 
-			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode, InputEventKind.Down);
+			var args = KeyEventArgs.Create(_inputDevice.Keyboard, _inputDevice.Mouse, key, scanCode, InputEventKind.Down);
 			OnKeyDown(FocusedElement, args);
 		}
 
 		/// <summary>
-		///   Handles a key released event.
+		///     Handles a key released event.
 		/// </summary>
 		private void KeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
 			if (FocusedElement == null)
 				return;
 
-			var args = KeyEventArgs.Create(_inputDevice.Keyboard, key, scanCode, InputEventKind.Up);
+			var args = KeyEventArgs.Create(_inputDevice.Keyboard, _inputDevice.Mouse, key, scanCode, InputEventKind.Up);
 			OnKeyUp(FocusedElement, args);
 		}
 
 		/// <summary>
-		///   Handles a text entered event.
+		///     Handles a text entered event.
 		/// </summary>
 		private void TextEntered(string text)
 		{
@@ -192,7 +188,7 @@
 		}
 
 		/// <summary>
-		///   Updates the hovered UI element, if necessary.
+		///     Updates the hovered UI element, if necessary.
 		/// </summary>
 		/// <param name="position">The position of the mouse.</param>
 		private void UpdateHoveredElement(Vector2 position)
@@ -204,7 +200,7 @@
 			if (hoveredElement == _hoveredElement)
 				return;
 
-			var args = MouseEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard.GetModifiers());
+			var args = MouseEventArgs.Create(_inputDevice.Mouse, _inputDevice.Keyboard);
 
 			if (_hoveredElement != null)
 				OnMouseLeave(_hoveredElement, args);
@@ -217,8 +213,8 @@
 		}
 
 		/// <summary>
-		///   Resets the focused element to the first focusable previously focused element. If none exists, the
-		///   closest focusable element in the tree is focused. Otherwise, the focus is set to the window.
+		///     Resets the focused element to the first focusable previously focused element. If none exists, the
+		///     closest focusable element in the tree is focused. Otherwise, the focus is set to the window.
 		/// </summary>
 		private void ResetFocusedElement()
 		{
@@ -241,7 +237,7 @@
 		}
 
 		/// <summary>
-		///   Removes all previously focused elements that are no longer part of the visual tree.
+		///     Removes all previously focused elements that are no longer part of the visual tree.
 		/// </summary>
 		private void CleanFocusedElements()
 		{

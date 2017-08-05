@@ -5,49 +5,40 @@
 	using Utilities;
 
 	/// <summary>
-	///   Provides information about mouse events.
+	///     Provides information about mouse events.
 	/// </summary>
 	public class MouseEventArgs : InputEventArgs
 	{
 		/// <summary>
-		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.
+		///     A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.
 		/// </summary>
 		private static readonly MouseEventArgs _cachedInstance = new MouseEventArgs();
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		protected MouseEventArgs()
 		{
 		}
 
 		/// <summary>
-		///   Gets the mouse that generated the event.
-		/// </summary>
-		public Mouse Mouse { get; protected set; }
-
-		/// <summary>
-		///   Gets the position of the mouse at the time the event was generated.
+		///     Gets the position of the mouse at the time the event was generated.
 		/// </summary>
 		public Vector2 Position => Mouse.Position;
 
 		/// <summary>
-		///   Gets the set of key modifiers that was pressed when the event was raised.
-		/// </summary>
-		public KeyModifiers Modifiers { get; protected set; }
-
-		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		/// <param name="mouse">The mouse device that raised the event.</param>
-		/// <param name="modifiers">The key modifiers that were pressed when the event was raised.</param>
-		internal static MouseEventArgs Create(Mouse mouse, KeyModifiers modifiers)
+		/// <param name="keyboard">The keyboard that raised the event.</param>
+		internal static MouseEventArgs Create(Mouse mouse, Keyboard keyboard)
 		{
 			Assert.ArgumentNotNull(mouse, nameof(mouse));
+			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
 
 			_cachedInstance.Handled = false;
 			_cachedInstance.Mouse = mouse;
-			_cachedInstance.Modifiers = modifiers;
+			_cachedInstance.Keyboard = keyboard;
 
 			return _cachedInstance;
 		}

@@ -287,7 +287,6 @@
     <Compile Include="Platform\Input\InputTrigger.cs" />
     <Compile Include="Platform\Input\InputState.cs" />
     <Compile Include="Platform\Input\Keyboard.cs" />
-    <Compile Include="Platform\Input\LogicalInput.cs" />
     <Compile Include="Platform\Input\LogicalInputDevice.cs" />
     <Compile Include="Platform\Input\Mouse.cs" />
     <Compile Include="Platform\Input\MouseWheelDirection.cs" />

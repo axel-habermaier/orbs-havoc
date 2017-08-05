@@ -30,7 +30,6 @@ namespace OrbsHavoc.Views
 		private ClientLogic _clientLogic;
 		private Clock _clock = new Clock();
 		private InputManager _inputManager;
-		private LogicalInput _showScoreboard;
 
 		/// <summary>
 		///     The camera that is used to draw the game session.
@@ -61,9 +60,6 @@ namespace OrbsHavoc.Views
 			Commands.OnDisconnect += Disconnect;
 			Commands.OnSay += OnSay;
 			Cvars.PlayerNameChanged += OnPlayerNameChanged;
-
-			_showScoreboard = new LogicalInput(Cvars.InputShowScoreboardCvar);
-			InputDevice.Add(_showScoreboard);
 		}
 
 		public override void InitializeUI()
@@ -71,6 +67,7 @@ namespace OrbsHavoc.Views
 			UI.CapturesInput = true;
 			UI.AutoFocus = true;
 			UI.Cursor = AssetBundle.Crosshair;
+
 			UI.InputBindings.AddRange(
 				new ConfigurableBinding(Views.Chat.Show, Cvars.InputChatCvar),
 				new KeyBinding(Views.InGameMenu.Show, Key.Escape)
@@ -99,7 +96,7 @@ namespace OrbsHavoc.Views
 					OnPlayerNameChanged();
 
 					_clock.Reset();
-					_inputManager = new InputManager(GameSession.Players.LocalPlayer, InputDevice);
+					_inputManager = new InputManager(GameSession.Players.LocalPlayer, Window, InputDevice.Keyboard, InputDevice.Mouse);
 
 					// Remove all event messages that have been added, e.g., for player joins
 					Views.EventMessages.Clear();
@@ -121,14 +118,15 @@ namespace OrbsHavoc.Views
 					if (UI.IsFocused)
 					{
 						_inputManager.Update();
-						_inputManager.SendInput(GameSession, Connection);
+						_inputManager.SendActiveInput(GameSession, Connection);
 					}
 					else
 						_inputManager.SendInactiveInput(GameSession, Connection);
 
 					Views.Hud.IsShown = !GameSession.IsLocalPlayerDead;
 					Views.RespawnOverlay.IsShown = GameSession.IsLocalPlayerDead;
-					Views.Scoreboard.IsShown = UI.IsFocused && (_showScoreboard.IsTriggered || GameSession.IsLocalPlayerDead);
+
+					Views.Scoreboard.IsShown = UI.IsFocused && (_inputManager.ShowScoreboard || GameSession.IsLocalPlayerDead);
 				}
 			}
 			catch (ConnectionDroppedException)
@@ -262,7 +260,6 @@ namespace OrbsHavoc.Views
 			Views.MainMenu.Show();
 			Views.EventMessages.Clear();
 
-			_inputManager.SafeDispose();
 			GameSession.SafeDispose();
 			Connection.SafeDispose();
 
@@ -288,10 +285,7 @@ namespace OrbsHavoc.Views
 
 			Disconnect();
 			_allocator.SafeDispose();
-			_inputManager.SafeDispose();
 			Camera.SafeDispose();
-
-			InputDevice.Remove(_showScoreboard);
 		}
 
 		/// <summary>

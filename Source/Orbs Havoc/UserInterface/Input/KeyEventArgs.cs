@@ -36,15 +36,7 @@
 		/// </summary>
 		public InputState KeyState => Keyboard[ScanCode];
 
-		/// <summary>
-		///   Gets the keyboard that generated the event.
-		/// </summary>
-		public Keyboard Keyboard { get; private set; }
-
-		/// <summary>
-		///   Gets the set of key modifiers that were pressed when the event was raised.
-		/// </summary>
-		public KeyModifiers Modifiers { get; private set; }
+	
 
 		/// <summary>
 		///   Indicates whether the event was raised because of a key being released or pressed.
@@ -55,20 +47,22 @@
 		///   Initializes a cached instance.
 		/// </summary>
 		/// <param name="keyboard">The keyboard device that raised the event.</param>
+		/// <param name="mouse">The mouse that belongs to the event.</param>
 		/// <param name="key">The key that was pressed or released.</param>
 		/// <param name="scanCode">The key's scan code.</param>
 		/// <param name="kind">Indicates whether the event was raised because of a key being released or pressed.</param>
-		internal static KeyEventArgs Create(Keyboard keyboard, Key key, ScanCode scanCode, InputEventKind kind)
+		internal static KeyEventArgs Create(Keyboard keyboard, Mouse mouse, Key key, ScanCode scanCode, InputEventKind kind)
 		{
 			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
+			Assert.ArgumentNotNull(mouse, nameof(mouse));
 			Assert.ArgumentInRange(scanCode, nameof(scanCode));
 			Assert.ArgumentInRange(kind, nameof(kind));
 
 			_cachedInstance.Handled = false;
 			_cachedInstance.Keyboard = keyboard;
+			_cachedInstance.Mouse = mouse;
 			_cachedInstance.Key = key;
 			_cachedInstance.ScanCode = scanCode;
-			_cachedInstance.Modifiers = keyboard.GetModifiers();
 			_cachedInstance.Kind = kind;
 
 			return _cachedInstance;

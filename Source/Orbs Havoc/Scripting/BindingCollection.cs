@@ -10,30 +10,19 @@
 	using Platform.Memory;
 	using Utilities;
 
-	/// <summary>
-	///   Manages all registered instruction bindings.
-	/// </summary>
 	internal class BindingCollection : DisposableObject
 	{
-		/// <summary>
-		///   The registered instruction bindings.
-		/// </summary>
 		private readonly List<Binding> _bindings = new List<Binding>();
+		private readonly Keyboard _keyboard;
+		private readonly Mouse _mouse;
 
-		/// <summary>
-		///   The logical input device that is used to determine whether the logical inputs are triggered.
-		/// </summary>
-		private readonly LogicalInputDevice _device;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
-		/// <param name="device">The logical input device that is used to determine whether the logical inputs are triggered.</param>
-		public BindingCollection(LogicalInputDevice device)
+		public BindingCollection(Keyboard keyboard, Mouse mouse)
 		{
-			Assert.ArgumentNotNull(device, nameof(device));
+			Assert.ArgumentNotNull(keyboard, nameof(keyboard));
+			Assert.ArgumentNotNull(mouse, nameof(mouse));
 
-			_device = device;
+			_keyboard = keyboard;
+			_mouse = mouse;
 
 			Commands.OnBind += OnBind;
 			Commands.OnUnbind += OnUnbind;
@@ -42,16 +31,16 @@
 		}
 
 		/// <summary>
-		///   Executes all instructions for which the binding's trigger has been triggered.
+		///     Executes all instructions for which the binding's trigger has been triggered.
 		/// </summary>
 		public void Update()
 		{
 			foreach (var binding in _bindings)
-				binding.ExecuteIfTriggered();
+				binding.ExecuteIfTriggered(_keyboard, _mouse);
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
@@ -62,7 +51,7 @@
 		}
 
 		/// <summary>
-		///   Lists all active bindings.
+		///     Lists all active bindings.
 		/// </summary>
 		private void OnListBindings()
 		{
@@ -92,7 +81,7 @@
 		}
 
 		/// <summary>
-		///   Removes all bindings.
+		///     Removes all bindings.
 		/// </summary>
 		private void OnUnbindAll()
 		{
@@ -101,7 +90,7 @@
 		}
 
 		/// <summary>
-		///   Invoked when the unbind command is used.
+		///     Invoked when the unbind command is used.
 		/// </summary>
 		/// <param name="trigger">The trigger that should be unbound.</param>
 		private void OnUnbind(InputTrigger trigger)
@@ -129,22 +118,19 @@
 		}
 
 		/// <summary>
-		///   Invoked when the bind command is used.
+		///     Invoked when the bind command is used.
 		/// </summary>
 		/// <param name="trigger">The trigger that should be bound.</param>
 		/// <param name="command">The instruction that should be bound.</param>
 		private void OnBind(InputTrigger trigger, string command)
 		{
-			var input = new LogicalInput(trigger, TriggerType.WentDown);
-			_device.Add(input);
-
 			try
 			{
-				_bindings.Add(new Binding(trigger, input, command, Parser.ParseInstruction(new InputStream(command))));
+				_bindings.Add(new Binding(trigger, command, Parser.ParseInstruction(new InputStream(command))));
 			}
 			catch (ParseException e)
 			{
-				_bindings.Add(new Binding(trigger, input, command, e.Message));
+				_bindings.Add(new Binding(trigger, command, e.Message));
 			}
 		}
 	}

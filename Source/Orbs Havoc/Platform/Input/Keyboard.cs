@@ -6,22 +6,22 @@
 	using static SDL2;
 
 	/// <summary>
-	///   Represents the state of the keyboard.
+	///     Represents the state of the keyboard.
 	/// </summary>
 	public class Keyboard : DisposableObject
 	{
 		/// <summary>
-		///   The key states.
+		///     The key states.
 		/// </summary>
 		private readonly InputState[] _states = new InputState[SDL_NUM_SCANCODES];
 
 		/// <summary>
-		///   The window that generates the key events.
+		///     The window that generates the key events.
 		/// </summary>
 		private readonly Window _window;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		/// <param name="window">The window that generates the key events.</param>
 		internal Keyboard(Window window)
@@ -34,7 +34,7 @@
 		}
 
 		/// <summary>
-		///   Gets the input state for the given button.
+		///     Gets the input state for the given button.
 		/// </summary>
 		/// <param name="scanCode">The scan code the input state should be returned for.</param>
 		public InputState this[ScanCode scanCode]
@@ -47,7 +47,7 @@
 		}
 
 		/// <summary>
-		///   Get or sets a value indicating whether text input is enabled for the currently focused window.
+		///     Get or sets a value indicating whether text input is enabled for the currently focused window.
 		/// </summary>
 		internal static bool TextInputEnabled
 		{
@@ -62,7 +62,7 @@
 		}
 
 		/// <summary>
-		///   Raised when a text was entered.
+		///     Raised when a text was entered.
 		/// </summary>
 		public event Action<string> TextEntered
 		{
@@ -71,7 +71,7 @@
 		}
 
 		/// <summary>
-		///   Raised when a key was pressed.
+		///     Raised when a key was pressed.
 		/// </summary>
 		public event Action<Key, ScanCode, KeyModifiers> KeyPressed
 		{
@@ -80,7 +80,7 @@
 		}
 
 		/// <summary>
-		///   Raised when a key was released.
+		///     Raised when a key was released.
 		/// </summary>
 		public event Action<Key, ScanCode, KeyModifiers> KeyReleased
 		{
@@ -89,7 +89,7 @@
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
@@ -98,7 +98,7 @@
 		}
 
 		/// <summary>
-		///   Invoked when a key has been released.
+		///     Invoked when a key has been released.
 		/// </summary>
 		private void OnKeyReleased(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
@@ -107,7 +107,7 @@
 		}
 
 		/// <summary>
-		///   Invoked when a key has been pressed.
+		///     Invoked when a key has been pressed.
 		/// </summary>
 		private void OnKeyPressed(Key key, ScanCode scanCode, KeyModifiers modifiers)
 		{
@@ -116,7 +116,7 @@
 		}
 
 		/// <summary>
-		///   Changes the text input area.
+		///     Changes the text input area.
 		/// </summary>
 		/// <param name="area">The new text input area.</param>
 		internal static void ChangeTextInputArea(Rectangle area)
@@ -131,7 +131,7 @@
 		}
 
 		/// <summary>
-		///   Updates the keyboard state.
+		///     Updates the keyboard state.
 		/// </summary>
 		internal void Update()
 		{
@@ -140,7 +140,7 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the key is currently being pressed down.
+		///     Gets a value indicating whether the key is currently being pressed down.
 		/// </summary>
 		/// <param name="scanCode">The scan code of the key that should be checked.</param>
 		public bool IsPressed(ScanCode scanCode)
@@ -150,8 +150,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the key was pressed during the current frame. WentDown is
-		///   only true during the single frame when IsPressed changed from false to true.
+		///     Gets a value indicating whether the key was pressed during the current frame. WentDown is
+		///     only true during the single frame when IsPressed changed from false to true.
 		/// </summary>
 		/// <param name="scanCode">The scan code of the key that should be checked.</param>
 		public bool WentDown(ScanCode scanCode)
@@ -161,8 +161,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the key was released during the current frame. WentUp is
-		///   only true during the single frame when IsPressed changed from true to false.
+		///     Gets a value indicating whether the key was released during the current frame. WentUp is
+		///     only true during the single frame when IsPressed changed from true to false.
 		/// </summary>
 		/// <param name="scanCode">The scan code of the key that should be checked.</param>
 		public bool WentUp(ScanCode scanCode)
@@ -172,8 +172,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether a system key repeat event occurred. IsRepeated is also true
-		///   when the key is pressed, i.e., when WentDown is true.
+		///     Gets a value indicating whether a system key repeat event occurred. IsRepeated is also true
+		///     when the key is pressed, i.e., when WentDown is true.
 		/// </summary>
 		/// <param name="scanCode">The scan code of the key that should be checked.</param>
 		public bool IsRepeated(ScanCode scanCode)
@@ -183,7 +183,7 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the key is currently being pressed down.
+		///     Gets a value indicating whether the key is currently being pressed down.
 		/// </summary>
 		/// <param name="key">The key that should be checked.</param>
 		public bool IsPressed(Key key)
@@ -192,8 +192,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the key was pressed during the current frame. WentDown is
-		///   only true during the single frame when IsPressed changed from false to true.
+		///     Gets a value indicating whether the key was pressed during the current frame. WentDown is
+		///     only true during the single frame when IsPressed changed from false to true.
 		/// </summary>
 		/// <param name="key">The key that should be checked.</param>
 		public bool WentDown(Key key)
@@ -202,8 +202,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether the key was released during the current frame. WentUp is
-		///   only true during the single frame when IsPressed changed from true to false.
+		///     Gets a value indicating whether the key was released during the current frame. WentUp is
+		///     only true during the single frame when IsPressed changed from true to false.
 		/// </summary>
 		/// <param name="key">The key that should be checked.</param>
 		public bool WentUp(Key key)
@@ -212,8 +212,8 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whether a system key repeat event occurred. IsRepeated is also true
-		///   when the key is pressed, i.e., when WentDown is true.
+		///     Gets a value indicating whether a system key repeat event occurred. IsRepeated is also true
+		///     when the key is pressed, i.e., when WentDown is true.
 		/// </summary>
 		/// <param name="key">The key that should be checked.</param>
 		public bool IsRepeated(Key key)
@@ -222,7 +222,7 @@
 		}
 
 		/// <summary>
-		///   Gets the set of key modifiers that are currently pressed.
+		///     Gets the set of key modifiers that are currently pressed.
 		/// </summary>
 		public KeyModifiers GetModifiers()
 		{

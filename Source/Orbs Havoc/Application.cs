@@ -32,7 +32,7 @@
 			Commands.Bind(Key.F5, "reload_assets");
 			Commands.Bind(new InputTrigger(Key.B, KeyModifiers.Control), "add_bot");
 			Commands.Bind(new InputTrigger(Key.B, KeyModifiers.Control | KeyModifiers.Shift), "remove_bot");
-			Commands.Bind(new InputTrigger(Key.Escape, KeyModifiers.LeftShift), "exit");
+			Commands.Bind(new InputTrigger(Key.Escape, KeyModifiers.Shift), "exit");
 			Commands.Bind(Key.F10, "toggle show_debug_overlay");
 
 			Commands.Help();
@@ -46,7 +46,7 @@
 			using (var graphicsDevice = new GraphicsDevice())
 			using (var window = new Window(graphicsDevice, Name, Cvars.WindowPosition, Cvars.WindowSize, Cvars.WindowMode))
 			using (var inputDevice = new LogicalInputDevice(window))
-			using (var bindings = new BindingCollection(inputDevice))
+			using (var bindings = new BindingCollection(inputDevice.Keyboard, inputDevice.Mouse))
 			using (new AssetBundle())
 			using (var renderer = new Renderer(graphicsDevice, window))
 			using (var views = new ViewCollection(window, inputDevice))
@@ -74,14 +74,10 @@
 						// Perform the necessary updates for the frame
 						using (TimeMeasurement.Measure(&updateTime))
 						{
-							// Process all pending operating system events
+							inputDevice.Update();
 							window.HandleEvents();
 
-							// Update the logical inputs based on the new state of the input system as well as the bindings
-							inputDevice.Update();
 							bindings.Update();
-
-							// Update the views
 							views.Update();
 						}
 
