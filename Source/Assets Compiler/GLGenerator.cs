@@ -176,6 +176,12 @@
 						writer.AppendLine($"({parameters})");
 						writer.AppendBlockStatement(() =>
 						{
+							writer.AppendLine($"if (_{func.Name} == null)");
+							writer.IncreaseIndent();
+							writer.AppendLine($"_{func.Name} = Load<{func.Name}Func>(\"{func.Name}\");");
+							writer.DecreaseIndent();
+							writer.NewLine();
+
 							if (func.ReturnType != "void")
 								writer.Append("var _result = ");
 
@@ -191,13 +197,6 @@
 						});
 						writer.NewLine();
 					}
-
-					writer.AppendLine("public static void LoadGraphicsEntryPoints()");
-					writer.AppendBlockStatement(() =>
-					{
-						foreach (var func in orderedFuncs)
-							writer.AppendLine($"_{func.Name} = Load<{func.Name}Func>(\"{func.Name}\");");
-					});
 				});
 			});
 

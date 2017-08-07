@@ -35,7 +35,6 @@
 				Log.Die("Failed to initialize the OpenGL context. OpenGL 3.3 is not supported by your graphics card.");
 
 			MakeCurrent();
-			LoadGraphicsEntryPoints();
 
 			int major, minor;
 			glGetIntegerv(GL_MAJOR_VERSION, &major);
