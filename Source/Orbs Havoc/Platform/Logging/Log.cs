@@ -5,27 +5,26 @@
 	using System.Runtime.InteropServices;
 	using JetBrains.Annotations;
 	using Utilities;
-	using static SDL2;
 
 	/// <summary>
-	///   Provides functions to log fatal errors, errors, warnings, informational messages, and debug-time only
-	///   informational messages. An event is raised whenever one of these functions is invoked.
+	///     Provides functions to log fatal errors, errors, warnings, informational messages, and debug-time only
+	///     informational messages. An event is raised whenever one of these functions is invoked.
 	/// </summary>
 	public static unsafe class Log
 	{
 		/// <summary>
-		///   The object used for thread synchronization.
+		///     The object used for thread synchronization.
 		/// </summary>
 		private static readonly object _lockObject = new object();
 
 		/// <summary>
-		///   Raised when a log message has been generated.
+		///     Raised when a log message has been generated.
 		/// </summary>
 		public static event Action<LogEntry> OnLog;
 
 		/// <summary>
-		///   Raises the OnFatalError event with the given message and terminates the application by throwing
-		///   an InvalidOperationException.
+		///     Raises the OnFatalError event with the given message and terminates the application by throwing
+		///     an InvalidOperationException.
 		/// </summary>
 		/// <param name="message">The message that should be passed as an argument of the OnFatalError event.</param>
 		[DebuggerHidden, ContractAnnotation("=> halt")]
@@ -38,7 +37,7 @@
 		}
 
 		/// <summary>
-		///   Raises the OnError event with the given message.
+		///     Raises the OnError event with the given message.
 		/// </summary>
 		/// <param name="message">The message that should be passed as an argument of the OnError event.</param>
 		public static void Error(string message)
@@ -48,7 +47,7 @@
 		}
 
 		/// <summary>
-		///   Raises the OnWarning event with the given message.
+		///     Raises the OnWarning event with the given message.
 		/// </summary>
 		/// <param name="message">The message that should be passed as an argument of the OnWarning event.</param>
 		public static void Warn(string message)
@@ -58,7 +57,7 @@
 		}
 
 		/// <summary>
-		///   Raises the OnInfo event with the given message.
+		///     Raises the OnInfo event with the given message.
 		/// </summary>
 		/// <param name="message">The message that should be passed as an argument of the OnInfo event.</param>
 		public static void Info(string message)
@@ -68,7 +67,7 @@
 		}
 
 		/// <summary>
-		///   In debug builds, raises the OnDebugInfo event with the given message.
+		///     In debug builds, raises the OnDebugInfo event with the given message.
 		/// </summary>
 		/// <param name="message">The message that should be passed as an argument of the OnDebugInfo event.</param>
 		[Conditional("DEBUG")]
@@ -79,7 +78,7 @@
 		}
 
 		/// <summary>
-		///   In debug builds, raises the OnDebugInfo event with the given message if the given condition is true.
+		///     In debug builds, raises the OnDebugInfo event with the given message if the given condition is true.
 		/// </summary>
 		/// <param name="condition">The condition that must be true for the message to be displayed.</param>
 		/// <param name="message">The message that should be passed as an argument of the OnDebugInfo event.</param>
@@ -91,7 +90,7 @@
 		}
 
 		/// <summary>
-		///   Raises the OnLog event.
+		///     Raises the OnLog event.
 		/// </summary>
 		private static void RaiseEvent(LogType logType, string message)
 		{
@@ -100,27 +99,13 @@
 		}
 
 		/// <summary>
-		///   Shows an OS-specific message box with the given header and message.
+		///     Shows a message box with the given header and message.
 		/// </summary>
 		/// <param name="title">The title of the message box.</param>
 		/// <param name="message">The message that the message box should display.</param>
 		public static void ShowErrorBox(string title, string message)
 		{
-			try
-			{
-				// Try to show a native Windows message box (which looks much better than the SDL2 one);
-				// if that fails because we're running on Linux, for instance, fall back to the SDL2 message box
-				MessageBox(null, message, title, 0x10);
-			}
-			catch (DllNotFoundException)
-			{
-				using (var titlePtr = Interop.ToPointer(title))
-				using (var messagePtr = Interop.ToPointer(message))
-				{
-					if (SDL_WasInit(SDL_INIT_VIDEO) != 0 && SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, titlePtr, messagePtr, null) != 0)
-						Error($"Failed to show message box: {SDL_GetError()}");
-				}
-			}
+			MessageBox(null, message, title, 0x10);
 		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
