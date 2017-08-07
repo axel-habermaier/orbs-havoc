@@ -1,156 +1,79 @@
 ﻿namespace OrbsHavoc.Platform.Logging
 {
 	using System;
-	using System.Collections.Generic;
+	using System.Collections.Concurrent;
 	using System.IO;
-	using System.Linq;
 	using System.Text;
-	using System.Threading.Tasks;
+	using System.Threading;
 	using Memory;
 	using Utilities;
 
-	/// <summary>
-	///   Captures all generated logs and outputs them to a log file.
-	/// </summary>
 	internal class LogFile : DisposableObject
 	{
-		/// <summary>
-		///   The number of log messages that must be queued before the messages are written to the file system.
-		/// </summary>
-		private const int BatchSize = 200;
-
-		/// <summary>
-		///   A cached string builder used to write the log file.
-		/// </summary>
-		private static readonly StringBuilder _builder = new StringBuilder();
-
-		/// <summary>
-		///   The name of the generated log file.
-		/// </summary>
 		private readonly string _fileName = $"{Application.Name}.log";
+		private readonly BlockingCollection<LogEntry> _logEntries = new BlockingCollection<LogEntry>();
+		private readonly Thread _thread;
+		private readonly TimeSpan _writeInterval = TimeSpan.FromSeconds(1);
 
-		/// <summary>
-		///   The unwritten log entries that have been generated.
-		/// </summary>
-		private readonly Queue<LogEntry> _logEntries = new Queue<LogEntry>();
-
-		/// <summary>
-		///   The task that writes the log entries to the file system.
-		/// </summary>
-		private Task _writeTask;
-
-		/// <summary>
-		///   Initializes a new instance.
-		/// </summary>
 		public LogFile()
 		{
-			Log.OnLog += Enqueue;
-
-			// Delete any previously created log file
-			UserFile.Delete(_fileName);
-		}
-
-		/// <summary>
-		///   Gets the path of the log file.
-		/// </summary>
-		public string FilePath => Path.Combine(UserFile.UserDirectory, _fileName).Replace("\\", "/");
-
-		/// <summary>
-		///   Enqueues the given log entry.
-		/// </summary>
-		/// <param name="entry">The log entry that should be enqueued.</param>
-		internal void Enqueue(LogEntry entry)
-		{
-			_logEntries.Enqueue(entry);
-			WriteToFile();
-		}
-
-		/// <summary>
-		///   Writes the generated log messages into the log file.
-		/// </summary>
-		/// <param name="force">If true, all unwritten messages are written; otherwise, writes are batched to improve performance.</param>
-		internal void WriteToFile(bool force = false)
-		{
-			if (!force && _logEntries.Count < BatchSize)
-				return;
-
-			if (_logEntries.Count == 0)
-				return;
-
 			try
 			{
-				WaitForCompletion();
-
-				var logEntries = _logEntries.ToArray();
-				_logEntries.Clear();
-
-				_writeTask = Task.Run(() => UserFile.AppendText(_fileName, ToString(logEntries)));
-
-				if (force)
-					WaitForCompletion();
+				UserFile.Delete(_fileName);
 			}
 			catch (Exception e)
 			{
-				Log.Error($"Failed to append to log file: {e.Message}");
+				Log.Warn($"Failed to delete old log file: {e.Message.EnsureEndsWithDot()}");
 			}
+
+			Log.OnLog += Enqueue;
+
+			_thread = new Thread(WriteToFile);
+			_thread.Start();
 		}
 
-		/// <summary>
-		///   Waits for the completion of the write task. Any exceptions that have been thrown during the execution of the write task
-		///   are collected into a new exception.
-		/// </summary>
-		private void WaitForCompletion()
+		public string FilePath => Path.Combine(UserFile.UserDirectory, _fileName).Replace("\\", "/");
+
+		private void Enqueue(LogEntry entry)
 		{
-			if (_writeTask == null)
-				return;
-
-			try
-			{
-				if (!_writeTask.IsCompleted)
-					_writeTask.Wait();
-				else if (_writeTask.Exception != null)
-					throw _writeTask.Exception;
-			}
-			catch (AggregateException e)
-			{
-				throw new InvalidOperationException(String.Join("\n", e.InnerExceptions.Select(inner => inner.Message)));
-			}
-			finally
-			{
-				_writeTask = null;
-			}
+			_logEntries.Add(entry);
 		}
 
-		/// <summary>
-		///   Generates the string representation for the given log entries.
-		/// </summary>
-		/// <param name="logEntries">The log entries that should be converted to a string.</param>
-		private static string ToString(LogEntry[] logEntries)
+		private void WriteToFile()
 		{
-			_builder.Clear();
-
-			foreach (var entry in logEntries)
+			var builder = new StringBuilder();
+			while (!_logEntries.IsCompleted)
 			{
-				_builder.Append("[");
-				_builder.Append(entry.LogTypeString);
-				_builder.Append("]   ");
-				_builder.Append(entry.Time.ToString("F4").PadLeft(9));
+				Thread.Sleep(_writeInterval);
 
-				_builder.Append("s   ");
-				TextString.Write(_builder, entry.Message);
-				_builder.Append("\n");
+				builder.Clear();
+				WriteQueuedLogEntries(builder);
+
+				UserFile.AppendText(_fileName, builder.ToString());
 			}
-
-			return _builder.ToString();
 		}
 
-		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
-		/// </summary>
+		private void WriteQueuedLogEntries(StringBuilder builder)
+		{
+			while (_logEntries.TryTake(out var logEntry))
+			{
+				builder.Append("[");
+				builder.Append(logEntry.LogTypeString);
+				builder.Append("]   ");
+				builder.Append(logEntry.Time.ToString("F4").PadLeft(9));
+
+				builder.Append("s   ");
+				TextString.Write(builder, logEntry.Message);
+				builder.Append("\n");
+			}
+		}
+
 		protected override void OnDisposing()
 		{
 			Log.OnLog -= Enqueue;
-			WriteToFile(true);
+
+			_logEntries.CompleteAdding();
+			_thread.Join();
 		}
 	}
 }

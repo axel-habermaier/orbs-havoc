@@ -4,35 +4,33 @@
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.Reflection;
+	using System.Runtime.InteropServices;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using JetBrains.Annotations;
 	using Platform;
 	using Platform.Logging;
 	using Platform.Memory;
 	using Scripting;
 	using Utilities;
 
-	/// <summary>
-	///   Represents the application.
-	/// </summary>
 	internal static class Program
 	{
-		/// <summary>
-		///   The entry point of the application.
-		/// </summary>
-		/// <param name="arguments">The command line arguments passed to the application.</param>
 		private static void Main(string[] arguments)
 		{
+			SetErrorMode(GetErrorMode() | ErrorMode.NoGpFaultErrorBox);
+
 			try
 			{
-				Thread.CurrentThread.Name = "Main Thread";
-				TaskScheduler.UnobservedTaskException += (o, e) => throw e.Exception.InnerException;
-				CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-				CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-
 				using (var logFile = new LogFile())
 				{
+					Thread.CurrentThread.Name = "Main Thread";
+					TaskScheduler.UnobservedTaskException += (o, e) => ReportException(e.Exception.InnerException, logFile.FilePath);
+					AppDomain.CurrentDomain.UnhandledException += (o, e) => ReportException(e.ExceptionObject as Exception, logFile.FilePath);
+					CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+					CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
 					LogEntryCache.EnableCaching();
 					Log.OnLog += WriteToConsole;
 
@@ -61,7 +59,7 @@
 					}
 					catch (Exception e)
 					{
-						ReportException(e, logFile);
+						ReportException(e, logFile.FilePath);
 					}
 				}
 			}
@@ -71,40 +69,26 @@
 			}
 		}
 
-		/// <summary>
-		///   Reports the given exception.
-		/// </summary>
-		/// <param name="exception">The exception that should be reported.</param>
-		/// <param name="logFile">The log file the exception should be reported to.</param>
-		private static void ReportException(Exception exception, LogFile logFile)
+		private static void ReportException(Exception exception, string logFilePath)
 		{
-			var message = "The application has been terminated after a fatal error. " +
-						  "See the log file for further details.\n\nThe error was: {0}\n\nLog file: {1}";
+			if (exception == null)
+				return;
 
 			while (exception is TargetInvocationException || exception is TypeInitializationException)
 				exception = exception.InnerException;
 
-			logFile.Enqueue(new LogEntry(LogType.Error, $"Exception type: {exception.GetType().FullName}"));
-			logFile.Enqueue(new LogEntry(LogType.Error, $"Exception message: {exception.Message}"));
-			logFile.Enqueue(new LogEntry(LogType.Error, $"Stack trace:\n{exception.StackTrace}"));
-			logFile.WriteToFile(force: true);
+			Log.Error($"Exception type: {exception.GetType().FullName}");
+			Log.Error($"Exception message: {exception.Message}");
+			Log.Error($"Stack trace:\n{exception.StackTrace}");
 
-			message = String.Format(message, exception.Message, logFile.FilePath);
+			var message = "The application has been terminated after a fatal error. " +
+						  "See the log file for further details.\n\nThe error was: {0}\n\nLog file: {1}";
+			message = String.Format(message, exception.Message, logFilePath);
+
 			Log.ShowErrorBox(Application.Name, message);
-
-			if (!(exception is FatalErrorException))
-			{
-				Log.Error($"Exception type: {exception.GetType().FullName}");
-				Log.Error($"Exception message: {exception.Message}");
-			}
-
-			Log.Error($"The application has been terminated after a fatal error. The log file is located at '{logFile.FilePath}'.");
+			Log.Error("The application has been terminated after a fatal error.");
 		}
 
-		/// <summary>
-		///   Writes the given log entry to the given text writer.
-		/// </summary>
-		/// <param name="entry">The log entry that should be written.</param>
 		private static void WriteToConsole(LogEntry entry)
 		{
 #if DEBUG
@@ -122,6 +106,23 @@
 			TextString.Write(output, entry.Message);
 			output.WriteLine();
 #endif
+		}
+
+		[DllImport("kernel32.dll")]
+		private static extern ErrorMode SetErrorMode(ErrorMode mode);
+
+		[DllImport("kernel32.dll")]
+		private static extern ErrorMode GetErrorMode();
+
+		[Flags]
+		[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+		private enum ErrorMode : uint
+		{
+			SystemDefault = 0x0,
+			FailCriticalErrors = 0x0001,
+			NoAlignmentFaultExcept = 0x0004,
+			NoGpFaultErrorBox = 0x0002,
+			NoOpenFileErrorBox = 0x8000
 		}
 	}
 }
