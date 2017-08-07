@@ -58,15 +58,15 @@
 			_firePrimary.UpdateTriggered(_keyboard, _mouse);
 			_fireSecondary.UpdateTriggered(_keyboard, _mouse);
 
-			if (Cvars.InputSelectMiniGun.IsTriggered(_keyboard, _mouse))
+			if (Cvars.InputSelectMiniGun.IsTriggered(_keyboard, _mouse, TriggerType.WentDown))
 				_primaryWeapon = EntityType.MiniGun;
-			else if (Cvars.InputSelectRocketLauncher.IsTriggered(_keyboard, _mouse))
+			else if (Cvars.InputSelectRocketLauncher.IsTriggered(_keyboard, _mouse, TriggerType.WentDown))
 				_primaryWeapon = EntityType.RocketLauncher;
-			else if (Cvars.InputSelectLightingGun.IsTriggered(_keyboard, _mouse))
+			else if (Cvars.InputSelectLightingGun.IsTriggered(_keyboard, _mouse, TriggerType.WentDown))
 				_primaryWeapon = EntityType.LightingGun;
-			else if (Cvars.InputNextWeapon.IsTriggered(_keyboard, _mouse))
+			else if (Cvars.InputNextWeapon.IsTriggered(_keyboard, _mouse, TriggerType.WentDown))
 				SelectPrimaryWeapon(1);
-			else if (Cvars.InputPreviousWeapon.IsTriggered(_keyboard, _mouse))
+			else if (Cvars.InputPreviousWeapon.IsTriggered(_keyboard, _mouse, TriggerType.WentDown))
 				SelectPrimaryWeapon(-1);
 
 			if (_player.Orb != null && _player.Orb.WeaponEnergyLevels[_primaryWeapon.GetWeaponSlot()] <= 0)
