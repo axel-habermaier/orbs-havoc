@@ -14,9 +14,9 @@
 	/// </summary>
 	public class BloomEffect : FullscreenEffect
 	{
-		private readonly ConstantBuffer _bloomSettingsBuffer;
-		private readonly ConstantBuffer _horizontalBlurBuffer;
-		private readonly ConstantBuffer _verticalBlurBuffer;
+		private readonly UniformBuffer _bloomSettingsBuffer;
+		private readonly UniformBuffer _horizontalBlurBuffer;
+		private readonly UniformBuffer _verticalBlurBuffer;
 
 		private BloomSettings _bloomSettings = new BloomSettings
 		{
@@ -39,9 +39,9 @@
 		/// </summary>
 		public unsafe BloomEffect()
 		{
-			_bloomSettingsBuffer = new ConstantBuffer(sizeof(BloomSettings));
-			_horizontalBlurBuffer = new ConstantBuffer(sizeof(BlurSettings));
-			_verticalBlurBuffer = new ConstantBuffer(sizeof(BlurSettings));
+			_bloomSettingsBuffer = new UniformBuffer(sizeof(BloomSettings));
+			_horizontalBlurBuffer = new UniformBuffer(sizeof(BlurSettings));
+			_verticalBlurBuffer = new UniformBuffer(sizeof(BlurSettings));
 
 			Cvars.BloomQualityChanged += BloomQualityChanged;
 		}

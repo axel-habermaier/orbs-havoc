@@ -1,39 +1,59 @@
 ﻿namespace OrbsHavoc.Platform.Graphics
 {
-	using System;
 	using Memory;
-	using SharpDX;
-	using SharpDX.Direct3D;
-	using SharpDX.Direct3D11;
-	using SharpDX.DXGI;
 	using Utilities;
+	using static OpenGL3;
 
-	public sealed unsafe class Texture : GraphicsObject
+	/// <summary>
+	///   Represents a two-dimensional texture.
+	/// </summary>
+	public sealed unsafe class Texture : DisposableObject
 	{
-		private ShaderResourceView _resourceView;
-		private Texture2D _texture;
+		private int _texture;
 
-		public Texture(GraphicsDevice device)
-			: base(device)
+		/// <summary>
+		///   Initializes a new instance that is initialized later.
+		/// </summary>
+		public Texture()
 		{
 		}
 
-		public Texture(GraphicsDevice device, Size size, Format format, void* data)
-			: base(device)
+		/// <summary>
+		///   Initializes a new instance.
+		/// </summary>
+		public Texture(Size size, DataFormat format, void* data)
 		{
 			Initialize(size, format, data);
 		}
 
+		/// <summary>
+		///   Gets the size of the texture.
+		/// </summary>
 		public Size Size { get; private set; }
+
+		/// <summary>
+		///   Gets the width of the texture.
+		/// </summary>
 		public float Width => Size.Width;
+
+		/// <summary>
+		///   Gets the height of the texture.
+		/// </summary>
 		public float Height => Size.Height;
 
-		public static implicit operator ShaderResourceView(Texture obj)
+		/// <summary>
+		///   Casts the texture to its underlying OpenGL handle.
+		/// </summary>
+		public static implicit operator int(Texture obj)
 		{
 			Assert.ArgumentNotNull(obj, nameof(obj));
-			return obj._resourceView;
+			return obj._texture;
 		}
 
+		/// <summary>
+		///   Loads the texture from the given buffer.
+		/// </summary>
+		/// <param name="buffer">The buffer the texture should be read from.</param>
 		public void Load(ref BufferReader buffer)
 		{
 			var size = new Size(buffer.ReadUInt32(), buffer.ReadUInt32());
@@ -42,67 +62,52 @@
 			using (var data = buffer.Pointer)
 			{
 				buffer.Skip(sizeInBytes);
-				Initialize(size, Format.R8G8B8A8_UInt, data);
+				Initialize(size, DataFormat.Rgba, data);
 			}
 		}
 
-		private void Initialize(Size size, Format format, void* data)
+		/// <summary>
+		///   Initializes the texture.
+		/// </summary>
+		private void Initialize(Size size, DataFormat format, void* data)
 		{
 			Assert.ArgumentInRange(format, nameof(format));
 			Assert.That(size.Width > 0 && size.Height > 0, "Invalid render target size.");
-			Assert.ArgumentNotNull(data, nameof(data));
 
 			OnDisposing();
 			Size = size;
+			_texture = Allocate(glGenTextures, nameof(Texture));
 
-			var textureDesc = new Texture2DDescription
-			{
-				Width = Size.IntegralWidth,
-				Height = Size.IntegralHeight,
-				MipLevels = 1,
-				ArraySize = 1,
-				SampleDescription = new SampleDescription(1, 0),
-				Usage = ResourceUsage.Default,
-				BindFlags = BindFlags.ShaderResource,
-				CpuAccessFlags = 0,
-				OptionFlags = 0,
-				Format = format
-			};
+			glBindTexture(GL_TEXTURE_2D, _texture);
+			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, (int)format, GL_UNSIGNED_BYTE, data);
 
-			var length = Size.IntegralWidth * Size.IntegralHeight * format.ComponentCount();
-			var stream = new DataStream(new IntPtr(data), length, canRead: true, canWrite: true);
-
-			var textureData = new DataRectangle(stream.DataPointer, Size.IntegralWidth * format.ComponentCount());
-			_texture = new Texture2D(Device, textureDesc, textureData);
-
-			var viewDesc = new ShaderResourceViewDescription
-			{
-				Format = format,
-				Dimension = ShaderResourceViewDimension.Texture2D,
-				Texture2D = new ShaderResourceViewDescription.Texture2DResource()
-			};
-
-			_resourceView = new ShaderResourceView(Device, _texture, viewDesc);
+			if (State.ActiveTextureSlot != -1)
+				State.Textures[State.ActiveTextureSlot] = null;
 		}
 
+		/// <summary>
+		///   Binds the texture for rendering.
+		/// </summary>
 		public void Bind(int slot)
 		{
-			Assert.NotDisposed(this);
-			Assert.That(_resourceView != null, "The texture has not been initialized.");
+			Assert.That(_texture != 0, "The texture has not been initialized.");
 
-			if (!GraphicsState.Change(State.Textures, slot, this))
+			if (!Change(State.Textures, slot, this))
 				return;
 
-			Context.VertexShader.SetShaderResource(slot, _resourceView);
-			Context.PixelShader.SetShaderResource(slot, _resourceView);
+			if (Change(ref State.ActiveTextureSlot, slot))
+				glActiveTexture(GL_TEXTURE0 + slot);
+
+			glBindTexture(GL_TEXTURE_2D, _texture);
 		}
 
+		/// <summary>
+		///   Disposes the object, releasing all managed and unmanaged resources.
+		/// </summary>
 		protected override void OnDisposing()
 		{
-			_texture.SafeDispose();
-			_resourceView.SafeDispose();
-
-			GraphicsState.Unset(State.Textures, this);
+			Unset(State.Textures, this);
+			Deallocate(glDeleteTextures, _texture);
 		}
 	}
 }

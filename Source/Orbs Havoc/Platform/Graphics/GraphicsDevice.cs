@@ -2,7 +2,6 @@
 {
 	using Logging;
 	using Memory;
-	using SharpDX.Direct3D11;
 	using Utilities;
 	using static OpenGL3;
 	using static SDL2;
@@ -18,11 +17,6 @@
 		private readonly int[] _endQueries = new int[GraphicsState.MaxFrameLag];
 		private readonly void*[] _syncQueries = new void*[GraphicsState.MaxFrameLag];
 		private int _syncedIndex;
-
-		public static implicit operator Device(GraphicsDevice device)
-		{
-			return null;
-		}
 
 		/// <summary>
 		///   Initializes the graphics device.

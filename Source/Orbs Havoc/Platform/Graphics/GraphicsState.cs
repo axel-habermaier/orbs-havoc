@@ -1,6 +1,5 @@
 ﻿namespace OrbsHavoc.Platform.Graphics
 {
-	using System.Collections.Generic;
 	using System.Diagnostics;
 	using Utilities;
 
@@ -27,7 +26,7 @@
 		/// <summary>
 		///   The uniform buffers that are currently bound.
 		/// </summary>
-		public readonly ConstantBuffer[] ConstantBuffers = new ConstantBuffer[UniformBufferSlotCount];
+		public readonly UniformBuffer[] UniformBuffers = new UniformBuffer[UniformBufferSlotCount];
 
 		/// <summary>
 		///   The currently bound sampler states.
@@ -97,72 +96,6 @@
 			Assert.InRange(BlendOperation);
 			Assert.That(VertexLayout >= 0, "Invalid vertex layout.");
 			Assert.That(Viewport.Size.Width * Viewport.Size.Height > 0, "Viewport has an area of 0.");
-		}
-
-		/// <summary>
-		///   Changes the state, if the current state value and the new one differ. Returns false to indicate that a state change was
-		///   not required.
-		/// </summary>
-		/// <typeparam name="T">The type of the state that should be changed.</typeparam>
-		/// <param name="stateValue">The current state value that will be updated, if necessary.</param>
-		/// <param name="value">The new state value.</param>
-		public static bool Change<T>(ref T stateValue, T value)
-		{
-			if (EqualityComparer<T>.Default.Equals(stateValue, value))
-				return false;
-
-			stateValue = value;
-			return true;
-		}
-
-		/// <summary>
-		///   Changes the state, if the current state value and the new one differ. Returns false to indicate that a state change was
-		///   not required.
-		/// </summary>
-		/// <typeparam name="T">The type of the state that should be changed.</typeparam>
-		/// <param name="stateValues">The current state values that will be updated, if necessary.</param>
-		/// <param name="index">The index of the state value that should be updated.</param>
-		/// <param name="value">The new state value.</param>
-		public static bool Change<T>(T[] stateValues, int index, T value)
-			where T : class
-		{
-			Assert.ArgumentNotNull(stateValues, nameof(stateValues));
-			Assert.ArgumentInRange(index, stateValues, nameof(stateValues));
-
-			if (stateValues[index] == value)
-				return false;
-
-			stateValues[index] = value;
-			return true;
-		}
-
-		/// <summary>
-		///   Unsets the given state value if it matches the given value.
-		/// </summary>
-		/// <typeparam name="T">The type of the state that should be unset.</typeparam>
-		/// <param name="stateValue">The current state value that will be unset, if necessary.</param>
-		/// <param name="value">The state value that should be unset.</param>
-		public static void Unset<T>(ref T stateValue, T value)
-			where T : class
-		{
-			if (stateValue == value)
-				stateValue = null;
-		}
-
-		/// <summary>
-		///   Unsets the given state value if it matches the given value.
-		/// </summary>
-		/// <typeparam name="T">The type of the state that should be unset.</typeparam>
-		/// <param name="stateValues">The current state values that will be unset, if necessary.</param>
-		/// <param name="value">The state value that should be unset.</param>
-		public static void Unset<T>(T[] stateValues, T value)
-			where T : class
-		{
-			for (var i = 0; i < stateValues.Length; ++i)
-			{
-				if (stateValues[i] == value)
-					stateValues[i] = null;
-			}
 		}
 	}
 }
