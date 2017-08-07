@@ -9,7 +9,7 @@
 	/// </summary>
 	public sealed unsafe class Camera : DisposableObject
 	{
-		private readonly UniformBuffer _buffer = new UniformBuffer(sizeof(Vector2));
+		private readonly ConstantBuffer _buffer = new ConstantBuffer(sizeof(Vector2));
 		private Vector2 _position;
 
 		/// <summary>

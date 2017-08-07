@@ -1,5 +1,6 @@
 ﻿namespace OrbsHavoc.Platform.Graphics
 {
+	using SharpDX.DXGI;
 	using Utilities;
 
 	/// <summary>
@@ -10,7 +11,7 @@
 		/// <summary>
 		///   The buffer the data is read from.
 		/// </summary>
-		public readonly Buffer Buffer;
+		public readonly HardwareBuffer Buffer;
 
 		/// <summary>
 		///   The number of components accessed by the attribute.
@@ -20,7 +21,7 @@
 		/// <summary>
 		///   The data format of the attribute.
 		/// </summary>
-		public readonly DataFormat DataFormat;
+		public readonly Format DataFormat;
 
 		/// <summary>
 		///   The number of bytes accessed by the attribute.
@@ -46,7 +47,7 @@
 		/// <param name="sizeInBytes">The number of bytes accessed by the attribute.</param>
 		/// <param name="strideInBytes">The stride in bytes between two consecutive values of the attribute.</param>
 		/// <param name="normalize">Indicates whether the attribute values should be normalized.</param>
-		public VertexAttribute(Buffer buffer, DataFormat dataFormat, int componentCount, int sizeInBytes, int strideInBytes, bool normalize)
+		public VertexAttribute(HardwareBuffer buffer, Format dataFormat, int componentCount, int sizeInBytes, int strideInBytes, bool normalize)
 		{
 			Assert.ArgumentNotNull(buffer, nameof(buffer));
 			Assert.ArgumentInRange(dataFormat, nameof(dataFormat));

@@ -12,7 +12,7 @@
 		/// <summary>
 		///   The vertex buffers that are used to store the quad data.
 		/// </summary>
-		private readonly Buffer[] _dataBuffers = new Buffer[GraphicsState.MaxFrameLag];
+		private readonly HardwareBuffer[] _dataBuffers = new HardwareBuffer[GraphicsState.MaxFrameLag];
 
 		/// <summary>
 		///   The vertex input layouts that describe the vertex buffers.
@@ -33,7 +33,7 @@
 
 			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
 			{
-				_dataBuffers[i] = Buffer.CreateVertexBuffer(ResourceUsage.Dynamic, QuadCollection.MaxQuads * Quad.SizeInBytes);
+				_dataBuffers[i] = HardwareBuffer.CreateVertexBuffer(ResourceUsage.Dynamic, QuadCollection.MaxQuads * Quad.SizeInBytes);
 				_vertexLayouts[i] = new VertexLayout(
 					new VertexAttribute(_dataBuffers[i], DataFormat.Float, 2, sizeof(float), Quad.SizeInBytes, false), // Positions
 					new VertexAttribute(_dataBuffers[i], DataFormat.Float, 1, sizeof(float), Quad.SizeInBytes, false), // Orientations

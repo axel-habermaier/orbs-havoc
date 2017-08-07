@@ -9,12 +9,12 @@
 	// ReSharper disable UnusedParameter.Global
 
 	/// <summary>
-	///   Defines assertion helpers that can be used to check for errors. The checks are only performed in debug builds.
+	///     Defines assertion helpers that can be used to check for errors. The checks are only performed in debug builds.
 	/// </summary>
 	public static class Assert
 	{
 		/// <summary>
-		///   Throws an ArgumentNullException if the argument is null.
+		///     Throws an ArgumentNullException if the argument is null.
 		/// </summary>
 		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
 		/// <param name="argument">The argument to check for null.</param>
@@ -30,7 +30,7 @@
 		}
 
 		/// <summary>
-		///   Throws an ArgumentNullException if the pointer is null.
+		///     Throws an ArgumentNullException if the pointer is null.
 		/// </summary>
 		/// <param name="pointer">The pointer to check for null.</param>
 		/// <param name="argumentName">The name of the argument that is checked.</param>
@@ -44,7 +44,21 @@
 		}
 
 		/// <summary>
-		///   Throws an ArgumentException if the object is not the same as or subtype of the given type.
+		///     Throws an ArgumentNullException if the pointer is null.
+		/// </summary>
+		/// <param name="pointer">The pointer to check for null.</param>
+		/// <param name="argumentName">The name of the argument that is checked.</param>
+		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("pointer: null,  argumentName: notnull => halt")]
+		public static unsafe void ArgumentNotNull(void* pointer, string argumentName)
+		{
+			ArgumentNotNullOrWhitespace(argumentName, nameof(argumentName));
+
+			if (pointer == null)
+				throw new ArgumentNullException(argumentName);
+		}
+
+		/// <summary>
+		///     Throws an ArgumentException if the object is not the same as or subtype of the given type.
 		/// </summary>
 		/// <param name="obj">The object to check.</param>
 		/// <param name="argumentName">The name of the argument that is checked.</param>
@@ -59,8 +73,8 @@
 		}
 
 		/// <summary>
-		///   Throws an ArgumentException if the string argument is null or an ArgumentException if the string is empty (or
-		///   only whitespace).
+		///     Throws an ArgumentException if the string argument is null or an ArgumentException if the string is empty (or
+		///     only whitespace).
 		/// </summary>
 		/// <param name="argument">The argument to check.</param>
 		/// <param name="argumentName">The name of the argument that is checked.</param>
@@ -75,7 +89,7 @@
 		}
 
 		/// <summary>
-		///   Throws an ArgumentOutOfRangeException if the enum argument is outside the range of the enumeration.
+		///     Throws an ArgumentOutOfRangeException if the enum argument is outside the range of the enumeration.
 		/// </summary>
 		/// <typeparam name="TEnum">The type of the enumeration.</typeparam>
 		/// <param name="argument">The enumeration value to check.</param>
@@ -91,7 +105,7 @@
 		}
 
 		/// <summary>
-		///   Throws an ArgumentOutOfRangeException if the argument is outside the range.
+		///     Throws an ArgumentOutOfRangeException if the argument is outside the range.
 		/// </summary>
 		/// <typeparam name="T">The type of the value to check.</typeparam>
 		/// <param name="argument">The value to check.</param>
@@ -112,7 +126,7 @@
 		}
 
 		/// <summary>
-		///   Throws an ArgumentOutOfRangeException if the argument is outside the range.
+		///     Throws an ArgumentOutOfRangeException if the argument is outside the range.
 		/// </summary>
 		/// <param name="argument">The value of the index argument to check.</param>
 		/// <param name="collection">The collection that defines the valid range of the given index argument.</param>
@@ -125,7 +139,7 @@
 		}
 
 		/// <summary>
-		///   Throws an ArgumentException if the condition does not hold.
+		///     Throws an ArgumentException if the condition does not hold.
 		/// </summary>
 		/// <param name="condition">The condition that, if false, causes the exception to be raised.</param>
 		/// <param name="argumentName">The name of the argument that is checked.</param>
@@ -141,7 +155,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the object is not null.
+		///     Throws a FatalErrorException if the object is not null.
 		/// </summary>
 		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
 		/// <param name="obj">The object to check for null.</param>
@@ -157,7 +171,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the object is null.
+		///     Throws a FatalErrorException if the object is null.
 		/// </summary>
 		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
 		/// <param name="obj">The object to check for null.</param>
@@ -173,7 +187,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the pointer is null.
+		///     Throws a FatalErrorException if the pointer is null.
 		/// </summary>
 		/// <param name="ptr">The pointer to check for null.</param>
 		/// <param name="message">An error message explaining the exception to the user.</param>
@@ -187,7 +201,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the object is null.
+		///     Throws a FatalErrorException if the object is null.
 		/// </summary>
 		/// <typeparam name="T">The type of the argument to check for null.</typeparam>
 		/// <param name="obj">The object to check for null.</param>
@@ -200,7 +214,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the pointer is null.
+		///     Throws a FatalErrorException if the pointer is null.
 		/// </summary>
 		/// <param name="ptr">The pointer to check for null.</param>
 		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("null => halt")]
@@ -211,7 +225,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the string is null or empty (or only whitespace).
+		///     Throws a FatalErrorException if the string is null or empty (or only whitespace).
 		/// </summary>
 		/// <param name="s">The string to check.</param>
 		/// <param name="message">An error message explaining the exception to the user.</param>
@@ -225,7 +239,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the condition does not hold.
+		///     Throws a FatalErrorException if the condition does not hold.
 		/// </summary>
 		/// <param name="condition">The condition that, if false, causes the exception to be raised.</param>
 		/// <param name="message">An error message explaining the exception to the user.</param>
@@ -239,7 +253,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the method is invoked.
+		///     Throws a FatalErrorException if the method is invoked.
 		/// </summary>
 		/// <param name="message">An error message explaining the exception to the user.</param>
 		[Conditional("DEBUG"), DebuggerHidden, ContractAnnotation("=> halt")]
@@ -249,7 +263,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the enum argument is outside the range of the enumeration.
+		///     Throws a FatalErrorException if the enum argument is outside the range of the enumeration.
 		/// </summary>
 		/// <typeparam name="TEnum">The type of the enumeration.</typeparam>
 		/// <param name="argument">The enumeration value to check.</param>
@@ -262,7 +276,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the argument is outside the range.
+		///     Throws a FatalErrorException if the argument is outside the range.
 		/// </summary>
 		/// <typeparam name="T">The type of the value to check.</typeparam>
 		/// <param name="index">The value to check.</param>
@@ -280,7 +294,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the argument is outside the range.
+		///     Throws a FatalErrorException if the argument is outside the range.
 		/// </summary>
 		/// <param name="index">The value of the index to check.</param>
 		/// <param name="collection">The collection that defines the valid range of the given index argument.</param>
@@ -292,7 +306,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the object is not the same as or subtype of the given type.
+		///     Throws a FatalErrorException if the object is not the same as or subtype of the given type.
 		/// </summary>
 		/// <param name="obj">The object to check.</param>
 		[Conditional("DEBUG"), DebuggerHidden]
@@ -305,7 +319,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the object is not the same as or subtype of the given type.
+		///     Throws a FatalErrorException if the object is not the same as or subtype of the given type.
 		/// </summary>
 		/// <param name="obj">The object to check.</param>
 		/// <param name="message">An error message explaining the exception to the user.</param>
@@ -320,7 +334,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the given object is not null or has not been disposed.
+		///     Throws a FatalErrorException if the given object is not null or has not been disposed.
 		/// </summary>
 		/// <param name="obj">The object that should be checked.</param>
 		[Conditional("DEBUG"), DebuggerHidden]
@@ -332,7 +346,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the given object has already been disposed.
+		///     Throws a FatalErrorException if the given object has already been disposed.
 		/// </summary>
 		/// <param name="obj">The object that should be checked.</param>
 		[Conditional("DEBUG"), DebuggerHidden]
@@ -345,7 +359,7 @@
 		}
 
 		/// <summary>
-		///   Throws a FatalErrorException if the given object has currently pooled and not in use.
+		///     Throws a FatalErrorException if the given object has currently pooled and not in use.
 		/// </summary>
 		/// <param name="obj">The object that should be checked.</param>
 		[Conditional("DEBUG"), DebuggerHidden]

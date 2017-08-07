@@ -150,12 +150,12 @@
     <Compile Include="Network\ServerFullException.cs" />
     <Compile Include="Network\ServerQuitException.cs" />
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
+    <Compile Include="Platform\Graphics\FormatExtensions.cs" />
+    <Compile Include="Platform\Graphics\GraphicsObject.cs" />
     <Compile Include="Platform\Graphics\PrimitiveType.cs" />
-    <Compile Include="Platform\Graphics\DataFormat.cs" />
-    <Compile Include="Platform\Graphics\ResourceUsage.cs" />
     <Compile Include="Platform\Graphics\VertexAttribute.cs" />
     <Compile Include="Platform\Graphics\VertexLayout.cs" />
-    <Compile Include="Platform\Graphics\UniformBuffer.cs" />
+    <Compile Include="Platform\Graphics\ConstantBuffer.cs" />
     <Compile Include="Platform\Graphics\OpenGL3.cs" />
     <Compile Include="UserInterface\Input\TriggerType.cs" />
     <Compile Include="Platform\Logging\LogEntryCache.cs" />
@@ -280,7 +280,7 @@
     <Compile Include="Views\View.cs" />
     <Compile Include="Network\NetworkProtocol.cs" />
     <Compile Include="Platform\Graphics\BlendOperation.cs" />
-    <Compile Include="Platform\Graphics\Buffer.cs" />
+    <Compile Include="Platform\Graphics\HardwareBuffer.cs" />
     <Compile Include="Platform\Graphics\GraphicsDevice.cs" />
     <Compile Include="Platform\Graphics\RenderTarget.cs" />
     <Compile Include="Platform\Graphics\GraphicsState.cs" />

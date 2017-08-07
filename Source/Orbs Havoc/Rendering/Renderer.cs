@@ -14,7 +14,7 @@
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
 		private readonly List<RenderOperation> _operations = new List<RenderOperation>();
-		private readonly UniformBuffer _projectionMatrixBuffer;
+		private readonly ConstantBuffer _projectionMatrixBuffer;
 
 		/// <summary>
 		///   Initializes a new instance.
@@ -27,7 +27,7 @@
 			Assert.ArgumentNotNull(window, nameof(window));
 
 			GraphicsDevice = graphicsDevice;
-			_projectionMatrixBuffer = new UniformBuffer(sizeof(Matrix4x4));
+			_projectionMatrixBuffer = new ConstantBuffer(sizeof(Matrix4x4));
 
 			Window = window;
 			Window.Resized += UpdateProjectionMatrix;
