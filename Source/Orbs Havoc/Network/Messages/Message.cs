@@ -6,32 +6,31 @@
 	using System.Numerics;
 	using System.Reflection;
 	using System.Runtime.CompilerServices;
-	using JetBrains.Annotations;
 	using Platform.Memory;
 	using Utilities;
 
 	/// <summary>
-	///   Represents a message that is used for the communication between the server and the client.
+	///     Represents a message that is used for the communication between the server and the client.
 	/// </summary>
 	internal abstract class Message : PooledObject
 	{
 		/// <summary>
-		///   Maps a message type to its transmission information.
+		///     Maps a message type to its transmission information.
 		/// </summary>
 		private static readonly Dictionary<Type, TransmissionInfo> _transmissionInfos = new Dictionary<Type, TransmissionInfo>();
 
 		/// <summary>
-		///   Maps a message type to a message instance allocator.
+		///     Maps a message type to a message instance allocator.
 		/// </summary>
 		private static readonly Dictionary<MessageType, Func<PoolAllocator, Message>> _messageConstructors =
 			new Dictionary<MessageType, Func<PoolAllocator, Message>>(new MessageTypeComparer());
 
 		/// <summary>
-		///   Initializes the type.
+		///     Initializes the type.
 		/// </summary>
 		static Message()
 		{
-			var allocateMethod = typeof(Message).GetTypeInfo().GetDeclaredMethod("CreateAllocator");
+			var allocateMethod = typeof(PoolAllocator).GetTypeInfo().GetDeclaredMethod("Allocate");
 
 			var messageTypes = typeof(Message)
 				.GetTypeInfo()
@@ -41,7 +40,8 @@
 
 			foreach (var messageType in messageTypes)
 			{
-				var allocator = (Func<PoolAllocator, Message>)allocateMethod.MakeGenericMethod(messageType.AsType()).Invoke(null, null);
+				var messageAllocationMethod = allocateMethod.MakeGenericMethod(messageType.AsType());
+				var allocator = (Func<PoolAllocator, Message>)Delegate.CreateDelegate(typeof(Func<PoolAllocator, Message>), messageAllocationMethod);
 				var reliable = (ReliableTransmissionAttribute)messageType
 					.GetCustomAttributes(typeof(ReliableTransmissionAttribute), false).FirstOrDefault();
 				var unreliable = (UnreliableTransmissionAttribute)messageType
@@ -83,7 +83,7 @@
 		}
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		protected Message()
 		{
@@ -95,58 +95,47 @@
 		}
 
 		/// <summary>
-		///   Gets the type of the message.
+		///     Gets the type of the message.
 		/// </summary>
 		public MessageType MessageType { get; }
 
 		/// <summary>
-		///   Gets a value indicating whether as many messages of this type as possible are batched together into a
-		///   single network transmission.
+		///     Gets a value indicating whether as many messages of this type as possible are batched together into a
+		///     single network transmission.
 		/// </summary>
 		public bool UseBatchedTransmission { get; }
 
 		/// <summary>
-		///   Gets a value indicating whether the message is reliable.
+		///     Gets a value indicating whether the message is reliable.
 		/// </summary>
 		public bool IsReliable { get; }
 
 		/// <summary>
-		///   Gets a value indicating whether the message is unreliable.
+		///     Gets a value indicating whether the message is unreliable.
 		/// </summary>
 		public bool IsUnreliable => !IsReliable;
 
 		/// <summary>
-		///   Creates an allocator for a message of the given type.
-		/// </summary>
-		/// <typeparam name="T">The message type the allocator should be created for.</typeparam>
-		[UsedImplicitly]
-		private static Func<PoolAllocator, Message> CreateAllocator<T>()
-			where T : Message, new()
-		{
-			return allocator => allocator.Allocate<T>();
-		}
-
-		/// <summary>
-		///   Serializes the message using the given writer.
+		///     Serializes the message using the given writer.
 		/// </summary>
 		/// <param name="writer">The writer that should be used to serialize the message.</param>
 		public abstract void Serialize(ref BufferWriter writer);
 
 		/// <summary>
-		///   Deserializes the message using the given reader.
+		///     Deserializes the message using the given reader.
 		/// </summary>
 		/// <param name="reader">The reader that should be used to deserialize the message.</param>
 		public abstract void Deserialize(ref BufferReader reader);
 
 		/// <summary>
-		///   Dispatches the message to the given dispatcher.
+		///     Dispatches the message to the given dispatcher.
 		/// </summary>
 		/// <param name="handler">The dispatcher that should be used to dispatch the message.</param>
 		/// <param name="sequenceNumber">The sequence number of the message.</param>
 		public abstract void Dispatch(IMessageHandler handler, uint sequenceNumber);
 
 		/// <summary>
-		///   Allocates a message instance for a message of the given message transmission type.
+		///     Allocates a message instance for a message of the given message transmission type.
 		/// </summary>
 		/// <param name="allocator">The allocator that should be used to allocate the message.</param>
 		/// <param name="messageType">The message transmission type a message instance should be created for.</param>
@@ -162,7 +151,7 @@
 		}
 
 		/// <summary>
-		///   Reads an identity from the buffer.
+		///     Reads an identity from the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the identity should be read from.</param>
 		protected static NetworkIdentity ReadIdentifier(ref BufferReader buffer)
@@ -174,7 +163,7 @@
 		}
 
 		/// <summary>
-		///   Reads a vector from the buffer.
+		///     Reads a vector from the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the vector should be read from.</param>
 		protected static Vector2 ReadVector2(ref BufferReader buffer)
@@ -183,7 +172,7 @@
 		}
 
 		/// <summary>
-		///   Reads an orientation, in radians, from the buffer.
+		///     Reads an orientation, in radians, from the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the orientation should be read from.</param>
 		protected static float ReadOrientation(ref BufferReader buffer)
@@ -192,7 +181,7 @@
 		}
 
 		/// <summary>
-		///   Writes the given identity into the buffer.
+		///     Writes the given identity into the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the identity should be written into.</param>
 		/// <param name="identity">The identity that should be written into the buffer.</param>
@@ -203,7 +192,7 @@
 		}
 
 		/// <summary>
-		///   Writes the given vector into the buffer.
+		///     Writes the given vector into the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the vector should be written into.</param>
 		/// <param name="vector">The vector that should be written into the buffer.</param>
@@ -215,7 +204,7 @@
 		}
 
 		/// <summary>
-		///   Writes the given orientation into the buffer.
+		///     Writes the given orientation into the buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer the orientation should be written into.</param>
 		/// <param name="orientation">The orientation, in radians, that should be written into the buffer.</param>
@@ -225,13 +214,13 @@
 		}
 
 		/// <summary>
-		///   The comparer that is used by the message constructor dictionary to compare the message type keys,
-		///   otherwise boxing would occur.
+		///     The comparer that is used by the message constructor dictionary to compare the message type keys,
+		///     otherwise boxing would occur.
 		/// </summary>
 		private class MessageTypeComparer : IEqualityComparer<MessageType>
 		{
 			/// <summary>
-			///   Determines whether the specified message types are equal.
+			///     Determines whether the specified message types are equal.
 			/// </summary>
 			/// <param name="messageType1">The first message type to compare.</param>
 			/// <param name="messageType2">The second message type to compare.</param>
@@ -241,7 +230,7 @@
 			}
 
 			/// <summary>
-			///   Returns a hash code for the given message type.
+			///     Returns a hash code for the given message type.
 			/// </summary>
 			/// <param name="messageType">The message type the hash code should be returned for.</param>
 			public int GetHashCode(MessageType messageType)
@@ -251,22 +240,22 @@
 		}
 
 		/// <summary>
-		///   Provides transmission information about a message.
+		///     Provides transmission information about a message.
 		/// </summary>
 		private struct TransmissionInfo
 		{
 			/// <summary>
-			///   Indicates whether as many messages as possible should be batched together for optimized transmission.
+			///     Indicates whether as many messages as possible should be batched together for optimized transmission.
 			/// </summary>
 			public bool BatchedTransmission;
 
 			/// <summary>
-			///   The transmission type of the message.
+			///     The transmission type of the message.
 			/// </summary>
 			public MessageType MessageType;
 
 			/// <summary>
-			///   Indicates whether reliable or unreliable transmission should be used.
+			///     Indicates whether reliable or unreliable transmission should be used.
 			/// </summary>
 			public bool ReliableTransmission;
 		}
