@@ -22,17 +22,18 @@ echo =====================================================================
 mkdir Binaries
 
 echo =====================================================================
-echo Merging assemblies...
+echo Merging and linking assemblies...
 echo =====================================================================
 cd Build\Release
-"..\..\Dependencies\ILRepack.exe" /out:"Orbs Havoc.exe" /internalize "Orbs Havoc.exe" "System.ValueTuple.dll" "System.Runtime.CompilerServices.Unsafe.dll"
+copy "Orbs Havoc.exe" "OrbsHavoc.exe"
+"..\..\Dependencies\SharpPak\SharpPak.exe" OrbsHavoc.exe -a
 cd ..\..\Binaries
 
 echo =====================================================================
 echo Copying files...
 echo =====================================================================
 copy "..\Build\Release\Assets.pak" 
-copy "..\Build\Release\Orbs Havoc.exe"
+copy "..\Build\Release\Output\OrbsHavoc.exe" "Orbs Havoc.exe"
 copy "..\Build\Release\SDL2.dll"
 
 cd..

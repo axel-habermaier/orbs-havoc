@@ -61,7 +61,7 @@
 					{
 						BatchedTransmission = false,
 						MessageType = reliable.MessageType,
-						ReliableTransmission = true,
+						ReliableTransmission = true
 					});
 				}
 
