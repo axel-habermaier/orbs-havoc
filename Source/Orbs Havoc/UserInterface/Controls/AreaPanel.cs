@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Allows each child to take up the entire area of the panel.
 	/// </summary>
-	public class AreaPanel : Panel
+	internal class AreaPanel : Panel
 	{
 		/// <summary>
 		///   Computes and returns the desired size of the element given the available space allocated by the parent UI element.

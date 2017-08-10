@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Draws a texture into the UI.
 	/// </summary>
-	public class Image : UIElement
+	internal class Image : UIElement
 	{
 		/// <summary>
 		///   Gets or sets the texture that should be drawn.

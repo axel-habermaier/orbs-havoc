@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Changes the scales of the particles.
 	/// </summary>
-	public sealed class ScaleModifier : Modifier
+	internal sealed class ScaleModifier : Modifier
 	{
 		/// <summary>
 		///   The scale delta per second.

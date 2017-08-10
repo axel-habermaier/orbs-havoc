@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Represents a configurable value.
 	/// </summary>
-	public interface ICvar
+	internal interface ICvar
 	{
 		/// <summary>
 		///   Gets the external name of the cvar that is used to refer to the cvar in the console, for instance.

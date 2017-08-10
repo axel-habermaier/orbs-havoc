@@ -2,7 +2,7 @@
 {
 	using System.Collections.Generic;
 
-	public static class ListExtensions
+	internal static class ListExtensions
 	{
 		public static void AddRange<T>(this List<T> list, T item1)
 		{

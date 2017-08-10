@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents an input binding that invokes a callback whenever it is triggered.
 	/// </summary>
-	public abstract class InputBinding
+	internal abstract class InputBinding
 	{
 		/// <summary>
 		///   The callback that is invoked when the binding is triggered.

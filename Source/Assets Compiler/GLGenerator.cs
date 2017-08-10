@@ -9,7 +9,7 @@
 	using JetBrains.Annotations;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class GLGenerator : CompilationTask
+	internal class GLGenerator : CompilationTask
 	{
 		private static readonly string[] _extensions = { };
 

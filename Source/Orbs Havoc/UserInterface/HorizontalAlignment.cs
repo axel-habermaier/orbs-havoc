@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Indicates where an UI element should be displayed horizontally relative to its parent element.
 	/// </summary>
-	public enum HorizontalAlignment : byte
+	internal enum HorizontalAlignment : byte
 	{
 		/// <summary>
 		///   Indicates that the entire horizontal space of the parent element is consumed.

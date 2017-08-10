@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents a timer that periodically raises a timeout event.
 	/// </summary>
-	public struct Timer
+	internal struct Timer
 	{
 		/// <summary>
 		///   The timeout in milliseconds after which the timeout event is raised.

@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Specifies the visiblity of an UI element.
 	/// </summary>
-	public enum Visibility : byte
+	internal enum Visibility : byte
 	{
 		/// <summary>
 		///   Indicates that the element is displayed.

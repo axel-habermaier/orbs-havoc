@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Displays arbitrary content in the UI.
 	/// </summary>
-	public sealed class ContentPresenter : UIElement
+	internal sealed class ContentPresenter : UIElement
 	{
 		private object _content;
 		private Label _label;

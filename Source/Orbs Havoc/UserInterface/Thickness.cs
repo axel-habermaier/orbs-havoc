@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Describes the thickness of a rectangular frame.
 	/// </summary>
-	public struct Thickness : IEquatable<Thickness>
+	internal struct Thickness : IEquatable<Thickness>
 	{
 		/// <summary>
 		///   The width of the lower side of the rectangle.

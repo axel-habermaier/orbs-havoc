@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Provides extension methods for the entity type enumeration.
 	/// </summary>
-	public static class EntityTypeExtensions
+	internal static class EntityTypeExtensions
 	{
 		/// <summary>
 		///   Gets the color for the given collectible.

@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Changes the speed of the particles.
 	/// </summary>
-	public sealed class SpeedModifier : Modifier
+	internal sealed class SpeedModifier : Modifier
 	{
 		/// <summary>
 		///   The minimum speed in percent of the initial speed.

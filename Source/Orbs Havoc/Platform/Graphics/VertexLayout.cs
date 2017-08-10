@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents the vertex layout expected by a vertex shader.
 	/// </summary>
-	public sealed unsafe class VertexLayout : DisposableObject
+	internal sealed unsafe class VertexLayout : DisposableObject
 	{
 		private readonly int _vertexLayout = Allocate(glGenVertexArrays, "Vertex Layout");
 

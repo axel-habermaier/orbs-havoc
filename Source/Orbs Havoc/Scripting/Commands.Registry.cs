@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Provides access to all commands.
 	/// </summary>
-	public static partial class Commands
+	internal static partial class Commands
 	{
 		/// <summary>
 		///   The registered commands.

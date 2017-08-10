@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Ensures that the validated value lies within the acceptable bounds of a window position.
 	/// </summary>
-	public class WindowPositionAttribute : ValidatorAttribute
+	internal class WindowPositionAttribute : ValidatorAttribute
 	{
 		/// <summary>
 		///   Gets an error message that describes a validation error.

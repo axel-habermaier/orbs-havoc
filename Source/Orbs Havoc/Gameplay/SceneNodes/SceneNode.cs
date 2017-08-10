@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Represents the base class for all scene nodes of a scene graph.
 	/// </summary>
-	public class SceneNode : PooledObject
+	internal class SceneNode : PooledObject
 	{
 		/// <summary>
 		///   The local transformation matrix of the scene node, relative to the parent scene node.
@@ -397,7 +397,7 @@
 		/// <summary>
 		///   Enumerates a list of behaviors.
 		/// </summary>
-		public struct BehaviorEnumerator
+		internal struct BehaviorEnumerator
 		{
 			/// <summary>
 			///   The remaining behaviors that have yet to be enumerated.
@@ -444,7 +444,7 @@
 		/// <summary>
 		///   Enumerates a list of scene nodes.
 		/// </summary>
-		public struct SceneNodeEnumerator
+		internal struct SceneNodeEnumerator
 		{
 			/// <summary>
 			///   The remaining scene nodes that have yet to be enumerated.

@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Converts between little and big endian encoding.
 	/// </summary>
-	public static class EndianConverter
+	internal static class EndianConverter
 	{
 		/// <summary>
 		///   Gets a value indicating whether an endianess conversion is required for multi-byte values.

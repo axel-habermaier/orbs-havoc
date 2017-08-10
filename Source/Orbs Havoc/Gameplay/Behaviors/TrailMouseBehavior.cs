@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Trails the position of a mouse cursor.
 	/// </summary>
-	public class TrailMouseBehavior : Behavior<SceneNode>
+	internal class TrailMouseBehavior : Behavior<SceneNode>
 	{
 		private Camera _camera;
 		private Mouse _mouse;

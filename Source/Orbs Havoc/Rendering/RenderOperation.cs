@@ -5,7 +5,7 @@ namespace OrbsHavoc.Rendering
 	/// <summary>
 	///   Represents an operation performed by a renderer.
 	/// </summary>
-	public abstract class RenderOperation : PooledObject
+	internal abstract class RenderOperation : PooledObject
 	{
 		/// <summary>
 		///   Gets the renderer that executes the operation.

@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Describes the kind of an input event.
 	/// </summary>
-	public enum InputEventKind
+	internal enum InputEventKind
 	{
 		/// <summary>
 		///   Indicates that the event was raised because a key or mouse button was released.

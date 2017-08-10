@@ -12,7 +12,7 @@
 	/// <summary>
 	///   Represents a effect that blooms the input render target.
 	/// </summary>
-	public class BloomEffect : FullscreenEffect
+	internal class BloomEffect : FullscreenEffect
 	{
 		private readonly UniformBuffer _bloomSettingsBuffer;
 		private readonly UniformBuffer _horizontalBlurBuffer;

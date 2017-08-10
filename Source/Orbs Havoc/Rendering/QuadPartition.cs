@@ -8,7 +8,7 @@ namespace OrbsHavoc.Rendering
 	/// <summary>
 	///     Represents a partition of a quad collection consisting of quads that use the same render states.
 	/// </summary>
-	public sealed class QuadPartition : PooledObject
+	internal sealed class QuadPartition : PooledObject
 	{
 		/// <summary>
 		///     The subsections of quads within the quad collection the partition consists of.

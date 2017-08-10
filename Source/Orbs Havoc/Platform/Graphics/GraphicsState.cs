@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents the state of the graphics device.
 	/// </summary>
-	public sealed class GraphicsState
+	internal sealed class GraphicsState
 	{
 		/// <summary>
 		///   The maximum number of uniform buffers that can be bound simultaneously.

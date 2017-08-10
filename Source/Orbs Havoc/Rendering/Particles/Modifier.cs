@@ -3,7 +3,7 @@
 	/// <summary>
 	///   A base class for modifiers that affect and update particle properties.
 	/// </summary>
-	public abstract class Modifier
+	internal abstract class Modifier
 	{
 		/// <summary>
 		///   Executes the modifier, updating the given number of particles contained in the particles collection.

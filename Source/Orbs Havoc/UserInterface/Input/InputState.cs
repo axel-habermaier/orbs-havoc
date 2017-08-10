@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Represents the state of an input key or button.
 	/// </summary>
-	public struct InputState
+	internal struct InputState
 	{
 		/// <summary>
 		///   Gets a value indicating whether the key or button is currently being pressed down.

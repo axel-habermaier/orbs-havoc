@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Determines the type of a key or mouse button input trigger.
 	/// </summary>
-	public enum TriggerType
+	internal enum TriggerType
 	{
 		/// <summary>
 		///   Indicates that the trigger triggers when the key or mouse button is released.

@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Represents a collection of a particle emitter's live particles.
 	/// </summary>
-	public sealed unsafe class ParticleCollection : DisposableObject
+	internal sealed unsafe class ParticleCollection : DisposableObject
 	{
 		/// <summary>
 		///   The pointer to the memory allocated for the particle collection.

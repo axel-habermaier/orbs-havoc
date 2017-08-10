@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Represents a particle effect consisting of one or more particle emitters.
 	/// </summary>
-	public sealed class ParticleEffect : PooledObject
+	internal sealed class ParticleEffect : PooledObject
 	{
 		/// <summary>
 		///   Gets or sets the emitters of the particle effect.

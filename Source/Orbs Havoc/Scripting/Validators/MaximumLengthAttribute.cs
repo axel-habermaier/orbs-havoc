@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Ensures that the validated string has a length less than or equal to the maximum allowed length.
 	/// </summary>
-	public class MaximumLengthAttribute : ValidatorAttribute
+	internal class MaximumLengthAttribute : ValidatorAttribute
 	{
 		/// <summary>
 		///   Initializes a new instance.

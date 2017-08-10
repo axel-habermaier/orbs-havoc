@@ -6,7 +6,7 @@
 	///     Specifies a set of key modifiers.
 	/// </summary>
 	[Flags]
-	public enum KeyModifiers
+	internal enum KeyModifiers
 	{
 		None = 0,
 		Control = 1,

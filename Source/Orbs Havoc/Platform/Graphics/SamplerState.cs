@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Describes a sampler state of a shader pipeline stage.
 	/// </summary>
-	public sealed unsafe class SamplerState : DisposableObject
+	internal sealed unsafe class SamplerState : DisposableObject
 	{
 		private readonly int _state;
 

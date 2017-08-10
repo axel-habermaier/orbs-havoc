@@ -13,7 +13,7 @@
 	using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class RegistryGenerator : CompilationTask
+	internal class RegistryGenerator : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input cvars file.")]
 		public string InFile { get; set; }

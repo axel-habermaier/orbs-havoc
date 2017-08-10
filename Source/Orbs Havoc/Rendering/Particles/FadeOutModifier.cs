@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Fades out the particles based on their remaining life time.
 	/// </summary>
-	public sealed class FadeOutModifier : Modifier
+	internal sealed class FadeOutModifier : Modifier
 	{
 		/// <summary>
 		///   Executes the modifier, updating the given number of particles contained in the particles collection.

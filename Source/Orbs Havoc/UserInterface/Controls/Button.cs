@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents a button control.
 	/// </summary>
-	public class Button : Control
+	internal class Button : Control
 	{
 		private static readonly ControlTemplate _defaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
 		{

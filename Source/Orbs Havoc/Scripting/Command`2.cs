@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Represents a command with two parameters.
 	/// </summary>
-	public sealed class Command<T1, T2> : ICommand
+	internal sealed class Command<T1, T2> : ICommand
 	{
 		/// <summary>
 		///   The representation the command's first parameter.

@@ -11,7 +11,7 @@
 	///   Represents a configurable value.
 	/// </summary>
 	/// <typeparam name="T">The type of the value.</typeparam>
-	public sealed class Cvar<T> : ICvar
+	internal sealed class Cvar<T> : ICvar
 	{
 		/// <summary>
 		///   The default value of the cvar.

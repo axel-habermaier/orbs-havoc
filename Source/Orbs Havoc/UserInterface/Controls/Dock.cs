@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Indicates the position of a child UI element within a dock panel.
 	/// </summary>
-	public enum Dock
+	internal enum Dock
 	{
 		/// <summary>
 		///   Indicates that the child UI element is docked to the left.

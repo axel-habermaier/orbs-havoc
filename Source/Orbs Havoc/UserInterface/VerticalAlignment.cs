@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Indicates where an UI element should be displayed vertically relative to its parent element.
 	/// </summary>
-	public enum VerticalAlignment : byte
+	internal enum VerticalAlignment : byte
 	{
 		/// <summary>
 		///   Indicates that the entire vertical space of the parent element is consumed.

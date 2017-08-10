@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents a panel that stacks its children vertically or horizontally.
 	/// </summary>
-	public class StackPanel : Panel
+	internal class StackPanel : Panel
 	{
 		private Orientation _orientation = Orientation.Vertical;
 

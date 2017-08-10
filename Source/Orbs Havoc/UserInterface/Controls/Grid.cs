@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Provides a flexible grid layout that consists of rows and columns.
 	/// </summary>
-	public class Grid : Panel
+	internal class Grid : Panel
 	{
 		/// <summary>
 		///   Initializes a new instance.

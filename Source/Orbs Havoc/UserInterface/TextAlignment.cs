@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Specifies whether some text is left-aligned, right-aligned, or centered.
 	/// </summary>
-	public enum TextAlignment
+	internal enum TextAlignment
 	{
 		/// <summary>
 		///   Indicates that the text left-aligned.

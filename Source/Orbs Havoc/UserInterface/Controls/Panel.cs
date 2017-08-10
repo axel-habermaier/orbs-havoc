@@ -6,7 +6,7 @@
 	/// <summary>
 	///   A base class for all panel elements that position and arrange child UI elements.
 	/// </summary>
-	public abstract class Panel : UIElement
+	internal abstract class Panel : UIElement
 	{
 		/// <summary>
 		///   Initializes a new instance.

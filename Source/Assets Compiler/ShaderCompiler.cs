@@ -10,7 +10,7 @@
 	using JetBrains.Annotations;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class ShaderCompiler : CompilationTask
+	internal class ShaderCompiler : CompilationTask
 	{
 		private const string Preamble = "#version 330\n";
 

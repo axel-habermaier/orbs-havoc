@@ -3,7 +3,7 @@
 	using System;
 	using System.IO;
 
-	public abstract class CompilationTask
+	internal abstract class CompilationTask
 	{
 		protected abstract string GeneratedFile { get; }
 

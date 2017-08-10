@@ -8,7 +8,7 @@
 	using Rendering;
 	using Utilities;
 
-	public partial class UIElement
+	partial class UIElement
 	{
 		private Action<UIElement> _activeStyle;
 		private float _bottom = Single.NaN;

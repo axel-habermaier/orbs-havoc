@@ -10,7 +10,7 @@
 	/// <summary>
 	///   Represents a parameterless command.
 	/// </summary>
-	public sealed class Command : ICommand
+	internal sealed class Command : ICommand
 	{
 		/// <summary>
 		///   Initializes a new instance.

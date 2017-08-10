@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Caches log entries.
 	/// </summary>
-	public static class LogEntryCache
+	internal static class LogEntryCache
 	{
 		/// <summary>
 		///   The list of cached log entries.

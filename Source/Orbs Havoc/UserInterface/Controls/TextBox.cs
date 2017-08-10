@@ -13,7 +13,7 @@
 	/// <summary>
 	///   Represents a control that can be used to edit text.
 	/// </summary>
-	public class TextBox : Control
+	internal class TextBox : Control
 	{
 		private static readonly ControlTemplate _defaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
 		{

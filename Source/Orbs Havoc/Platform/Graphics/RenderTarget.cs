@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Represents the target of a rendering operation.
 	/// </summary>
-	public sealed unsafe class RenderTarget : DisposableObject
+	internal sealed unsafe class RenderTarget : DisposableObject
 	{
 		private readonly int _renderTarget;
 		private readonly Size _size;

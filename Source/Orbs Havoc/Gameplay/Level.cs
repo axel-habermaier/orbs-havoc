@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Represents a level within which a game session takes place.
 	/// </summary>
-	public class Level : DisposableObject
+	internal class Level : DisposableObject
 	{
 		/// <summary>
 		///   The size of a block within the
@@ -298,7 +298,7 @@
 		/// <summary>
 		///   Provides information about a collision with a wall.
 		/// </summary>
-		public struct CollisionInfo
+		internal struct CollisionInfo
 		{
 			/// <summary>
 			///   Gets the wall normal at the impact position.

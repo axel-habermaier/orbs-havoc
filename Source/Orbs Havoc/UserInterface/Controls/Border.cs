@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Draws a border around another UI element.
 	/// </summary>
-	public class Border : UIElement
+	internal class Border : UIElement
 	{
 		private Thickness _borderThickness = new Thickness(1);
 		private UIElement _child;

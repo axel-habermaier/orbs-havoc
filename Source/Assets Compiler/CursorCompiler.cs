@@ -8,7 +8,7 @@
 	using JetBrains.Annotations;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class CursorCompiler : CompilationTask
+	internal class CursorCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input cursor file.")]
 		public string InFile { get; set; }

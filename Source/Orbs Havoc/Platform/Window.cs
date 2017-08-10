@@ -14,7 +14,7 @@
 	/// <summary>
 	///   Represents a window the application can be drawn to.
 	/// </summary>
-	public unsafe class Window : DisposableObject
+	internal unsafe class Window : DisposableObject
 	{
 		/// <summary>
 		///   The minimum overlap of a window that must always be visible.

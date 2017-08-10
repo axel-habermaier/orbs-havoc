@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Represents a scrollable area.
 	/// </summary>
-	public class ScrollViewer : Control
+	internal class ScrollViewer : Control
 	{
 		private Size _arrangedContentSize;
 		private Camera _camera;

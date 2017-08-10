@@ -8,7 +8,7 @@
 	using OrbsHavoc.Gameplay.SceneNodes.Entities;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class LevelCompiler : CompilationTask
+	internal class LevelCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input level file.")]
 		public string InFile { get; set; }

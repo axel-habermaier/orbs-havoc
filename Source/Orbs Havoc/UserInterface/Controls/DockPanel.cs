@@ -6,7 +6,7 @@
 	/// <summary>
 	///   A panel that arranges its children both vertically and horizontally.
 	/// </summary>
-	public class DockPanel : Panel
+	internal class DockPanel : Panel
 	{
 		private bool _lastChildFill = true;
 

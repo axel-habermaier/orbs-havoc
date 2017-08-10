@@ -7,7 +7,7 @@
 	///   Represents a fullscreen effect that applies a shader to an input texture originating from a render target, rendering the
 	///   result fullscreen to the output render target.
 	/// </summary>
-	public abstract class FullscreenEffect : RenderOperation
+	internal abstract class FullscreenEffect : RenderOperation
 	{
 		/// <summary>
 		///   Gets or sets the input render target the effect should be applied to.

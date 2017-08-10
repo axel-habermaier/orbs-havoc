@@ -6,7 +6,7 @@ namespace OrbsHavoc.Scripting.Parsing
 	/// <summary>
 	///   Provides information about parsing errors.
 	/// </summary>
-	public class ParseException : Exception
+	internal class ParseException : Exception
 	{
 		/// <summary>
 		///   Initializes a new instance.

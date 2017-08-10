@@ -10,7 +10,7 @@
 	/// <summary>
 	///     Represents the state of the mouse.
 	/// </summary>
-	public sealed class Mouse : DisposableObject
+	internal sealed class Mouse : DisposableObject
 	{
 		/// <summary>
 		///     Stores whether a button is currently being double-clicked.

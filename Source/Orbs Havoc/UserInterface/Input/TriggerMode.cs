@@ -3,7 +3,7 @@
 	/// <summary>
 	///     Describes the trigger mode of an input binding.
 	/// </summary>
-	public enum TriggerMode
+	internal enum TriggerMode
 	{
 		/// <summary>
 		///     The input binding is triggered when the input is activated.

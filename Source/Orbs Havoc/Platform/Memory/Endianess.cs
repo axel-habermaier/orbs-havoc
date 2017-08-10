@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Specifies whether a little endian or big endian encoding is used.
 	/// </summary>
-	public enum Endianess
+	internal enum Endianess
 	{
 		/// <summary>
 		///   Indicates that a little endian encoding is used.

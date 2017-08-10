@@ -3,7 +3,7 @@ namespace OrbsHavoc.Rendering
 	/// <summary>
 	///   Provides access to several predefined colors.
 	/// </summary>
-	public static class Colors
+	internal static class Colors
 	{
 		public static readonly Color Black = new Color(0, 0, 0, 255);
 		public static readonly Color White = new Color(255, 255, 255, 255);

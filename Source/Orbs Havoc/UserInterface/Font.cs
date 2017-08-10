@@ -9,7 +9,7 @@
 	/// <summary>
 	///     Provides the metadata and operations for drawing text.
 	/// </summary>
-	public sealed class Font : DisposableObject
+	internal sealed class Font : DisposableObject
 	{
 		/// <summary>
 		///     The glyphs of the font.

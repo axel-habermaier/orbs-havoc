@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Determines the quality level of an effect.
 	/// </summary>
-	public enum QualityLevel
+	internal enum QualityLevel
 	{
 		Low,
 		Medium,

@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents a layout where all child elements can position themselves with coordinates relative to the canvas.
 	/// </summary>
-	public class Canvas : Panel
+	internal class Canvas : Panel
 	{
 		/// <summary>
 		///   Computes and returns the desired size of the element given the available space allocated by the parent UI element.

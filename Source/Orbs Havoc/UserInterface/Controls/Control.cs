@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents a base class for templated UI elements with a single logical child of any type as its content.
 	/// </summary>
-	public abstract class Control : UIElement
+	internal abstract class Control : UIElement
 	{
 		private static readonly ControlTemplate _defaultTemplate =
 			(out UIElement templateRoot, out ContentPresenter contentPresenter) => templateRoot = contentPresenter = new ContentPresenter();

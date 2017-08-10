@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Represents an attribute of a vertex layout.
 	/// </summary>
-	public struct VertexAttribute
+	internal struct VertexAttribute
 	{
 		/// <summary>
 		///   The buffer the data is read from.

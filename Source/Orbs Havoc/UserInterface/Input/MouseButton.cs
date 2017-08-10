@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Identifies a mouse button.
 	/// </summary>
-	public enum MouseButton : byte
+	internal enum MouseButton : byte
 	{
 		/// <summary>
 		///   Identifies the left mouse button.

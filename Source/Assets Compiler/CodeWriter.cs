@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Writes code with a C-like syntax to an in-memory buffer.
 	/// </summary>
-	public class CodeWriter
+	internal class CodeWriter
 	{
 		/// <summary>
 		///   The buffer that contains the written code.

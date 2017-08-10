@@ -4,7 +4,7 @@
 	using Scripting;
 	using Utilities;
 
-	public sealed class ConfigurableBinding : InputBinding
+	internal sealed class ConfigurableBinding : InputBinding
 	{
 		private readonly Cvar<InputTrigger> _cvar;
 

@@ -10,7 +10,7 @@ namespace OrbsHavoc.Rendering
 	/// <summary>
 	///   Represents a collection of quads.
 	/// </summary>
-	public sealed unsafe class QuadCollection : DisposableObject
+	internal sealed unsafe class QuadCollection : DisposableObject
 	{
 		/// <summary>
 		///   The maximum number of quads that can be drawn.

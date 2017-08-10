@@ -13,7 +13,7 @@
 	///   pauses are usually due to the app being inactive for some time or due to the debugger pausing the app.
 	/// </summary>
 	/// <remarks>Adopted from a Visual Studio C++ WinRT template.</remarks>
-	public class StepTimer
+	internal class StepTimer
 	{
 		/// <summary>
 		///   The maximum time delta in seconds that is allowed between two consecutive calls to Update.

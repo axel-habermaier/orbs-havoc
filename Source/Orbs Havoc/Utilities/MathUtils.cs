@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Provides math utility functions.
 	/// </summary>
-	public static class MathUtils
+	internal static class MathUtils
 	{
 		/// <summary>
 		///   Epsilon value for float-point equality comparisons.

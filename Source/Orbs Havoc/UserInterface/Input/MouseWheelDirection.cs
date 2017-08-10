@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Indicates the direction the mouse wheel was turned in.
 	/// </summary>
-	public enum MouseWheelDirection
+	internal enum MouseWheelDirection
 	{
 		/// <summary>
 		///   Indicates that the mouse wheel was turned up.

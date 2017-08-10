@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Provides extension methods for network related .NET framework classes.
 	/// </summary>
-	public static class NetworkExtensions
+	internal static class NetworkExtensions
 	{
 		/// <summary>
 		///   Gets the cleaned-up message of the given exception.

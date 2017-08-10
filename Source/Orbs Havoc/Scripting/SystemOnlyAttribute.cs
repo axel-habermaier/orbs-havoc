@@ -9,7 +9,7 @@
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false)]
 	[MeansImplicitUse]
-	public class SystemOnlyAttribute : Attribute
+	internal class SystemOnlyAttribute : Attribute
 	{
 	}
 }

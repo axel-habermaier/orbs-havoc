@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents a camera that can be used to draw scenes.
 	/// </summary>
-	public sealed unsafe class Camera : DisposableObject
+	internal sealed unsafe class Camera : DisposableObject
 	{
 		private readonly UniformBuffer _buffer = new UniformBuffer(sizeof(Vector2));
 		private Vector2 _position;

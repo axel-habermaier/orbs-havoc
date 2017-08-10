@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Describes a blend operation of the output merger pipeline stage.
 	/// </summary>
-	public enum BlendOperation
+	internal enum BlendOperation
 	{
 		/// <summary>
 		///   Indicates that no blending should be used and all drawn objects are opaque.
@@ -32,7 +32,7 @@
 	/// <summary>
 	///   Provides extension methods for blend operations.
 	/// </summary>
-	public static class BlendOperationExtensions
+	internal static class BlendOperationExtensions
 	{
 		/// <summary>
 		///   Binds the blend state for rendering.

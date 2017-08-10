@@ -6,7 +6,7 @@ namespace OrbsHavoc.Gameplay.Behaviors
 	/// <summary>
 	///   Represents a behavior that can be attached to a scene node.
 	/// </summary>
-	public abstract class Behavior : PooledObject
+	internal abstract class Behavior : PooledObject
 	{
 		/// <summary>
 		///   Gets or sets the next behavior in an intrusive list.

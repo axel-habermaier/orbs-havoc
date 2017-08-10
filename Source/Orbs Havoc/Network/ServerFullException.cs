@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Raised when a server has reached the maximum number of clients that can connect concurrently.
 	/// </summary>
-	public class ServerFullException : Exception
+	internal class ServerFullException : Exception
 	{
 	}
 }

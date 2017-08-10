@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Represents a node that emits and draws particles.
 	/// </summary>
-	public class ParticleEffectNode : SceneNode
+	internal class ParticleEffectNode : SceneNode
 	{
 		private ParticleEffect _effect;
 

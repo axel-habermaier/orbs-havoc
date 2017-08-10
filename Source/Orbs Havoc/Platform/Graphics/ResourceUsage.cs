@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Determines the usage pattern of a GPU resource.
 	/// </summary>
-	public enum ResourceUsage
+	internal enum ResourceUsage
 	{
 		Dynamic = GL_DYNAMIC_DRAW,
 		Static = GL_STATIC_DRAW

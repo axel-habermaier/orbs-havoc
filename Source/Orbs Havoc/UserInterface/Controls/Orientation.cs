@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Determines the orientation of a layout.
 	/// </summary>
-	public enum Orientation
+	internal enum Orientation
 	{
 		/// <summary>
 		///   Indicates that the layout is oriented horizontally.

@@ -9,14 +9,14 @@
 	/// <summary>
 	///   Wraps a byte buffer, providing methods for reading fundamental data types from the buffer.
 	/// </summary>
-	public struct BufferReader
+	internal struct BufferReader
 	{
 		/// <summary>
 		///   Represents a deserialization function.
 		/// </summary>
 		/// <typeparam name="T">The type of the object that should be deserialized.</typeparam>
 		/// <param name="reader">The reader that is used to read the object that should be deserialized.</param>
-		public delegate T Deserializer<out T>(ref BufferReader reader);
+		internal delegate T Deserializer<out T>(ref BufferReader reader);
 
 		/// <summary>
 		///   Indicates the which endian encoding the buffer uses.

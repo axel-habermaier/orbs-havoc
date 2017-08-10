@@ -11,7 +11,7 @@
 	/// <summary>
 	///   Defines assertion helpers that can be used to check for errors. The checks are only performed in debug builds.
 	/// </summary>
-	public static class Assert
+	internal static class Assert
 	{
 		/// <summary>
 		///   Throws an ArgumentNullException if the argument is null.

@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Ensures that the validated value lies within the acceptable bounds of a window size.
 	/// </summary>
-	public class WindowSizeAttribute : ValidatorAttribute
+	internal class WindowSizeAttribute : ValidatorAttribute
 	{
 		/// <summary>
 		///   Gets an error message that describes a validation error.

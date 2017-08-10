@@ -8,7 +8,7 @@ namespace OrbsHavoc.UserInterface
 	/// <summary>
 	///   Represents the mouse cursor.
 	/// </summary>
-	public unsafe class Cursor : DisposableObject
+	internal unsafe class Cursor : DisposableObject
 	{
 		private Color _color = Colors.White;
 		private void* _cursor;

@@ -7,7 +7,7 @@
 	///     Represents a collection of UI elements that belongs to an UI element. When an UI element is added to or removed from the
 	///     collection, its parent is updated accordingly.
 	/// </summary>
-	public class UIElementCollection : Collection<UIElement>
+	internal class UIElementCollection : Collection<UIElement>
 	{
 		/// <summary>
 		///     The parent of the UI elements contained in the collection.

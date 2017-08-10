@@ -8,7 +8,7 @@
 	using JetBrains.Annotations;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class TextureCompiler : CompilationTask
+	internal class TextureCompiler : CompilationTask
 	{
 		[Option("input", Required = true, HelpText = "The path to the input texture file.")]
 		public string InFile { get; set; }

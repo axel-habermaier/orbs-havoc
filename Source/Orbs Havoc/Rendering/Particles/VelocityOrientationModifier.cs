@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Sets the orientation of particles in accordance with their velocities.
 	/// </summary>
-	public class VelocityOrientationModifier : Modifier
+	internal class VelocityOrientationModifier : Modifier
 	{
 		/// <summary>
 		///   Executes the modifier, updating the given number of particles contained in the particles collection.

@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents a column of a Grid layout.
 	/// </summary>
-	public class ColumnDefinition
+	internal class ColumnDefinition
 	{
 		/// <summary>
 		///   Gets or sets the width of the column. Can be NaN to indicate that the column should automatically size itself to the

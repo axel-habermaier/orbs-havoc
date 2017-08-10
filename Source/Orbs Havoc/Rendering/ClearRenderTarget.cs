@@ -6,7 +6,7 @@ namespace OrbsHavoc.Rendering
 	/// <summary>
 	///   Represents a render operation that clears a render target.
 	/// </summary>
-	public sealed class ClearRenderTarget : RenderOperation
+	internal sealed class ClearRenderTarget : RenderOperation
 	{
 		/// <summary>
 		///   Gets or sets the render target cleared by the operation.

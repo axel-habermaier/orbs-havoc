@@ -10,7 +10,7 @@
 	/// <summary>
 	///     Represents a text that may optionally contain color specifiers.
 	/// </summary>
-	public sealed class TextString : PooledObject
+	internal sealed class TextString : PooledObject
 	{
 		/// <summary>
 		///     The marker that introduces a color specifier.

@@ -5,7 +5,7 @@
 	/// <summary>
 	///     Provides information about input events.
 	/// </summary>
-	public class InputEventArgs
+	internal class InputEventArgs
 	{
 		/// <summary>
 		///     Gets or sets a value indicating whether the event has been handled.

@@ -10,7 +10,7 @@
 	///   Represents a circle with a position and a radius.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public struct Circle : IEquatable<Circle>
+	internal struct Circle : IEquatable<Circle>
 	{
 		/// <summary>
 		///   The position of the circle's center.

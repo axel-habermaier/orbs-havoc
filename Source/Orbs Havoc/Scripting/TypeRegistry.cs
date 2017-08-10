@@ -17,7 +17,7 @@
 	///   built-in types and common .NET types are supported automatically. Enumeration types can also be registered, in which case
 	///   they overwrite the defaults.
 	/// </summary>
-	public static class TypeRegistry
+	internal static class TypeRegistry
 	{
 		/// <summary>
 		///   Stores the registered type information.

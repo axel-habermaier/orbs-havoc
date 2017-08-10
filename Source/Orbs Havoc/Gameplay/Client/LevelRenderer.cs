@@ -11,7 +11,7 @@
 	/// <summary>
 	///   Renders the static geometry of a level.
 	/// </summary>
-	public class LevelRenderer
+	internal class LevelRenderer
 	{
 		private readonly Level _level;
 		private readonly Quad[] _quads;

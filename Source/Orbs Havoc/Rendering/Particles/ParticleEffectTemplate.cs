@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents a template from which a certain particle effect can be created.
 	/// </summary>
-	public sealed class ParticleEffectTemplate : DisposableObject
+	internal sealed class ParticleEffectTemplate : DisposableObject
 	{
 		private readonly ObjectPool<ParticleEffect> _pooledEffects;
 

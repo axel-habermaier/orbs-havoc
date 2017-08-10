@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Provides access to all cvars.
 	/// </summary>
-	public static partial class Cvars
+	internal static partial class Cvars
 	{
 		/// <summary>
 		///   The registered cvars.

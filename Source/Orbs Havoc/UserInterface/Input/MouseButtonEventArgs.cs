@@ -6,7 +6,7 @@
 	/// <summary>
 	///     Provides information about mouse button press and release events.
 	/// </summary>
-	public sealed class MouseButtonEventArgs : MouseEventArgs
+	internal sealed class MouseButtonEventArgs : MouseEventArgs
 	{
 		/// <summary>
 		///     A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.

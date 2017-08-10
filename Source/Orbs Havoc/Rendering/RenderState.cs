@@ -8,7 +8,7 @@ namespace OrbsHavoc.Rendering
 	/// <summary>
 	///   Contains the GPU render state information required for sprite rendering.
 	/// </summary>
-	public struct RenderState
+	internal struct RenderState
 	{
 		/// <summary>
 		///   Resets the render state to its default values.

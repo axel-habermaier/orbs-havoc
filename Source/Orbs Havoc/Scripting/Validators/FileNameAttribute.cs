@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Ensures that the validated string is a file name.
 	/// </summary>
-	public class FileNameAttribute : ValidatorAttribute
+	internal class FileNameAttribute : ValidatorAttribute
 	{
 		/// <summary>
 		///   Gets an error message that describes a validation error.

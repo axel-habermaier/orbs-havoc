@@ -6,7 +6,7 @@ namespace OrbsHavoc.Scripting
 	/// <summary>
 	///   A common interface for commands with zero or more parameters.
 	/// </summary>
-	public interface ICommand
+	internal interface ICommand
 	{
 		/// <summary>
 		///   Gets the external name of the command that is used to refer to the command in the console, for instance.

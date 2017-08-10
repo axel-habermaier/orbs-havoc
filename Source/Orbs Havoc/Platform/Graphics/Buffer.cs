@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Represents a vertex or index buffer accessible by the GPU.
 	/// </summary>
-	public sealed unsafe class Buffer : DisposableObject
+	internal sealed unsafe class Buffer : DisposableObject
 	{
 		private readonly int _buffer;
 		private readonly int _type;

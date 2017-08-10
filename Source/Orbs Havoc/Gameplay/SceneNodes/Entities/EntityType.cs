@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Identifies the type of an entity.
 	/// </summary>
-	public enum EntityType : byte
+	internal enum EntityType : byte
 	{
 		Unknown = 0,
 		None = Unknown,
@@ -44,7 +44,7 @@
 	/// <summary>
 	///   Provides extension methods for the entity type enumeration.
 	/// </summary>
-	public static class EntityTypeExtensions
+	internal static class EntityTypeExtensions
 	{
 		/// <summary>
 		///   Gets the weapon slot corresponding to the given entity type.

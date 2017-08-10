@@ -10,7 +10,7 @@
 	/// <summary>
 	///   Arranges the logical and spacial representation of a graphical 3D scene.
 	/// </summary>
-	public class SceneGraph : DisposableObject
+	internal class SceneGraph : DisposableObject
 	{
 		/// <summary>
 		///   The updates that should be applied to the scene graph.
@@ -426,7 +426,7 @@
 		///   Only nodes of the given type are enumerated.
 		/// </summary>
 		/// <typeparam name="T">The type of the scene nodes that should be enumerated.</typeparam>
-		public struct PostOrderEnumerator<T> : IDisposable
+		internal struct PostOrderEnumerator<T> : IDisposable
 			where T : SceneNode
 		{
 			/// <summary>
@@ -562,7 +562,7 @@
 		///   enumerated.
 		/// </summary>
 		/// <typeparam name="T">The type of the scene nodes that should be enumerated.</typeparam>
-		public struct PreOrderEnumerator<T> : IDisposable
+		internal struct PreOrderEnumerator<T> : IDisposable
 			where T : SceneNode
 		{
 			/// <summary>

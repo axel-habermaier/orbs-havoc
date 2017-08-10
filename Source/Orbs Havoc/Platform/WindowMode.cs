@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Indicates the whether the window is minimized, maximized, or neither minimized nor maximized.
 	/// </summary>
-	public enum WindowMode
+	internal enum WindowMode
 	{
 		/// <summary>
 		///   Indicates that the window is neither minimized nor maximized.

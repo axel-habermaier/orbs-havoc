@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents a row of a Grid layout.
 	/// </summary>
-	public class RowDefinition
+	internal class RowDefinition
 	{
 		/// <summary>
 		///   Gets or sets the row's background color.

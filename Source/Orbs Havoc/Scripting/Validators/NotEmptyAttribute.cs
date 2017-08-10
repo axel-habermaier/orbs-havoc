@@ -5,7 +5,7 @@
 	/// <summary>
 	///     Ensures that the validated string does not consist of whitespaces only.
 	/// </summary>
-	public class NotEmptyAttribute : ValidatorAttribute
+	internal class NotEmptyAttribute : ValidatorAttribute
 	{
 		/// <summary>
 		///     Gets an error message that describes a validation error.

@@ -6,7 +6,7 @@
 	///   Identifies a layout-dependent keyboard key.
 	/// </summary>
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public enum Key
+	internal enum Key
 	{
 		Enter = '\r',
 		Escape = 27,

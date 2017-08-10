@@ -5,7 +5,7 @@ namespace OrbsHavoc.Platform.Graphics
 	/// <summary>
 	///   Represents a data format used by the GPU.
 	/// </summary>
-	public enum DataFormat
+	internal enum DataFormat
 	{
 		Rgba = GL_RGBA,
 		Float = GL_FLOAT,

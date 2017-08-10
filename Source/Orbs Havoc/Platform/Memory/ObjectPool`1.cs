@@ -15,7 +15,7 @@
 	/// </summary>
 	/// <typeparam name="T">The type of the pooled objects.</typeparam>
 	[DebuggerDisplay("{_pooledObjects.Count} of {_allocationCount} available ({typeof(T)})")]
-	public sealed class ObjectPool<T> : ObjectPool
+	internal sealed class ObjectPool<T> : ObjectPool
 		where T : class, new()
 	{
 #if DEBUG

@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents a two-dimensional texture.
 	/// </summary>
-	public sealed unsafe class Texture : DisposableObject
+	internal sealed unsafe class Texture : DisposableObject
 	{
 		private int _texture;
 

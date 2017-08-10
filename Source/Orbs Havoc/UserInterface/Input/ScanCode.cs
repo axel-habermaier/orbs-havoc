@@ -6,7 +6,7 @@
 	///   Identifies a layout-independent key of a keyboard.
 	/// </summary>
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public enum ScanCode
+	internal enum ScanCode
 	{
 		A = 4,
 		B = 5,

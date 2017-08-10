@@ -9,7 +9,7 @@
 	///   Represents a rectangle with possibly non-axis aligned edges.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 1, Size = SizeInBytes)]
-	public struct Quad
+	internal struct Quad
 	{
 		/// <summary>
 		///   The size of a quad in bytes.

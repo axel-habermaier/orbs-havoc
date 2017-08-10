@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Raised when a network error occurred.
 	/// </summary>
-	public class NetworkException : Exception
+	internal class NetworkException : Exception
 	{
 		/// <summary>
 		///   Initializes a new instance.

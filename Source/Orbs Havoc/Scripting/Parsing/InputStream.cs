@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Provides read-access to a sequence of UTF-16 characters.
 	/// </summary>
-	public class InputStream
+	internal class InputStream
 	{
 		/// <summary>
 		///   Initializes a new instance.

@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Copies a render target to another.
 	/// </summary>
-	public sealed class CopyEffect : FullscreenEffect
+	internal sealed class CopyEffect : FullscreenEffect
 	{
 		/// <summary>
 		///   Executes the render operation.

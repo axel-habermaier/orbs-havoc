@@ -19,14 +19,14 @@ namespace OrbsHavoc.Platform.Graphics
 		/// </summary>
 		/// <param name="count">The number of objects that should be allocated.</param>
 		/// <param name="objects">A pointer to the allocated objects.</param>
-		public delegate void Allocator(int count, int* objects);
+		internal delegate void Allocator(int count, int* objects);
 
 		/// <summary>
 		///   Represents a pointer to an OpenGL deallocation function.
 		/// </summary>
 		/// <param name="count">The number of objects that should be deallocated.</param>
 		/// <param name="objects">A pointer to the objects that should be deallocated.</param>
-		public delegate void Deallocator(int count, int* objects);
+		internal delegate void Deallocator(int count, int* objects);
 
 		/// <summary>
 		///   Gets the state of the graphics device.

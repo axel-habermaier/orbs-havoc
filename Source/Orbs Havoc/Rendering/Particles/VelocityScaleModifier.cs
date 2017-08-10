@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Changes the scale of the particles based on the particles' velocities.
 	/// </summary>
-	public sealed class VelocityScaleModifier : Modifier
+	internal sealed class VelocityScaleModifier : Modifier
 	{
 		private readonly float _aboveScaleDelta;
 		private readonly float _belowScaleDelta;

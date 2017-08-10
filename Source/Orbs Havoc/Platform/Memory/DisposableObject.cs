@@ -10,7 +10,7 @@
 	///   because of the object not having been disposed by calling the Dispose() method. In release builds, the finalizer
 	///   is not executed and the object might silently leak unmanaged resources.
 	/// </summary>
-	public abstract class DisposableObject : IDisposable
+	internal abstract class DisposableObject : IDisposable
 	{
 		/// <summary>
 		///   Gets a value indicating whether the object has already been disposed.

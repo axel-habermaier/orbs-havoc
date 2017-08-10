@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents an input binding that is triggered by a key event.
 	/// </summary>
-	public sealed class KeyBinding : InputBinding
+	internal sealed class KeyBinding : InputBinding
 	{
 		private readonly Key _key;
 		private readonly KeyModifiers _modifiers;

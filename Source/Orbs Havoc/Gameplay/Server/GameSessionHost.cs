@@ -19,7 +19,7 @@
 	/// <summary>
 	///   Represents a server hosting a game session.
 	/// </summary>
-	public sealed class GameSessionHost : DisposableObject
+	internal sealed class GameSessionHost : DisposableObject
 	{
 		/// <summary>
 		///   The allocator that is used to allocate server objects.

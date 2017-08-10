@@ -7,7 +7,7 @@
 	///   invoking the command.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false)]
-	public abstract class ValidatorAttribute : Attribute
+	internal abstract class ValidatorAttribute : Attribute
 	{
 		/// <summary>
 		///   Gets an error message that describes a validation error.

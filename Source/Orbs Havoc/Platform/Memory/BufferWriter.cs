@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Wraps a byte buffer, providing methods for writing fundamental data types to the buffer.
 	/// </summary>
-	public struct BufferWriter
+	internal struct BufferWriter
 	{
 		/// <summary>
 		///   Represents a serialization function.
@@ -16,7 +16,7 @@
 		/// <typeparam name="T">The type of the object that should be serialized.</typeparam>
 		/// <param name="writer">The writer that is used to write the object that should be serialized.</param>
 		/// <param name="obj">The object that should be serialized.</param>
-		public delegate void Serializer<in T>(ref BufferWriter writer, T obj);
+		internal delegate void Serializer<in T>(ref BufferWriter writer, T obj);
 
 		/// <summary>
 		///   Indicates the which endian encoding the buffer uses.

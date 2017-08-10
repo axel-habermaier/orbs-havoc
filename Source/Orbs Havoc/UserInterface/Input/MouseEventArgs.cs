@@ -7,7 +7,7 @@
 	/// <summary>
 	///     Provides information about mouse events.
 	/// </summary>
-	public class MouseEventArgs : InputEventArgs
+	internal class MouseEventArgs : InputEventArgs
 	{
 		/// <summary>
 		///     A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.

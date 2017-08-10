@@ -9,7 +9,7 @@
 	///   Represents a rectangle.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public struct Rectangle : IEquatable<Rectangle>
+	internal struct Rectangle : IEquatable<Rectangle>
 	{
 		/// <summary>
 		///   Represents a rectangle at the origin with an area of 0.

@@ -10,7 +10,7 @@
 	/// <summary>
 	///   Renders the application.
 	/// </summary>
-	public sealed unsafe class Renderer : DisposableObject
+	internal sealed unsafe class Renderer : DisposableObject
 	{
 		private readonly PoolAllocator _allocator = new PoolAllocator();
 		private readonly List<RenderOperation> _operations = new List<RenderOperation>();

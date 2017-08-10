@@ -22,12 +22,12 @@
 	/// </remarks>
 	[UsedImplicitly(ImplicitUseTargetFlags.Members)]
 	[SuppressUnmanagedCodeSecurity]
-	public static unsafe class SDL2
+	internal static unsafe class SDL2
 	{
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		public delegate int SDL_EventFilter(void* userdata, void* sdlevent);
+		internal delegate int SDL_EventFilter(void* userdata, void* sdlevent);
 
-		public delegate uint SDL_TimerCallback(uint interval, void* param);
+		internal delegate uint SDL_TimerCallback(uint interval, void* param);
 
 		private const string LibraryName = "SDL2.dll";
 		public const int SDL_NUM_SCANCODES = 512;
@@ -1062,7 +1062,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_version
+		internal struct SDL_version
 		{
 			public byte major;
 			public byte minor;
@@ -1070,7 +1070,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_DisplayMode
+		internal struct SDL_DisplayMode
 		{
 			public uint format;
 			public int w;
@@ -1080,14 +1080,14 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_Point
+		internal struct SDL_Point
 		{
 			public int x;
 			public int y;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_Rect
+		internal struct SDL_Rect
 		{
 			public int x;
 			public int y;
@@ -1096,7 +1096,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_Surface
+		internal struct SDL_Surface
 		{
 			public uint flags;
 			public void* format;
@@ -1113,14 +1113,14 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_GenericEvent
+		internal struct SDL_GenericEvent
 		{
 			public uint type;
 			public uint timestamp;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_WindowEvent
+		internal struct SDL_WindowEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1134,7 +1134,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_KeyboardEvent
+		internal struct SDL_KeyboardEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1147,7 +1147,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_TextEditingEvent
+		internal struct SDL_TextEditingEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1158,7 +1158,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_TextInputEvent
+		internal struct SDL_TextInputEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1167,7 +1167,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_MouseMotionEvent
+		internal struct SDL_MouseMotionEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1184,7 +1184,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_MouseButtonEvent
+		internal struct SDL_MouseButtonEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1199,7 +1199,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_MouseWheelEvent
+		internal struct SDL_MouseWheelEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1210,7 +1210,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_JoyAxisEvent
+		internal struct SDL_JoyAxisEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1224,7 +1224,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_JoyBallEvent
+		internal struct SDL_JoyBallEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1238,7 +1238,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_JoyHatEvent
+		internal struct SDL_JoyHatEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1250,7 +1250,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_JoyButtonEvent
+		internal struct SDL_JoyButtonEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1262,7 +1262,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_JoyDeviceEvent
+		internal struct SDL_JoyDeviceEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1270,7 +1270,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_ControllerAxisEvent
+		internal struct SDL_ControllerAxisEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1284,7 +1284,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_ControllerButtonEvent
+		internal struct SDL_ControllerButtonEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1296,7 +1296,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_ControllerDeviceEvent
+		internal struct SDL_ControllerDeviceEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1305,7 +1305,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_TouchFingerEvent
+		internal struct SDL_TouchFingerEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1319,7 +1319,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_MultiGestureEvent
+		internal struct SDL_MultiGestureEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1333,7 +1333,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_DollarGestureEvent
+		internal struct SDL_DollarGestureEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1346,7 +1346,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_DropEvent
+		internal struct SDL_DropEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1354,14 +1354,14 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_QuitEvent
+		internal struct SDL_QuitEvent
 		{
 			public uint type;
 			public uint timestamp;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_UserEvent
+		internal struct SDL_UserEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1372,7 +1372,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_SysWMEvent
+		internal struct SDL_SysWMEvent
 		{
 			public uint type;
 			public uint timestamp;
@@ -1380,7 +1380,7 @@
 		}
 
 		[StructLayout(LayoutKind.Explicit)]
-		public struct SDL_Event
+		internal struct SDL_Event
 		{
 			[FieldOffset(0)]
 			public uint type;
@@ -1453,7 +1453,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_Keysym
+		internal struct SDL_Keysym
 		{
 			public ScanCode scancode;
 			public Key sym;
@@ -1462,7 +1462,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_Finger
+		internal struct SDL_Finger
 		{
 			public long id;
 			public float x;
@@ -1471,7 +1471,7 @@
 		}
 
 		[StructLayout(LayoutKind.Explicit)]
-		public struct intBind
+		internal struct intBind
 		{
 			[FieldOffset(0)]
 			public int bindType;
@@ -1490,14 +1490,14 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_HapticDirection
+		internal struct SDL_HapticDirection
 		{
 			public byte type;
 			public fixed int dir [3];
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_HapticConstant
+		internal struct SDL_HapticConstant
 		{
 			public ushort type;
 			public SDL_HapticDirection direction;
@@ -1513,7 +1513,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_HapticPeriodic
+		internal struct SDL_HapticPeriodic
 		{
 			public ushort type;
 			public SDL_HapticDirection direction;
@@ -1532,7 +1532,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_HapticCondition
+		internal struct SDL_HapticCondition
 		{
 			public ushort type;
 			public SDL_HapticDirection direction;
@@ -1549,7 +1549,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_HapticRamp
+		internal struct SDL_HapticRamp
 		{
 			public ushort type;
 			public SDL_HapticDirection direction;
@@ -1566,7 +1566,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_HapticLeftRight
+		internal struct SDL_HapticLeftRight
 		{
 			public ushort type;
 			public uint length;
@@ -1575,7 +1575,7 @@
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct SDL_HapticCustom
+		internal struct SDL_HapticCustom
 		{
 			public ushort type;
 			public SDL_HapticDirection direction;
@@ -1594,7 +1594,7 @@
 		}
 
 		[StructLayout(LayoutKind.Explicit)]
-		public struct SDL_HapticEffect
+		internal struct SDL_HapticEffect
 		{
 			[FieldOffset(0)]
 			public ushort type;

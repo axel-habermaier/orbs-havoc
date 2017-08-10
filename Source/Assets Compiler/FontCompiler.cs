@@ -12,7 +12,7 @@
 	using SharpFont;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class FontCompiler : CompilationTask
+	internal class FontCompiler : CompilationTask
 	{
 		private const int Padding = 1;
 

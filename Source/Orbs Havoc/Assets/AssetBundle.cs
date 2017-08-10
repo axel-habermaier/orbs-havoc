@@ -9,7 +9,7 @@
 	using Scripting;
 	using Utilities;
 
-	public sealed partial class AssetBundle : DisposableObject
+	internal sealed partial class AssetBundle : DisposableObject
 	{
 		public AssetBundle()
 		{

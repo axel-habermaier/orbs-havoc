@@ -8,7 +8,7 @@
 	///   Represents a size value with the width and height stored as 32-bit floating point values.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public struct Size : IEquatable<Size>
+	internal struct Size : IEquatable<Size>
 	{
 		/// <summary>
 		///   The width.

@@ -1,14 +1,13 @@
 ﻿namespace OrbsHavoc.UserInterface.Controls
 {
-	using System;
 	using System.Numerics;
 	using Input;
 	using Rendering;
 
 	/// <summary>
-	///   Represents a checkbox control that the user can select and clear.
+	///     Represents a checkbox control that the user can select and clear.
 	/// </summary>
-	public class CheckBox : Control
+	internal class CheckBox : Control
 	{
 		private static readonly ControlTemplate _defaultTemplate = (out UIElement templateRoot, out ContentPresenter contentPresenter) =>
 		{
@@ -29,25 +28,8 @@
 			};
 		};
 
-		private bool _isChecked;
-
 		/// <summary>
-		///   Raised when the checkbox' selection state has changed.
-		/// </summary>
-		public Action Changed;
-
-		/// <summary>
-		///   Raised when the checkbox has been checked.
-		/// </summary>
-		public Action Checked;
-
-		/// <summary>
-		///   Raised when the checkbox has been unchecked.
-		/// </summary>
-		public Action Unchecked;
-
-		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		public CheckBox()
 			: base(_defaultTemplate)
@@ -58,28 +40,12 @@
 		}
 
 		/// <summary>
-		///   Gets a value indicating whethre the checkbox is checked.
+		///     Gets or sets a value indicating whether the checkbox is checked.
 		/// </summary>
-		public bool IsChecked
-		{
-			get => _isChecked;
-			set
-			{
-				if (_isChecked == value)
-					return;
-
-				_isChecked = value;
-				Changed?.Invoke();
-
-				if (IsChecked)
-					Checked?.Invoke();
-				else
-					Unchecked?.Invoke();
-			}
-		}
+		public bool IsChecked { get; set; }
 
 		/// <summary>
-		///   Invoked when a mouse button has been released while hovering the UI element.
+		///     Invoked when a mouse button has been released while hovering the UI element.
 		/// </summary>
 		protected override void OnMouseUp(MouseButtonEventArgs e)
 		{
@@ -93,7 +59,7 @@
 		}
 
 		/// <summary>
-		///   Draws the UI element using the given sprite batch.
+		///     Draws the UI element using the given sprite batch.
 		/// </summary>
 		/// <param name="spriteBatch">The sprite batch that should be used to draw the UI element.</param>
 		protected override void DrawCore(SpriteBatch spriteBatch)

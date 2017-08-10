@@ -11,7 +11,7 @@
 	/// <summary>
 	///   Emits, updates, and removes particles of a particle effect, with all particles sharing the same properties and modifiers.
 	/// </summary>
-	public sealed class Emitter : DisposableObject
+	internal sealed class Emitter : DisposableObject
 	{
 		/// <summary>
 		///   The number of times per second that the emitter searches for dead particles and removes them.

@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Caches commonly used string representations of numbers.
 	/// </summary>
-	public static class StringCache
+	internal static class StringCache
 	{
 		private static readonly string[] _integers = new string[1000];
 		private static readonly string[] _doubles = new string[2000];

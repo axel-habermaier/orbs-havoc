@@ -11,7 +11,7 @@
 	/// <summary>
 	///   Provides layouting, input events, hit testing, rendering, and other base functionality for all UI elements.
 	/// </summary>
-	public abstract partial class UIElement
+	internal abstract partial class UIElement
 	{
 		/// <summary>
 		///   The list of input bindings associated with this UI element.

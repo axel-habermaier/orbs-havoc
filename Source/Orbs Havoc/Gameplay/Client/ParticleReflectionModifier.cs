@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Reflects particles when the hit a level wall.
 	/// </summary>
-	public class ParticleReflectionModifier : Modifier
+	internal class ParticleReflectionModifier : Modifier
 	{
 		private readonly Level _level;
 

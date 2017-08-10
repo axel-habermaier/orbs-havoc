@@ -10,7 +10,7 @@
 	/// <summary>
 	///   Represents a combination of vertex and fragment shaders that control the various pipeline stages of the GPU.
 	/// </summary>
-	public sealed unsafe class Shader : DisposableObject
+	internal sealed unsafe class Shader : DisposableObject
 	{
 		private const int LogBufferLength = 4096;
 		private int _fragmentShader;

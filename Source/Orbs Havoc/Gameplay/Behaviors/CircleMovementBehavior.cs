@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Moves a scene node in a circle.
 	/// </summary>
-	public class CircleMovementBehavior : Behavior<SceneNode>
+	internal class CircleMovementBehavior : Behavior<SceneNode>
 	{
 		private Vector2 _position;
 		private float _radius;

@@ -6,7 +6,7 @@
 	/// <summary>
 	///   A base class for object pools.
 	/// </summary>
-	public abstract class ObjectPool : DisposableObject
+	internal abstract class ObjectPool : DisposableObject
 	{
 		/// <summary>
 		///   The object pools with global lifetime that should be disposed automatically during application shutdown.

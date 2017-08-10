@@ -9,7 +9,7 @@
 	///   Represents a 32-bit color (4 bytes) in the form of RGBA.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public struct Color : IEquatable<Color>
+	internal struct Color : IEquatable<Color>
 	{
 		/// <summary>
 		///   The red component of the color.

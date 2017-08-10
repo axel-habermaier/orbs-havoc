@@ -6,7 +6,7 @@
 	using CommandLine.Text;
 	using JetBrains.Annotations;
 
-	public static class Program
+	internal static class Program
 	{
 		public static int Main(string[] args)
 		{

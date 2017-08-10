@@ -8,7 +8,7 @@
 	using UserInterface.Input;
 	using Utilities;
 
-	public sealed class MessageBoxUI : Border
+	internal sealed class MessageBoxUI : Border
 	{
 		public Action Button1Clicked;
 		public Action Button2Clicked;

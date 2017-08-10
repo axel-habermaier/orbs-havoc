@@ -4,7 +4,7 @@
 	///   Represents a range of values.
 	/// </summary>
 	/// <typeparam name="T">The type of the values within the range.</typeparam>
-	public struct Range<T>
+	internal struct Range<T>
 	{
 		/// <summary>
 		///   The inclusive lower bound of the range. For multi-component values such as vectors or colors, this

@@ -7,7 +7,7 @@
 	///   Represents a behavior that can be attached to a scene node of the given type or of a derived type.
 	/// </summary>
 	/// <typeparam name="T">The base type of the scene nodes the behavior can be attached to.</typeparam>
-	public abstract class Behavior<T> : Behavior
+	internal abstract class Behavior<T> : Behavior
 		where T : SceneNode
 	{
 		/// <summary>

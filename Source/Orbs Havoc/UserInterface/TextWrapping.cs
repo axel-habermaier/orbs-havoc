@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Indicates whether text should wrap when it reaches the edge of the layout area.
 	/// </summary>
-	public enum TextWrapping
+	internal enum TextWrapping
 	{
 		/// <summary>
 		///   Indicates that the text should be wrapped.

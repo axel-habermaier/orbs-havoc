@@ -10,7 +10,7 @@
 	using JetBrains.Annotations;
 
 	[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-	public class BundleCompiler : CompilationTask
+	internal class BundleCompiler : CompilationTask
 	{
 		[Option("shaders", Required = true, HelpText = "The paths to the input shader files.")]
 		public string Shaders { get; set; }

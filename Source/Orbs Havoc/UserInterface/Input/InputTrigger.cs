@@ -4,7 +4,7 @@ namespace OrbsHavoc.UserInterface.Input
 	using System.Text;
 	using Utilities;
 
-	public struct InputTrigger : IEquatable<InputTrigger>
+	internal struct InputTrigger : IEquatable<InputTrigger>
 	{
 		public InputTrigger(Key key, KeyModifiers? modifiers = KeyModifiers.None)
 			: this()

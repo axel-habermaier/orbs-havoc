@@ -7,7 +7,7 @@ namespace OrbsHavoc.UserInterface.Input
 	/// <summary>
 	///   Represents an input binding that is triggered by turning the mouse wheel.
 	/// </summary>
-	public sealed class MouseWheelBinding : InputBinding
+	internal sealed class MouseWheelBinding : InputBinding
 	{
 		/// <summary>
 		///   The direction the mouse wheel must be turned in to trigger the binding. If null, both directions trigger the binding.

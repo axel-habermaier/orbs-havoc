@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Provides access to a pointer to a pinned object.
 	/// </summary>
-	public unsafe struct PinnedPointer : IDisposable
+	internal unsafe struct PinnedPointer : IDisposable
 	{
 		/// <summary>
 		///   The handle of the pinned object.

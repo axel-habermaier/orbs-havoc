@@ -10,7 +10,7 @@
 	/// <summary>
 	///   Represents a parameter of a command.
 	/// </summary>
-	public struct CommandParameter
+	internal struct CommandParameter
 	{
 		/// <summary>
 		///   The validators that are used to validate a parameter value.

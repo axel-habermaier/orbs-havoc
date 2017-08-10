@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Provides information about mouse wheel events.
 	/// </summary>
-	public sealed class MouseWheelEventArgs : MouseEventArgs
+	internal sealed class MouseWheelEventArgs : MouseEventArgs
 	{
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.

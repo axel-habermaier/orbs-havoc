@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Represents a clock that can be used to query the time that has elapsed since the creation of the clock.
 	/// </summary>
-	public struct Clock
+	internal struct Clock
 	{
 		/// <summary>
 		///   Scales the passing of time. If null, time advances in constant steps.

@@ -9,7 +9,7 @@
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 	[MeansImplicitUse]
-	public class PersistentAttribute : Attribute
+	internal class PersistentAttribute : Attribute
 	{
 	}
 }

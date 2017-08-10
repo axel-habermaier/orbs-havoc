@@ -9,7 +9,7 @@
 	///   allocated instance, if any, or allocate a new one. Once the object is no longer being used, it must be returned to the
 	///   pool so that it can be reused later on.
 	/// </summary>
-	public class PoolAllocator : DisposableObject
+	internal class PoolAllocator : DisposableObject
 	{
 		/// <summary>
 		///   The object pools that are used to allocate gameplay objects.

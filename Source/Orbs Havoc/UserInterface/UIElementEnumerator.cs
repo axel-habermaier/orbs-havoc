@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Enumerates a custom collection.
 	/// </summary>
-	public struct UIElementEnumerator
+	internal struct UIElementEnumerator
 	{
 		/// <summary>
 		///   Represents an enumerator that does not enumerate any items.

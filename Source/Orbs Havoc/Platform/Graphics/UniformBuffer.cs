@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Represents a uniform buffer that provides constant data to shaders.
 	/// </summary>
-	public unsafe class UniformBuffer : DisposableObject
+	internal unsafe class UniformBuffer : DisposableObject
 	{
 		/// <summary>
 		///   The underlying OpenGL handle of the buffer.

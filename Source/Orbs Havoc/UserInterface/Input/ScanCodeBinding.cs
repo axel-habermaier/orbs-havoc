@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents an input binding that is triggered by a key event, identifying the key by its scan code.
 	/// </summary>
-	public sealed class ScanCodeBinding : InputBinding
+	internal sealed class ScanCodeBinding : InputBinding
 	{
 		/// <summary>
 		///   The key modifiers that must be pressed for the binding to trigger.

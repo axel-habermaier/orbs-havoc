@@ -9,7 +9,7 @@ namespace OrbsHavoc.Scripting.Parsing
 	/// <summary>
 	///   Provides access to parsing functions.
 	/// </summary>
-	public static class Parser
+	internal static class Parser
 	{
 		/// <summary>
 		///   Parses a cvar or command name.

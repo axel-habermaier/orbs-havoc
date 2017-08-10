@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Represents the GPU.
 	/// </summary>
-	public sealed unsafe class GraphicsDevice : DisposableObject
+	internal sealed unsafe class GraphicsDevice : DisposableObject
 	{
 		private readonly int[] _beginQueries = new int[GraphicsState.MaxFrameLag];
 		private readonly void* _context;

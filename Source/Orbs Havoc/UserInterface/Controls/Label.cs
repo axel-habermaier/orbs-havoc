@@ -8,7 +8,7 @@
 	/// <summary>
 	///   Represents a label that draws text into the UI.
 	/// </summary>
-	public class Label : UIElement
+	internal class Label : UIElement
 	{
 		private TextAlignment _alignment = TextAlignment.Left;
 		private string _text = String.Empty;

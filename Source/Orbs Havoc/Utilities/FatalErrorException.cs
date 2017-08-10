@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Represents a fatal error that causes the execution of the application to be aborted.
 	/// </summary>
-	public class FatalErrorException : Exception
+	internal class FatalErrorException : Exception
 	{
 		/// <summary>
 		///   Initializes a new instance.

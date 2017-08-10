@@ -10,7 +10,7 @@
 	///     Provides functions to log fatal errors, errors, warnings, informational messages, and debug-time only
 	///     informational messages. An event is raised whenever one of these functions is invoked.
 	/// </summary>
-	public static unsafe class Log
+	internal static unsafe class Log
 	{
 		/// <summary>
 		///     The object used for thread synchronization.

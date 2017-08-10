@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Provides information about key press and release events.
 	/// </summary>
-	public sealed class KeyEventArgs : InputEventArgs
+	internal sealed class KeyEventArgs : InputEventArgs
 	{
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.

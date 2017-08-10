@@ -5,7 +5,7 @@
 	/// <summary>
 	///   Raised when a server has quit a game session.
 	/// </summary>
-	public class ServerQuitException : Exception
+	internal class ServerQuitException : Exception
 	{
 	}
 }

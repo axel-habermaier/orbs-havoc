@@ -10,7 +10,7 @@
 	///   collector. Pooled types should override the OnReturning method to perform all their cleanup logic that must be run when
 	///   an instance is returned to the pool.
 	/// </summary>
-	public abstract class PooledObject : IPooledObject
+	internal abstract class PooledObject : IPooledObject
 	{
 		/// <summary>
 		///   The pool the instance should be returned to.

@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Provides information about text input.
 	/// </summary>
-	public class TextInputEventArgs : InputEventArgs
+	internal class TextInputEventArgs : InputEventArgs
 	{
 		/// <summary>
 		///   A cached instance of the event argument class that should be used to reduce the pressure on the garbage collector.

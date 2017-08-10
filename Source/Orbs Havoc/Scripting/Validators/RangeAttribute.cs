@@ -6,7 +6,7 @@
 	/// <summary>
 	///   Ensures that the validated value lies within the given bounds.
 	/// </summary>
-	public class RangeAttribute : ValidatorAttribute
+	internal class RangeAttribute : ValidatorAttribute
 	{
 		/// <summary>
 		///   Initializes a new instance.

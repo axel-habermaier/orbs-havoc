@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Provides extension methods for classes implementing the IDisposable interface.
 	/// </summary>
-	public static class DisposableExtensions
+	internal static class DisposableExtensions
 	{
 		/// <summary>
 		///   Disposes all objects contained in the list if the list is not null and clears the list.

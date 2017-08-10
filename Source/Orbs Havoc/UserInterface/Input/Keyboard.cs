@@ -8,7 +8,7 @@
 	/// <summary>
 	///     Represents the state of the keyboard.
 	/// </summary>
-	public sealed class Keyboard : DisposableObject
+	internal sealed class Keyboard : DisposableObject
 	{
 		/// <summary>
 		///     The key states.

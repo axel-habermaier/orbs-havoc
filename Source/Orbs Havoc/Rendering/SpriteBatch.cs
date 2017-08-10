@@ -9,7 +9,7 @@
 	/// <summary>
 	///   Efficiently draws large amounts of 2D sprites.
 	/// </summary>
-	public sealed unsafe class SpriteBatch : RenderOperation
+	internal sealed unsafe class SpriteBatch : RenderOperation
 	{
 		private static readonly LayerComparer _layerComparer = new LayerComparer();
 		private readonly List<QuadPartition> _partitions = new List<QuadPartition>();

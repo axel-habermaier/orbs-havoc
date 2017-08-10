@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Describes the type of a log entry.
 	/// </summary>
-	public enum LogType
+	internal enum LogType
 	{
 		/// <summary>
 		///   Indicates that the log entry represents a fatal error.
