@@ -115,7 +115,7 @@
 		public static void SafeDispose<T>(this T obj)
 			where T : class, IDisposable
 		{
-			if ((object)obj is DisposableObject disposableObject && disposableObject.IsDisposed)
+			if (obj is DisposableObject disposableObject && disposableObject.IsDisposed)
 				return;
 
 			obj?.Dispose();
