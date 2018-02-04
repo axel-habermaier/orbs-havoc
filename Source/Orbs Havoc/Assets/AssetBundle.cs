@@ -22,14 +22,14 @@
 			try
 			{
 				var stopwatch = Stopwatch.StartNew();
-				var data = LoadAssetsData(File.ReadAllBytes("Assets.pak"));
+				var data = LoadAssetsData(File.ReadAllBytes("Orbs Havoc.pak"));
 
 				LoadAssets(new BufferReader(data, Endianess.Little));
-				Log.Info($"Asset bundle loaded ({stopwatch.Elapsed.TotalMilliseconds:F2}ms).");
+				Log.Info($"Assets loaded ({stopwatch.Elapsed.TotalMilliseconds:F2}ms).");
 			}
 			catch (Exception e)
 			{
-				throw new FatalErrorException($"Failed to load assets bundle: {e.Message.EnsureEndsWithDot()}");
+				throw new FatalErrorException($"Failed to load assets: {e.Message.EnsureEndsWithDot()}");
 			}
 		}
 

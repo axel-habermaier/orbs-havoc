@@ -10,7 +10,7 @@
 	</ItemGroup>
 	
 	<PropertyGroup>
-		<AssetBundle>$(TargetDir)Assets.pak</AssetBundle>
+		<AssetBundle>$(TargetDir)Orbs Havoc.pak</AssetBundle>
 		<AssetsCompiler>$(OutDir)AssetsCompiler.exe</AssetsCompiler>
 	</PropertyGroup>
 	

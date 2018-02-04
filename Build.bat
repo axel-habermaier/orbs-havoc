@@ -25,7 +25,7 @@ cd Binaries
 echo =====================================================================
 echo Copying files...
 echo =====================================================================
-copy "..\Build\Release\Assets.pak" 
+copy "..\Build\Release\Orbs Havoc.pak" 
 copy "..\Build\Release\Orbs Havoc.exe"
 copy "..\Build\Release\SDL2.dll"
 
