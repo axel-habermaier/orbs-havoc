@@ -159,7 +159,7 @@
 		/// <summary>
 		///   Contains the result of a ray cast.
 		/// </summary>
-		internal struct RayCastResult
+		internal readonly struct RayCastResult
 		{
 			/// <summary>
 			///   Gets the length of the ray from the start position to the nearest collision or the maximum ray length

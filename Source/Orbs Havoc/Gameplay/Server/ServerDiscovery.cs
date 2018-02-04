@@ -50,7 +50,7 @@
 			if (serverName.Length > NetworkProtocol.ServerNameLength)
 				serverName = serverName.Substring(0, NetworkProtocol.ServerNameLength);
 
-			var writer = new BufferWriter(_buffer, Endianess.Big);
+			var writer = new BufferWriter(_buffer);
 			writer.WriteUInt32(NetworkProtocol.AppIdentifier);
 			writer.WriteByte(NetworkProtocol.Revision);
 			writer.WriteUInt16(serverPort);

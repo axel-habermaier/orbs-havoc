@@ -229,7 +229,7 @@
 		/// <param name="size">The size of the packet.</param>
 		private void HandlePacket(int size)
 		{
-			var buffer = new BufferReader(_buffer, 0, size, Endianess.Big);
+			var buffer = new BufferReader(_buffer, 0, size);
 
 			if (!PacketHeader.TryRead(ref buffer, out var acknowledgement))
 				return;

@@ -6,7 +6,7 @@ namespace OrbsHavoc.Network
 	/// <summary>
 	///   Associates a message with a sequence number.
 	/// </summary>
-	internal struct SequencedMessage
+	internal readonly struct SequencedMessage
 	{
 		/// <summary>
 		///   Initializes a new instance.

@@ -7,7 +7,7 @@
 	/// <summary>
 	///   Represents a log entry with a specific type and message.
 	/// </summary>
-	internal struct LogEntry : IEquatable<LogEntry>
+	internal readonly struct LogEntry : IEquatable<LogEntry>
 	{
 		/// <summary>
 		///   Used to measure the time since the start of the application.

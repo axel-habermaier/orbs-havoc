@@ -70,7 +70,7 @@
 			Assert.That(_map[identity.Identifier].Identity.Generation == identity.Generation,
 				"Attempted to unmap an object of a different generation.");
 
-			_map[identity.Identifier] = (default(NetworkIdentity), null);
+			_map[identity.Identifier] = (default, null);
 		}
 
 		/// <summary>

@@ -103,7 +103,7 @@
 		/// <param name="name">The name of the player.</param>
 		/// <param name="kind">The kind of the player.</param>
 		/// <param name="identity">The network identity of the player.</param>
-		public static Player Create(PoolAllocator allocator, string name, PlayerKind kind, NetworkIdentity identity = default(NetworkIdentity))
+		public static Player Create(PoolAllocator allocator, string name, PlayerKind kind, NetworkIdentity identity = default)
 		{
 			Assert.ArgumentNotNull(allocator, nameof(allocator));
 			Assert.ArgumentNotNullOrWhitespace(name, nameof(name));

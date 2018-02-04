@@ -19,11 +19,6 @@
 		internal delegate T Deserializer<out T>(ref BufferReader reader);
 
 		/// <summary>
-		///   Indicates the which endian encoding the buffer uses.
-		/// </summary>
-		private readonly Endianess _endianess;
-
-		/// <summary>
 		///   The buffer from which the data is read.
 		/// </summary>
 		private ArraySegment<byte> _buffer;
@@ -38,9 +33,8 @@
 		///   range [0, buffer.Length).
 		/// </summary>
 		/// <param name="buffer">The buffer from which the data should be read.</param>
-		/// <param name="endianess">Specifies the endianess of the buffer.</param>
-		public BufferReader(byte[] buffer, Endianess endianess)
-			: this(new ArraySegment<byte>(buffer, 0, buffer.Length), endianess)
+		public BufferReader(byte[] buffer)
+			: this(new ArraySegment<byte>(buffer, 0, buffer.Length))
 		{
 		}
 
@@ -51,9 +45,8 @@
 		/// <param name="buffer">The buffer from which the data should be read.</param>
 		/// <param name="offset">The offset to the first valid byte in the buffer.</param>
 		/// <param name="length">The length of the buffer in bytes.</param>
-		/// <param name="endianess">Specifies the endianess of the buffer.</param>
-		public BufferReader(byte[] buffer, int offset, int length, Endianess endianess)
-			: this(new ArraySegment<byte>(buffer, offset, length), endianess)
+		public BufferReader(byte[] buffer, int offset, int length)
+			: this(new ArraySegment<byte>(buffer, offset, length))
 		{
 		}
 
@@ -62,15 +55,12 @@
 		///   range [offset, offset + length).
 		/// </summary>
 		/// <param name="buffer">The buffer from which the data should be read.</param>
-		/// <param name="endianess">Specifies the endianess of the buffer.</param>
-		public BufferReader(ArraySegment<byte> buffer, Endianess endianess)
+		public BufferReader(ArraySegment<byte> buffer)
 			: this()
 		{
 			Assert.ArgumentNotNull(buffer.Array, nameof(buffer.Array));
 
-			_endianess = endianess;
 			_buffer = buffer;
-
 			Reset();
 		}
 
@@ -182,12 +172,7 @@
 		public short ReadInt16()
 		{
 			ValidateCanRead(2);
-			var value = (short)(Next() | (Next() << 8));
-
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
-
-			return value;
+			return (short)(Next() | (Next() << 8));
 		}
 
 		/// <summary>
@@ -196,12 +181,7 @@
 		public ushort ReadUInt16()
 		{
 			ValidateCanRead(2);
-			var value = (ushort)(Next() | (Next() << 8));
-
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
-
-			return value;
+			return (ushort)(Next() | (Next() << 8));
 		}
 
 		/// <summary>
@@ -218,12 +198,7 @@
 		public int ReadInt32()
 		{
 			ValidateCanRead(4);
-			var value = Next() | (Next() << 8) | (Next() << 16) | (Next() << 24);
-
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
-
-			return value;
+			return Next() | (Next() << 8) | (Next() << 16) | (Next() << 24);
 		}
 
 		/// <summary>
@@ -232,12 +207,7 @@
 		public uint ReadUInt32()
 		{
 			ValidateCanRead(4);
-			var value = (uint)(Next() | (Next() << 8) | (Next() << 16) | (Next() << 24));
-
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
-
-			return value;
+			return (uint)(Next() | (Next() << 8) | (Next() << 16) | (Next() << 24));
 		}
 
 		/// <summary>
@@ -246,7 +216,7 @@
 		public long ReadInt64()
 		{
 			ValidateCanRead(8);
-			var value = Next() |
+			return Next() |
 						((long)(Next()) << 8) |
 						((long)(Next()) << 16) |
 						((long)(Next()) << 24) |
@@ -254,11 +224,6 @@
 						((long)(Next()) << 40) |
 						((long)(Next()) << 48) |
 						((long)(Next()) << 56);
-
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
-
-			return value;
 		}
 
 		/// <summary>
@@ -267,7 +232,7 @@
 		public ulong ReadUInt64()
 		{
 			ValidateCanRead(8);
-			var value = Next() |
+			return Next() |
 						((ulong)(Next()) << 8) |
 						((ulong)(Next()) << 16) |
 						((ulong)(Next()) << 24) |
@@ -275,11 +240,6 @@
 						((ulong)(Next()) << 40) |
 						((ulong)(Next()) << 48) |
 						((ulong)(Next()) << 56);
-
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
-
-			return value;
 		}
 
 		/// <summary>
@@ -429,7 +389,7 @@
 			catch (BufferOverflowException)
 			{
 				_readPosition = offset;
-				obj = default(T);
+				obj = default;
 				return false;
 			}
 		}

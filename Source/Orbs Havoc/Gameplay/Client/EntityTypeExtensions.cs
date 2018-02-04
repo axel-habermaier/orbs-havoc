@@ -33,7 +33,7 @@
 					return Colors.White;
 				default:
 					Assert.NotReached("Unexpected entity type.");
-					return default(Color);
+					return default;
 			}
 		}
 

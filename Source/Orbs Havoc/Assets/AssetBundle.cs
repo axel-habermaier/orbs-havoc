@@ -24,7 +24,7 @@
 				var stopwatch = Stopwatch.StartNew();
 				var data = LoadAssetsData(File.ReadAllBytes("Orbs Havoc.pak"));
 
-				LoadAssets(new BufferReader(data, Endianess.Little));
+				LoadAssets(new BufferReader(data));
 				Log.Info($"Assets loaded ({stopwatch.Elapsed.TotalMilliseconds:F2}ms).");
 			}
 			catch (Exception e)
@@ -35,7 +35,7 @@
 
 		private static byte[] LoadAssetsData(byte[] compressedContent)
 		{
-			var buffer = new BufferReader(compressedContent, Endianess.Little);
+			var buffer = new BufferReader(compressedContent);
 
 			ValidateHeader(ref buffer);
 			return DecompressContent(ref buffer);

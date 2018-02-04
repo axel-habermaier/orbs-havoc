@@ -92,7 +92,7 @@
 				// There's nothing to do if we've already reached the end of the buffer.
 				if (reader.EndOfBuffer)
 				{
-					message = default(SequencedMessage);
+					message = default;
 					return false;
 				}
 
@@ -109,7 +109,7 @@
 					if (continueWithOptimizedMessage)
 						Assert.NotReached("Received an invalid packet. Parts of the packet have been ignored.");
 
-					message = default(SequencedMessage);
+					message = default;
 					return false;
 				}
 

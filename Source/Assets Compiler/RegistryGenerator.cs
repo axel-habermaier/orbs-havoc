@@ -281,7 +281,7 @@
 							writer.Append($"new CommandParameter(\"{parameter.Identifier}\", typeof({parameter.Type}), ");
 							writer.Append($"{(parameter.Default != null).ToString().ToLower()}, ");
 							if (parameter.Default == null)
-								writer.Append($"default({parameter.Type})");
+								writer.Append($"default");
 							else
 								writer.Append(parameter.Default.Value.ToString());
 

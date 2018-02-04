@@ -232,7 +232,7 @@
 		/// </summary>
 		private void AllocatePacket()
 		{
-			_writer = new BufferWriter(_buffer, Endianess.Big);
+			_writer = new BufferWriter(_buffer);
 
 			Log.DebugIf(EnableTracing, $"Packet #{_packetCount + 1},  ack: {_acknowledgement}");
 			PacketHeader.Write(ref _writer, _acknowledgement);

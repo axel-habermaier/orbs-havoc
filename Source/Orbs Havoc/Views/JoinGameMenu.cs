@@ -189,7 +189,7 @@
 				while (_socket.Available != 0)
 				{
 					var size = _socket.ReceiveFrom(_buffer, ref endPoint);
-					var reader = new BufferReader(_buffer, 0, size, Endianess.Big);
+					var reader = new BufferReader(_buffer, 0, size);
 
 					HandleDiscoveryMessage(reader, endPoint);
 				}

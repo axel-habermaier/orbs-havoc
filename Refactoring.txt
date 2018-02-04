@@ -7,7 +7,6 @@
 	* clock -> stopwatch
 	* pool allocator -> GC
 - simplify platform
-	* ignore endianess
 	* remove SDL
 - make AssetBundle non-global
 - simplify gameplay code

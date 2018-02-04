@@ -14,7 +14,7 @@
     <Features>strict</Features>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
-	<LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -306,8 +306,6 @@
     <Compile Include="Platform\Memory\BufferWriter.cs" />
     <Compile Include="Platform\Memory\DisposableExtensions.cs" />
     <Compile Include="Platform\Memory\DisposableObject.cs" />
-    <Compile Include="Platform\Memory\EndianConverter.cs" />
-    <Compile Include="Platform\Memory\Endianess.cs" />
     <Compile Include="Platform\Memory\IPooledObject.cs" />
     <Compile Include="Platform\Memory\ObjectPool.cs" />
     <Compile Include="Platform\Memory\ObjectPool`1.cs" />

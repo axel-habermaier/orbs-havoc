@@ -19,11 +19,6 @@
 		internal delegate void Serializer<in T>(ref BufferWriter writer, T obj);
 
 		/// <summary>
-		///   Indicates the which endian encoding the buffer uses.
-		/// </summary>
-		private readonly Endianess _endianess;
-
-		/// <summary>
 		///   The buffer to which the data is written.
 		/// </summary>
 		private ArraySegment<byte> _buffer;
@@ -42,9 +37,8 @@
 		///   Writes to the given buffer. Data is written to the buffer within the range [0, buffer.Length).
 		/// </summary>
 		/// <param name="buffer">The buffer to which the data should be written.</param>
-		/// <param name="endianess">Specifies the endianess of the buffer.</param>
-		public BufferWriter(byte[] buffer, Endianess endianess)
-			: this(buffer, 0, buffer.Length, endianess)
+		public BufferWriter(byte[] buffer)
+			: this(buffer, 0, buffer.Length)
 		{
 		}
 
@@ -54,9 +48,8 @@
 		/// <param name="buffer">The buffer to which the data should be written.</param>
 		/// <param name="offset"> The offset to the first byte of the buffer that should be written.</param>
 		/// <param name="length">The length of the buffer in bytes.</param>
-		/// <param name="endianess">Specifies the endianess of the buffer.</param>
-		public BufferWriter(byte[] buffer, int offset, int length, Endianess endianess)
-			: this(new ArraySegment<byte>(buffer, offset, length), endianess)
+		public BufferWriter(byte[] buffer, int offset, int length)
+			: this(new ArraySegment<byte>(buffer, offset, length))
 		{
 		}
 
@@ -64,15 +57,12 @@
 		///   Writes to the given buffer. Data is written to the buffer within the range [offset, offset + length).
 		/// </summary>
 		/// <param name="buffer">The buffer to which the data should be written.</param>
-		/// <param name="endianess">Specifies the endianess of the buffer.</param>
-		public BufferWriter(ArraySegment<byte> buffer, Endianess endianess)
+		public BufferWriter(ArraySegment<byte> buffer)
 			: this()
 		{
 			Assert.ArgumentNotNull(buffer.Array, nameof(buffer.Array));
 
-			_endianess = endianess;
 			_buffer = buffer;
-
 			Reset();
 		}
 
@@ -198,8 +188,6 @@
 		public void WriteInt16(short value)
 		{
 			ValidateCanWrite(2);
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
 			Append((byte)(value >> 8));
@@ -212,8 +200,6 @@
 		public void WriteUInt16(ushort value)
 		{
 			ValidateCanWrite(2);
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
 			Append((byte)(value >> 8));
@@ -236,8 +222,6 @@
 		public void WriteInt32(int value)
 		{
 			ValidateCanWrite(4);
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
 			Append((byte)(value >> 8));
@@ -252,8 +236,6 @@
 		public void WriteUInt32(uint value)
 		{
 			ValidateCanWrite(4);
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
 			Append((byte)(value >> 8));
@@ -268,8 +250,6 @@
 		public void WriteInt64(long value)
 		{
 			ValidateCanWrite(8);
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
 			Append((byte)(value >> 8));
@@ -288,8 +268,6 @@
 		public void WriteUInt64(ulong value)
 		{
 			ValidateCanWrite(8);
-			if (EndianConverter.RequiresConversion(_endianess))
-				value = EndianConverter.Convert(value);
 
 			Append((byte)value);
 			Append((byte)(value >> 8));
