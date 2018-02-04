@@ -65,7 +65,6 @@
     <Compile Include="Gameplay\Client\EntityTypeExtensions.cs" />
     <Compile Include="Gameplay\Client\InputManager.cs" />
     <Compile Include="Gameplay\Client\ClientLogic.Unsupported.cs">
-      <DependentUpon>ClientLogic.cs</DependentUpon>
     </Compile>
     <Compile Include="Gameplay\Client\IRenderable.cs" />
     <Compile Include="Gameplay\Client\LevelRenderer.cs" />
@@ -95,7 +94,6 @@
     <Compile Include="Gameplay\Behaviors\SpriteBehavior.cs" />
     <Compile Include="Gameplay\Server\Client.cs" />
     <Compile Include="Gameplay\Server\Client.Unsupported.cs">
-      <DependentUpon>Client.cs</DependentUpon>
     </Compile>
     <Compile Include="Gameplay\Server\ClientCollection.cs" />
     <Compile Include="Gameplay\Server\PhysicsSimulation.cs" />
@@ -329,7 +327,6 @@
     <Compile Include="Scripting\CommandLine.cs" />
     <Compile Include="Scripting\CommandParameter.cs" />
     <Compile Include="Scripting\Commands.Registry.cs">
-      <DependentUpon>Commands.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\Commands.g.cs">
     </Compile>
@@ -340,7 +337,6 @@
     <Compile Include="Scripting\ConfigurationFile.cs" />
     <Compile Include="Scripting\Cvar.cs" />
     <Compile Include="Scripting\Cvars.Registry.cs">
-      <DependentUpon>Cvars.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\Cvars.g.cs">
     </Compile>
@@ -461,8 +457,8 @@
     <Copy SourceFiles="$(SolutionDir)Dependencies/SDL2.dll" DestinationFolder="$(OutDir)" />
   </Target>
   <Target Name="PackageAndLink" AfterTargets="AfterBuild" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(TargetDir)OrbsHavoc.exe" />
-    <Exec Command="&quot;$(SolutionDir)Dependencies\SharpPak\SharpPak.exe&quot; OrbsHavoc.exe -a" WorkingDirectory="$(TargetDir)" />
-    <Copy SourceFiles="$(TargetDir)Output/OrbsHavoc.exe" DestinationFiles="$(TargetDir)Orbs Havoc.exe" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(TargetDir)tmp.exe" />
+    <Exec Command="&quot;$(SolutionDir)Dependencies\SharpPak\SharpPak.exe&quot; tmp.exe -a" WorkingDirectory="$(TargetDir)" />
+    <Copy SourceFiles="$(TargetDir)Output/tmp.exe" DestinationFiles="$(TargetDir)Orbs Havoc.exe" />
   </Target>
 </Project>
