@@ -455,8 +455,8 @@
     <Copy SourceFiles="$(SolutionDir)Dependencies/SDL2.dll" DestinationFolder="$(OutDir)" />
   </Target>
   <Target Name="PackageAndLink" AfterTargets="AfterBuild" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(TargetDir)tmp.exe" />
-    <Exec Command="&quot;$(SolutionDir)Dependencies\SharpPak\SharpPak.exe&quot; tmp.exe -a" WorkingDirectory="$(TargetDir)" />
-    <Copy SourceFiles="$(TargetDir)Output/tmp.exe" DestinationFiles="$(TargetDir)Orbs Havoc.exe" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(TargetDir)OrbsHavoc.exe" />
+    <Exec Command="&quot;$(SolutionDir)Dependencies\SharpPak\SharpPak.exe&quot; OrbsHavoc.exe -a" WorkingDirectory="$(TargetDir)" />
+    <Copy SourceFiles="$(TargetDir)Output/OrbsHavoc.exe" DestinationFiles="$(TargetDir)Orbs Havoc.exe" />
   </Target>
 </Project>
