@@ -58,11 +58,11 @@
 						.ToArray();
 
 					var kernings =
-					(from left in glyphs
-					 from right in glyphs
-					 let offset = (int)face.GetKerning(left.Index, right.Index, KerningMode.Default).X
-					 where offset != 0
-					 select new { Left = left, Right = right, Offset = offset }).ToArray();
+						(from left in glyphs
+						 from right in glyphs
+						 let offset = (int)face.GetKerning(left.Index, right.Index, KerningMode.Default).X
+						 where offset != 0
+						 select new { Left = left, Right = right, Offset = offset }).ToArray();
 
 					var bitmapSize = Layout(glyphs);
 					using (var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height, PixelFormat.Format32bppArgb))
@@ -73,20 +73,20 @@
 								graphics.DrawImage(glyph.Bitmap, new Point(glyph.Area.Left, glyph.Area.Top));
 						}
 
+						writer.Write((uint)bitmap.Width);
+						writer.Write((uint)bitmap.Height);
+
+						var length = bitmap.Width * bitmap.Height;
+						writer.Write(length);
+
 						for (var y = 0; y < bitmap.Height; y++)
 						{
 							for (var x = 0; x < bitmap.Width; x++)
 							{
 								var pixelColor = bitmap.GetPixel(x, y);
-								var a = pixelColor.A;
-								var r = (byte)(255 - pixelColor.R);
-								var g = (byte)(255 - pixelColor.G);
-								var b = (byte)(255 - pixelColor.B);
-								bitmap.SetPixel(x, y, Color.FromArgb(a, r, g, b));
+								writer.Write(pixelColor.A);
 							}
 						}
-
-						TextureCompiler.Compile(writer, bitmap);
 					}
 
 					// Write font metadata

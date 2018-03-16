@@ -5,21 +5,21 @@
 	using static OpenGL3;
 
 	/// <summary>
-	///   Represents a two-dimensional texture.
+	///     Represents a two-dimensional texture.
 	/// </summary>
 	internal sealed unsafe class Texture : DisposableObject
 	{
 		private int _texture;
 
 		/// <summary>
-		///   Initializes a new instance that is initialized later.
+		///     Initializes a new instance that is initialized later.
 		/// </summary>
 		public Texture()
 		{
 		}
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		public Texture(Size size, DataFormat format, void* data)
 		{
@@ -27,22 +27,22 @@
 		}
 
 		/// <summary>
-		///   Gets the size of the texture.
+		///     Gets the size of the texture.
 		/// </summary>
 		public Size Size { get; private set; }
 
 		/// <summary>
-		///   Gets the width of the texture.
+		///     Gets the width of the texture.
 		/// </summary>
 		public float Width => Size.Width;
 
 		/// <summary>
-		///   Gets the height of the texture.
+		///     Gets the height of the texture.
 		/// </summary>
 		public float Height => Size.Height;
 
 		/// <summary>
-		///   Casts the texture to its underlying OpenGL handle.
+		///     Casts the texture to its underlying OpenGL handle.
 		/// </summary>
 		public static implicit operator int(Texture obj)
 		{
@@ -51,10 +51,9 @@
 		}
 
 		/// <summary>
-		///   Loads the texture from the given buffer.
+		///     Loads the texture from the given buffer.
 		/// </summary>
-		/// <param name="buffer">The buffer the texture should be read from.</param>
-		public void Load(ref BufferReader buffer)
+		public void Load(ref BufferReader buffer, DataFormat dataFormat = DataFormat.Rgba)
 		{
 			var size = new Size(buffer.ReadUInt32(), buffer.ReadUInt32());
 			var sizeInBytes = buffer.ReadInt32();
@@ -62,12 +61,12 @@
 			using (var data = buffer.Pointer)
 			{
 				buffer.Skip(sizeInBytes);
-				Initialize(size, DataFormat.Rgba, data);
+				Initialize(size, dataFormat, data);
 			}
 		}
 
 		/// <summary>
-		///   Initializes the texture.
+		///     Initializes the texture.
 		/// </summary>
 		private void Initialize(Size size, DataFormat format, void* data)
 		{
@@ -81,12 +80,20 @@
 			glBindTexture(GL_TEXTURE_2D, _texture);
 			glTexImage2D(GL_TEXTURE_2D, 0, (int)format, size.IntegralWidth, size.IntegralHeight, 0, (int)format, GL_UNSIGNED_BYTE, data);
 
+			if (format == DataFormat.Monochrome)
+			{
+				var swizzleMask = stackalloc int[4];
+				for (var i = 0; i < 4; ++i)
+					swizzleMask[i] = GL_RED;
+				glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+			}
+
 			if (State.ActiveTextureSlot != -1)
 				State.Textures[State.ActiveTextureSlot] = null;
 		}
 
 		/// <summary>
-		///   Binds the texture for rendering.
+		///     Binds the texture for rendering.
 		/// </summary>
 		public void Bind(int slot)
 		{
@@ -102,7 +109,7 @@
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{

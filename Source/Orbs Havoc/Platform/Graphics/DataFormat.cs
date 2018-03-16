@@ -7,6 +7,7 @@ namespace OrbsHavoc.Platform.Graphics
 	/// </summary>
 	internal enum DataFormat
 	{
+		Monochrome = GL_RED,
 		Rgba = GL_RGBA,
 		Float = GL_FLOAT,
 		UnsignedByte = GL_UNSIGNED_BYTE,

@@ -213,7 +213,7 @@
 		public void Load(ref BufferReader buffer)
 		{
 			// Load the font map
-			Texture.Load(ref buffer);
+			Texture.Load(ref buffer, DataFormat.Monochrome);
 
 			// Load the font metadata
 			LineHeight = buffer.ReadUInt16();
