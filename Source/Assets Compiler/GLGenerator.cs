@@ -137,8 +137,8 @@
 			var writer = new CodeWriter();
 			writer.WriterHeader();
 
-			var orderedEnums = gl.Enums.OrderBy(e => e.Name);
-			var orderedFuncs = gl.Funcs.OrderBy(f => f.Name);
+			var orderedEnums = gl.Enums.OrderBy(e => e.Name).ToArray();
+			var orderedFuncs = gl.Funcs.OrderBy(f => f.Name).ToArray();
 
 			writer.AppendLine("namespace OrbsHavoc.Platform.Graphics");
 			writer.AppendBlockStatement(() =>
@@ -253,10 +253,10 @@
 				value = value.Substring(2);
 			}
 
-			if (isHex && UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var result))
+			if (isHex && UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _))
 				return "int";
-
-			if (UInt32.TryParse(value, out result))
+			
+			if (UInt32.TryParse(value, out _))
 				return "int";
 
 			return "long";

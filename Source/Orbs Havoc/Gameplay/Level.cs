@@ -254,9 +254,9 @@
 				case EntityType.BottomWall:
 					return new CollisionInfo(new Vector2(0, wall.Top - circle.Position.Y - circle.Radius), -Vector2.UnitY,
 						circle.Position.Y - circle.Radius > wall.Top);
+				default:
+					return null;
 			}
-
-			return null;
 		}
 
 		/// <summary>
