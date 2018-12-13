@@ -66,7 +66,7 @@
 			glLinkProgram(_program);
 
 			int success, logLength;
-			byte* log = stackalloc byte[LogBufferLength];
+			var log = stackalloc byte[LogBufferLength];
 
 			glGetProgramiv(_program, GL_LINK_STATUS, &success);
 			glGetProgramInfoLog(_program, LogBufferLength, &logLength, log);
@@ -129,7 +129,7 @@
 			}
 
 			int success, logLength;
-			byte* log = stackalloc byte[LogBufferLength];
+			var log = stackalloc byte[LogBufferLength];
 
 			glCompileShader(shader);
 			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);

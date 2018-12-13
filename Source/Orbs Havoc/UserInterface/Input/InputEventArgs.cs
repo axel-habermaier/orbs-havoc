@@ -1,7 +1,5 @@
 ﻿namespace OrbsHavoc.UserInterface.Input
 {
-	using Input;
-
 	/// <summary>
 	///     Provides information about input events.
 	/// </summary>

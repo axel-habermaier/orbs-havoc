@@ -96,7 +96,7 @@
 			if (!_serversDirty)
 				return;
 
-			UI.SetServers(_discoveredServers.Select(s => (Name:s.Name, EndPoint: s.EndPoint)));
+			UI.SetServers(_discoveredServers.Select(s => (s.Name, s.EndPoint)));
 			_serversDirty = false;
 		}
 

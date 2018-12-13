@@ -1,7 +1,6 @@
 ﻿namespace OrbsHavoc.UserInterface.Input
 {
 	using System;
-	using Input;
 	using Utilities;
 
 	/// <summary>

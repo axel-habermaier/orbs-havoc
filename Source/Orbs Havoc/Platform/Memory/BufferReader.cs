@@ -7,30 +7,30 @@
 	using Utilities;
 
 	/// <summary>
-	///   Wraps a byte buffer, providing methods for reading fundamental data types from the buffer.
+	///     Wraps a byte buffer, providing methods for reading fundamental data types from the buffer.
 	/// </summary>
 	internal struct BufferReader
 	{
 		/// <summary>
-		///   Represents a deserialization function.
+		///     Represents a deserialization function.
 		/// </summary>
 		/// <typeparam name="T">The type of the object that should be deserialized.</typeparam>
 		/// <param name="reader">The reader that is used to read the object that should be deserialized.</param>
 		internal delegate T Deserializer<out T>(ref BufferReader reader);
 
 		/// <summary>
-		///   The buffer from which the data is read.
+		///     The buffer from which the data is read.
 		/// </summary>
-		private ArraySegment<byte> _buffer;
+		private readonly ArraySegment<byte> _buffer;
 
 		/// <summary>
-		///   The current read position.
+		///     The current read position.
 		/// </summary>
 		private int _readPosition;
 
 		/// <summary>
-		///   Reads from the given buffer. The valid data of the buffer can be found within the
-		///   range [0, buffer.Length).
+		///     Reads from the given buffer. The valid data of the buffer can be found within the
+		///     range [0, buffer.Length).
 		/// </summary>
 		/// <param name="buffer">The buffer from which the data should be read.</param>
 		public BufferReader(byte[] buffer)
@@ -39,8 +39,8 @@
 		}
 
 		/// <summary>
-		///   Reads from the given buffer. The valid data of the buffer can be found within the
-		///   range [offset, offset + length).
+		///     Reads from the given buffer. The valid data of the buffer can be found within the
+		///     range [offset, offset + length).
 		/// </summary>
 		/// <param name="buffer">The buffer from which the data should be read.</param>
 		/// <param name="offset">The offset to the first valid byte in the buffer.</param>
@@ -51,8 +51,8 @@
 		}
 
 		/// <summary>
-		///   Reads from the given buffer. The valid data of the buffer can be found within the
-		///   range [offset, offset + length).
+		///     Reads from the given buffer. The valid data of the buffer can be found within the
+		///     range [offset, offset + length).
 		/// </summary>
 		/// <param name="buffer">The buffer from which the data should be read.</param>
 		public BufferReader(ArraySegment<byte> buffer)
@@ -65,32 +65,32 @@
 		}
 
 		/// <summary>
-		///   Gets the buffer that is read from.
+		///     Gets the buffer that is read from.
 		/// </summary>
 		public byte[] Buffer => _buffer.Array;
 
 		/// <summary>
-		///   Gets a value indicating whether the end of the buffer has been reached.
+		///     Gets a value indicating whether the end of the buffer has been reached.
 		/// </summary>
 		public bool EndOfBuffer => _readPosition - _buffer.Offset >= _buffer.Count;
 
 		/// <summary>
-		///   Gets the number of bytes that have been read from the buffer.
+		///     Gets the number of bytes that have been read from the buffer.
 		/// </summary>
 		public int Count => _readPosition - _buffer.Offset;
 
 		/// <summary>
-		///   Gets the size of the entire buffer in bytes.
+		///     Gets the size of the entire buffer in bytes.
 		/// </summary>
 		public int BufferSize => _buffer.Count;
 
 		/// <summary>
-		///   Gets a pointer to the next byte of the buffer that should be read.
+		///     Gets a pointer to the next byte of the buffer that should be read.
 		/// </summary>
 		public PinnedPointer Pointer => PinnedPointer.Create(_buffer.Array, _buffer.Offset + _readPosition);
 
 		/// <summary>
-		///   Resets the read position so that all content can be read again.
+		///     Resets the read position so that all content can be read again.
 		/// </summary>
 		public void Reset()
 		{
@@ -98,7 +98,7 @@
 		}
 
 		/// <summary>
-		///   Checks whether the given number of bytes can be read from the buffer.
+		///     Checks whether the given number of bytes can be read from the buffer.
 		/// </summary>
 		/// <param name="size">The number of bytes that should be checked.</param>
 		public bool CanRead(int size)
@@ -107,7 +107,7 @@
 		}
 
 		/// <summary>
-		///   Skips the given number of bytes.
+		///     Skips the given number of bytes.
 		/// </summary>
 		/// <param name="count">The number of bytes that should be skipped.</param>
 		public void Skip(int count)
@@ -119,7 +119,7 @@
 		}
 
 		/// <summary>
-		///   Checks whether the given number of bytes can be read from the buffer and throws an exception if not.
+		///     Checks whether the given number of bytes can be read from the buffer and throws an exception if not.
 		/// </summary>
 		/// <param name="size">The number of bytes that should be checked.</param>
 		[DebuggerHidden]
@@ -132,7 +132,7 @@
 		}
 
 		/// <summary>
-		///   Reads an unsigned byte.
+		///     Reads an unsigned byte.
 		/// </summary>
 		private byte Next()
 		{
@@ -140,7 +140,7 @@
 		}
 
 		/// <summary>
-		///   Reads a Boolean value.
+		///     Reads a Boolean value.
 		/// </summary>
 		public bool ReadBoolean()
 		{
@@ -149,7 +149,7 @@
 		}
 
 		/// <summary>
-		///   Reads a signed byte.
+		///     Reads a signed byte.
 		/// </summary>
 		public sbyte ReadSignedByte()
 		{
@@ -158,7 +158,7 @@
 		}
 
 		/// <summary>
-		///   Reads an unsigned byte.
+		///     Reads an unsigned byte.
 		/// </summary>
 		public byte ReadByte()
 		{
@@ -167,7 +167,7 @@
 		}
 
 		/// <summary>
-		///   Reads a 2 byte signed integer.
+		///     Reads a 2 byte signed integer.
 		/// </summary>
 		public short ReadInt16()
 		{
@@ -176,7 +176,7 @@
 		}
 
 		/// <summary>
-		///   Reads a 2 byte unsigned integer.
+		///     Reads a 2 byte unsigned integer.
 		/// </summary>
 		public ushort ReadUInt16()
 		{
@@ -185,7 +185,7 @@
 		}
 
 		/// <summary>
-		///   Reads an UTF-16 character.
+		///     Reads an UTF-16 character.
 		/// </summary>
 		public char ReadCharacter()
 		{
@@ -193,7 +193,7 @@
 		}
 
 		/// <summary>
-		///   Reads a 4 byte signed integer.
+		///     Reads a 4 byte signed integer.
 		/// </summary>
 		public int ReadInt32()
 		{
@@ -202,7 +202,7 @@
 		}
 
 		/// <summary>
-		///   Reads a 4 byte unsigned integer.
+		///     Reads a 4 byte unsigned integer.
 		/// </summary>
 		public uint ReadUInt32()
 		{
@@ -211,39 +211,39 @@
 		}
 
 		/// <summary>
-		///   Reads an 8 byte signed integer.
+		///     Reads an 8 byte signed integer.
 		/// </summary>
 		public long ReadInt64()
 		{
 			ValidateCanRead(8);
 			return Next() |
-						((long)(Next()) << 8) |
-						((long)(Next()) << 16) |
-						((long)(Next()) << 24) |
-						((long)(Next()) << 32) |
-						((long)(Next()) << 40) |
-						((long)(Next()) << 48) |
-						((long)(Next()) << 56);
+				((long)(Next()) << 8) |
+				((long)(Next()) << 16) |
+				((long)(Next()) << 24) |
+				((long)(Next()) << 32) |
+				((long)(Next()) << 40) |
+				((long)(Next()) << 48) |
+				((long)(Next()) << 56);
 		}
 
 		/// <summary>
-		///   Reads an 8 byte unsigned integer.
+		///     Reads an 8 byte unsigned integer.
 		/// </summary>
 		public ulong ReadUInt64()
 		{
 			ValidateCanRead(8);
 			return Next() |
-						((ulong)(Next()) << 8) |
-						((ulong)(Next()) << 16) |
-						((ulong)(Next()) << 24) |
-						((ulong)(Next()) << 32) |
-						((ulong)(Next()) << 40) |
-						((ulong)(Next()) << 48) |
-						((ulong)(Next()) << 56);
+				((ulong)(Next()) << 8) |
+				((ulong)(Next()) << 16) |
+				((ulong)(Next()) << 24) |
+				((ulong)(Next()) << 32) |
+				((ulong)(Next()) << 40) |
+				((ulong)(Next()) << 48) |
+				((ulong)(Next()) << 56);
 		}
 
 		/// <summary>
-		///   Reads an UTF8-encoded string of unbounded length from the buffer.
+		///     Reads an UTF8-encoded string of unbounded length from the buffer.
 		/// </summary>
 		public string ReadString()
 		{
@@ -252,7 +252,7 @@
 		}
 
 		/// <summary>
-		///   Reads an UTF8-encoded string of the given length from the buffer.
+		///     Reads an UTF8-encoded string of the given length from the buffer.
 		/// </summary>
 		/// <param name="maxLength">The maximum length of the string.</param>
 		public string ReadString(byte maxLength)
@@ -262,7 +262,7 @@
 		}
 
 		/// <summary>
-		///   Reads an UTF8-encoded string of the given length from the buffer.
+		///     Reads an UTF8-encoded string of the given length from the buffer.
 		/// </summary>
 		/// <param name="maxLength">The maximum length of the string.</param>
 		public string ReadString(ushort maxLength)
@@ -272,7 +272,7 @@
 		}
 
 		/// <summary>
-		///   Reads an UTF8-encoded string of the given length from the buffer.
+		///     Reads an UTF8-encoded string of the given length from the buffer.
 		/// </summary>
 		/// <param name="maxLength">The maximum length of the string.</param>
 		public string ReadString(int maxLength)
@@ -282,7 +282,7 @@
 		}
 
 		/// <summary>
-		///   Reads an UTF8-encoded string of the given length from the buffer.
+		///     Reads an UTF8-encoded string of the given length from the buffer.
 		/// </summary>
 		/// <param name="actualLength">The actual length of the string.</param>
 		/// <param name="maxLength">The maximum length of the string.</param>
@@ -309,7 +309,7 @@
 		}
 
 		/// <summary>
-		///   Reads a byte array of the given length.
+		///     Reads a byte array of the given length.
 		/// </summary>
 		/// <param name="length">The length of the byte array.</param>
 		public byte[] ReadByteArray(int length)
@@ -325,7 +325,7 @@
 		}
 
 		/// <summary>
-		///   Reads a byte array.
+		///     Reads a byte array.
 		/// </summary>
 		public byte[] ReadByteArray()
 		{
@@ -344,7 +344,7 @@
 		}
 
 		/// <summary>
-		///   Copies the requested number of bytes into the buffer, starting at the given offset.
+		///     Copies the requested number of bytes into the buffer, starting at the given offset.
 		/// </summary>
 		/// <param name="buffer">The buffer into which the data should be copied.</param>
 		public void Copy(byte[] buffer)
@@ -353,7 +353,7 @@
 		}
 
 		/// <summary>
-		///   Copies the requested number of bytes into the buffer, starting at the given offset.
+		///     Copies the requested number of bytes into the buffer, starting at the given offset.
 		/// </summary>
 		/// <param name="buffer">The buffer into which the data should be copied.</param>
 		/// <param name="offset">The first byte in the buffer that should be written.</param>
@@ -369,9 +369,9 @@
 		}
 
 		/// <summary>
-		///   Tries to deserialize an object of the given type from the buffer. Either, all reads succeed or the read position of
-		///   the buffer remains unmodified if any reads are out of bounds. Returns true to indicate that the object has been
-		///   successfully deserialized.
+		///     Tries to deserialize an object of the given type from the buffer. Either, all reads succeed or the read position of
+		///     the buffer remains unmodified if any reads are out of bounds. Returns true to indicate that the object has been
+		///     successfully deserialized.
 		/// </summary>
 		/// <typeparam name="T">The type of the object that should be deserialized.</typeparam>
 		/// <param name="obj">The object that the deserialized values should be written to.</param>

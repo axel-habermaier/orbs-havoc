@@ -3,7 +3,7 @@
 	/// <summary>
 	///   Identifies the type of a text token.
 	/// </summary>
-	internal enum TextTokenType
+	internal enum TextTokenType : byte
 	{
 		/// <summary>
 		///   Indicates that the token represents of a word, including digits and special characters.

@@ -32,7 +32,7 @@
 		private readonly ConcurrentQueue<BotCommand> _botCommands = new ConcurrentQueue<BotCommand>();
 
 		/// <summary>
-		///   The avaiable and currently unused bot names.
+		///   The available and currently unused bot names.
 		/// </summary>
 		private readonly List<string> _botNames = new List<string>
 		{

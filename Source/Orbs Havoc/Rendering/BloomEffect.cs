@@ -243,52 +243,48 @@
 		{
 			Assert.InRange(BlurSampleCount, 1, BlurSettings.Count + 1);
 
-			fixed (float* sampleWeights = settings.SampleWeights)
-			fixed (float* sampleOffsets = settings.SampleOffsets)
+			// The first sample always has a zero offset.
+			settings.SampleWeights[0] = ComputeGaussian(0);
+			settings.SampleOffsets[0] = 0;
+			settings.SampleOffsets[1] = 0;
+
+			// Maintain a sum of all the weighting values.
+			var totalWeights = settings.SampleWeights[0];
+
+			// Add pairs of additional sample taps, positioned
+			// along a line in both directions from the center.
+			for (var i = 0; i < BlurSampleCount / 2; i++)
 			{
-				// The first sample always has a zero offset.
-				sampleWeights[0] = ComputeGaussian(0);
-				sampleOffsets[0] = 0;
-				sampleOffsets[1] = 0;
+				// Store weights for the positive and negative taps.
+				var weight = ComputeGaussian(i + 1);
 
-				// Maintain a sum of all the weighting values.
-				var totalWeights = sampleWeights[0];
+				settings.SampleWeights[i * 8 + 4] = weight;
+				settings.SampleWeights[i * 8 + 8] = weight;
 
-				// Add pairs of additional sample taps, positioned
-				// along a line in both directions from the center.
-				for (var i = 0; i < BlurSampleCount / 2; i++)
-				{
-					// Store weights for the positive and negative taps.
-					var weight = ComputeGaussian(i + 1);
+				totalWeights += weight * 2;
 
-					sampleWeights[i * 8 + 4] = weight;
-					sampleWeights[i * 8 + 8] = weight;
+				// To get the maximum amount of blurring from a limited number of
+				// pixel shader samples, we take advantage of the bilinear filtering
+				// hardware inside the texture fetch unit. If we position our texture
+				// coordinates exactly halfway between two texels, the filtering unit
+				// will average them for us, giving two samples for the price of one.
+				// This allows us to step in units of two texels per sample, rather
+				// than just one at a time. The 1.5 offset kicks things off by
+				// positioning us nicely in between two texels.
+				var sampleOffset = i * 2 + 1.5f;
 
-					totalWeights += weight * 2;
+				var delta = new Vector2(dx, dy) * sampleOffset;
 
-					// To get the maximum amount of blurring from a limited number of
-					// pixel shader samples, we take advantage of the bilinear filtering
-					// hardware inside the texture fetch unit. If we position our texture
-					// coordinates exactly halfway between two texels, the filtering unit
-					// will average them for us, giving two samples for the price of one.
-					// This allows us to step in units of two texels per sample, rather
-					// than just one at a time. The 1.5 offset kicks things off by
-					// positioning us nicely in between two texels.
-					var sampleOffset = i * 2 + 1.5f;
-
-					var delta = new Vector2(dx, dy) * sampleOffset;
-
-					// Store texture coordinate offsets for the positive and negative taps.
-					sampleOffsets[i * 8 + 4] = delta.X;
-					sampleOffsets[i * 8 + 5] = delta.Y;
-					sampleOffsets[i * 8 + 8] = -delta.X;
-					sampleOffsets[i * 8 + 9] = -delta.Y;
-				}
-
-				// Normalize the list of sample weightings, so they will always sum to one.
-				for (var i = 0; i < BlurSettings.Count; i++)
-					sampleWeights[i * 4] /= totalWeights;
+				// Store texture coordinate offsets for the positive and negative taps.
+				settings.SampleOffsets[i * 8 + 4] = delta.X;
+				settings.SampleOffsets[i * 8 + 5] = delta.Y;
+				settings.SampleOffsets[i * 8 + 8] = -delta.X;
+				settings.SampleOffsets[i * 8 + 9] = -delta.Y;
 			}
+
+			// Normalize the list of sample weightings, so they will always sum to one.
+			for (var i = 0; i < BlurSettings.Count; i++)
+				settings.SampleWeights[i * 4] /= totalWeights;
 		}
 
 		/// <summary>

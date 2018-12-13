@@ -6,12 +6,12 @@
 	using Utilities;
 
 	/// <summary>
-	///   Wraps a byte buffer, providing methods for writing fundamental data types to the buffer.
+	///     Wraps a byte buffer, providing methods for writing fundamental data types to the buffer.
 	/// </summary>
 	internal struct BufferWriter
 	{
 		/// <summary>
-		///   Represents a serialization function.
+		///     Represents a serialization function.
 		/// </summary>
 		/// <typeparam name="T">The type of the object that should be serialized.</typeparam>
 		/// <param name="writer">The writer that is used to write the object that should be serialized.</param>
@@ -19,22 +19,22 @@
 		internal delegate void Serializer<in T>(ref BufferWriter writer, T obj);
 
 		/// <summary>
-		///   The buffer to which the data is written.
+		///     The buffer to which the data is written.
 		/// </summary>
-		private ArraySegment<byte> _buffer;
+		private readonly ArraySegment<byte> _buffer;
 
 		/// <summary>
-		///   The maximum position that was written by the writer.
+		///     The maximum position that was written by the writer.
 		/// </summary>
 		private int _maxWritePosition;
 
 		/// <summary>
-		///   The current write position.
+		///     The current write position.
 		/// </summary>
 		private int _writePosition;
 
 		/// <summary>
-		///   Writes to the given buffer. Data is written to the buffer within the range [0, buffer.Length).
+		///     Writes to the given buffer. Data is written to the buffer within the range [0, buffer.Length).
 		/// </summary>
 		/// <param name="buffer">The buffer to which the data should be written.</param>
 		public BufferWriter(byte[] buffer)
@@ -43,7 +43,7 @@
 		}
 
 		/// <summary>
-		///   Writes to the given buffer. Data is written to the buffer within the range [offset, offset + length).
+		///     Writes to the given buffer. Data is written to the buffer within the range [offset, offset + length).
 		/// </summary>
 		/// <param name="buffer">The buffer to which the data should be written.</param>
 		/// <param name="offset"> The offset to the first byte of the buffer that should be written.</param>
@@ -54,7 +54,7 @@
 		}
 
 		/// <summary>
-		///   Writes to the given buffer. Data is written to the buffer within the range [offset, offset + length).
+		///     Writes to the given buffer. Data is written to the buffer within the range [offset, offset + length).
 		/// </summary>
 		/// <param name="buffer">The buffer to which the data should be written.</param>
 		public BufferWriter(ArraySegment<byte> buffer)
@@ -67,7 +67,7 @@
 		}
 
 		/// <summary>
-		///   Gets or sets the zero-based write position where the next write operation will be performed.
+		///     Gets or sets the zero-based write position where the next write operation will be performed.
 		/// </summary>
 		public int WritePosition
 		{
@@ -80,17 +80,17 @@
 		}
 
 		/// <summary>
-		///   Gets the buffer that is written to.
+		///     Gets the buffer that is written to.
 		/// </summary>
 		public byte[] Buffer => _buffer.Array;
 
 		/// <summary>
-		///   Gets the number of bytes that have been written to the buffer.
+		///     Gets the number of bytes that have been written to the buffer.
 		/// </summary>
 		public int Count => _maxWritePosition - _buffer.Offset;
 
 		/// <summary>
-		///   Resets the write position so that all content can be overwritten.
+		///     Resets the write position so that all content can be overwritten.
 		/// </summary>
 		public void Reset()
 		{
@@ -99,7 +99,7 @@
 		}
 
 		/// <summary>
-		///   Checks whether the given number of bytes can be written to the buffer.
+		///     Checks whether the given number of bytes can be written to the buffer.
 		/// </summary>
 		/// <param name="size">The number of bytes that should be checked.</param>
 		public bool CanWrite(int size)
@@ -108,7 +108,7 @@
 		}
 
 		/// <summary>
-		///   Skips writing the given number of bytes.
+		///     Skips writing the given number of bytes.
 		/// </summary>
 		/// <param name="byteCount">The number of bytes that should be skipped.</param>
 		public void SkipBytes(int byteCount)
@@ -120,7 +120,7 @@
 		}
 
 		/// <summary>
-		///   Advances the write position by the given number of bytes.
+		///     Advances the write position by the given number of bytes.
 		/// </summary>
 		/// <param name="bytes">The number of bytes the write position should be advanced.</param>
 		private void AdvanceWritePosition(int bytes)
@@ -130,7 +130,7 @@
 		}
 
 		/// <summary>
-		///   Checks whether the given number of bytes can be written to the buffer and throws an exception if not.
+		///     Checks whether the given number of bytes can be written to the buffer and throws an exception if not.
 		/// </summary>
 		/// <param name="size">The number of bytes that should be checked.</param>
 		[DebuggerHidden]
@@ -142,7 +142,7 @@
 		}
 
 		/// <summary>
-		///   Appends the given byte value to the end of the payload.
+		///     Appends the given byte value to the end of the payload.
 		/// </summary>
 		/// <param name="value">The value that should be appended.</param>
 		private void Append(byte value)
@@ -152,7 +152,7 @@
 		}
 
 		/// <summary>
-		///   Writes a Boolean value.
+		///     Writes a Boolean value.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteBoolean(bool value)
@@ -162,7 +162,7 @@
 		}
 
 		/// <summary>
-		///   Writes a signed byte.
+		///     Writes a signed byte.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteSByte(sbyte value)
@@ -172,7 +172,7 @@
 		}
 
 		/// <summary>
-		///   Writes an unsigned byte.
+		///     Writes an unsigned byte.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteByte(byte value)
@@ -182,7 +182,7 @@
 		}
 
 		/// <summary>
-		///   Writes a 2 byte signed integer.
+		///     Writes a 2 byte signed integer.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteInt16(short value)
@@ -194,7 +194,7 @@
 		}
 
 		/// <summary>
-		///   Writes a 2 byte unsigned integer.
+		///     Writes a 2 byte unsigned integer.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteUInt16(ushort value)
@@ -206,7 +206,7 @@
 		}
 
 		/// <summary>
-		///   Writes an UTF-16 character.
+		///     Writes an UTF-16 character.
 		/// </summary>
 		/// <param name="character">The value that should be written.</param>
 		public void WriteCharacter(char character)
@@ -216,7 +216,7 @@
 		}
 
 		/// <summary>
-		///   Writes a 4 byte signed integer.
+		///     Writes a 4 byte signed integer.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteInt32(int value)
@@ -230,7 +230,7 @@
 		}
 
 		/// <summary>
-		///   Writes a 4 byte unsigned integer.
+		///     Writes a 4 byte unsigned integer.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteUInt32(uint value)
@@ -244,7 +244,7 @@
 		}
 
 		/// <summary>
-		///   Writes an 8 byte signed integer.
+		///     Writes an 8 byte signed integer.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteInt64(long value)
@@ -262,7 +262,7 @@
 		}
 
 		/// <summary>
-		///   Writes an 8 byte unsigned integer.
+		///     Writes an 8 byte unsigned integer.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteUInt64(ulong value)
@@ -280,7 +280,7 @@
 		}
 
 		/// <summary>
-		///   Writes an UTF8-encoded string to the buffer.
+		///     Writes an UTF8-encoded string to the buffer.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteString(string value)
@@ -290,7 +290,7 @@
 		}
 
 		/// <summary>
-		///   Writes an UTF8-encoded string of the given maximum length to the buffer.
+		///     Writes an UTF8-encoded string of the given maximum length to the buffer.
 		/// </summary>
 		/// <param name="s">The string that should be written into the buffer.</param>
 		/// <param name="maxLength">The maximum length of the string.</param>
@@ -306,7 +306,7 @@
 		}
 
 		/// <summary>
-		///   Writes an UTF8-encoded string of the given maximum length to the buffer.
+		///     Writes an UTF8-encoded string of the given maximum length to the buffer.
 		/// </summary>
 		/// <param name="s">The string that should be written into the buffer.</param>
 		/// <param name="maxLength">The maximum length of the string.</param>
@@ -322,7 +322,7 @@
 		}
 
 		/// <summary>
-		///   Writes an UTF8-encoded string of the given maximum length to the buffer.
+		///     Writes an UTF8-encoded string of the given maximum length to the buffer.
 		/// </summary>
 		/// <param name="s">The string that should be written into the buffer.</param>
 		/// <param name="maxLength">The maximum length of the string.</param>
@@ -338,7 +338,7 @@
 		}
 
 		/// <summary>
-		///   Writes a byte array.
+		///     Writes a byte array.
 		/// </summary>
 		/// <param name="value">The value that should be written.</param>
 		public void WriteByteArray(byte[] value)
@@ -350,7 +350,7 @@
 		}
 
 		/// <summary>
-		///   Copies the given byte array into the buffer.
+		///     Copies the given byte array into the buffer.
 		/// </summary>
 		/// <param name="value">The data that should be copied.</param>
 		public void Copy(byte[] value)
@@ -363,8 +363,8 @@
 		}
 
 		/// <summary>
-		///   Tries to serialize the given object into the buffer. Either, all writes succeed or the buffer remains unmodified
-		///   if any writes are out of bounds. Returns true to indicate that all writes have been successful.
+		///     Tries to serialize the given object into the buffer. Either, all writes succeed or the buffer remains unmodified
+		///     if any writes are out of bounds. Returns true to indicate that all writes have been successful.
 		/// </summary>
 		/// <typeparam name="T">The type of the object that should be serialized.</typeparam>
 		/// <param name="obj">The object that should be serialized into the buffer.</param>

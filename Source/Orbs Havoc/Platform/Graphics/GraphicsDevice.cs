@@ -118,7 +118,7 @@
 			_syncQueries[_syncedIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 			_syncedIndex = (_syncedIndex + 1) % GraphicsState.MaxFrameLag;
 
-			// Drawing is no longer allowed, but all frame-dependant resources can now be updated again
+			// Drawing is no longer allowed, but all frame-dependent resources can now be updated again
 			State.CanDraw = false;
 			State.FrameNumber += 1;
 		}
