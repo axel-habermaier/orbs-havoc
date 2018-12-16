@@ -35,8 +35,6 @@
 		/// </summary>
 		public InputState KeyState => Keyboard[ScanCode];
 
-	
-
 		/// <summary>
 		///   Indicates whether the event was raised because of a key being released or pressed.
 		/// </summary>

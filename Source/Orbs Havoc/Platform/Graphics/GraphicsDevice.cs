@@ -23,9 +23,7 @@
 		/// </summary>
 		public GraphicsDevice()
 		{
-			var title = stackalloc byte[1];
-			title[0] = 0;
-
+			var title = stackalloc byte[] { 0 };
 			_contextWindow = SDL_CreateWindow(title, 0, 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
 			if (_contextWindow == null)
 				Log.Die($"Failed to create the OpenGL context window: {SDL_GetError()}");

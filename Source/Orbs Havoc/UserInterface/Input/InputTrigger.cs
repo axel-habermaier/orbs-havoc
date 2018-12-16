@@ -66,7 +66,7 @@ namespace OrbsHavoc.UserInterface.Input
 			if (ReferenceEquals(null, obj))
 				return false;
 
-			return obj is InputTrigger && Equals((InputTrigger)obj);
+			return obj is InputTrigger trigger && Equals(trigger);
 		}
 
 		public override int GetHashCode()
