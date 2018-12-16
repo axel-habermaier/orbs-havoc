@@ -10,7 +10,7 @@
 	using Utilities;
 
 	/// <summary>
-	///   Represents a connection to a remote peer, using the Lwar network protocol specification.
+	///   Represents a connection to a remote peer.
 	/// </summary>
 	internal class Connection : PooledObject
 	{
