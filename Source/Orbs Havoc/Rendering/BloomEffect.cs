@@ -14,9 +14,9 @@
 	/// </summary>
 	internal class BloomEffect : FullscreenEffect
 	{
-		private readonly UniformBuffer _bloomSettingsBuffer;
-		private readonly UniformBuffer _horizontalBlurBuffer;
-		private readonly UniformBuffer _verticalBlurBuffer;
+		private readonly UniformBuffer<BloomSettings> _bloomSettingsBuffer;
+		private readonly UniformBuffer<BlurSettings> _horizontalBlurBuffer;
+		private readonly UniformBuffer<BlurSettings> _verticalBlurBuffer;
 
 		private BloomSettings _bloomSettings = new BloomSettings
 		{
@@ -39,9 +39,9 @@
 		/// </summary>
 		public unsafe BloomEffect()
 		{
-			_bloomSettingsBuffer = new UniformBuffer(sizeof(BloomSettings));
-			_horizontalBlurBuffer = new UniformBuffer(sizeof(BlurSettings));
-			_verticalBlurBuffer = new UniformBuffer(sizeof(BlurSettings));
+			_bloomSettingsBuffer = new UniformBuffer<BloomSettings>();
+			_horizontalBlurBuffer = new UniformBuffer<BlurSettings>();
+			_verticalBlurBuffer = new UniformBuffer<BlurSettings>();
 
 			Cvars.BloomQualityChanged += BloomQualityChanged;
 		}

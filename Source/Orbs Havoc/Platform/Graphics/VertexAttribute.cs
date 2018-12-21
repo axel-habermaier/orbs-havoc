@@ -3,42 +3,42 @@
 	using Utilities;
 
 	/// <summary>
-	///   Represents an attribute of a vertex layout.
+	///     Represents an attribute of a vertex layout.
 	/// </summary>
 	internal readonly struct VertexAttribute
 	{
 		/// <summary>
-		///   The buffer the data is read from.
+		///     The buffer the data is read from.
 		/// </summary>
 		public readonly Buffer Buffer;
 
 		/// <summary>
-		///   The number of components accessed by the attribute.
+		///     The number of components accessed by the attribute.
 		/// </summary>
 		public readonly int ComponentCount;
 
 		/// <summary>
-		///   The data format of the attribute.
+		///     The data format of the attribute.
 		/// </summary>
 		public readonly DataFormat DataFormat;
 
 		/// <summary>
-		///   The number of bytes accessed by the attribute.
+		///     The number of bytes accessed by the attribute.
 		/// </summary>
 		public readonly int SizeInBytes;
 
 		/// <summary>
-		///   Indicates whether the attribute values should be normalized.
+		///     Indicates whether the attribute values should be normalized.
 		/// </summary>
 		public readonly bool Normalize;
 
 		/// <summary>
-		///   The stride in bytes between two consecutive values of the attribute.
+		///     The stride in bytes between two consecutive values of the attribute.
 		/// </summary>
 		public readonly int StrideInBytes;
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		/// <param name="buffer">The buffer the data is read from.</param>
 		/// <param name="dataFormat">The data format of the attribute.</param>

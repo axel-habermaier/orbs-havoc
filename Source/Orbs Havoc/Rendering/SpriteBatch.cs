@@ -214,16 +214,16 @@
 		///   Draws the given quads.
 		/// </summary>
 		/// <param name="quads">The quads that should be added.</param>
-		/// <param name="count">The number of quads to draw.</param>
+		/// <param name="quadCount">The number of quads to draw.</param>
 		/// <param name="texture">The texture that should be used to draw the quads.</param>
-		public void Draw(Quad[] quads, int count, Texture texture)
+		public void Draw(Quad[] quads, int quadCount, Texture texture)
 		{
 			Assert.ArgumentNotNull(quads, nameof(quads));
 			Assert.ArgumentNotNull(texture, nameof(texture));
-			Assert.ArgumentInRange(count, 0, quads.Length, nameof(count));
+			Assert.ArgumentInRange(quadCount, 0, quads.Length, nameof(quadCount));
 
 			fixed (Quad* ptr = quads)
-				Interop.Copy(AddQuads(count, texture), ptr, count * sizeof(Quad));
+				Interop.Copy(AddQuads(quadCount, texture), ptr, quadCount);
 		}
 
 		/// <summary>

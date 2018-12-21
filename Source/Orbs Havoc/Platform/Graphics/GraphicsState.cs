@@ -26,7 +26,7 @@
 		/// <summary>
 		///   The uniform buffers that are currently bound.
 		/// </summary>
-		public readonly UniformBuffer[] UniformBuffers = new UniformBuffer[UniformBufferSlotCount];
+		public readonly Buffer[] UniformBuffers = new Buffer[UniformBufferSlotCount];
 
 		/// <summary>
 		///   The currently bound sampler states.

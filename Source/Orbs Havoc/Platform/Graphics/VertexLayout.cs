@@ -5,14 +5,14 @@
 	using static OpenGL3;
 
 	/// <summary>
-	///   Represents the vertex layout expected by a vertex shader.
+	///     Represents the vertex layout expected by a vertex shader.
 	/// </summary>
 	internal sealed unsafe class VertexLayout : DisposableObject
 	{
 		private readonly int _vertexLayout = Allocate(glGenVertexArrays, "Vertex Layout");
 
 		/// <summary>
-		///   Initializes a new instance.
+		///     Initializes a new instance.
 		/// </summary>
 		/// <param name="attributes">The attributes the layout should contain.</param>
 		public VertexLayout(params VertexAttribute[] attributes)
@@ -31,7 +31,7 @@
 		}
 
 		/// <summary>
-		///   Adds the vertex attribute to the layout.
+		///     Adds the vertex attribute to the layout.
 		/// </summary>
 		private static void AddAttribute(VertexAttribute attribute, ref byte* offset, ref int index)
 		{
@@ -46,7 +46,7 @@
 		}
 
 		/// <summary>
-		///   Binds the the vertex layout for rendering.
+		///     Binds the the vertex layout for rendering.
 		/// </summary>
 		public void Bind()
 		{
@@ -56,7 +56,7 @@
 		}
 
 		/// <summary>
-		///   Disposes the object, releasing all managed and unmanaged resources.
+		///     Disposes the object, releasing all managed and unmanaged resources.
 		/// </summary>
 		protected override void OnDisposing()
 		{
@@ -65,7 +65,7 @@
 		}
 
 		/// <summary>
-		///   Casts the vertex layout to its underlying OpenGL handle.
+		///     Casts the vertex layout to its underlying OpenGL handle.
 		/// </summary>
 		public static implicit operator int(VertexLayout obj)
 		{

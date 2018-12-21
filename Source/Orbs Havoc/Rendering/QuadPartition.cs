@@ -68,10 +68,10 @@ namespace OrbsHavoc.Rendering
 		{
 			Offset = gpuOffset;
 
-			foreach (var section in _sections)
+			foreach (var (offset, length) in _sections)
 			{
-				Interop.Copy(gpuBuffer + gpuOffset, cpuBuffer + section.Offset, section.Length * Quad.SizeInBytes);
-				gpuOffset += section.Length;
+				Interop.Copy(gpuBuffer + gpuOffset, cpuBuffer + offset, length);
+				gpuOffset += length;
 			}
 		}
 	}
