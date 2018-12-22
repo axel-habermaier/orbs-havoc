@@ -20,7 +20,7 @@
 			for (var i = 0; i < sizeof(T); ++i)
 				data[i] = 0;
 
-			glBindBuffer(GL_UNIFORM_BUFFER, GpuBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, Handle);
 			glBufferData(GL_UNIFORM_BUFFER, sizeof(T), data, GL_DYNAMIC_DRAW);
 		}
 
@@ -29,7 +29,7 @@
 		/// </summary>
 		protected override void OnDisposing()
 		{
-			Deallocate(glDeleteBuffers, GpuBuffer);
+			Deallocate(glDeleteBuffers, Handle);
 			Unset(State.UniformBuffers, this);
 		}
 
@@ -44,7 +44,7 @@
 			if (!Change(State.UniformBuffers, slot, this))
 				return;
 
-			glBindBufferBase(GL_UNIFORM_BUFFER, slot, GpuBuffer);
+			glBindBufferBase(GL_UNIFORM_BUFFER, slot, Handle);
 		}
 
 		/// <summary>
@@ -56,7 +56,7 @@
 			Assert.NotDisposed(this);
 			Assert.ArgumentNotNull(new IntPtr(data), nameof(data));
 
-			glBindBuffer(GL_UNIFORM_BUFFER, GpuBuffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, Handle);
 			glBufferSubData(GL_UNIFORM_BUFFER, null, sizeof(T), data);
 		}
 	}

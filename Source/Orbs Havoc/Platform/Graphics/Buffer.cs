@@ -11,11 +11,11 @@
 		/// <summary>
 		///     The underlying OpenGL handle of the buffer.
 		/// </summary>
-		protected readonly int GpuBuffer;
+		protected readonly int Handle;
 
 		protected Buffer(int buffer)
 		{
-			GpuBuffer = buffer;
+			Handle = buffer;
 		}
 
 		/// <summary>
@@ -24,7 +24,7 @@
 		public static implicit operator int(Buffer buffer)
 		{
 			Assert.ArgumentNotNull(buffer, nameof(buffer));
-			return buffer.GpuBuffer;
+			return buffer.Handle;
 		}
 	}
 }

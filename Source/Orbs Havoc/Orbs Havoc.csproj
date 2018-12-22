@@ -143,11 +143,11 @@
     <Compile Include="Network\ServerFullException.cs" />
     <Compile Include="Network\ServerQuitException.cs" />
     <Compile Include="Network\UnreliableTransmissionAttribute.cs" />
-    <Compile Include="Platform\Graphics\Buffer`1.cs" />
+    <Compile Include="Platform\Graphics\VertexBuffer.cs" />
     <Compile Include="Platform\Graphics\PrimitiveType.cs" />
     <Compile Include="Platform\Graphics\DataFormat.cs" />
     <Compile Include="Platform\Graphics\ResourceUsage.cs" />
-    <Compile Include="Platform\Graphics\UniformBuffer`1.cs" />
+    <Compile Include="Platform\Graphics\UniformBuffer.cs" />
     <Compile Include="Platform\Graphics\VertexAttribute.cs" />
     <Compile Include="Platform\Graphics\VertexLayout.cs" />
     <Compile Include="Platform\Graphics\OpenGL3.cs" />

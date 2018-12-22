@@ -12,7 +12,7 @@
 		/// <summary>
 		///     The vertex buffers that are used to store the quad data.
 		/// </summary>
-		private readonly Buffer<Quad>[] _dataBuffers = new Buffer<Quad>[GraphicsState.MaxFrameLag];
+		private readonly VertexBuffer<Quad>[] _dataBuffers = new VertexBuffer<Quad>[GraphicsState.MaxFrameLag];
 
 		/// <summary>
 		///     The vertex input layouts that describe the vertex buffers.
@@ -33,13 +33,13 @@
 
 			for (var i = 0; i < GraphicsState.MaxFrameLag; ++i)
 			{
-				_dataBuffers[i] = Buffer<Quad>.CreateVertexBuffer(ResourceUsage.Dynamic, QuadCollection.MaxQuads);
+				_dataBuffers[i] = VertexBuffer<Quad>.CreateVertexBuffer(ResourceUsage.Dynamic, QuadCollection.MaxQuads);
 				_vertexLayouts[i] = new VertexLayout(
-					new VertexAttribute(_dataBuffers[i], DataFormat.Float, 2, sizeof(float), Quad.SizeInBytes, false), // Positions
-					new VertexAttribute(_dataBuffers[i], DataFormat.Float, 1, sizeof(float), Quad.SizeInBytes, false), // Orientations
-					new VertexAttribute(_dataBuffers[i], DataFormat.UnsignedByte, 4, sizeof(byte), Quad.SizeInBytes, true), // Colors
-					new VertexAttribute(_dataBuffers[i], DataFormat.UnsignedShort, 2, sizeof(ushort), Quad.SizeInBytes, false), // Sizes
-					new VertexAttribute(_dataBuffers[i], DataFormat.UnsignedShort, 4, sizeof(ushort), Quad.SizeInBytes, true)); // Tex Coords
+					VertexAttribute.Create(_dataBuffers[i], DataFormat.Float, 2, sizeof(float), Quad.SizeInBytes, false), // Positions
+					VertexAttribute.Create(_dataBuffers[i], DataFormat.Float, 1, sizeof(float), Quad.SizeInBytes, false), // Orientations
+					VertexAttribute.Create(_dataBuffers[i], DataFormat.UnsignedByte, 4, sizeof(byte), Quad.SizeInBytes, true), // Colors
+					VertexAttribute.Create(_dataBuffers[i], DataFormat.UnsignedShort, 2, sizeof(ushort), Quad.SizeInBytes, false), // Sizes
+					VertexAttribute.Create(_dataBuffers[i], DataFormat.UnsignedShort, 4, sizeof(ushort), Quad.SizeInBytes, true)); // Tex Coords
 			}
 		}
 
